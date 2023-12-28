@@ -65,3 +65,37 @@ export function getChannelValue(channel: ColorChannel, value: AnyColor | Colord)
 			return 0;
 	}
 }
+
+export function sameColor(a: AnyColor | Colord, b: AnyColor | Colord) {
+	return colord(a).isEqual(b);
+}
+
+type GetColorFromPosArgs = {
+	pos: { x: number; y: number };
+	value: string;
+};
+
+export function getColorFromPos({ pos, value }: GetColorFromPosArgs) {
+	const x = pos.x;
+	const y = 100 - pos.y;
+	const hueAngle = colord(value).hue();
+
+	const c = colord({
+		h: hueAngle,
+		s: x,
+		v: y,
+		a: getChannelValue('alpha', value),
+	});
+
+	return convertColor(c, getColorFormat(value) ?? 'hex', true);
+}
+
+export const getColorPos = (color: string) => {
+	const c = colord(color);
+	const { s, v } = c.toHsv();
+
+	return {
+		x: s,
+		y: 100 - v,
+	};
+};

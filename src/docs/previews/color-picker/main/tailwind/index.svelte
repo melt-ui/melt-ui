@@ -4,7 +4,7 @@
 	import { Pipette } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 
-	const defaultColor = '#5b52aa';
+	const defaultColor = 'hsl(200,50%,50%)';
 	const alphaValue = writable(100);
 	const hueAngle = writable(0);
 
@@ -44,12 +44,12 @@
 	});
 </script>
 
-<div class="flex w-[350px] gap-2 overflow-hidden rounded-md bg-white p-2">
+<div class="flex w-[500px] gap-2 overflow-hidden rounded-md bg-white p-2">
 	<div class="flex shrink flex-col items-center justify-center gap-2">
 		<div class="canvas relative">
 			<canvas
 				use:melt={$colorCanvas}
-				class="color-canvas h-[175px] w-[175px] cursor-pointer rounded-sm"
+				class="color-canvas h-[300px] w-[300px] cursor-pointer rounded-sm"
 				aria-label="Color canvas for showing saturation and brightness."
 			/>
 			<button
@@ -59,7 +59,7 @@
 			/>
 		</div>
 
-		<div class="hue relative h-[10px] w-[175px]">
+		<div class="hue relative h-[10px] w-[300px]">
 			<button
 				use:melt={$huePicker}
 				class="hue-picker"
@@ -67,12 +67,12 @@
 			/>
 			<canvas
 				use:melt={$hueSlider}
-				class="h-[10px] w-[175px] cursor-pointer rounded-md"
+				class="h-[10px] w-[300px] cursor-pointer rounded-md"
 				aria-label="A canvas element showing all available hue colors."
 			/>
 		</div>
 
-		<div class="alpha relative h-[10px] w-[175px] rounded-full">
+		<div class="alpha relative h-[10px] w-[300px] rounded-full">
 			<button
 				use:melt={$alphaPicker}
 				class="alpha-picker"
@@ -80,7 +80,7 @@
 			/>
 			<canvas
 				use:melt={$alphaSlider}
-				class="h-[10px] w-[175px] cursor-pointer rounded-full"
+				class="h-[10px] w-[300px] cursor-pointer rounded-full"
 				aria-label="A canvas element showing the alpha values for the color."
 			/>
 		</div>
@@ -101,7 +101,7 @@
 			<input
 				use:melt={$hexInput}
 				type="text"
-				class="w-24 rounded-md border border-gray-800 px-2 py-1 text-black"
+				class=" rounded-md border border-gray-800 px-2 py-1 text-black"
 				aria-label="hex color value"
 			/>
 

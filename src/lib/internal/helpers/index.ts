@@ -2,6 +2,7 @@ export * from './array.js';
 export * from './attr.js';
 export * from './builder.js';
 export * from './callbacks.js';
+export * from './color/index.js';
 export * from './debounce.js';
 export * from './dom.js';
 export * from './elements.js';

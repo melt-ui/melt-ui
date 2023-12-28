@@ -2,30 +2,32 @@ import {
 	addEventListener,
 	addMeltEventListener,
 	builder,
+	clamp,
+	convertColor,
 	createElHelpers,
 	effect,
 	executeCallbacks,
+	getChannelValue,
+	getColorFormat,
 	isBrowser,
+	isColorChannel,
 	isNumberString,
+	isValidColor,
 	omit,
 	overridable,
+	sameColor,
 	styleToString,
 	toWritableStores,
+	type ColorChannel,
+	getColorFromPos,
+	getColorPos,
 } from '$lib/internal/helpers';
 import { colord } from 'colord';
 
 import type { Defaults, Orientation } from '$lib/internal/types';
 
-import {
-	convertColor,
-	getChannelValue,
-	getColorFormat,
-	isColorChannel,
-	isValidColor,
-	type ColorChannel,
-} from '$lib/internal/helpers/color';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 import type {
 	ArrowKeys,
 	ColorPickerParts,
@@ -66,10 +68,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
 	value.update((p) => (isValidColor(p) ? p : defaults.defaultValue));
 
-	const colorCanvasDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
-		height: 1,
-		width: 1,
-	});
+	let colorCanvasEl: HTMLCanvasElement | null = null;
 	const colorCanvasThumbPos = writable({ x: 0, y: 0 });
 	const colorCanvasThumbDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
 
@@ -89,62 +88,32 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 	let eye: EyeDropperType | null = null;
 
-	const setAlphaValue = (x: number, y: number) => {
+	function isEyeDropperSupported() {
+		return typeof window !== 'undefined' && 'EyeDropper' in window;
+	}
+
+	// Setters
+	const _setAlphaValue = (x: number, y: number) => {
 		if (argsWithDefaults.alphaSliderOrientation === 'horizontal') {
-			alphaValue.set(Math.round((x / get(alphaSliderDimensions).width) * 100));
+			setAlpha(Math.round((x / get(alphaSliderDimensions).width) * 100));
 		} else {
-			alphaValue.set(Math.round((y / get(alphaSliderDimensions).height) * 100));
+			setAlpha(Math.round((y / get(alphaSliderDimensions).height) * 100));
 		}
 	};
 
-	const getColorFromPos = derived(
-		[colorCanvasDimensions, hueAngle, value],
-		([$colorCanvasDimensions, $hueAngle, $value]) => {
-			return (pos: { x: number; y: number }) => {
-				const x = pos.x / $colorCanvasDimensions.width;
-				const y = 1 - pos.y / $colorCanvasDimensions.height;
+	function setAlpha(value: number) {
+		alphaValue.set(value);
+		updateChannel(value / 100, 'alpha');
+	}
 
-				const c = colord({
-					h: $hueAngle,
-					s: x * 100,
-					v: y * 100,
-					a: getChannelValue('alpha', $value),
-				});
+	function setHueAngle(value: number) {
+		hueAngle.set(value);
+		updateChannel(value, 'hue');
+	}
 
-				return convertColor(c, getColorFormat($value) ?? 'hex', true);
-			};
-		}
-	);
-
-	const getColorPos = derived([colorCanvasDimensions], ([$colorCanvasDimensions]) => {
-		return (color: string) => {
-			const c = colord(color);
-
-			const { s, v } = c.toHsv();
-
-			return {
-				x: (s / 100) * $colorCanvasDimensions.width,
-				y: (1 - v / 100) * $colorCanvasDimensions.height,
-			};
-		};
-	});
-
-	/**
-	 * Returns the current color of the color picker.
-	 * This function is used in some builder return parameters,
-	 * as well as the subscribe methods, since we sometimes need to
-	 * update the $colors value when the hue angle is changed.
-	 */
-	const updateByPos = derived(getColorFromPos, ($colorFromPos) => {
-		return (pos: { x: number; y: number }) => {
-			colorCanvasThumbPos.set(pos);
-
-			value.set($colorFromPos(pos));
-		};
-	});
-
-	function isEyeDropperSupported() {
-		return typeof window !== 'undefined' && 'EyeDropper' in window;
+	function setColorCanvasThumbPos(pos: { x: number; y: number }) {
+		colorCanvasThumbPos.set(pos);
+		value.update((p) => getColorFromPos({ pos, value: p }));
 	}
 
 	// Handlers
@@ -157,39 +126,20 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		height: number;
 	};
 
-	type HandleSliderMovementArgs = {
-		x: number;
-		y: number;
-		nodeX: number;
-		nodeY: number;
-		width: number;
-		height: number;
-		store: Writable<number>;
-		orientation: Orientation;
-		maxValue: number;
-	};
-
 	function handleOutsideColorCanvasMovement(args: HandleMovementArgs) {
 		const { x, y, nodeX, nodeY, width, height } = args;
 
-		if (x <= nodeX && y <= nodeY) {
-			get(updateByPos)({ x: 0, y: 0 });
-		} else if (x <= nodeX && y <= nodeY + height) {
-			get(updateByPos)({ x: 0, y: y - nodeY });
-		} else if (x <= nodeX && y > nodeY + height) {
-			get(updateByPos)({ x: 0, y: height });
-		} else if (x <= nodeX + width && y <= nodeY) {
-			get(updateByPos)({ x: x - nodeX, y: 0 });
-		} else if (x <= nodeX + width && y > nodeY + height) {
-			get(updateByPos)({ x: x - nodeX, y: height });
-		} else if (x > nodeX + width && y <= nodeY) {
-			get(updateByPos)({ x: width, y: 0 });
-		} else if (x > nodeX + width && y <= nodeY + height) {
-			get(updateByPos)({ x: width, y: y - nodeY });
-		} else if (x > nodeX + width && y > nodeY + height) {
-			get(updateByPos)({ x: width, y: height });
-		}
+		const xPercent = clamp(0, (x - nodeX) / width, 1);
+		const yPercent = clamp(0, (y - nodeY) / height, 1);
+
+		setColorCanvasThumbPos({ x: xPercent * 100, y: yPercent * 100 });
 	}
+
+	type HandleSliderMovementArgs = HandleMovementArgs & {
+		set: (v: number) => void;
+		orientation: Orientation;
+		maxValue: number;
+	};
 
 	/**
 	 * Allows values to be changed when dragging is going on where the mouse or touch event
@@ -198,23 +148,23 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	 * @param args - slider movement arguments
 	 */
 	function handleOutsideSliderMovement(args: HandleSliderMovementArgs) {
-		const { x, y, nodeX, nodeY, width, height, store, orientation, maxValue } = args;
+		const { x, y, nodeX, nodeY, width, height, set, orientation, maxValue } = args;
 
 		if (orientation === 'horizontal') {
 			if (x <= nodeX) {
-				store.set(0);
+				set(0);
 			} else if (x <= nodeX + width && (y <= nodeY || y >= nodeY + height)) {
-				store.set(Math.round(((x - nodeX) / width) * maxValue));
+				set(Math.round(((x - nodeX) / width) * maxValue));
 			} else if (x >= nodeX + width) {
-				store.set(maxValue);
+				set(maxValue);
 			}
 		} else {
 			if (y <= nodeY) {
-				store.set(0);
+				set(0);
 			} else if (y <= nodeY + height && (x <= nodeX || x >= nodeX + width)) {
-				store.set(Math.round(((y - nodeY) / height) * maxValue));
+				set(Math.round(((y - nodeY) / height) * maxValue));
 			} else if (y >= nodeY + height) {
-				store.set(maxValue);
+				set(maxValue);
 			}
 		}
 	}
@@ -226,15 +176,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	 */
 	function handleWindowsMouseMove(e: MouseEvent) {
 		if (dragging) {
-			const cc = get(colorCanvasDimensions);
-
-			if (!cc.node) return;
+			if (!colorCanvasEl) return;
 
 			e.preventDefault();
 
 			const { clientX: x, clientY: y } = e;
-			const { width, height, node } = cc;
-			const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+			const { x: nodeX, y: nodeY, width, height } = colorCanvasEl.getBoundingClientRect();
 
 			handleOutsideColorCanvasMovement({ x, y, nodeX, nodeY, width, height });
 		} else if (hueDragging) {
@@ -255,7 +203,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				nodeY,
 				width,
 				height,
-				store: hueAngle,
+				set: setHueAngle,
 				orientation: argsWithDefaults.hueSliderOrientation,
 				maxValue: 359,
 			});
@@ -277,7 +225,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				nodeY,
 				width,
 				height,
-				store: alphaValue,
+				set: setAlpha,
 				orientation: argsWithDefaults.alphaSliderOrientation,
 				maxValue: 100,
 			});
@@ -291,15 +239,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	 */
 	function handleWindowsMouseUp(e: MouseEvent) {
 		if (dragging) {
-			const cc = get(colorCanvasDimensions);
-
-			if (!cc.node) return;
+			if (!colorCanvasEl) return;
 
 			e.preventDefault();
 
 			const { clientX: x, clientY: y } = e;
-			const { width, height, node } = cc;
-			const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+			const { x: nodeX, y: nodeY, width, height } = colorCanvasEl.getBoundingClientRect();
 
 			if (x < nodeX || x > nodeX + width || y < nodeY || y > nodeY + height) {
 				dragging = false;
@@ -363,16 +309,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLCanvasElement) => {
 			const rect = node.getBoundingClientRect();
 
-			colorCanvasDimensions.set({
-				node,
-				width: rect.width,
-				height: rect.height,
-			});
+			colorCanvasEl = node;
 
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					const { offsetX: x, offsetY: y } = e;
-					get(updateByPos)({ x, y });
+					const xPercent = x / rect.width;
+					const yPercent = y / rect.height;
+					setColorCanvasThumbPos({ x: xPercent * 100, y: yPercent * 100 });
 				}),
 				addMeltEventListener(node, 'mousedown', () => {
 					dragging = true;
@@ -384,7 +328,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					if (!dragging) return;
 
 					const { offsetX: x, offsetY: y } = e;
-					get(updateByPos)({ x, y });
+					const xPercent = x / rect.width;
+					const yPercent = y / rect.height;
+					setColorCanvasThumbPos({ x: xPercent * 100, y: yPercent * 100 });
 				}),
 				addMeltEventListener(node, 'touchstart', () => {
 					dragging = true;
@@ -395,18 +341,15 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				addMeltEventListener(node, 'touchmove', (e) => {
 					if (!dragging) return;
 
-					const cc = get(colorCanvasDimensions);
-
-					if (!cc.node) return;
+					if (!colorCanvasEl) return;
 
 					e.preventDefault();
 
 					const { clientX: x, clientY: y } = e.touches[0];
-					const { width, height, node } = cc;
-					const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+					const { x: nodeX, y: nodeY, width, height } = node.getBoundingClientRect();
 
 					if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
-						get(updateByPos)({ x: x - nodeX, y: y - nodeY });
+						setColorCanvasThumbPos({ x: x - nodeX, y: y - nodeY });
 					} else {
 						handleOutsideColorCanvasMovement({ x, y, nodeX, nodeY, width, height });
 					}
@@ -422,17 +365,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const colorCanvasThumb = builder(name('color-canvas-thumb'), {
-		stores: [colorCanvasThumbPos, colorCanvasThumbDimensions, value],
-		returned: ([$colorPickerPos, $colorPickerDimensions, $value]) => {
-			const top = Math.round($colorPickerPos.y - $colorPickerDimensions.height / 2);
-			const left = Math.round($colorPickerPos.x - $colorPickerDimensions.width / 2);
-
+		stores: [colorCanvasThumbPos, value],
+		returned: ([$colorPickerPos, $value]) => {
 			return {
 				style: styleToString({
 					position: 'absolute',
-					transform: `translate(${left}px, ${top}px)`,
-					top: 0,
-					left: 0,
+					top: `${$colorPickerPos.y}%`,
+					left: `${$colorPickerPos.x}%`,
+					transform: 'translate(-50%, -50%)',
 					'background-color': `${$value}`,
 				}),
 			};
@@ -480,17 +420,18 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					const step = duration > 1000 ? speedUpStep : 1;
 
 					const { x, y } = get(colorCanvasThumbPos);
-					const { height: canvasH, width: canvasW } = get(colorCanvasDimensions);
+					if (!colorCanvasEl) return;
+					const { width: canvasW, height: canvasH } = colorCanvasEl.getBoundingClientRect();
 
 					// Move the picker button and restrict movement to within the canvas.
 					if (key === 'ArrowUp' && y - 1 >= 0) {
-						get(updateByPos)({ x, y: Math.max(y - step, 0) });
+						setColorCanvasThumbPos({ x, y: Math.max(y - step, 0) });
 					} else if (key === 'ArrowDown' && y + 1 <= canvasH) {
-						get(updateByPos)({ x, y: Math.min(y + step, canvasH) });
+						setColorCanvasThumbPos({ x, y: Math.min(y + step, canvasH) });
 					} else if (key === 'ArrowRight' && x + 1 <= canvasW) {
-						get(updateByPos)({ x: Math.min(x + step, canvasW), y });
+						setColorCanvasThumbPos({ x: Math.min(x + step, canvasW), y });
 					} else if (key === 'ArrowLeft' && x - 1 >= 0) {
-						get(updateByPos)({ x: Math.max(x - step, 0), y });
+						setColorCanvasThumbPos({ x: Math.max(x - step, 0), y });
 					}
 				})
 			);
@@ -541,7 +482,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 							? Math.round((x / get(hueSliderDimensions).width) * 360)
 							: Math.round((y / get(hueSliderDimensions).height) * 360);
 
-					hueAngle.set(angle);
+					setHueAngle(angle);
 				}),
 				addMeltEventListener(node, 'mousedown', () => {
 					hueDragging = true;
@@ -561,7 +502,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 							? Math.round((x / get(hueSliderDimensions).width) * 360)
 							: Math.round((y / get(hueSliderDimensions).height) * 360);
 
-					hueAngle.set(angle);
+					setHueAngle(angle);
 				}),
 				addMeltEventListener(node, 'touchstart', () => {
 					hueDragging = true;
@@ -583,7 +524,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
 
 					if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
-						hueAngle.set(Math.round(((x - nodeX) / width) * 359));
+						setHueAngle(Math.round(((x - nodeX) / width) * 359));
 					} else {
 						handleOutsideSliderMovement({
 							x,
@@ -592,7 +533,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 							nodeY,
 							width,
 							height,
-							store: hueAngle,
+							set: setHueAngle,
 							orientation: argsWithDefaults.hueSliderOrientation,
 							maxValue: 359,
 						});
@@ -679,9 +620,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					// Move the picker button and restrict movement to within the canvas.
 					if (key === increaseArrow && angle + 1 < 360) {
-						hueAngle.set(angle + 1);
+						setHueAngle(angle + 1);
 					} else if (key === decreaseArrow && angle - 1 >= 0) {
-						hueAngle.set(angle - 1);
+						setHueAngle(angle - 1);
 					}
 				})
 			);
@@ -723,7 +664,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					const { offsetX: x, offsetY: y } = e;
-					setAlphaValue(x, y);
+					_setAlphaValue(x, y);
 				}),
 				addMeltEventListener(node, 'mousedown', () => {
 					alphaDragging = true;
@@ -735,7 +676,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					if (!alphaDragging) return;
 
 					const { offsetX: x, offsetY: y } = e;
-					setAlphaValue(x, y);
+					_setAlphaValue(x, y);
 				}),
 				addMeltEventListener(node, 'touchstart', () => {
 					alphaDragging = true;
@@ -757,7 +698,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
 
 					if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
-						alphaValue.set(Math.round(((x - nodeX) / width) * 100));
+						setAlpha(Math.round(((x - nodeX) / width) * 100));
 					} else {
 						handleOutsideSliderMovement({
 							x,
@@ -766,7 +707,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 							nodeY,
 							width,
 							height,
-							store: alphaValue,
+							set: setAlpha,
 							orientation: argsWithDefaults.alphaSliderOrientation,
 							maxValue: 100,
 						});
@@ -856,9 +797,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					// Move the picker button and restrict movement to within the canvas.
 					if (key === increaseArrow && alpha + 1 <= 100) {
-						alphaValue.set(alpha + 1);
+						setAlpha(alpha + 1);
 					} else if (key === decreaseArrow && alpha - 1 >= 0) {
-						alphaValue.set(alpha - 1);
+						setAlpha(alpha - 1);
 					}
 				})
 			);
@@ -970,26 +911,18 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		);
 	});
 
-	effect([value, getColorFromPos, getColorPos], ([$value, $getColorFromPos, $getColorPos]) => {
-		colorCanvasThumbPos.update((pos) => {
-			const colorFromPos = $getColorFromPos(pos);
-			if (colorFromPos === $value) return pos;
-			return $getColorPos($value);
-		});
-	});
-
-	effect(hueAngle, ($hueAngle) => {
-		updateChannel($hueAngle, 'hue');
-	});
-
 	effect(value, ($value) => {
-		hueAngle.set(colord($value).hue());
 		lastValid = $value;
+		hueAngle.update((p) => {
+			if (sameColor(colord($value).hue(p), $value)) return p;
+			return colord($value).hue();
+		});
 		alphaValue.set(colord($value).alpha() * 100);
-	});
-
-	effect(alphaValue, ($alphaValue) => {
-		updateChannel($alphaValue / 100, 'alpha');
+		colorCanvasThumbPos.update((p) => {
+			const colorFromPos = getColorFromPos({ pos: p, value: $value });
+			if (sameColor(colorFromPos, $value)) return p;
+			return getColorPos($value);
+		});
 	});
 
 	return {
