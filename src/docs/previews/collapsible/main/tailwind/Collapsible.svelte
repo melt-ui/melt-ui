@@ -5,18 +5,20 @@
 	import { createSync } from './sync';
 
 	export let open = false;
+	export let disabled = false;
 
 	const {
 		elements: { root, content, trigger },
 		states,
+		options,
 	} = createCollapsible({
 		onOpenChange({ next }) {
 			return next;
 		},
 	});
 
-	const sync = createSync(states);
-	$: sync({ open });
+	const sync = createSync({ ...states, ...options });
+	$: sync({ open, disabled });
 </script>
 
 {JSON.stringify($$props)}
