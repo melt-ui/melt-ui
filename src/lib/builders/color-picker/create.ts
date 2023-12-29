@@ -847,6 +847,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 	effect(uc, ($uc) => {
 		lastValid = $uc.toString();
+		value.set($uc.toString());
 		// hueAngle.update((p) => {
 		// 	if (sameColor(colord($value).hue(p), $value)) return p;
 		// 	return colord($value).hue();
@@ -857,6 +858,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		// 	if (sameColor(colorFromPos, $value)) return p;
 		// 	return getColorPos($value);
 		// });
+	});
+
+	effect(value, ($value) => {
+		uc.update((p) => {
+			if ($value !== p.toString()) return ultimateColor($value);
+			return p;
+		});
 	});
 
 	return {

@@ -4,9 +4,9 @@
 	import { Pipette } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 
-	// const defaultColor = '#04afde55';
-	// const defaultColor = 'rgba(255, 0, 0, 0.5)';
-	const defaultColor = 'hsla(200, 50%, 50%, 0.5)';
+	const dHex = '#04afde55';
+	const dRgb = 'rgba(255, 0, 0, 0.5)';
+	const dHsl = 'hsla(200, 50%, 50%, 0.5)';
 
 	let history: string[] = [];
 
@@ -25,7 +25,7 @@
 		states: { value },
 		helpers: { convertColor, isEyeDropperSupported },
 	} = createColorPicker({
-		defaultValue: defaultColor,
+		defaultValue: dHsl,
 		onValueChange: ({ curr, next }) => {
 			history = [curr, ...history.slice(0, 20)];
 			return next;
@@ -41,6 +41,10 @@
 		hex: convertColor($value, 'hex'),
 	});
 </script>
+
+<button on:click={() => ($value = dHex)}>Set to hex</button>
+<button on:click={() => ($value = dRgb)}>Set to rgb</button>
+<button on:click={() => ($value = dHsl)}>Set to hsl</button>
 
 <div class="flex w-[500px] gap-2 overflow-hidden rounded-md bg-white p-2">
 	<div class="flex shrink flex-col items-center justify-center gap-2">
