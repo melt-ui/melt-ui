@@ -66,15 +66,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		height: 1,
 		width: 1,
 	});
-	const huePickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
-	const hueAngle = writable(getChannelValue('hue', get(value)));
 
 	const alphaSliderDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
 		width: 1,
 	});
-	const alphaPickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
-	const alphaValue = writable(getChannelValue('alpha', get(value)));
 
 	let eye: EyeDropperType | null = null;
 
@@ -93,20 +89,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 	function setAlpha(value: number) {
 		uc.update((p) => p.updateChannel(value / 100, 'alpha'));
-		// alphaValue.set(value);
-		// updateChannel(value / 100, 'alpha');
 	}
 
 	function setHueAngle(value: number) {
 		uc.update((p) => p.updateChannel(value, 'hue'));
-		// hueAngle.set(value);
-		// updateChannel(value, 'hue');
 	}
 
 	function setColorCanvasThumbPos(pos: { x: number; y: number }) {
 		uc.update((p) => p.updateChannel(pos.x, 'saturation').updateChannel(100 - pos.y, 'lightness'));
-		// colorCanvasThumbPos.set(pos);
-		// value.update((p) => getColorFromPos({ pos, value: p, hueAngle: get(hueAngle) }));
 	}
 
 	// Handlers
@@ -540,13 +530,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			};
 		},
 		action: (node: HTMLButtonElement) => {
-			const rect = node.getBoundingClientRect();
-
-			huePickerDimensions.set({
-				height: rect.height,
-				width: rect.width,
-			});
-
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'mousedown', () => {
 					hueDragging = true;
@@ -565,7 +548,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					e.preventDefault();
 
-					const angle = get(hueAngle);
+					const angle = get(uc).hue;
 
 					let increaseArrow = 'ArrowRight';
 					let decreaseArrow = 'ArrowLeft';
@@ -694,13 +677,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			};
 		},
 		action: (node: HTMLButtonElement) => {
-			const rect = node.getBoundingClientRect();
-
-			alphaPickerDimensions.set({
-				height: rect.height,
-				width: rect.width,
-			});
-
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'mousedown', () => {
 					alphaDragging = true;
@@ -719,7 +695,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					e.preventDefault();
 
-					const alpha = get(alphaValue);
+					const alpha = get(uc).alpha;
 
 					let increaseArrow = 'ArrowRight';
 					let decreaseArrow = 'ArrowLeft';
@@ -848,16 +824,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	effect(uc, ($uc) => {
 		lastValid = $uc.toString();
 		value.set($uc.toString());
-		// hueAngle.update((p) => {
-		// 	if (sameColor(colord($value).hue(p), $value)) return p;
-		// 	return colord($value).hue();
-		// });
-		// alphaValue.set(colord($value).alpha() * 100);
-		// colorCanvasThumbPos.update((p) => {
-		// 	const colorFromPos = getColorFromPos({ pos: p, value: $value, hueAngle: get(hueAngle) });
-		// 	if (sameColor(colorFromPos, $value)) return p;
-		// 	return getColorPos($value);
-		// });
 	});
 
 	effect(value, ($value) => {
