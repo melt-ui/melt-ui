@@ -33,7 +33,6 @@ import type {
 	EyeDropperType,
 	EyeDropperWindow,
 	NodeElement,
-	NodeSize,
 } from './types';
 
 const defaults = {
@@ -760,11 +759,19 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			}
 
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', async () => {
 					if (!eye) return;
 
-					// eye.open().then((result) => updateOnColorInput(result.sRGBHex));
-					// .catch((e) => console.log(e));
+					try {
+						const { sRGBHex } = await eye.open();
+						value.update((p) => {
+							const format = getColorFormat(p);
+							if (!format) return p;
+							return convertColor(sRGBHex, format, true);
+						});
+					} catch {
+						// Do nothing.
+					}
 				})
 			);
 
