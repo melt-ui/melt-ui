@@ -102,40 +102,49 @@ export const getColorPos = (color: string) => {
 
 type UltimateColor = Record<ColorChannel, number> & {
 	format: ColorFormat;
+	updateChannel: (v: number, channel: ColorChannel) => UltimateColor;
+	toString: () => string;
 };
 
-export function ultimateColor(color: string) {
-	const c = colord(color);
+export function ultimateColor(color: string | UltimateColor): UltimateColor {
+	let uc: UltimateColor;
+	if (typeof color === 'string') {
+		const c = colord(color);
 
-	const uc: UltimateColor = {
-		hue: c.hue(),
-		saturation: c.toHsl().s,
-		lightness: c.toHsl().l,
-
-		red: c.toRgb().r,
-		green: c.toRgb().g,
-		blue: c.toRgb().b,
-		alpha: c.alpha(),
-
-		format: getColorFormat(color) ?? 'hex',
-	};
+		uc = {
+			hue: c.hue(),
+			saturation: c.toHsl().s,
+			lightness: c.toHsl().l,
+			red: c.toRgb().r,
+			green: c.toRgb().g,
+			blue: c.toRgb().b,
+			alpha: c.alpha(),
+			format: getColorFormat(color) ?? 'hex',
+			updateChannel,
+			toString,
+		};
+	} else {
+		uc = {
+			...color,
+			updateChannel,
+			toString,
+		};
+	}
 
 	function syncRGB(uc: UltimateColor) {
-		const copied = { ...uc };
-		const rgb = colord({ h: copied.hue, s: copied.saturation, l: copied.lightness }).toRgb();
-		copied.red = rgb.r;
-		copied.green = rgb.g;
-		copied.blue = rgb.b;
-		return copied;
+		const rgb = colord({ h: uc.hue, s: uc.saturation, l: uc.lightness }).toRgb();
+		uc.red = rgb.r;
+		uc.green = rgb.g;
+		uc.blue = rgb.b;
+		return ultimateColor(uc);
 	}
 
 	function syncHSL(uc: UltimateColor) {
-		const copied = { ...uc };
-		const hsl = colord({ r: copied.red, g: copied.green, b: copied.blue }).toHsl();
-		copied.hue = hsl.h;
-		copied.saturation = hsl.s;
-		copied.lightness = hsl.l;
-		return copied;
+		const hsl = colord({ r: uc.red, g: uc.green, b: uc.blue }).toHsl();
+		uc.hue = hsl.h;
+		uc.saturation = hsl.s;
+		uc.lightness = hsl.l;
+		return ultimateColor(uc);
 	}
 
 	function updateChannel(v: number, channel: ColorChannel): UltimateColor {
@@ -147,11 +156,11 @@ export function ultimateColor(color: string) {
 				return syncRGB(copied);
 			}
 			case 'saturation': {
-				copied.saturation = v;
+				copied.saturation = Math.round(v);
 				return syncRGB(copied);
 			}
 			case 'lightness': {
-				copied.lightness = v;
+				copied.lightness = Math.round(v);
 				return syncRGB(copied);
 			}
 			case 'red': {
@@ -168,7 +177,29 @@ export function ultimateColor(color: string) {
 			}
 			case 'alpha': {
 				copied.alpha = v;
-				return copied;
+				return ultimateColor(copied);
+			}
+		}
+	}
+
+	function toString() {
+		switch (uc.format) {
+			case 'hex': {
+				return colord({ h: uc.hue, s: uc.saturation, l: uc.lightness, a: uc.alpha }).toHex();
+			}
+			case 'rgb': {
+				if (uc.alpha === 1) {
+					return `rgb(${uc.red}, ${uc.green}, ${uc.blue})`;
+				} else {
+					return `rgba(${uc.red}, ${uc.green}, ${uc.blue}, ${uc.alpha})`;
+				}
+			}
+			case 'hsl': {
+				if (uc.alpha === 1) {
+					return `hsl(${uc.hue}, ${uc.saturation}%, ${uc.lightness}%)`;
+				} else {
+					return `hsla(${uc.hue}, ${uc.saturation}%, ${uc.lightness}%, ${uc.alpha})`;
+				}
 			}
 		}
 	}

@@ -9,17 +9,15 @@ import {
 	executeCallbacks,
 	getChannelValue,
 	getColorFormat,
-	getColorFromPos,
-	getColorPos,
 	isBrowser,
 	isColorChannel,
 	isNumberString,
 	isValidColor,
 	omit,
 	overridable,
-	sameColor,
 	styleToString,
 	toWritableStores,
+	ultimateColor,
 	type ColorChannel,
 } from '$lib/internal/helpers';
 import { colord } from 'colord';
@@ -59,6 +57,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
 	value.update((p) => (isValidColor(p) ? p : defaults.defaultValue));
 
+	const uc = writable(ultimateColor(get(value)));
+
 	let colorCanvasEl: HTMLCanvasElement | null = null;
 	const colorCanvasThumbPos = writable({ x: 0, y: 0 });
 
@@ -92,18 +92,21 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	};
 
 	function setAlpha(value: number) {
-		alphaValue.set(value);
-		updateChannel(value / 100, 'alpha');
+		uc.update((p) => p.updateChannel(value / 100, 'alpha'));
+		// alphaValue.set(value);
+		// updateChannel(value / 100, 'alpha');
 	}
 
 	function setHueAngle(value: number) {
-		hueAngle.set(value);
-		updateChannel(value, 'hue');
+		uc.update((p) => p.updateChannel(value, 'hue'));
+		// hueAngle.set(value);
+		// updateChannel(value, 'hue');
 	}
 
 	function setColorCanvasThumbPos(pos: { x: number; y: number }) {
-		colorCanvasThumbPos.set(pos);
-		value.update((p) => getColorFromPos({ pos, value: p, hueAngle: get(hueAngle) }));
+		uc.update((p) => p.updateChannel(pos.x, 'saturation').updateChannel(100 - pos.y, 'lightness'));
+		// colorCanvasThumbPos.set(pos);
+		// value.update((p) => getColorFromPos({ pos, value: p, hueAngle: get(hueAngle) }));
 	}
 
 	// Handlers
@@ -286,13 +289,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 	// Builders
 	const colorCanvas = builder(name('color-canvas'), {
-		stores: [hueAngle],
-		returned: ([$hueAngle]) => {
+		stores: uc,
+		returned: ($uc) => {
 			return {
 				style: styleToString({
-					'background-color': `hsl(${$hueAngle}, 100%, 50%)`,
-					'background-image':
-						'linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))',
+					background: `linear-gradient(to top, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0) 50%, rgb(255, 255, 255) 100%),
+					linear-gradient(to right,rgb(128, 128, 128), rgba(128,128,128,0)), hsl(${$uc.hue}, 100%, 50%)`,
 				}),
 			};
 		},
@@ -355,15 +357,15 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const colorCanvasThumb = builder(name('color-canvas-thumb'), {
-		stores: [colorCanvasThumbPos, value],
-		returned: ([$colorPickerPos, $value]) => {
+		stores: uc,
+		returned: ($uc) => {
 			return {
 				style: styleToString({
 					position: 'absolute',
-					top: `${$colorPickerPos.y}%`,
-					left: `${$colorPickerPos.x}%`,
+					top: `${100 - $uc.lightness}%`,
+					left: `${$uc.saturation}%`,
 					transform: 'translate(-50%, -50%)',
-					'background-color': `${$value}`,
+					'background-color': `${$uc.toString()}`,
 				}),
 			};
 		},
@@ -523,35 +525,17 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const huePicker = builder(name('hue-picker'), {
-		stores: [hueAngle, huePickerDimensions, hueSliderDimensions],
-		returned: ([$hueAngle, $huePickerDimensions, $hueSliderDimensions]) => {
+		stores: uc,
+		returned: ($uc) => {
 			const { hueSliderOrientation: orientation } = argsWithDefaults;
-
-			let left = '';
-			let top = '';
-			let transform = '';
-
-			if (orientation === 'horizontal') {
-				left = `${Math.round(
-					($hueAngle / 360) * $hueSliderDimensions.width - $huePickerDimensions.width / 2
-				)}px`;
-				top = '50%';
-				transform = 'translateY(-50%)';
-			} else {
-				left = '50%';
-				top = `${Math.round(
-					($hueAngle / 360) * $hueSliderDimensions.height - $huePickerDimensions.height / 2
-				)}px`;
-				transform = 'translateX(-50%)';
-			}
 
 			return {
 				style: styleToString({
 					position: 'absolute',
-					background: `hsl(${$hueAngle}, 100%, 50%)`,
-					left,
-					top,
-					transform,
+					background: `hsl(${$uc.hue}, 100%, 50%)`,
+					left: orientation === 'horizontal' ? `${($uc.hue * 100) / 360}%` : '50%',
+					top: orientation === 'horizontal' ? '50%' : `${($uc.hue * 100) / 360}%`,
+					transform: 'translateX(-50%) translateY(-50%)',
 				}),
 			};
 		},
@@ -609,19 +593,17 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const alphaSlider = builder(name('alpha-slider'), {
-		stores: [value],
-		returned: ([$value]) => {
+		stores: [uc],
+		returned: ([$uc]) => {
 			const orientation =
 				argsWithDefaults.hueSliderOrientation === 'horizontal' ? 'right' : 'bottom';
 
-			const rgb = convertColor($value, 'rgb');
-			const { r, g, b } = rgb;
-
-			const color = `${r}, ${g}, ${b}`;
+			const { red, green, blue } = $uc;
+			const color = `${red}, ${green}, ${blue}`;
 
 			return {
 				style: styleToString({
-					background: `linear-gradient(to ${orientation}, rgba(${color}, 0), ${$value})`,
+					background: `linear-gradient(to ${orientation}, rgba(${color}, 0), rgb(${color}))`,
 				}),
 			};
 		},
@@ -697,38 +679,17 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const alphaPicker = builder(name('alpha-picker'), {
-		stores: [alphaValue, alphaPickerDimensions, alphaSliderDimensions],
-		returned: ([$alphaValue, $alphaPickerDimensions, $alphaSliderDimensions]) => {
+		stores: uc,
+		returned: ($uc) => {
 			const { alphaSliderOrientation: orientation } = argsWithDefaults;
-
-			let left = '';
-			let top = '';
-			let transform = '';
-
-			if (orientation === 'horizontal') {
-				left = `${Math.round(
-					($alphaValue / 100) * $alphaSliderDimensions.width - $alphaPickerDimensions.width / 2
-				)}px`;
-				top = '50%';
-				transform = 'translateY(-50%)';
-			} else {
-				left = '50%';
-				top = `${Math.round(
-					($alphaValue / 100) * $alphaSliderDimensions.height - $alphaPickerDimensions.height / 2
-				)}px`;
-				transform = 'translateX(-50%)';
-			}
-
-			// const { rgb } = $getCurrentColor();
-			// const { r, g, b } = rgb;
 
 			return {
 				style: styleToString({
 					position: 'absolute',
 					// background: `rgba(${r}, ${g}, ${b}, ${$alphaValue / 100})`,
-					left,
-					top,
-					transform,
+					left: orientation === 'horizontal' ? `${$uc.alpha * 100}%` : '50%',
+					top: orientation === 'horizontal' ? '50%' : `${$uc.alpha * 100}%`,
+					transform: 'translateX(-50%) translateY(-50%)',
 				}),
 			};
 		},
@@ -840,10 +801,10 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const input = builder(name('input'), {
-		stores: [value],
-		returned: ([$value]) => {
+		stores: [uc],
+		returned: ([$uc]) => {
 			return {
-				value: $value,
+				value: $uc.toString(),
 			};
 		},
 		action: (node: HTMLInputElement) => {
@@ -852,14 +813,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					if (e.key !== 'Enter') return;
 
 					if (isValidColor(node.value)) {
-						value.set(node.value);
+						uc.set(ultimateColor(node.value));
 					} else {
 						node.value = lastValid;
 					}
 				}),
 				addMeltEventListener(node, 'blur', () => {
 					if (isValidColor(node.value)) {
-						value.set(node.value);
+						uc.set(ultimateColor(node.value));
 					} else {
 						node.value = lastValid;
 					}
@@ -884,18 +845,18 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		);
 	});
 
-	effect(value, ($value) => {
-		lastValid = $value;
-		hueAngle.update((p) => {
-			if (sameColor(colord($value).hue(p), $value)) return p;
-			return colord($value).hue();
-		});
-		alphaValue.set(colord($value).alpha() * 100);
-		colorCanvasThumbPos.update((p) => {
-			const colorFromPos = getColorFromPos({ pos: p, value: $value, hueAngle: get(hueAngle) });
-			if (sameColor(colorFromPos, $value)) return p;
-			return getColorPos($value);
-		});
+	effect(uc, ($uc) => {
+		lastValid = $uc.toString();
+		// hueAngle.update((p) => {
+		// 	if (sameColor(colord($value).hue(p), $value)) return p;
+		// 	return colord($value).hue();
+		// });
+		// alphaValue.set(colord($value).alpha() * 100);
+		// colorCanvasThumbPos.update((p) => {
+		// 	const colorFromPos = getColorFromPos({ pos: p, value: $value, hueAngle: get(hueAngle) });
+		// 	if (sameColor(colorFromPos, $value)) return p;
+		// 	return getColorPos($value);
+		// });
 	});
 
 	return {
