@@ -1,27 +1,20 @@
 <script lang="ts">
-	import { createCollapsible, melt } from '$lib/index.js';
+	import { createCollapsible, melt, createSync } from '$lib/index.js';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
-	import { createSync } from './sync';
 
 	export let open = false;
 	export let disabled = false;
 
 	const {
 		elements: { root, content, trigger },
-		states,
+		states: { open: localOpen },
 		options,
-	} = createCollapsible({
-		onOpenChange({ next }) {
-			return next;
-		},
-	});
+	} = createCollapsible();
 
-	const sync = createSync({ ...states, ...options });
-	$: sync({ open, disabled });
+	$: localOpen.set(open);
+	$: open = $localOpen;
 </script>
-
-{JSON.stringify($$props)}
 
 <div
 	use:melt={$root}

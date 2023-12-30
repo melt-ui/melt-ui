@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { createSelect, melt } from '$lib/index.js';
+	import { createSelect, createSync, melt } from '$lib/index.js';
 	import { Check, ChevronDown } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
+
+	let value = 'Caramel';
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -10,9 +12,9 @@
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
-		states: { selectedLabel, open },
+		states: { selectedLabel, open, selected },
 		helpers: { isSelected },
-	} = createSelect({
+	} = createSelect<string>({
 		forceVisible: true,
 		positioning: {
 			placement: 'bottom',
@@ -20,7 +22,14 @@
 			sameWidth: true,
 		},
 	});
+
+	const sync = createSync({ selected });
+	$: sync.selected({ value, label: value }, (v) => (value = v?.value ?? ''));
 </script>
+
+{value}
+
+<button on:click={() => (value = 'Basil')}>Set to Basil</button>
 
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->

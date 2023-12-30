@@ -114,8 +114,45 @@ purposes, should you desire to do so.
 ```
 
 <Callout>
-Svelte transitions can also be utilized. However, it is important to note that this may interfere with default functionality in particular components, such as focus management, so proceed with caution.
-</Callout>
+Svelte transitions can also be utilized. However, it is important to note that this may interfere with default functionality in particular components, such as focus management, so proceed with caution.<br/><br/>When using Svelte transitions, it is recommended to set the `forceVisible` prop to `true` to prevent
+the component from being hidden while the transition is in progress. </Callout>
+
+### Componentization
+
+Usually, you'll use Melt's builders to **build** components. You can use them in an uncontrolled
+manner, where props don't reactively affect the builder's internal state, or you can use them in a
+controlled manner, where props do affect the builder's internal state.
+
+```svelte
+<!-- Uncontrolled -->
+<script>
+	import { createCollapsible, melt } from '@melt-ui/svelte'
+
+	export let defaultOpen = false; // This prop only affects the initial state of the component
+
+	const {
+		elements: { root, content, trigger }
+	} = createCollapsible({ defaultOpen })
+</script>
+
+<!-- Controlled -->
+<script>
+	import { createCollapsible, melt, createSync } from '@melt-ui/svelte'
+	export let open = false;
+
+	const {
+		elements: { root, content, trigger },
+		states
+	} = createCollapsible()
+
+	const sync = createSync(states)
+	// Whenever the open prop changes, update the local state, and vice versa
+	$: sync.open(open, (value) => (open = value))
+</script>
+```
+
+To get a clearer picture of the contrast between uncontrolled and controlled behavior,
+[read more about it here](/docs/controlled).
 
 ## Need help?
 
