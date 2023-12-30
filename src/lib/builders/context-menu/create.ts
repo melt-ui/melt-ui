@@ -55,6 +55,7 @@ const defaults = {
 	disableFocusFirstItem: true,
 	closeFocus: undefined,
 	closeOnItemClick: true,
+	onOutsideClick: undefined,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
@@ -110,6 +111,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const longPressTimer = writable(0);
 
 	function handleClickOutside(e: PointerEvent) {
+		get(rootOptions.onOutsideClick)?.(e);
 		if (e.defaultPrevented) return;
 
 		const target = e.target;

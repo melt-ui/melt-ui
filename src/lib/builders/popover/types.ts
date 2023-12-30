@@ -61,6 +61,14 @@ export type CreatePopoverProps = {
 	closeOnOutsideClick?: boolean;
 
 	/**
+	 * A custom event handler for the "outside click" event, which
+	 * is handled by the `document`.
+	 * If `event.preventDefault()` is called within the function,
+	 * the dialog will not close when the user clicks outside of it.
+	 */
+	onOutsideClick?: (event: PointerEvent) => void;
+
+	/**
 	 * Whether or not to prevent scrolling when the popover is open.
 	 *
 	 * @default false

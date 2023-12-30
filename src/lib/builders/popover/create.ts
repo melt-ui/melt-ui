@@ -43,6 +43,7 @@ const defaults = {
 	forceVisible: false,
 	openFocus: undefined,
 	closeFocus: undefined,
+	onOutsideClick: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
@@ -66,6 +67,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		forceVisible,
 		openFocus,
 		closeFocus,
+		onOutsideClick,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -179,6 +181,8 @@ export function createPopover(args?: CreatePopoverProps) {
 	}
 
 	function handleClickOutside(e: PointerEvent) {
+		get(onOutsideClick)?.(e);
+		if (e.defaultPrevented) return;
 		const target = e.target;
 		const triggerEl = document.getElementById(get(ids.trigger));
 

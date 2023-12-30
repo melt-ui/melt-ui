@@ -18,13 +18,15 @@
 	const {
 		elements: { trigger, menu, item, separator, arrow },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
-	} = createDropdownMenu({
-		loop,
-		closeFocus,
-		closeOnEscape,
-		closeOnOutsideClick,
-		...$$restProps,
-	});
+	} = createDropdownMenu(
+		removeUndefined({
+			loop,
+			closeFocus,
+			closeOnEscape,
+			closeOnOutsideClick,
+			...$$restProps,
+		})
+	);
 
 	const {
 		elements: { checkboxItem: settingsSyncCheckbox },
