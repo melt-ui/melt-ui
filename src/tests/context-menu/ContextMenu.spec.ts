@@ -205,4 +205,16 @@ describe('Context Menu', () => {
 		const submenu = getByTestId('submenu');
 		expect(submenu.id).toBe(subIds.menu);
 	});
+
+	test("Doesn't close on outsideClick if defaultPrevented in onOutsideClick", async () => {
+		const { user, menu, getByTestId } = await open({
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		expect(menu).toBeVisible();
+		const outsideClick = getByTestId('outside-click');
+		await user.click(outsideClick);
+		expect(menu).toBeVisible();
+	});
 });

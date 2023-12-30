@@ -75,6 +75,7 @@ const defaults = {
 	name: undefined,
 	typeahead: true,
 	highlightOnHover: true,
+	onOutsideClick: undefined,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
@@ -133,6 +134,7 @@ export function createListbox<
 		typeahead,
 		name: nameProp,
 		highlightOnHover,
+		onOutsideClick,
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
@@ -475,6 +477,9 @@ export function createListbox<
 								clickOutside: $closeOnOutsideClick
 									? {
 											handler: (e) => {
+												get(onOutsideClick)?.(e);
+												if (e.defaultPrevented) return;
+
 												const target = e.target;
 												if (!isElement(target)) return;
 												if (target === $activeTrigger || $activeTrigger.contains(target)) {

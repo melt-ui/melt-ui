@@ -199,6 +199,25 @@ describe('Select', () => {
 		expect(menu).toBeVisible();
 	});
 
+	test("doesn't close when preventDefault called in `onOutsideClick`", async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest, {
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		const outside = getByTestId('outside');
+		await user.click(outside);
+		expect(menu).toBeVisible();
+	});
+
 	test('Applies custom ids when provided', async () => {
 		const ids = {
 			label: 'id-label',

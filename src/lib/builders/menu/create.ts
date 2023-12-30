@@ -76,6 +76,7 @@ const defaults = {
 	defaultOpen: false,
 	typeahead: true,
 	closeOnItemClick: true,
+	onOutsideClick: undefined,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -94,6 +95,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		closeFocus,
 		disableFocusFirstItem,
 		closeOnItemClick,
+		onOutsideClick,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -189,7 +191,22 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							open: rootOpen,
 							options: {
 								floating: $positioning,
-								clickOutside: $closeOnOutsideClick ? undefined : null,
+								clickOutside: $closeOnOutsideClick
+									? {
+											handler: (e) => {
+												get(onOutsideClick)?.(e);
+												if (e.defaultPrevented) return;
+
+												if (
+													isHTMLElement($rootActiveTrigger) &&
+													!$rootActiveTrigger.contains(e.target as Element)
+												) {
+													rootOpen.set(false);
+													$rootActiveTrigger.focus();
+												}
+											},
+									  }
+									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},

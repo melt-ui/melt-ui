@@ -17,6 +17,8 @@
 	export let multiple = false;
 	export let defaultValue: string | undefined = undefined;
 	export let ids: CreateComboboxProps<unknown>['ids'] = undefined;
+	export let onOutsideClick: CreateComboboxProps<unknown>['onOutsideClick'] = undefined;
+	export let closeOnEscape: CreateComboboxProps<unknown>['closeOnEscape'] = undefined;
 
 	const {
 		elements: { menu, input, option, label },
@@ -31,6 +33,8 @@
 				  }
 				: undefined,
 			ids,
+			onOutsideClick,
+			closeOnEscape,
 		})
 	);
 
@@ -60,4 +64,5 @@
 			{/each}
 		</div>
 	</ul>
+	<div data-testid="outside-click" />
 </main>

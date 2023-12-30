@@ -57,6 +57,23 @@ describe('Popover (Default)', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
+	test('doesnt close when preventDefault called in `onOutsideClick`', async () => {
+		const { content, trigger, user, getByTestId } = setup({
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		await waitFor(() => expect(content).toBeVisible());
+		const outside = getByTestId('outside');
+		await user.click(outside);
+		await waitFor(() => expect(content).toBeVisible());
+	});
+
 	test('Toggles open state on trigger click', async () => {
 		const { content, trigger, user } = setup();
 

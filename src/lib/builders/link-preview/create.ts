@@ -42,6 +42,7 @@ const defaults = {
 	forceVisible: false,
 	portal: 'body',
 	closeOnEscape: true,
+	onOutsideClick: undefined,
 } satisfies CreateLinkPreviewProps;
 
 export const linkPreviewIdParts = ['trigger', 'content'] as const;
@@ -71,6 +72,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		forceVisible,
 		portal,
 		closeOnEscape,
+		onOutsideClick,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(linkPreviewIdParts), ...withDefaults.ids });
@@ -190,7 +192,22 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 						open: open,
 						options: {
 							floating: $positioning,
-							clickOutside: $closeOnOutsideClick ? undefined : null,
+							clickOutside: $closeOnOutsideClick
+								? {
+										handler: (e) => {
+											get(onOutsideClick)?.(e);
+											if (e.defaultPrevented) return;
+
+											if (
+												isHTMLElement($activeTrigger) &&
+												!$activeTrigger.contains(e.target as Element)
+											) {
+												open.set(false);
+												$activeTrigger.focus();
+											}
+										},
+								  }
+								: null,
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,
 							escapeKeydown: $closeOnEscape ? undefined : null,

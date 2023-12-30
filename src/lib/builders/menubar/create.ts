@@ -106,6 +106,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		closeFocus: undefined,
 		disableFocusFirstItem: false,
 		closeOnItemClick: true,
+		onOutsideClick: undefined,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -115,7 +116,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// options
 		const options = toWritableStores(withDefaults);
-		const { positioning, portal, forceVisible } = options;
+		const { positioning, portal, forceVisible, closeOnOutsideClick, onOutsideClick } = options;
 
 		const m = createMenuBuilder({
 			rootOptions: options,
@@ -154,8 +155,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, positioning, portal],
-					([$rootOpen, $rootActiveTrigger, $positioning, $portal]) => {
+					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick],
+					([$rootOpen, $rootActiveTrigger, $positioning, $portal, $closeOnOutsideClick]) => {
 						unsubPopper();
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
@@ -166,17 +167,21 @@ export function createMenubar(props?: CreateMenubarProps) {
 								options: {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
-									clickOutside: {
-										ignore: (e) => {
-											const target = e.target;
-											const menubarEl = document.getElementById(get(ids.menubar));
-											if (!menubarEl || !isElement(target)) return false;
-											return menubarEl.contains(target);
-										},
-										handler: () => {
-											activeMenu.set('');
-										},
-									},
+									clickOutside: $closeOnOutsideClick
+										? {
+												ignore: (e) => {
+													const target = e.target;
+													const menubarEl = document.getElementById(get(ids.menubar));
+													if (!menubarEl || !isElement(target)) return false;
+													return menubarEl.contains(target);
+												},
+												handler: (e) => {
+													get(onOutsideClick)?.(e);
+													if (e.defaultPrevented) return;
+													activeMenu.set('');
+												},
+										  }
+										: null,
 								},
 							});
 

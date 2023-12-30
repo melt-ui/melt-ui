@@ -58,6 +58,14 @@ export type CreateLinkPreviewProps = {
 	closeOnOutsideClick?: boolean;
 
 	/**
+	 * A custom event handler for the "outside click" event, which
+	 * is handled by the `document`.
+	 * If `event.preventDefault()` is called within the function,
+	 * the dialog will not close when the user clicks outside of it.
+	 */
+	onOutsideClick?: (event: PointerEvent) => void;
+
+	/**
 	 * Whether or not to close the linkpreview when the escape key is pressed
 	 * while it is open.
 	 *

@@ -545,4 +545,22 @@ describe('DatePicker', () => {
 		await user.click(label);
 		expect(monthSegment).toHaveFocus();
 	});
+
+	test("doesn't close on outside click if preventDefault called in `onOutsideClick`", async () => {
+		const { getByTestId, trigger, user } = setup({
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		const content = getByTestId('content');
+
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		await waitFor(() => expect(content).toBeVisible());
+		const outside = getByTestId('inside-value');
+		await user.click(outside);
+		await waitFor(() => expect(content).toBeVisible());
+	});
 });
