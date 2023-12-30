@@ -23,11 +23,11 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	omit,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import { omit } from '../../internal/helpers/object';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
 
@@ -51,6 +51,8 @@ const defaults = {
 	forceVisible: false,
 	openFocus: undefined,
 	closeFocus: undefined,
+	onOutsideClick: undefined,
+	onEscapeKeydown: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -72,6 +74,8 @@ export function createDialog(props?: CreateDialogProps) {
 		forceVisible,
 		openFocus,
 		closeFocus,
+		onOutsideClick,
+		onEscapeKeydown,
 	} = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -164,7 +168,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 			if (get(closeOnEscape)) {
 				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
+					handler: (e) => {
+						get(onEscapeKeydown)?.(e);
+						if (e.defaultPrevented) return;
 						handleClose();
 					},
 				});
@@ -229,6 +235,7 @@ export function createDialog(props?: CreateDialogProps) {
 					return useClickOutside(node, {
 						enabled: $open,
 						handler: (e: PointerEvent) => {
+							get(onOutsideClick)?.(e);
 							if (e.defaultPrevented) return;
 
 							const $openDialogIds = get(openDialogIds);
