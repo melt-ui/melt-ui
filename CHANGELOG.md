@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.67.0
+
+### Minor Changes
+
+- feat: expose `onOutsideClick` handler ([#863](https://github.com/melt-ui/melt-ui/pull/863))
+
 ## 0.66.4
 
 ### Patch Changes
