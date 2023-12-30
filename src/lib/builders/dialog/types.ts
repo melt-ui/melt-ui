@@ -27,19 +27,12 @@ export type CreateDialogProps = {
 	closeOnOutsideClick?: boolean;
 
 	/**
-	 * A custom event handler for the "outside click" event.
+	 * A custom event handler for the "outside click" event, which
+	 * is handled by the `document`.
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
 	onOutsideClick?: (event: PointerEvent) => void;
-
-	/**
-	 * A custom event handler for the "escape keydown" event, which
-	 * by default closes the dialog. If `event.preventDefault()` is called
-	 * within the function, the dialog will not close when the user presses
-	 * the escape key.
-	 */
-	onEscapeKeydown?: (event: KeyboardEvent) => void;
 
 	/**
 	 * The `role` attribute to apply to the dialog.

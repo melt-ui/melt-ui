@@ -52,7 +52,6 @@ const defaults = {
 	openFocus: undefined,
 	closeFocus: undefined,
 	onOutsideClick: undefined,
-	onEscapeKeydown: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -75,7 +74,6 @@ export function createDialog(props?: CreateDialogProps) {
 		openFocus,
 		closeFocus,
 		onOutsideClick,
-		onEscapeKeydown,
 	} = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -168,9 +166,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 			if (get(closeOnEscape)) {
 				const escapeKeydown = useEscapeKeydown(node, {
-					handler: (e) => {
-						get(onEscapeKeydown)?.(e);
-						if (e.defaultPrevented) return;
+					handler: () => {
 						handleClose();
 					},
 				});

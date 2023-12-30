@@ -458,15 +458,8 @@ export function createListbox<
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[isVisible, closeOnEscape, portal, closeOnOutsideClick, positioning, activeTrigger],
-					([
-						$isVisible,
-						$closeOnEscape,
-						$portal,
-						$closeOnOutsideClick,
-						$positioning,
-						$activeTrigger,
-					]) => {
+					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
+					([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
 						unsubPopper();
 
 						if (!$isVisible || !$activeTrigger) return;
@@ -492,13 +485,7 @@ export function createListbox<
 											ignore: ignoreHandler,
 									  }
 									: null,
-								escapeKeydown: $closeOnEscape
-									? {
-											handler: () => {
-												closeMenu();
-											},
-									  }
-									: null,
+								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),
 							},
 						});
