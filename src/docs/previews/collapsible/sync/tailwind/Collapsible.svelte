@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { createCollapsible, melt, createSync } from '$lib/index.js';
+	import { createCollapsible, melt } from '$lib/index.js';
+	import { syncAll } from '$lib/sync';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
@@ -8,12 +9,11 @@
 
 	const {
 		elements: { root, content, trigger },
-		states: { open: localOpen },
+		states,
 		options,
-	} = createCollapsible();
+	} = createCollapsible({ forceVisible: true });
 
-	$: localOpen.set(open);
-	$: open = $localOpen;
+	syncAll({ ...states, ...options }, { open, disabled });
 </script>
 
 <div
@@ -21,7 +21,7 @@
 	class="relative mx-auto mb-28 w-[18rem] max-w-full sm:w-[25rem]"
 >
 	<div class="flex items-center justify-between">
-		<span class="text-sm font-semibold text-magnum-900">
+		<span class="text-sm font-semibold text-magnum-200">
 			@thomasglopes starred 3 repositories
 		</span>
 		<button

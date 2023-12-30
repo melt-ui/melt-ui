@@ -1,20 +1,14 @@
 <script lang="ts">
-	import { createCollapsible, melt, createSync } from '$lib/index.js';
+	import { createCollapsible, melt } from '$lib/index.js';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
-	export let open = false;
-	export let disabled = false;
-
 	const {
 		elements: { root, content, trigger },
-		states,
-		options,
-	} = createCollapsible();
-
-	const sync = createSync({ ...states, ...options });
-	$: sync.open(open, (v) => (open = v));
-	$: sync.disabled(disabled, (v) => (disabled = v));
+		states: { open },
+	} = createCollapsible({
+		forceVisible: true,
+	});
 </script>
 
 <div
@@ -33,7 +27,7 @@
 			aria-label="Toggle"
 		>
 			<div class="abs-center">
-				{#if open}
+				{#if $open}
 					<X class="square-4" />
 				{:else}
 					<ChevronsUpDown class="square-4" />
@@ -52,7 +46,7 @@
 		style:right="0"
 		style:left="0"
 	>
-		{#if open}
+		{#if $open}
 			<div use:melt={$content} transition:slide>
 				<div class="flex flex-col gap-2">
 					<div class="rounded-lg bg-white p-3 shadow">

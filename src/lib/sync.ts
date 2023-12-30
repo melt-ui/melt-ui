@@ -48,3 +48,10 @@ export function createSync<Stores extends Record<string, Writable<unknown>>>(
 		};
 	}, {} as { [K in keyof Stores]: (value: WritableValue<Stores[K]>, setter: (value: WritableValue<Stores[K]>) => void) => void });
 }
+
+
+export function syncAll<Stores extends Record<string, Writable<unknown>>>(stores: Stores, props: { [K in keyof Stores]?: WritableValue<Stores[K]> }) {
+	throw new Error(
+		"[MELTUI ERROR]: The `syncAll` action cannot be used without MeltUI's Preprocessor. See: https://www.melt-ui.com/docs/preprocessor"
+	);
+} 
