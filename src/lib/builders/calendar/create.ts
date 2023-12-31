@@ -245,14 +245,9 @@ export function createCalendar<
 			}
 
 			if ($monthsHeaderType === 'array') {
-				const monthNames: string[] = [];
-
-				$months.forEach((m) => {
-					monthNames.push(
-						`${formatter.fullMonth(toDate(m.value))} ${formatter.fullYear(toDate(m.value))}`
-					);
-				});
-
+				const monthNames: string[] = $months.map(
+					(m) => `${formatter.fullMonth(toDate(m.value))} ${formatter.fullYear(toDate(m.value))}`
+				);
 				return monthNames;
 			} else {
 				const startMonth = toDate($months[0].value);
