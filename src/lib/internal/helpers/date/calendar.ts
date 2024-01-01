@@ -98,7 +98,7 @@ function createMonth(props: CreateMonthProps): Month<DateValue> {
 		}
 
 		const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
-			const incr = i;
+			const incr = i + 1;
 			return startFrom.add({ days: incr });
 		});
 		nextMonthDays.push(...extraDaysArray);

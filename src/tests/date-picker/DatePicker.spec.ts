@@ -308,7 +308,8 @@ describe('DatePicker', () => {
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 			await user.keyboard(kbd.ARROW_DOWN);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+
+			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month));
 		});
 
 		test('increments segment on arrow down', async () => {
@@ -325,7 +326,7 @@ describe('DatePicker', () => {
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 			await user.keyboard(kbd.ARROW_DOWN);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month));
 		});
 
 		test('navigates segments using arrow keys', async () => {
@@ -377,6 +378,7 @@ describe('DatePicker', () => {
 		test('when no time selected, selecting', async () => {
 			const { getByTestId, queryByTestId, user, trigger } = setup({
 				granularity: 'minute',
+				defaultValue: new CalendarDateTime(2021, 1, 1),
 			});
 
 			await user.click(trigger);
@@ -393,7 +395,7 @@ describe('DatePicker', () => {
 			const minuteSegment = getByTestId('minute');
 			expect(minuteSegment).not.toHaveTextContent(String(undefined));
 
-			const firstDayInMonth = getByTestId('month-1-date-1');
+			const firstDayInMonth = getByTestId('month-2-date-1');
 			await user.click(firstDayInMonth);
 
 			await tick();
