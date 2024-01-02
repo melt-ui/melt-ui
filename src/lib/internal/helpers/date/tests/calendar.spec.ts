@@ -16,16 +16,19 @@ describe('Calendar', () => {
 		expect(month[0].value.toString()).toBe(calendarDate.toString());
 	});
 
-	it('should create a month not containing duplicate dates when fixed weeks is true', () => {
-		const month = createMonths({
-			dateObj: calendarDate,
-			weekStartsOn: 0,
-			fixedWeeks: true,
-			locale: 'en-US',
-			numberOfMonths: 1,
-		});
-		const dateStringArray = month[0].dates.map((date) => date.toString());
-		const dateStringSet = new Set(dateStringArray);
-		expect(dateStringArray.length).toBe(dateStringSet.size);
-	});
+	it.each([0, 1, 2, 3, 4, 5, 6])(
+		'should create a month not containing duplicate dates when fixed weeks is true',
+		(i) => {
+			const month = createMonths({
+				dateObj: calendarDate,
+				weekStartsOn: i,
+				fixedWeeks: true,
+				locale: 'en-US',
+				numberOfMonths: 1,
+			});
+			const dateStringArray = month[0].dates.map((date) => date.toString());
+			const dateStringSet = new Set(dateStringArray);
+			expect(dateStringArray.length).toBe(dateStringSet.size);
+		}
+	);
 });
