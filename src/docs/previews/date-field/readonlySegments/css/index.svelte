@@ -24,7 +24,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
 	[data-melt-datefield-label] {
 		user-select: none;
 		font-weight: 500;
