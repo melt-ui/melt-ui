@@ -1,6 +1,6 @@
 import { render, act, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
-import { describe, vi, it } from 'vitest';
+import { describe, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { testKbd as kbd } from '../utils.js';
 import DropdownMenuTest from './DropdownMenuTest.svelte';
