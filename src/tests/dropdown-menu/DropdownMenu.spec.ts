@@ -7,6 +7,7 @@ import DropdownMenuTest from './DropdownMenuTest.svelte';
 import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
 import type { CreateDropdownMenuProps } from '$lib';
 import { sleep } from '$lib/internal/helpers/sleep.js';
+import { tick } from 'svelte';
 
 const OPEN_KEYS = [kbd.ENTER, kbd.ARROW_DOWN, kbd.SPACE];
 
@@ -322,10 +323,13 @@ describe('Dropdown Menu (forceVisible)', () => {
 		expect(queryByTestId('menu')).toBeNull();
 		await user.click(trigger);
 		await waitFor(() => expect(queryByTestId('menu')).not.toBeNull());
+		await user.keyboard(kbd.ARROW_DOWN);
 
+		expect(trigger).not.toHaveFocus();
+		const spy = vi.spyOn(trigger, 'focus');
 		await user.keyboard(kbd.ESCAPE);
 		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
-		await waitFor(() => expect(trigger).toHaveFocus());
+		expect(spy).toHaveBeenCalled();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
