@@ -10,7 +10,7 @@ export type {
 } from '../listbox/types.js';
 
 export type CreateComboboxProps<
-	Value,
+	Value = unknown,
 	Multiple extends boolean = false,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Omit<CreateListboxProps<Value, Multiple, S>, 'builder' | 'typeahead'>;

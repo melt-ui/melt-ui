@@ -293,7 +293,7 @@ describe('DatePicker', () => {
 			}
 		});
 
-		test('increments segment on arrow down', async () => {
+		test('decrements segment on arrow down', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = setup({
 				defaultPlaceholder: calendarDateToday,
@@ -308,24 +308,12 @@ describe('DatePicker', () => {
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 			await user.keyboard(kbd.ARROW_DOWN);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
-		});
 
-		test('increments segment on arrow down', async () => {
-			const { getByTestId, user } = setup({
-				defaultPlaceholder: calendarDateToday,
-			});
-
-			const firstSegment = getByTestId('month');
-			await user.click(firstSegment);
-
-			await user.keyboard(kbd.ARROW_DOWN);
-
-			const currentMonth = calendarDateToday.month;
-			expect(firstSegment).toHaveTextContent(String(currentMonth));
-
-			await user.keyboard(kbd.ARROW_DOWN);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+			if (calendarDateToday.month === 1) {
+				expect(firstSegment).toHaveTextContent(String(12));
+			} else {
+				expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+			}
 		});
 
 		test('navigates segments using arrow keys', async () => {
@@ -377,6 +365,7 @@ describe('DatePicker', () => {
 		test('when no time selected, selecting', async () => {
 			const { getByTestId, queryByTestId, user, trigger } = setup({
 				granularity: 'minute',
+				defaultValue: new CalendarDateTime(2021, 1, 1),
 			});
 
 			await user.click(trigger);
@@ -393,7 +382,7 @@ describe('DatePicker', () => {
 			const minuteSegment = getByTestId('minute');
 			expect(minuteSegment).not.toHaveTextContent(String(undefined));
 
-			const firstDayInMonth = getByTestId('month-1-date-1');
+			const firstDayInMonth = getByTestId('month-2-date-1');
 			await user.click(firstDayInMonth);
 
 			await tick();
@@ -544,5 +533,23 @@ describe('DatePicker', () => {
 		const monthSegment = getByTestId('month');
 		await user.click(label);
 		expect(monthSegment).toHaveFocus();
+	});
+
+	test("doesn't close on outside click if preventDefault called in `onOutsideClick`", async () => {
+		const { getByTestId, trigger, user } = setup({
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		const content = getByTestId('content');
+
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		await waitFor(() => expect(content).toBeVisible());
+		const outside = getByTestId('inside-value');
+		await user.click(outside);
+		await waitFor(() => expect(content).toBeVisible());
 	});
 });

@@ -34,7 +34,7 @@
 			class="z-10 mt-[clamp(2rem,5vh,6rem)] max-w-2xl text-center font-display text-5xl sm:text-6xl
 		md:max-w-3xl md:text-7xl lg:max-w-5xl lg:text-[6rem] lg:leading-none"
 		>
-			<Logo class="inline-block h-12 md:-my-2 md:h-20 lg:-my-4 lg:h-32" /> <b>melt</b> away complexity
+			<Logo class="inline-block h-12 md:-my-2 md:h-20 lg:-my-4 lg:h-32" /> <b>melt</b> away<br /> complexity
 		</h1>
 
 		<p

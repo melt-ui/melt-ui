@@ -1,5 +1,39 @@
 # @melt-ui/svelte
 
+## 0.67.0
+
+### Minor Changes
+
+- feat: expose `onOutsideClick` handler ([#863](https://github.com/melt-ui/melt-ui/pull/863))
+
+## 0.66.4
+
+### Patch Changes
+
+- Toast: return `aria-live` type as `'assertive' | 'polite'` ([#859](https://github.com/melt-ui/melt-ui/pull/859))
+
+- Tags Input: Fix addOnPaste (closes #830) ([#847](https://github.com/melt-ui/melt-ui/pull/847))
+
+- escape-keydown: remove `capture` listener (fixes [#842](https://github.com/melt-ui/melt-ui/issues/842)) ([#845](https://github.com/melt-ui/melt-ui/pull/845))
+
+- Combobox: change default Value props type ([`835c285a`](https://github.com/melt-ui/melt-ui/commit/835c285a774cc00455980693a5978f0969ef05ee))
+
+## 0.66.3
+
+### Patch Changes
+
+- Menu: fix default active subtrigger ([`84270042`](https://github.com/melt-ui/melt-ui/commit/84270042ee257a9dff0efaa97eacd3ec9ce04a6c))
+
+## 0.66.2
+
+### Patch Changes
+
+- Datepicker: fix types (closes #838) ([#839](https://github.com/melt-ui/melt-ui/pull/839))
+
+- Collapsible: remove leftover log ([`31119cce`](https://github.com/melt-ui/melt-ui/commit/31119cce0b89cc0153f9160a1d8a074d075ff1bf))
+
+- Types: fix wrong builder return type for functions ([#844](https://github.com/melt-ui/melt-ui/pull/844))
+
 ## 0.66.1
 
 ### Patch Changes

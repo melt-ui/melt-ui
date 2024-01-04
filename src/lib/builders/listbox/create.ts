@@ -75,6 +75,7 @@ const defaults = {
 	name: undefined,
 	typeahead: true,
 	highlightOnHover: true,
+	onOutsideClick: undefined,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
@@ -133,6 +134,7 @@ export function createListbox<
 		typeahead,
 		name: nameProp,
 		highlightOnHover,
+		onOutsideClick,
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
@@ -458,15 +460,8 @@ export function createListbox<
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[isVisible, closeOnEscape, portal, closeOnOutsideClick, positioning, activeTrigger],
-					([
-						$isVisible,
-						$closeOnEscape,
-						$portal,
-						$closeOnOutsideClick,
-						$positioning,
-						$activeTrigger,
-					]) => {
+					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
+					([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
 						unsubPopper();
 
 						if (!$isVisible || !$activeTrigger) return;
@@ -482,6 +477,9 @@ export function createListbox<
 								clickOutside: $closeOnOutsideClick
 									? {
 											handler: (e) => {
+												get(onOutsideClick)?.(e);
+												if (e.defaultPrevented) return;
+
 												const target = e.target;
 												if (!isElement(target)) return;
 												if (target === $activeTrigger || $activeTrigger.contains(target)) {
@@ -492,13 +490,7 @@ export function createListbox<
 											ignore: ignoreHandler,
 									  }
 									: null,
-								escapeKeydown: $closeOnEscape
-									? {
-											handler: () => {
-												closeMenu();
-											},
-									  }
-									: null,
+								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),
 							},
 						});

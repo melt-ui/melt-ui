@@ -1,13 +1,13 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.66.1",
+	"version": "0.67.0",
 	"license": "MIT",
 	"repository": "github:melt-ui/melt-ui",
 	"author": "Thomas G. Lopes",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
-		"deploy": "export PREDEPLOY=0 && vite build",
+		"deploy": "vite build && pnpm run pagefind",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
@@ -25,8 +25,7 @@
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
 		"changeset": "changeset",
-		"pagefind": "node ./scripts/pagefind.js",
-		"pre-deploy": "export PREDEPLOY=1 && vite build && pnpm run pagefind"
+		"pagefind": "node ./scripts/pagefind.js"
 	},
 	"exports": {
 		".": {
@@ -68,7 +67,7 @@
 		"@internationalized/date": "^3.5.0",
 		"dequal": "^2.0.3",
 		"focus-trap": "^7.5.2",
-		"nanoid": "^4.0.2"
+		"nanoid": "^5.0.4"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.26.2",

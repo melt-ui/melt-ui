@@ -77,6 +77,25 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 	});
 
+	it('Prevents closing on outside click if `defaultPrevented` in `onOutsideClick` callback', async () => {
+		const { getByTestId, user, trigger } = setup({
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		const overlay = getByTestId('overlay');
+		const content = getByTestId('content');
+
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await sleep(100);
+		expect(overlay).toBeVisible();
+		await user.click(overlay);
+		expect(content).toBeVisible();
+	});
+
 	it('Portalled el attaches dialog to body', async () => {
 		const { getByTestId, user, trigger } = setup();
 		await user.click(trigger);

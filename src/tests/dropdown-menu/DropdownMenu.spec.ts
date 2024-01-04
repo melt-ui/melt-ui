@@ -244,6 +244,20 @@ describe('Dropdown Menu (Default)', () => {
 		expect(submenu.id).toBe(subIds.menu);
 	});
 
+	test("Doesn't close on outsideClick if defaultPrevented in onOutsideClick", async () => {
+		const { user, trigger, getByTestId } = setup({
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		const menu = getByTestId('menu');
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+		const outsideClick = getByTestId('outside-click');
+		await user.click(outsideClick);
+		expect(menu).toBeVisible();
+	});
+
 	test.todo('Radio items');
 });
 
