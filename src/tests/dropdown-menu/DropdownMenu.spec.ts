@@ -1,6 +1,6 @@
 import { render, act, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
-import { describe, vi } from 'vitest';
+import { describe, vi, it } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { testKbd as kbd } from '../utils.js';
 import DropdownMenuTest from './DropdownMenuTest.svelte';
@@ -43,6 +43,19 @@ describe('Dropdown Menu (Default)', () => {
 
 		await user.click(trigger);
 		expect(menu).not.toBeVisible();
+	});
+
+	test('Refocuses the trigger when menu closed with keyboard', async () => {
+		const { user, trigger, getByTestId } = setup();
+		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).not.toBeVisible();
+		expect(trigger).toHaveFocus();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
@@ -301,6 +314,18 @@ describe('Dropdown Menu (forceVisible)', () => {
 
 		await user.click(trigger);
 		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
+	});
+
+	test('Refocuses the trigger when menu closed with keyboard', async () => {
+		const { queryByTestId, user, trigger } = setupForceVis();
+
+		expect(queryByTestId('menu')).toBeNull();
+		await user.click(trigger);
+		await waitFor(() => expect(queryByTestId('menu')).not.toBeNull());
+
+		await user.keyboard(kbd.ESCAPE);
+		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
+		await waitFor(() => expect(trigger).toHaveFocus());
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
