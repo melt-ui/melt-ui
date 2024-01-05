@@ -226,9 +226,16 @@ export function createDialog(props?: CreateDialogProps) {
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
 					return initInteractOutside(node, {
 						enabled: $open,
-						onInteractOutside: (e) => {
+						onInteractOutsideStart(e) {
+							// if last dialog, we want to stop propagation
+							e.stopPropagation();
+							e.preventDefault();
+						},
+						onInteractOutside(e) {
 							get(onOutsideClick)?.(e);
 							if (e.defaultPrevented) return;
+							e.stopPropagation();
+							e.preventDefault();
 
 							const $openDialogIds = get(openDialogIds);
 							const isLast = last($openDialogIds) === get(ids.content);
