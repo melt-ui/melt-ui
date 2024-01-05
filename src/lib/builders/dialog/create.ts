@@ -1,9 +1,4 @@
-import {
-	createFocusTrap,
-	useClickOutside,
-	useEscapeKeydown,
-	usePortal,
-} from '$lib/internal/actions/index.js';
+import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	builder,
@@ -30,6 +25,7 @@ import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
+import { initInteractOutside } from '$lib/internal/actions/interact-outside/action.js';
 
 type DialogParts =
 	| 'trigger'
@@ -228,9 +224,9 @@ export function createDialog(props?: CreateDialogProps) {
 				}),
 
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
-					return useClickOutside(node, {
+					return initInteractOutside(node, {
 						enabled: $open,
-						handler: (e: PointerEvent) => {
+						onInteractOutside: (e) => {
 							get(onOutsideClick)?.(e);
 							if (e.defaultPrevented) return;
 
@@ -240,7 +236,7 @@ export function createDialog(props?: CreateDialogProps) {
 								handleClose();
 							}
 						},
-					}).destroy;
+					});
 				}),
 
 				effect([closeOnEscape], ([$closeOnEscape]) => {
