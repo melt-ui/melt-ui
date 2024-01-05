@@ -7,6 +7,7 @@ import DropdownMenuTest from './DropdownMenuTest.svelte';
 import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
 import type { CreateDropdownMenuProps } from '$lib';
 import { sleep } from '$lib/internal/helpers/sleep.js';
+import { tick } from 'svelte';
 
 const OPEN_KEYS = [kbd.ENTER, kbd.ARROW_DOWN, kbd.SPACE];
 
@@ -43,6 +44,19 @@ describe('Dropdown Menu (Default)', () => {
 
 		await user.click(trigger);
 		expect(menu).not.toBeVisible();
+	});
+
+	test('Refocuses the trigger when menu closed with keyboard', async () => {
+		const { user, trigger, getByTestId } = setup();
+		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).not.toBeVisible();
+		expect(trigger).toHaveFocus();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
@@ -301,6 +315,21 @@ describe('Dropdown Menu (forceVisible)', () => {
 
 		await user.click(trigger);
 		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
+	});
+
+	test('Refocuses the trigger when menu closed with keyboard', async () => {
+		const { queryByTestId, user, trigger } = setupForceVis();
+
+		expect(queryByTestId('menu')).toBeNull();
+		await user.click(trigger);
+		await waitFor(() => expect(queryByTestId('menu')).not.toBeNull());
+		await user.keyboard(kbd.ARROW_DOWN);
+
+		expect(trigger).not.toHaveFocus();
+		const spy = vi.spyOn(trigger, 'focus');
+		await user.keyboard(kbd.ESCAPE);
+		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
+		expect(spy).toHaveBeenCalled();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
