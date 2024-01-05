@@ -23,13 +23,13 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	generateIds,
+	omit,
 } from '$lib/internal/helpers/index.js';
 import { safeOnDestroy, safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
-import { omit } from '../../internal/helpers/object';
 import {
 	applyAttrsIfDisabled,
 	createMenuBuilder,
@@ -48,6 +48,7 @@ const { name } = createElHelpers<_MenuParts | 'menu'>('menubar');
 const defaults = {
 	loop: true,
 	closeOnEscape: true,
+	preventScroll: false,
 } satisfies CreateMenubarProps;
 
 export const menubarIdParts = ['menubar'] as const;
@@ -57,7 +58,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
 
 	const options = toWritableStores(omit(withDefaults, 'ids'));
-	const { loop, closeOnEscape } = options;
+	const { loop, closeOnEscape, preventScroll } = options;
 	const activeMenu = writable<string>('');
 
 	const nextFocusable = writable<HTMLElement | null>(null);
@@ -93,7 +94,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 		positioning: {
 			placement: 'bottom-start',
 		},
-		preventScroll: true,
 		arrowSize: 8,
 		dir: 'ltr',
 		loop: false,
@@ -119,7 +119,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		const { positioning, portal, forceVisible, closeOnOutsideClick, onOutsideClick } = options;
 
 		const m = createMenuBuilder({
-			rootOptions: options,
+			rootOptions: { ...options, preventScroll },
 			rootOpen,
 			rootActiveTrigger,
 			nextFocusable,
@@ -588,8 +588,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 	});
 
 	const unsubs: Array<() => void> = [];
-	effect([activeMenu], ([$activeMenu]) => {
-		if (!isBrowser) return;
+	effect([activeMenu, preventScroll], ([$activeMenu, $preventScroll]) => {
+		if (!isBrowser || !$preventScroll) return;
 
 		/**
 		 * To prevent adding/removing the scroll as we cycle through
