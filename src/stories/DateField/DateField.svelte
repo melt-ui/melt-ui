@@ -11,6 +11,7 @@
 	export let isDateUnavailable: CreateDateFieldProps['isDateUnavailable'] = undefined;
 	export let disabled: CreateDateFieldProps['disabled'] = undefined;
 	export let readonly: CreateDateFieldProps['readonly'] = undefined;
+	export let readonlySegments: CreateDateFieldProps['readonlySegments'] = undefined;
 	export let hourCycle: CreateDateFieldProps['hourCycle'] = undefined;
 	export let locale: CreateDateFieldProps['locale'] = 'en';
 	export let hideTimeZone: CreateDateFieldProps['hideTimeZone'] = undefined;
@@ -29,6 +30,7 @@
 		isDateUnavailable,
 		disabled,
 		readonly,
+		readonlySegments,
 		hourCycle,
 		locale,
 		hideTimeZone,

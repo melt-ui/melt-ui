@@ -71,6 +71,11 @@ const dateRangeFieldProps = [
 		description: 'Whether the date field is readonly.',
 	},
 	{
+		name: 'readonlySegments',
+		type: '{ start: EditableSegmentPart[], end: EditableSegmentPart[] }',
+		description: 'The sets of segments that are readonly on the start and end fields.',
+	},
+	{
 		name: 'hourCycle',
 		type: 'HourCycle',
 		description: 'The hour cycle to use when formatting the date.',
