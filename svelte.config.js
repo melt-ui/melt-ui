@@ -1,7 +1,7 @@
 import { mdsvex } from '@huntabyte/mdsvex';
 import { preprocessMeltUI } from '@melt-ui/pp';
 import adapterStatic from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { vitePreprocess } from '@sveltejs/kit/vite';
 import sequence from 'svelte-sequential-preprocessor';
 import { mdsvexOptions } from './mdsvex.config.js';
 
