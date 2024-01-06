@@ -1,75 +1,80 @@
 import { addEventListener, isElement, executeCallbacks, noop } from '$lib/internal/helpers';
+import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 
-type InteractOutsideEvent = PointerEvent | MouseEvent | TouchEvent;
+export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
+	let unsub = noop;
+	function update(config: InteractOutsideConfig) {
+		unsub();
+		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 
-export type InteractOutsideConfig = {
-	onInteractOutside?: (e: InteractOutsideEvent) => void;
-	onInteractOutsideStart?: (e: InteractOutsideEvent) => void;
-	enabled?: boolean;
-};
-
-export function initInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
-	const { onInteractOutside, onInteractOutsideStart, enabled } = config;
-	if (!enabled) return noop;
-
-	let isPointerDown = false;
-	let ignoreEmulatedMouseEvents = false;
-
-	function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
-		if (onInteractOutside && isValidEvent(e, node)) {
-			onInteractOutsideStart?.(e);
+		if (!enabled) {
+			return {
+				destroy: unsub,
+			};
 		}
-		isPointerDown = true;
+
+		let isPointerDown = false;
+		let ignoreEmulatedMouseEvents = false;
+
+		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
+			if (onInteractOutside && isValidEvent(e, node)) {
+				onInteractOutsideStart?.(e);
+			}
+			isPointerDown = true;
+		}
+
+		function triggerInteractOutside(e: InteractOutsideEvent) {
+			onInteractOutside?.(e);
+		}
+
+		const documentObj = getOwnerDocument(node);
+
+		// Use pointer events if available, otherwise use mouse/touch events
+		if (typeof PointerEvent !== 'undefined') {
+			const onPointerUp = (e: PointerEvent) => {
+				if (isPointerDown && isValidEvent(e, node)) {
+					triggerInteractOutside(e);
+				}
+				isPointerDown = false;
+			};
+
+			unsub = executeCallbacks(
+				addEventListener(documentObj, 'pointerdown', onPointerDown, true),
+				addEventListener(documentObj, 'pointerup', onPointerUp, true)
+			);
+		} else {
+			const onMouseUp = (e: MouseEvent) => {
+				if (ignoreEmulatedMouseEvents) {
+					ignoreEmulatedMouseEvents = false;
+				} else if (isPointerDown && isValidEvent(e, node)) {
+					triggerInteractOutside(e);
+				}
+				isPointerDown = false;
+			};
+
+			const onTouchEnd = (e: TouchEvent) => {
+				ignoreEmulatedMouseEvents = true;
+				if (isPointerDown && isValidEvent(e, node)) {
+					triggerInteractOutside(e);
+				}
+				isPointerDown = false;
+			};
+
+			unsub = executeCallbacks(
+				addEventListener(documentObj, 'mousedown', onPointerDown, true),
+				addEventListener(documentObj, 'mouseup', onMouseUp, true),
+				addEventListener(documentObj, 'touchstart', onPointerDown, true),
+				addEventListener(documentObj, 'touchend', onTouchEnd, true)
+			);
+		}
 	}
 
-	function triggerInteractOutside(e: InteractOutsideEvent) {
-		onInteractOutside?.(e);
-	}
+	update(config);
 
-	const documentObj = getOwnerDocument(node);
-
-	// Use pointer events if available, otherwise use mouse/touch events
-	if (typeof PointerEvent !== 'undefined') {
-		const onPointerUp = (e: PointerEvent) => {
-			if (isPointerDown && isValidEvent(e, node)) {
-				triggerInteractOutside(e);
-			}
-			isPointerDown = false;
-		};
-
-		const unsub = executeCallbacks(
-			addEventListener(documentObj, 'pointerdown', onPointerDown, true),
-			addEventListener(documentObj, 'pointerup', onPointerUp, true)
-		);
-
-		return unsub;
-	} else {
-		const onMouseUp = (e: MouseEvent) => {
-			if (ignoreEmulatedMouseEvents) {
-				ignoreEmulatedMouseEvents = false;
-			} else if (isPointerDown && isValidEvent(e, node)) {
-				triggerInteractOutside(e);
-			}
-			isPointerDown = false;
-		};
-
-		const onTouchEnd = (e: TouchEvent) => {
-			ignoreEmulatedMouseEvents = true;
-			if (isPointerDown && isValidEvent(e, node)) {
-				triggerInteractOutside(e);
-			}
-			isPointerDown = false;
-		};
-
-		const unsub = executeCallbacks(
-			addEventListener(documentObj, 'mousedown', onPointerDown, true),
-			addEventListener(documentObj, 'mouseup', onMouseUp, true),
-			addEventListener(documentObj, 'touchstart', onPointerDown, true),
-			addEventListener(documentObj, 'touchend', onTouchEnd, true)
-		);
-
-		return unsub;
-	}
+	return {
+		update,
+		destroy: unsub,
+	};
 }
 
 function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {

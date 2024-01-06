@@ -11,11 +11,9 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
-	last,
 	noop,
 	overridable,
 	removeScroll,
-	sleep,
 	styleToString,
 	toWritableStores,
 	omit,
@@ -25,7 +23,7 @@ import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
-import { initInteractOutside } from '$lib/internal/actions/interact-outside/action.js';
+import { useModal } from '$lib/internal/actions/modal/action.js';
 
 type DialogParts =
 	| 'trigger'
@@ -49,8 +47,6 @@ const defaults = {
 	closeFocus: undefined,
 	onOutsideClick: undefined,
 } satisfies Defaults<CreateDialogProps>;
-
-const openDialogIds = writable<string[]>([]);
 
 export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
@@ -102,20 +98,6 @@ export function createDialog(props?: CreateDialogProps) {
 			defaultEl: get(activeTrigger),
 		});
 	}
-
-	effect([open], ([$open]) => {
-		// Prevent double clicks from closing multiple dialogs
-		sleep(100).then(() => {
-			if ($open) {
-				openDialogIds.update((prev) => {
-					prev.push(get(ids.content));
-					return prev;
-				});
-			} else {
-				openDialogIds.update((prev) => prev.filter((id) => id !== get(ids.content)));
-			}
-		});
-	});
 
 	const trigger = builder(name('trigger'), {
 		stores: [open],
@@ -224,26 +206,18 @@ export function createDialog(props?: CreateDialogProps) {
 				}),
 
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
-					return initInteractOutside(node, {
-						enabled: $open,
-						onInteractOutsideStart(e) {
-							// if last dialog, we want to stop propagation
-							e.stopPropagation();
-							e.preventDefault();
+					return useModal(node, {
+						open: $open,
+						closeOnInteractOutside: $closeOnOutsideClick,
+						onClose() {
+							handleClose();
 						},
-						onInteractOutside(e) {
+						shouldCloseOnInteractOutside(e) {
 							get(onOutsideClick)?.(e);
-							if (e.defaultPrevented) return;
-							e.stopPropagation();
-							e.preventDefault();
-
-							const $openDialogIds = get(openDialogIds);
-							const isLast = last($openDialogIds) === get(ids.content);
-							if ($closeOnOutsideClick && isLast) {
-								handleClose();
-							}
+							if (e.defaultPrevented) return false;
+							return true;
 						},
-					});
+					}).destroy;
 				}),
 
 				effect([closeOnEscape], ([$closeOnEscape]) => {
@@ -259,6 +233,7 @@ export function createDialog(props?: CreateDialogProps) {
 					}
 					return noop;
 				}),
+
 				effect([isVisible], ([$isVisible]) => {
 					tick().then(() => {
 						if (!$isVisible) {
