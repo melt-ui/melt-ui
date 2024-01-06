@@ -1,4 +1,4 @@
-import type { InteractOutsideEvent } from '..';
+import type { InteractOutsideEvent } from '$lib/internal/actions/index.js';
 
 export type ModalConfig = {
 	/**
@@ -31,24 +31,4 @@ export type ModalConfig = {
 	 * will not be called.
 	 */
 	shouldCloseOnInteractOutside?: (event: InteractOutsideEvent) => boolean;
-
-	/**
-	 * Whether the modal is able to be closed by interacting outside of it.
-	 * If true, the `onClose` callback will be called when the user interacts
-	 * outside of the modal.
-	 *
-	 * @default true
-	 */
-	closeOnEscapeKeydown?: boolean;
-
-	/**
-	 * If provided, this function is called with the escape keydown event.
-	 * Whatever is returned from this function will determine whether the modal
-	 * actually closes or not. If `closeOnEscapeKeydown` is `false`, this
-	 * function will never be called.
-	 *
-	 * This is useful to filter out certain escape keydown events from closing
-	 * or not closing the modal.
-	 */
-	shouldCloseOnEscapeKeydown?: (event: KeyboardEvent) => boolean;
 };
