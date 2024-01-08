@@ -3,6 +3,7 @@ import { accordionData } from './accordion.js';
 import { avatarData } from './avatar.js';
 import { checkboxData } from './checkbox.js';
 import { collapsibleData } from './collapsible.js';
+import { colorPickerData } from './color-picker.js';
 import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
 import { calendarData } from './calendar.js';
@@ -48,6 +49,7 @@ export const builderMap = {
 	calendar: calendarData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
+	'color-picker': colorPickerData,
 	combobox: comboboxData,
 	'context-menu': contextMenuData,
 	'date-field': dateFieldData,
