@@ -96,6 +96,10 @@ const content = elementSchema('content', {
 	description: 'The tooltip content element.',
 	dataAttributes: [
 		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
 			name: 'data-melt-tooltip-content',
 			value: ATTRS.MELT('tooltip content'),
 		},

@@ -126,12 +126,17 @@ export function createTooltip(props?: CreateTooltipProps) {
 		}
 	}
 
+	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
+		return $open || $forceVisible;
+	});
+
 	const trigger = builder(name('trigger'), {
-		stores: [ids.content, ids.trigger],
-		returned: ([$contentId, $triggerId]) => {
+		stores: [ids.content, ids.trigger, open],
+		returned: ([$contentId, $triggerId, $open]) => {
 			return {
 				'aria-describedby': $contentId,
 				id: $triggerId,
+				'data-state': $open ? 'open' : 'closed',
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
@@ -183,10 +188,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
-	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
-		return $open || $forceVisible;
-	});
-
 	const content = builder(name('content'), {
 		stores: [isVisible, portal, ids.content],
 		returned: ([$isVisible, $portal, $contentId]) => {
@@ -199,6 +200,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				}),
 				id: $contentId,
 				'data-portal': $portal ? '' : undefined,
+				'data-state': $isVisible ? 'open' : 'closed',
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
