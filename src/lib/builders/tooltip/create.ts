@@ -189,8 +189,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [isVisible, portal, ids.content],
-		returned: ([$isVisible, $portal, $contentId]) => {
+		stores: [isVisible, open, portal, ids.content],
+		returned: ([$isVisible, $open, $portal, $contentId]) => {
 			return {
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
@@ -200,7 +200,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				}),
 				id: $contentId,
 				'data-portal': $portal ? '' : undefined,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open ? 'open' : 'closed',
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
