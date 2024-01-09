@@ -1,5 +1,27 @@
 # @melt-ui/svelte
 
+## 0.68.0
+
+### Minor Changes
+
+- Menubar: Add `preventScroll` prop. Removes it from the returned `createMenu` builders (closes #821) ([#882](https://github.com/melt-ui/melt-ui/pull/882))
+
+### Patch Changes
+
+- Radio Group: fix keyboard navigation when disabled (closes #820) ([#884](https://github.com/melt-ui/melt-ui/pull/884))
+
+- fix: missing tooltip data-attrs ([#889](https://github.com/melt-ui/melt-ui/pull/889))
+
+- DateField & DateRangeField: add `readonlySegments` prop ([#846](https://github.com/melt-ui/melt-ui/pull/846))
+
+- chore: upgrade nanoid to v5 ([#851](https://github.com/melt-ui/melt-ui/pull/851))
+
+- Fix(calendar): extraDays array should add days starting from 1 ([#869](https://github.com/melt-ui/melt-ui/pull/869))
+
+- fix(menu): focus on the trigger when rootActiveTrigger is defined ([#871](https://github.com/melt-ui/melt-ui/pull/871))
+
+- Progress: allow `null` value for indeterminate state ([#870](https://github.com/melt-ui/melt-ui/pull/870))
+
 ## 0.67.0
 
 ### Minor Changes
