@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-fix: disabled radio group keyboard navigation
+Radio Group: fix keyboard navigation when disabled (closes #820)
