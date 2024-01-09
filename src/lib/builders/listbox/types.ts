@@ -1,8 +1,8 @@
-import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
-import type { Writable } from 'svelte/store';
-import type { createListbox } from './create.js';
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
+import type { Writable } from 'svelte/store';
+import type { ListboxIdParts, createListbox } from './create.js';
 export type { ListboxComponentEvents } from './events.js';
 
 export type ListboxOption<Value = unknown> = {
@@ -112,6 +112,14 @@ export type CreateListboxProps<
 	closeOnEscape?: boolean;
 
 	/**
+	 * A custom event handler for the "outside click" event, which
+	 * is handled by the `document`.
+	 * If `event.preventDefault()` is called within the function,
+	 * the dialog will not close when the user clicks outside of it.
+	 */
+	onOutsideClick?: (event: PointerEvent) => void;
+
+	/**
 	 * Whether or not to prevent scrolling the page when the
 	 * listbox menu is open.
 	 *
@@ -151,6 +159,18 @@ export type CreateListboxProps<
 	 * @default true
 	 */
 	typeahead?: boolean;
+
+	/**
+	 * IF true, whenever an option is hovered, the highlightedItem will be set to that option.
+	 *
+	 * @default true
+	 */
+	highlightOnHover?: boolean;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: Partial<IdObj<ListboxIdParts>>;
 };
 
 export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {

@@ -11,6 +11,7 @@
 		add(tag) {
 			return { id: tag, value: tag };
 		},
+		addOnPaste: true,
 	});
 </script>
 

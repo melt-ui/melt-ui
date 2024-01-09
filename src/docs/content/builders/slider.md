@@ -37,6 +37,22 @@ example:
     <svelte:component this={previews.vertical} />
 </Preview>
 
+### RTL
+
+To enable Right-to-Left (RTL) support, you can set the `rtl` prop to `true. Here's an example of a
+horizontal slider with RTL enabled:
+
+<Preview code={snippets.rtl_horizontal}>
+    <svelte:component this={previews.rtl_horizontal} />
+</Preview>
+
+In a Right-to-Left (RTL) context, vertical sliders function from top-to-bottom instead of bottom-to
+top. Here's an example of a vertical slider with RTL enabled:
+
+<Preview code={snippets.rtl_vertical}>
+    <svelte:component this={previews.rtl_vertical} />
+</Preview>
+
 ### Slider ticks
 
 You can add slider ticks using the `ticks` state and the `tick` element returned by `createSlider`.

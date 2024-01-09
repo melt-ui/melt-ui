@@ -2,8 +2,8 @@ import { kbd } from '$lib/internal/helpers/index.js';
 import { act, render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import Slider from './Slider.svelte';
 import RangeSlider from './RangeSlider.svelte';
+import Slider from './Slider.svelte';
 
 const IS_ENOUGH_CLOSE = 0.0001;
 
@@ -541,7 +541,7 @@ describe('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetMin: 2 });
+		rerender({ ...props, resetMin: 2 });
 
 		expect(getAllByTestId('tick')).toHaveLength(9);
 	});
@@ -551,7 +551,7 @@ describe('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetMax: 8 });
+		rerender({ ...props, resetMax: 8 });
 
 		expect(getAllByTestId('tick')).toHaveLength(9);
 	});
@@ -561,8 +561,42 @@ describe('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetStep: 2 });
+		rerender({ ...props, resetStep: 2 });
 
 		expect(getAllByTestId('tick')).toHaveLength(6);
+	});
+});
+
+describe('Slider (min=0, max=100, step=30)', () => {
+	test('Does not overshoot to the max', async () => {
+		const { getByTestId } = render(Slider, {
+			min: 0,
+			max: 100,
+			step: 30,
+			value: [0],
+		});
+
+		const user = userEvent.setup();
+		const thumb = getByTestId('thumb');
+		expect(thumb).toBeInTheDocument();
+
+		await act(() => thumb.focus());
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+
+		expectPercentage({ percentage: 90, thumb, range: getByTestId('range') });
+	});
+
+	test('Autocorrects value outside of steps', () => {
+		const { getByTestId } = render(Slider, {
+			min: 0,
+			max: 100,
+			step: 30,
+			value: [40],
+		});
+
+		expectPercentage({ percentage: 30, thumb: getByTestId('thumb'), range: getByTestId('range') });
 	});
 });

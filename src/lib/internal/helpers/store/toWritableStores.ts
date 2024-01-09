@@ -1,12 +1,16 @@
 import { type Writable, writable } from 'svelte/store';
 
+export type ToWritableStores<T extends Record<string, unknown>> = {
+	[K in keyof T]: Writable<T[K]>;
+};
+
 /**
  * Given an object of properties, returns an object of writable stores
  * with the same properties and values.
  */
 export function toWritableStores<T extends Record<string, unknown>>(
 	properties: T
-): { [K in keyof T]: Writable<T[K]> } {
+): ToWritableStores<T> {
 	const result = {} as { [K in keyof T]: Writable<T[K]> };
 
 	Object.keys(properties).forEach((key) => {

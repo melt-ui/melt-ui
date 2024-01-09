@@ -1,8 +1,8 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createMenuBuilder } from './create.js';
+import type { _MenuIdParts, createMenuBuilder } from './create.js';
 
 export type _CreateMenuProps = {
 	/**
@@ -40,6 +40,13 @@ export type _CreateMenuProps = {
 	closeOnEscape?: boolean;
 
 	/**
+	 * Whether or not to close the menu when an internal item is clicked.
+	 *
+	 * @default true
+	 */
+	closeOnItemClick?: boolean;
+
+	/**
 	 * If not `undefined`, the menu will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
@@ -52,6 +59,14 @@ export type _CreateMenuProps = {
 	 * @default true
 	 */
 	closeOnOutsideClick?: boolean;
+
+	/**
+	 * A custom event handler for the "outside click" event, which
+	 * is handled by the `document`.
+	 * If `event.preventDefault()` is called within the function,
+	 * the dialog will not close when the user clicks outside of it.
+	 */
+	onOutsideClick?: (event: PointerEvent) => void;
 
 	/**
 	 * Whether or not to loop the menu navigation.
@@ -99,9 +114,28 @@ export type _CreateMenuProps = {
 	 * @default true
 	 */
 	typeahead?: boolean;
+
+	/**
+	 * Override the default autofocus behavior of the menu
+	 * on close.
+	 */
+	closeFocus?: FocusProp;
+
+	/**
+	 * Optionally prevent focusing the first item in the menu
+	 */
+	disableFocusFirstItem?: boolean;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: Partial<IdObj<_MenuIdParts>>;
 };
 
-export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {
+export type _CreateSubmenuProps = Pick<
+	_CreateMenuProps,
+	'arrowSize' | 'positioning' | 'open' | 'onOpenChange' | 'ids'
+> & {
 	disabled?: boolean;
 };
 
@@ -152,9 +186,12 @@ export type _MenuBuilderOptions = {
 		portal: Writable<string | HTMLElement | undefined | null>;
 		forceVisible: Writable<boolean>;
 		typeahead: Writable<boolean>;
+		closeFocus: Writable<FocusProp | undefined>;
+		disableFocusFirstItem: Writable<boolean>;
+		closeOnItemClick: Writable<boolean>;
+		onOutsideClick: Writable<((event: PointerEvent) => void) | undefined>;
 	};
-	disableTriggerRefocus?: boolean;
-	disableFocusFirstItem?: boolean;
+
 	nextFocusable: Writable<HTMLElement | null>;
 	prevFocusable: Writable<HTMLElement | null>;
 	selector: string;
@@ -163,6 +200,8 @@ export type _MenuBuilderOptions = {
 	 * rather than in the menu builder factory.
 	 */
 	removeScroll: boolean;
+
+	ids?: Partial<IdObj<_MenuIdParts>>;
 };
 
 export type _MenuParts =

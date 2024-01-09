@@ -27,3 +27,6 @@ storybook-static/**/*
 
 playwright.config.ts
 playwright-report
+
+src/pagefind/**/*
+static/pagefind/**/*

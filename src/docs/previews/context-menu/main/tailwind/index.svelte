@@ -9,7 +9,9 @@
 	const {
 		elements: { trigger, menu, item, separator },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
-	} = createContextMenu();
+	} = createContextMenu({
+		loop: true,
+	});
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
@@ -45,8 +47,7 @@
 <span class="trigger" use:melt={$trigger} aria-label="Update dimensions">
 	Right click me.
 </span>
-
-<div class="menu" use:melt={$menu}>
+<div class="force-dark menu" use:melt={$menu}>
 	<div class="item" use:melt={$item}>About Melt UI</div>
 	<div class="item" use:melt={$item}>Check for Updates...</div>
 	<div class="separator" use:melt={$separator} />

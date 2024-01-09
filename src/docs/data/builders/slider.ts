@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+
 import { sliderEvents } from '$lib/builders/slider/events.js';
 import type { BuilderData } from './index.js';
 
@@ -31,6 +32,12 @@ const OPTION_PROPS = [
 		type: TYPES.ORIENTATION,
 		default: "'horizontal'",
 		description: 'The orientation of the slider.',
+	},
+	{
+		name: 'dir',
+		type: TYPES.DIR,
+		default: "'ltr'",
+		description: 'The direction of the slider.',
 	},
 	PROPS.DISABLED,
 ];
@@ -106,6 +113,10 @@ const root = elementSchema('root', {
 			value: ATTRS.ORIENTATION,
 		},
 		{
+			name: 'data-disabled',
+			value: ATTRS.DISABLED('slider'),
+		},
+		{
 			name: 'data-melt-slider',
 			value: ATTRS.MELT('slider'),
 		},
@@ -129,6 +140,10 @@ const thumb = elementSchema('thumb', {
 			name: 'data-melt-slider-thumb',
 			value: ATTRS.MELT('slider thumb'),
 		},
+		{
+			name: 'data-value',
+			value: 'The current value of the thumb.',
+		},
 	],
 	events: sliderEvents['thumb'],
 });
@@ -141,8 +156,12 @@ const tick = elementSchema('tick', {
 			value: ATTRS.MELT('slider tick'),
 		},
 		{
+			name: 'data-value',
+			value: "The value at the tick's position.",
+		},
+		{
 			name: 'data-bounded',
-			value: "Present when a tick is inside the `value`'s bounds.",
+			value: 'Present when the tick is inside the active range.',
 		},
 	],
 });

@@ -29,7 +29,7 @@
 	<div
 		use:melt={$content}
 		transition:fly={{ y: -5, duration: 100 }}
-		class="z-10 rounded-md bg-white shadow-sm"
+		class="force-dark z-10 rounded-md bg-white shadow-sm"
 	>
 		<div class="w-[300px] rounded-md bg-white p-5 shadow-sm">
 			<div class="flex flex-col gap-2">

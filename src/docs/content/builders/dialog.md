@@ -21,13 +21,14 @@ At a high level, the anatomy of a dialog looks like this:
 <script lang="ts">
 	import { createDialog, melt } from '@melt-ui/svelte'
 	const {
-		elements: { trigger, portalled, overlay, content, title, description, close, open }
+		elements: { trigger, portalled, overlay, content, title, description, close },
+		states: { open }
 	} = createDialog()
 </script>
 
 <button use:melt={$trigger}> Open Dialog </button>
 
-<div use:portal>
+<div use:melt={$portalled}>
 	{#if $open}
 		<div use:melt={$overlay} />
 		<div use:melt={$content}>
@@ -143,7 +144,7 @@ Dialogs can be nested. For example, here's a dialog that opens another dialog.
 ## Accessibility
 
 Adheres to the
-[Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) &
+[Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) and
 [Alert Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)
 
 <KbdTable {keyboard} />

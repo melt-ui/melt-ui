@@ -102,7 +102,7 @@ export function createCombobox<
 	return {
 		...listbox,
 		elements: {
-			...listbox.elements,
+			...omit(listbox.elements, 'trigger'),
 			input,
 		},
 		states: {

@@ -37,6 +37,8 @@ export const kbd = {
 	TAB: 'Tab',
 	CTRL: 'Control',
 	ASTERISK: '*',
+	A: 'a',
+	P: 'p',
 };
 
 /** Key sets for navigation within lists, such as select, menu, and combobox. */

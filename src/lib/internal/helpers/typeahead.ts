@@ -27,6 +27,13 @@ export type HandleTypeaheadSearch = {
 };
 
 /**
+ * Keys to ignore for typeahead so we aren't matching things
+ * like `Shift menu item` or `Control center` or `Alt menu` when
+ * a user presses those keys.
+ */
+const ignoredKeys = new Set(['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'NumLock']);
+
+/**
  * Default options for the typeahead search.
  * We default to roving focus when a match is found, but
  * you can override this with the `onMatch` option.
@@ -45,6 +52,7 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	});
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
+		if (ignoredKeys.has(key)) return;
 		const currentItem = withDefaults.getCurrentItem();
 
 		const $typed = get(typed);

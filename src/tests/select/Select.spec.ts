@@ -1,151 +1,159 @@
-import '@testing-library/jest-dom';
-import { render, act, fireEvent, waitFor } from '@testing-library/svelte';
+import { render, act, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { kbd, sleep } from '$lib/internal/helpers/index.js';
+import { testKbd as kbd } from '../utils';
 import SelectTest from './SelectTest.svelte';
-import { tick } from 'svelte';
 
 const OPEN_KEYS = [kbd.ENTER, kbd.SPACE];
 
-describe('Select (Default)', () => {
+describe('Select', () => {
 	test('No accessibility violations', async () => {
-		const { container } = await render(SelectTest);
-
+		const { container } = render(SelectTest);
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
 	test('Opens/Closes when trigger is clicked', async () => {
-		const { getByTestId } = await render(SelectTest);
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(getByTestId('menu')).toBeVisible();
+
+		await user.click(trigger);
+		expect(menu).not.toBeVisible();
+	});
+
+	test('Closes on escape keydown', async () => {
 		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
 
-		await expect(menu).not.toBeVisible();
+		expect(menu).not.toBeVisible();
 		await user.click(trigger);
-		await expect(getByTestId('menu')).toBeVisible();
+		expect(menu).toBeVisible();
+		expect(trigger).toHaveFocus();
 
-		await user.click(trigger);
-		await expect(menu).not.toBeVisible();
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).not.toBeVisible();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
-		const { getByTestId } = await render(SelectTest);
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
-		await expect(menu).not.toBeVisible();
+		expect(menu).not.toBeVisible();
 		await act(() => trigger.focus());
-		await user.keyboard(`{${key}}`);
-		await expect(menu).toBeVisible();
+		await user.keyboard(key);
+		expect(menu).toBeVisible();
 	});
 
-	test.skip('Focus when opened with click', async () => {
-		const { getByTestId } = await render(SelectTest);
-		await tick();
+	test('Toggles when trigger is clicked', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		await user.click(trigger);
+		expect(menu).not.toBeVisible();
+	});
+
+	test('Toggles when icon within trigger is clicked', async () => {
 		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
+		const icon = getByTestId('icon');
+		const menu = getByTestId('menu');
 
-		await expect(menu).not.toBeVisible();
-		await expect(trigger).toBeVisible();
-		await sleep(100);
-		await fireEvent.click(trigger);
-		await expect(menu).toBeVisible();
+		expect(menu).not.toBeVisible();
+		await user.click(icon);
+		expect(menu).toBeVisible();
 
-		const firstItem = getByTestId('sweet-option-0');
-		await expect(firstItem).not.toHaveFocus();
-
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-
-		// Focuses first item after arrow down
-		await expect(firstItem).toHaveFocus();
-
-		// Focuses next item after arrow down
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-		const secondItem = getByTestId('sweet-option-1');
-		await expect(secondItem).toHaveFocus();
-
-		// Doesn't focus disabled items
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-		const thirdItem = getByTestId('sweet-option-2');
-		await expect(thirdItem).not.toHaveFocus();
+		await user.click(icon);
+		expect(menu).not.toBeVisible();
 	});
 
 	test('Selects item when clicked', async () => {
-		const { getByTestId } = await render(SelectTest);
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
-		await expect(trigger).not.toHaveTextContent('Caramel');
+		expect(trigger).not.toHaveTextContent('Caramel');
 
-		await expect(menu).not.toBeVisible();
+		expect(menu).not.toBeVisible();
 		await user.click(trigger);
-		await expect(menu).toBeVisible();
+		expect(menu).toBeVisible();
 
 		const firstItem = menu.querySelector('[data-melt-select-option]');
 		if (!firstItem) throw new Error('No option found');
 		await user.click(firstItem);
 
-		await expect(menu).not.toBeVisible();
-		await expect(trigger).toHaveTextContent('Caramel');
+		expect(menu).not.toBeVisible();
+		expect(trigger).toHaveTextContent('Caramel');
 
 		await user.click(trigger);
-		await expect(menu).toBeVisible();
+		expect(menu).toBeVisible();
 
 		const secondItem = menu.querySelectorAll('[data-melt-select-option]')[1];
 		if (!secondItem) throw new Error('No option found');
 		await user.click(secondItem);
 
-		await expect(menu).not.toBeVisible();
-		await expect(trigger).toHaveTextContent('Chocolate');
+		expect(menu).not.toBeVisible();
+		expect(trigger).toHaveTextContent('Chocolate');
 	});
 
 	test('Selects multiple items when `multiple` is true', async () => {
-		const { getByTestId } = await render(SelectTest, { multiple: true });
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest, { multiple: true });
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
-		await expect(trigger).not.toHaveTextContent('Caramel');
+		expect(trigger).not.toHaveTextContent('Caramel');
 
-		await expect(menu).not.toBeVisible();
+		expect(menu).not.toBeVisible();
 		await user.click(trigger);
-		await expect(menu).toBeVisible();
+		expect(menu).toBeVisible();
 
 		const firstItem = menu.querySelector('[data-melt-select-option]');
 		if (!firstItem) throw new Error('No option found');
 		await user.click(firstItem);
 
-		await expect(firstItem).toHaveAttribute('data-selected');
-		await expect(firstItem).toHaveAttribute('aria-selected', 'true');
+		expect(firstItem).toHaveAttribute('data-selected');
+		expect(firstItem).toHaveAttribute('aria-selected', 'true');
 
-		await expect(menu).toBeVisible();
-		await expect(trigger).toHaveTextContent('Caramel');
+		expect(menu).toBeVisible();
+		expect(trigger).toHaveTextContent('Caramel');
 
 		const secondItem = menu.querySelectorAll('[data-melt-select-option]')[1];
 		if (!secondItem) throw new Error('No option found');
 		await user.click(secondItem);
 
-		await expect(secondItem).toHaveAttribute('data-selected');
-		await expect(secondItem).toHaveAttribute('aria-selected', 'true');
+		expect(secondItem).toHaveAttribute('data-selected');
+		expect(secondItem).toHaveAttribute('aria-selected', 'true');
 
-		await expect(menu).toBeVisible();
-		await expect(trigger).toHaveTextContent('Caramel, Chocolate');
+		expect(menu).toBeVisible();
+		expect(trigger).toHaveTextContent('Caramel, Chocolate');
 	});
 
 	test('Shows correct label when defaultValue is provided', async () => {
-		const { getByTestId } = await render(SelectTest, { defaultValue: 'Chocolate' });
+		const { getByTestId } = render(SelectTest, { defaultValue: 'Chocolate' });
 		const trigger = getByTestId('trigger');
 
-		await expect(trigger).toHaveTextContent('Chocolate');
+		expect(trigger).toHaveTextContent('Chocolate');
 	});
 
 	test('Manually setting the value updates the label', async () => {
-		const { getByTestId } = await render(SelectTest);
+		const { getByTestId } = render(SelectTest);
 		const manualBtn = getByTestId('manual-btn');
 		const trigger = getByTestId('trigger');
 
@@ -154,12 +162,79 @@ describe('Select (Default)', () => {
 	});
 
 	test('Updating options and setting the value updates the label', async () => {
-		const { getByTestId } = await render(SelectTest);
+		const { getByTestId } = render(SelectTest);
 		const updateBtn = getByTestId('update-btn');
 		const trigger = getByTestId('trigger');
 
 		updateBtn.click();
 		await waitFor(() => expect(trigger).toHaveTextContent('Vanilla'), { timeout: 500 });
+	});
+
+	test('Respects the `closeOnEscape` prop', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest, { closeOnEscape: false });
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).toBeVisible();
+	});
+
+	test('Respects the `closeOnOutsideClick` prop', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest, { closeOnOutsideClick: false });
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		const outside = getByTestId('outside');
+		await user.click(outside);
+		expect(menu).toBeVisible();
+	});
+
+	test("doesn't close when preventDefault called in `onOutsideClick`", async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest, {
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		const outside = getByTestId('outside');
+		await user.click(outside);
+		expect(menu).toBeVisible();
+	});
+
+	test('Applies custom ids when provided', async () => {
+		const ids = {
+			label: 'id-label',
+			menu: 'id-menu',
+			trigger: 'id-trigger',
+		};
+
+		const { getByTestId } = render(SelectTest, {
+			ids,
+		});
+
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const label = getByTestId('label');
+		expect(trigger.id).toBe(ids.trigger);
+		expect(menu.id).toBe(ids.menu);
+		expect(label.id).toBe(ids.label);
 	});
 
 	test.todo('Disabled select cannot be opened');

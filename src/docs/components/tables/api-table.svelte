@@ -75,6 +75,14 @@
 			</svelte:fragment>
 		</ReturnedPropsTable>
 	{/if}
+	{#if data.ids && data.ids.length}
+		<ReturnedPropsTable data={data.ids} title="IDs" tableHeading="Option">
+			<svelte:fragment slot="info">
+				Some elements come with predefined IDs for internal use. We provide stores for each ID, that
+				can be changed at any time by setting the respective store to a new value.
+			</svelte:fragment>
+		</ReturnedPropsTable>
+	{/if}
 	{#if data.dataAttributes && data.dataAttributes.length}
 		<DataAttrTable data={data.dataAttributes} />
 	{/if}

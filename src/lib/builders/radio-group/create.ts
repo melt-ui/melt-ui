@@ -15,8 +15,8 @@ import {
 	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { onMount } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { RadioGroupEvents } from './events.js';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types.js';
@@ -51,7 +51,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		curr: null,
 	};
 
-	onMount(() => {
+	safeOnMount(() => {
 		return addEventListener(document, 'focus', (e) => {
 			const focusedItem = e.target as HTMLElement;
 			if (!isHTMLElement(focusedItem)) return;
@@ -128,7 +128,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					if (!isHTMLElement(root)) return;
 
 					const items = Array.from(root.querySelectorAll(selector('item'))).filter(
-						(el): el is HTMLElement => isHTMLElement(el)
+						(el): el is HTMLElement => isHTMLElement(el) && !el.hasAttribute('data-disabled')
 					);
 					const currentIndex = items.indexOf(el);
 

@@ -1,24 +1,35 @@
 <script lang="ts">
-	import { createSelect, melt } from '$lib/index.js';
-	import { Check, ChevronDown } from 'lucide-svelte';
+	import { createSelect, melt, type CreateSelectProps } from '$lib/index.js';
+	import { Check } from 'lucide-svelte';
 	import { tick } from 'svelte';
+	import { removeUndefined } from '../utils';
 
 	export let multiple = false;
 	export let defaultValue: string | undefined = undefined;
-
+	export let closeOnEscape = true;
+	export let closeOnOutsideClick = true;
+	export let ids: CreateSelectProps['ids'] = undefined;
+	export let onOutsideClick: CreateSelectProps['onOutsideClick'] = undefined;
 	const {
-		elements: { trigger, menu, option, group, groupLabel },
+		elements: { trigger, menu, option, group, groupLabel, label },
 		states: { selected, selectedLabel },
 		helpers: { isSelected },
-	} = createSelect({
-		multiple,
-		defaultSelected: defaultValue
-			? {
-					value: defaultValue,
-					label: defaultValue,
-			  }
-			: undefined,
-	});
+		ids: { trigger: triggerId },
+	} = createSelect(
+		removeUndefined({
+			multiple,
+			defaultSelected: defaultValue
+				? {
+						value: defaultValue,
+						label: defaultValue,
+				  }
+				: undefined,
+			closeOnEscape,
+			closeOnOutsideClick,
+			ids,
+			onOutsideClick,
+		})
+	);
 
 	let options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -27,6 +38,7 @@
 </script>
 
 <main>
+	<label for={$triggerId} use:melt={$label} data-testid="label">Label</label>
 	<button
 		on:click={() => {
 			selected.set({ value: 'Chocolate', label: 'Chocolate' });
@@ -55,7 +67,21 @@
 
 	<button use:melt={$trigger} aria-label="Food" data-testid="trigger">
 		{$selectedLabel || 'Select an option'}
-		<ChevronDown />
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="1em"
+			height="1em"
+			viewBox="0 0 24 24"
+			data-testid="icon"
+			><path
+				fill="none"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="m6 9l6 6l6-6"
+			/></svg
+		>
 	</button>
 
 	<div use:melt={$menu} data-testid="menu">
@@ -78,4 +104,5 @@
 			</div>
 		{/each}
 	</div>
+	<div data-testid="outside" />
 </main>

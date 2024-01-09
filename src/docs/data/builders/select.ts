@@ -1,6 +1,7 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { listboxIdParts } from '$lib/builders/listbox/create.js';
 import { selectEvents } from '$lib/builders/select/events.js';
 import type { BuilderData } from './index.js';
 
@@ -23,11 +24,19 @@ const OPTION_PROPS = [
 		type: 'string',
 		description: 'The name to be used for the select input.',
 	},
+	{
+		name: 'highlightOnHover',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
+	},
 ];
 
 const BUILDER_NAME = 'select';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: listboxIdParts,
 	title: 'createSelect',
 	props: [
 		{
@@ -60,7 +69,6 @@ const builder = builderSchema(BUILDER_NAME, {
 			default: 'false',
 			description: 'Whether or not the select is a multiple select.',
 		},
-
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
@@ -79,7 +87,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the select options.',
 		},
 		{
-			name: 'hidden-input',
+			name: 'hiddenInput',
 			description: 'The builder store used to create the select hidden input.',
 		},
 		{

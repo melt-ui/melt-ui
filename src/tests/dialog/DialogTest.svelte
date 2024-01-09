@@ -1,24 +1,37 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib/index.js';
+	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
+
+	type $$Props = CreateDialogProps;
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
-	} = createDialog();
+		states: { open },
+	} = createDialog({
+		...$$restProps,
+	});
 </script>
 
-<main>
+<main data-testid="main">
+	<button id="closeFocus" data-testid="closeFocus">Focus Me</button>
 	<button use:melt={$trigger} data-testid="trigger">Open</button>
 	<div use:melt={$portalled} data-testid="portalled">
 		<div use:melt={$overlay} data-testid="overlay" />
 		<div use:melt={$content} data-testid="content">
-			<h2 use:melt={$title}>Title</h2>
-			<p use:melt={$description}>Description</p>
+			<h2 use:melt={$title} data-testid="title">Title</h2>
+			<p use:melt={$description} data-testid="description">Description</p>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
+			<div tabindex="-1" role="button" id="openFocus" data-testid="openFocus">hello world</div>
 		</div>
 	</div>
 </main>
+<div id="portal-target" data-testid="portal-target" />
+
+{#if $open}
+	<!-- Floating close -->
+	<button use:melt={$close} data-testid="floating-closer">Close</button>
+{/if}
 
 <style>
 	[data-testid='overlay'] {
@@ -36,5 +49,12 @@
 		transform: translate(-50%, -50%);
 		background: white;
 		padding: 1rem;
+	}
+
+	[data-testid='floating-closer'] {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 999;
 	}
 </style>

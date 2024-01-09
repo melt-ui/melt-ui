@@ -3,6 +3,184 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+	:root {
+		/* store initial colors to be able to reset at specific locations */
+		--initial-color-magnum-50: 255 249 237;
+		--initial-color-magnum-100: 254 242 214;
+		--initial-color-magnum-200: 252 224 172;
+		--initial-color-magnum-300: 249 201 120;
+		--initial-color-magnum-400: 247 177 85;
+		--initial-color-magnum-500: 243 141 28;
+		--initial-color-magnum-600: 228 115 18;
+		--initial-color-magnum-700: 189 87 17;
+		--initial-color-magnum-800: 150 69 22;
+		--initial-color-magnum-900: 121 58 21;
+		--initial-color-magnum-950: 65 28 9;
+
+		--initial-color-neutral-50: 250 250 250;
+		--initial-color-neutral-100: 245 245 245;
+		--initial-color-neutral-200: 229 229 229;
+		--initial-color-neutral-300: 212 212 212;
+		--initial-color-neutral-400: 163 163 163;
+		--initial-color-neutral-500: 115 115 115;
+		--initial-color-neutral-600: 82 82 82;
+		--initial-color-neutral-700: 64 64 64;
+		--initial-color-neutral-800: 38 38 38;
+		--initial-color-neutral-900: 23 23 23;
+		--initial-color-neutral-950: 10 10 10;
+
+		--initial-color-zinc-50: 250 250 250;
+		--initial-color-zinc-100: 244 244 245;
+		--initial-color-zinc-200: 228 228 231;
+		--initial-color-zinc-300: 212 212 216;
+		--initial-color-zinc-400: 161 161 170;
+		--initial-color-zinc-500: 113 113 122;
+		--initial-color-zinc-600: 82 82 91;
+		--initial-color-zinc-700: 63 63 70;
+		--initial-color-zinc-800: 39 39 42;
+		--initial-color-zinc-900: 24 24 27;
+		--initial-color-zinc-950: 9 9 11;
+
+		--initial-color-green-400: 74 222 128;
+
+		--initial-color-white: 255 255 255;
+
+		/* actual dark theme */
+		--color-magnum-50: var(--initial-color-magnum-50);
+		--color-magnum-100: var(--initial-color-magnum-100);
+		--color-magnum-200: var(--initial-color-magnum-200);
+		--color-magnum-300: var(--initial-color-magnum-300);
+		--color-magnum-400: var(--initial-color-magnum-400);
+		--color-magnum-500: var(--initial-color-magnum-500);
+		--color-magnum-600: var(--initial-color-magnum-600);
+		--color-magnum-700: var(--initial-color-magnum-700);
+		--color-magnum-800: var(--initial-color-magnum-800);
+		--color-magnum-900: var(--initial-color-magnum-900);
+		--color-magnum-950: var(--initial-color-magnum-950);
+
+		--color-neutral-50: var(--initial-color-neutral-50);
+		--color-neutral-100: var(--initial-color-neutral-100);
+		--color-neutral-200: var(--initial-color-neutral-200);
+		--color-neutral-300: var(--initial-color-neutral-300);
+		--color-neutral-400: var(--initial-color-neutral-400);
+		--color-neutral-500: var(--initial-color-neutral-500);
+		--color-neutral-600: var(--initial-color-neutral-600);
+		--color-neutral-700: var(--initial-color-neutral-700);
+		--color-neutral-800: var(--initial-color-neutral-800);
+		--color-neutral-900: var(--initial-color-neutral-900);
+		--color-neutral-950: var(--initial-color-neutral-950);
+
+		--color-zinc-50: var(--initial-color-zinc-50);
+		--color-zinc-100: var(--initial-color-zinc-100);
+		--color-zinc-200: var(--initial-color-zinc-200);
+		--color-zinc-300: var(--initial-color-zinc-300);
+		--color-zinc-400: var(--initial-color-zinc-400);
+		--color-zinc-500: var(--initial-color-zinc-500);
+		--color-zinc-600: var(--initial-color-zinc-600);
+		--color-zinc-700: var(--initial-color-zinc-700);
+		--color-zinc-800: var(--initial-color-zinc-800);
+		--color-zinc-900: var(--initial-color-zinc-900);
+		--color-zinc-950: var(--initial-color-zinc-950);
+
+		--color-green-400: var(--initial-color-green-400);
+
+		--color-white: var(--initial-color-white);
+
+		/* light theme */
+		&:not(.dark) {
+			--color-magnum-50: 65 28 9;
+			--color-magnum-100: 121 58 21;
+			--color-magnum-200: 150 69 22 252;
+			--color-magnum-300: 189 87 17;
+			--color-magnum-400: 228 115 18;
+			--color-magnum-500: 243 141 28;
+			--color-magnum-600: 247 177 85;
+			--color-magnum-700: 249 201 120;
+			--color-magnum-800: 224 172;
+			--color-magnum-900: 252 225 172;
+			--color-magnum-950: 255 249 237;
+
+			--color-neutral-50: 10 10 10;
+			--color-neutral-100: 23 23 23;
+			--color-neutral-200: 38 38 38;
+			--color-neutral-300: 64 64 64;
+			--color-neutral-400: 82 82 82;
+			--color-neutral-500: 115 115 115;
+			--color-neutral-600: 163 163 163;
+			--color-neutral-700: 212 212 212;
+			--color-neutral-800: 229 229 229;
+			--color-neutral-900: 245 245 245;
+			--color-neutral-950: 250 250 250;
+
+			--color-zinc-50: 9 9 11;
+			--color-zinc-100: 24 24 27;
+			--color-zinc-200: 39 39 42;
+			--color-zinc-300: 63 63 70;
+			--color-zinc-400: 82 82 91;
+			--color-zinc-500: 113 113 122;
+			--color-zinc-600: 161 161 170;
+			--color-zinc-700: 212 212 216;
+			--color-zinc-800: 228 228 231;
+			--color-zinc-900: 244 244 245;
+			--color-zinc-950: 250 250 250;
+
+			--color-green-400: 22 163 74;
+
+			--color-white: 0 0 0;
+
+			/* escape hatch to use dark colors anywhere */
+			& .force-dark {
+				--color-magnum-50: var(--initial-color-magnum-50);
+				--color-magnum-100: var(--initial-color-magnum-100);
+				--color-magnum-200: var(--initial-color-magnum-200);
+				--color-magnum-300: var(--initial-color-magnum-300);
+				--color-magnum-400: var(--initial-color-magnum-400);
+				--color-magnum-500: var(--initial-color-magnum-500);
+				--color-magnum-600: var(--initial-color-magnum-600);
+				--color-magnum-700: var(--initial-color-magnum-700);
+				--color-magnum-800: var(--initial-color-magnum-800);
+				--color-magnum-900: var(--initial-color-magnum-900);
+				--color-magnum-950: var(--initial-color-magnum-950);
+
+				--color-neutral-50: var(--initial-color-neutral-50);
+				--color-neutral-100: var(--initial-color-neutral-100);
+				--color-neutral-200: var(--initial-color-neutral-200);
+				--color-neutral-300: var(--initial-color-neutral-300);
+				--color-neutral-400: var(--initial-color-neutral-400);
+				--color-neutral-500: var(--initial-color-neutral-500);
+				--color-neutral-600: var(--initial-color-neutral-600);
+				--color-neutral-700: var(--initial-color-neutral-700);
+				--color-neutral-800: var(--initial-color-neutral-800);
+				--color-neutral-900: var(--initial-color-neutral-900);
+				--color-neutral-950: var(--initial-color-neutral-950);
+
+				--color-zinc-50: var(--initial-color-zinc-50);
+				--color-zinc-100: var(--initial-color-zinc-100);
+				--color-zinc-200: var(--initial-color-zinc-200);
+				--color-zinc-300: var(--initial-color-zinc-300);
+				--color-zinc-400: var(--initial-color-zinc-400);
+				--color-zinc-500: var(--initial-color-zinc-500);
+				--color-zinc-600: var(--initial-color-zinc-600);
+				--color-zinc-700: var(--initial-color-zinc-700);
+				--color-zinc-800: var(--initial-color-zinc-800);
+				--color-zinc-900: var(--initial-color-zinc-900);
+				--color-zinc-950: var(--initial-color-zinc-950);
+
+				--color-green-400: var(--initial-color-green-400);
+
+				--color-white: var(--initial-color-white);
+			}
+		}
+	}
+}
+
+/* Force inputs to use light background, when forced to use light mode in dark mode.
+ :where is used to lower CSS specifity */
+:where(.force-dark input) {
+	background-color: inherit;
+}
+
 body {
 	background-color: theme('colors.neutral.900');
 	color: theme('colors.white');

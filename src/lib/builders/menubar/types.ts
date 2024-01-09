@@ -1,7 +1,9 @@
+import type { IdObj } from '$lib/internal/helpers/id.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
-import type { createMenubar } from './create.js';
+import type { MenubarIdParts, createMenubar } from './create.js';
 export type { MenubarComponentEvents } from './events.js';
+
 // Props
 export type CreateMenubarProps = {
 	/**
@@ -14,10 +16,26 @@ export type CreateMenubarProps = {
 
 	/**
 	 * Whether to close the active menu when the escape key is pressed.
+	 *
+	 * @default true
 	 */
 	closeOnEscape?: boolean;
+
+	/**
+	 * Whether to prevent scrolling the body when any menu within
+	 * the menubar is open.
+	 *
+	 * @default true
+	 */
+	preventScroll?: boolean;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: Partial<IdObj<MenubarIdParts>>;
 };
-export type CreateMenubarMenuProps = _Menu['builder'];
+
+export type CreateMenubarMenuProps = Omit<_Menu['builder'], 'preventScroll'>;
 export type CreateMenubarSubmenuProps = _Menu['submenu'];
 export type MenubarMenuItemProps = _Menu['item'];
 export type CreateMenuRadioGroupProps = _Menu['radioGroup'];
@@ -46,3 +64,8 @@ export type MenubarMenuRadioGroup = BuilderReturn<MenubarMenuBuilders['createMen
 export type MenubarMenuRadioGroupElements = MenubarMenuRadioGroup['elements'];
 export type MenubarMenuRadioGroupStates = MenubarMenuRadioGroup['states'];
 export type MenubarMenuRadioGroupHelpers = MenubarMenuRadioGroup['helpers'];
+
+export type MenubarMenuCheckboxItem = BuilderReturn<MenubarMenuBuilders['createCheckboxItem']>;
+export type MenubarMenuCheckboxItemElements = MenubarMenuCheckboxItem['elements'];
+export type MenubarMenuCheckboxItemStates = MenubarMenuCheckboxItem['states'];
+export type MenubarMenuCheckboxItemHelpers = MenubarMenuCheckboxItem['helpers'];

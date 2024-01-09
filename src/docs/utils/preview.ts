@@ -5,7 +5,7 @@ import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 import rawGlobalCSS from '../../../other/globalcss.html?raw';
 import rawTailwindConfig from '../../../other/tailwindconfig.html?raw';
-import { data, isBuilderName, type Builder } from '../data/builders/index.js';
+import { builderMap, isBuilderName, type Builder } from '../data/builders/index.js';
 import { processMeltAttributes } from '../pp.js';
 import type { DocResolver, PreviewFile, PreviewResolver } from '../types.js';
 
@@ -60,9 +60,15 @@ async function createPreviewsObject({
 
 		if (match) {
 			const [, groupKey, styleKey, fileKey] = match; // Destructure the matched parts
-			const { content } = obj;
+			const { content: clutteredContent } = obj;
 
 			if (!isSvelteFile(fileKey)) return;
+
+			const content = clutteredContent
+				.replaceAll(`\n\t\t\tclass="force-dark"`, '')
+				.replaceAll(`class="force-dark `, `class="`)
+				.replaceAll(' force-dark', '')
+				.replaceAll('force-dark', '');
 
 			// Create the structure in the returnedObj
 			if (!returnedObj[groupKey]) {
@@ -216,7 +222,7 @@ export async function getMainPreviewComponent(slug: string) {
 }
 
 export async function getBuilderData({ slug, fetcher }: GetBuilderDataArgs) {
-	const builderData = data[slug];
+	const builderData = builderMap[slug];
 	const schemas = builderData['schemas'];
 	if (!schemas) return builderData;
 

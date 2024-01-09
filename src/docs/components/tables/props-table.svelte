@@ -65,7 +65,7 @@
 										{/if}
 									</div>
 									{#if prop.description}
-										<div class="my-2 leading-7">
+										<div class="my-2 whitespace-pre-wrap leading-7">
 											<p>
 												{@html transformAPIString(prop.description, true)}
 											</p>

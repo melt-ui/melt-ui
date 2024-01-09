@@ -7,13 +7,15 @@
 		base: 'flex items-center rounded-xl relative md:px-12 overflow-x-auto lg:overflow-x-hidden',
 		variants: {
 			variant: {
-				default: 'bg-magnum-400',
+				default: 'bg-magnum-400 force-dark',
 				dark: 'bg-neutral-950/25',
 			},
 			size: {
 				default: 'h-[20rem] lg:h-[28rem]',
-				sm: 'h-[12rem] lg:h-[20rem]',
-				lg: 'h-[24rem] lg:h-[32rem]',
+				sm: 'h-[12rem] sm:h-[20rem]',
+				md: 'h-[16rem] sm:h-[24rem]',
+				lg: 'h-[24rem] sm:h-[32rem]',
+				auto: 'h-auto py-6 lg:py-12',
 			},
 		},
 		defaultVariants: {
@@ -28,10 +30,11 @@
 
 	export let variant: PreviewVariants['variant'] = 'default';
 	export let size: PreviewVariants['size'] = 'default';
+	export let id: string | undefined = undefined;
 </script>
 
-<div class={cn(previewVariants({ variant, size }))} data-variant={variant}>
-	<div class={cn('relative z-10 mx-auto inline-block px-4')}>
+<div class={cn(previewVariants({ variant, size }))} data-variant={variant} {id}>
+	<div class={cn('z-10 mx-auto inline-block px-4')}>
 		<slot />
 	</div>
 </div>

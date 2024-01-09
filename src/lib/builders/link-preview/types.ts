@@ -1,8 +1,8 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createLinkPreview } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { LinkPreviewIdParts, createLinkPreview } from './create.js';
 export type { LinkPreviewComponentEvents } from './events.js';
 export type CreateLinkPreviewProps = {
 	/**
@@ -58,6 +58,14 @@ export type CreateLinkPreviewProps = {
 	closeOnOutsideClick?: boolean;
 
 	/**
+	 * A custom event handler for the "outside click" event, which
+	 * is handled by the `document`.
+	 * If `event.preventDefault()` is called within the function,
+	 * the dialog will not close when the user clicks outside of it.
+	 */
+	onOutsideClick?: (event: PointerEvent) => void;
+
+	/**
 	 * Whether or not to close the linkpreview when the escape key is pressed
 	 * while it is open.
 	 *
@@ -88,6 +96,11 @@ export type CreateLinkPreviewProps = {
 	 * @default 'body'
 	 */
 	portal?: HTMLElement | string | null;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: Partial<IdObj<LinkPreviewIdParts>>;
 };
 
 export type LinkPreview = BuilderReturn<typeof createLinkPreview>;

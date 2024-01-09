@@ -2,6 +2,7 @@ import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
 import type { createDropdownMenu } from './create.js';
 export type { DropdownMenuComponentEvents } from './events.js';
+
 // Props
 export type CreateDropdownMenuProps = _Menu['builder'];
 export type CreateDropdownSubmenuProps = _Menu['submenu'];
@@ -27,3 +28,8 @@ export type DropdownMenuRadioGroup = BuilderReturn<DropdownMenuBuilders['createM
 export type DropdownMenuRadioGroupElements = DropdownMenuRadioGroup['elements'];
 export type DropdownMenuRadioGroupStates = DropdownMenuRadioGroup['states'];
 export type DropdownMenuRadioGroupHelpers = DropdownMenuRadioGroup['helpers'];
+
+export type DropdownMenuCheckboxItem = BuilderReturn<DropdownMenuBuilders['createCheckboxItem']>;
+export type DropdownMenuCheckboxItemElements = DropdownMenuCheckboxItem['elements'];
+export type DropdownMenuCheckboxItemStates = DropdownMenuCheckboxItem['states'];
+export type DropdownMenuCheckboxItemHelpers = DropdownMenuCheckboxItem['helpers'];

@@ -1,8 +1,11 @@
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createSlider } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { SliderComponentEvents } from './events.js';
+
+export type SliderOrientation = 'horizontal' | 'vertical';
+
 export type CreateSliderProps = {
 	/**
 	 * The uncontrolled default value of the slider.
@@ -50,7 +53,17 @@ export type CreateSliderProps = {
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: 'horizontal' | 'vertical';
+	orientation?: SliderOrientation;
+
+	/**
+	 * The direction of the slider.
+	 *
+	 * For vertical sliders, setting `dir` to `rtl`
+	 * will cause the slider to be start from the top.
+	 *
+	 * @default 'ltr'
+	 */
+	dir?: 'ltr' | 'rtl';
 
 	/**
 	 * When `true`, prevents the user from interacting with the slider.

@@ -17,7 +17,7 @@
 		},
 		states: { open },
 	} = createDialog({
-		forceVisible: false,
+		forceVisible: true,
 	});
 </script>
 
@@ -29,7 +29,7 @@
 	Open Dialog
 </button>
 
-<div use:melt={$portalled}>
+<div class="force-dark" use:melt={$portalled}>
 	{#if $open}
 		<div
 			use:melt={$overlay}

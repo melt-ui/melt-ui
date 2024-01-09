@@ -85,3 +85,5 @@ vi.mock('$app/stores', (): typeof stores => {
 });
 
 global.ResizeObserver = require('resize-observer-polyfill');
+
+Element.prototype.scrollIntoView = () => {};

@@ -38,7 +38,7 @@ module.exports = {
 			'warn',
 			{
 				argsIgnorePattern: '^_',
-				varsIgnorePattern: '^_',
+				varsIgnorePattern: '^(\\$\\$(Props|Events|Slots|Generic)|_)',
 			},
 		],
 
@@ -57,5 +57,6 @@ module.exports = {
 	},
 	globals: {
 		NodeJS: true,
+		$$Generic: 'writable',
 	},
 };

@@ -28,3 +28,8 @@ export type ContextMenuRadioGroup = BuilderReturn<ContextMenuBuilders['createMen
 export type ContextMenuRadioGroupElements = ContextMenuRadioGroup['elements'];
 export type ContextMenuRadioGroupStates = ContextMenuRadioGroup['states'];
 export type ContextMenuRadioGroupHelpers = ContextMenuRadioGroup['helpers'];
+
+export type ContextMenuCheckboxItem = BuilderReturn<ContextMenuBuilders['createCheckboxItem']>;
+export type ContextMenuCheckboxItemElements = ContextMenuCheckboxItem['elements'];
+export type ContextMenuCheckboxItemStates = ContextMenuCheckboxItem['states'];
+export type ContextMenuCheckboxItemHelpers = ContextMenuCheckboxItem['helpers'];

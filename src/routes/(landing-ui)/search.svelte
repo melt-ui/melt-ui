@@ -1,19 +1,50 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { createCombobox, createDialog, melt } from '$lib';
-	import { Check, CornerDownRight, Search } from 'lucide-svelte';
-	import { onMount } from 'svelte';
-	import type { PagefindSearchFragment, Pagefind, PagefindSearchResult } from '../../pagefind.js';
 	import { Tooltip } from '$docs/components/index.js';
+	import { createCombobox, createDialog, melt } from '$lib';
+	import { CornerDownRight, Search as SearchIcon } from 'lucide-svelte';
+	import { onMount } from 'svelte';
+	import type {
+		Pagefind,
+		PagefindSearchFragment,
+		PagefindSearchResult,
+		PagefindSubResult,
+	} from '../../pagefind';
 
-	let pagefind: Pagefind;
-	let results: PagefindSearchResult[] = [];
+	type Promised<T> = T extends Promise<infer U> ? U : T;
+
+	type AwaitedResult = Omit<PagefindSearchResult, 'data'> & {
+		data: Promised<ReturnType<PagefindSearchResult['data']>>;
+	};
+
+	let pagefind: Pagefind | null = null;
+	let results: AwaitedResult[] = [];
+
+	async function getPagefind() {
+		const res = await fetch('/pagefind/pagefind.js');
+		if (!res.ok) {
+			return null;
+		}
+		const text = await res.text();
+		const blob = new Blob([text], { type: 'application/javascript' });
+		const url = URL.createObjectURL(blob);
+
+		return (await import(/* @vite-ignore */ url)) as Pagefind;
+	}
 
 	onMount(async () => {
-		pagefind = await import('../../pagefind/pagefind.js');
+		pagefind = await getPagefind();
+		if (!pagefind) return;
 
 		await pagefind.init();
-		results = (await pagefind.search('')).results;
+		const promisedResults = (await pagefind.search('')).results;
+
+		results = await Promise.all(
+			promisedResults.map(async (result) => ({
+				...result,
+				data: await result.data(),
+			}))
+		);
 	});
 
 	const sanitizeLink = (url: string) => {
@@ -29,7 +60,7 @@
 	const {
 		elements: { input, menu, option },
 		states: { open: cbOpen, inputValue },
-	} = createCombobox<PagefindSearchFragment>({
+	} = createCombobox<PagefindSearchFragment | PagefindSubResult>({
 		onSelectedChange({ next }) {
 			if (next) {
 				gotoLink(next.value.url);
@@ -38,7 +69,10 @@
 		},
 		forceVisible: true,
 		preventScroll: false,
+		highlightOnHover: false,
 	});
+
+	let comboboxInput: HTMLInputElement | null = null;
 
 	const {
 		elements: { trigger, portalled, content, overlay },
@@ -51,6 +85,7 @@
 			}
 			return next;
 		},
+		openFocus: comboboxInput,
 	});
 
 	let debounceTimer: ReturnType<typeof setTimeout>;
@@ -63,8 +98,13 @@
 	$: {
 		if (pagefind) {
 			debounce(() => {
-				pagefind.search($inputValue).then((r) => {
-					results = r.results;
+				pagefind?.search($inputValue).then(async (r) => {
+					results = await Promise.all(
+						r.results.map(async (result) => ({
+							...result,
+							data: await result.data(),
+						}))
+					);
 				});
 			});
 		}
@@ -82,8 +122,8 @@
 />
 
 <Tooltip text="Search">
-	<button class="text-neutral-400 transition-colors hover:text-neutral-50" use:melt={$trigger}>
-		<Search class="h-5 w-5" />
+	<button class="transition-colors hover:text-neutral-50" use:melt={$trigger}>
+		<SearchIcon class="h-5 w-5" />
 	</button>
 </Tooltip>
 
@@ -91,14 +131,15 @@
 	<div use:melt={$overlay} class="fixed inset-0 z-40 bg-black bg-opacity-50" />
 	<div
 		use:melt={$content}
-		class="fixed left-1/2 top-96 z-50 grid -translate-x-1/2 place-items-center"
+		class="fixed left-1/2 top-4 z-50 grid -translate-x-1/2 place-items-center md:top-64"
 	>
 		<div class="flex flex-col gap-1">
 			<div class="relative">
 				<input
+					bind:this={comboboxInput}
 					use:melt={$input}
 					class="flex h-10 w-[calc(100vw-2rem)] max-w-[600px] items-center justify-between rounded-lg border
-            border-neutral-400 bg-neutral-800 px-3 pl-8 text-white focus:border-magnum-400"
+            border-neutral-500 bg-neutral-800 px-3 pl-8 text-white focus:border-magnum-400"
 					placeholder="Search..."
 					on:keydown={(e) => {
 						if (e.key === 'Escape') {
@@ -108,7 +149,7 @@
 					}}
 				/>
 
-				<Search class="absolute top-1/2 ml-2 -translate-y-1/2 square-4" />
+				<SearchIcon class="absolute top-1/2 ml-2 -translate-y-1/2 square-4" />
 			</div>
 		</div>
 
@@ -121,41 +162,46 @@
 			<div
 				class="flex max-h-full flex-col gap-0 overflow-y-auto rounded-lg bg-neutral-800 px-2 py-2 text-white"
 			>
-				{#each results as result, index (index)}
-					{#await result.data()}
-						<!-- nothingness -->
-					{:then data}
-						<div
-							use:melt={$option({ value: data, label: data.meta.title })}
-							class="group relative scroll-my-2 rounded-md px-4 py-2 data-[disabled]:opacity-50"
+				<p aria-live="polite" class="px-4 py-1 font-light opacity-50">
+					{results.length === 0 ? 'No results' : `Found ${results.length} results`}
+				</p>
+				{#each results as { data }, index (index)}
+					{@const isLast = index === results.length - 1}
+
+					<div
+						use:melt={$option({ value: data, label: data.meta.title })}
+						class="relative scroll-my-2 rounded-md px-4 py-2 data-[disabled]:opacity-50"
+					>
+						<a
+							class="title text-lg font-semibold underline hover:opacity-75"
+							href={sanitizeLink(data.url)}>{data.meta.title}</a
 						>
-							<a
-								class="title text-lg font-semibold underline hover:opacity-75"
-								href={sanitizeLink(data.url)}>{data.meta.title}</a
-							>
-							<p class="mt-1 font-light">
-								{@html data.excerpt}
+						<p class="mt-1 font-light">
+							{@html data.excerpt}
+						</p>
+					</div>
+					{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
+						<div
+							class="subresult ml-3 scroll-my-2 rounded-md py-2 pl-3"
+							use:melt={$option({ value: subresult, label: subresult.title })}
+						>
+							<div class="flex items-center gap-1">
+								<CornerDownRight class="opacity-75 square-4" />
+								<a
+									class="font-semibold underline hover:opacity-75"
+									href={sanitizeLink(subresult.url)}
+								>
+									{subresult.title}
+								</a>
+							</div>
+							<p class="mt-2 text-sm font-light opacity-75">
+								{@html subresult.excerpt}
 							</p>
-							{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
-								<div class="subresult py-2 pl-2">
-									<div class="flex items-center gap-1">
-										<CornerDownRight class="opacity-75 square-4" />
-										<a
-											class="font-semibold underline hover:opacity-75"
-											href={sanitizeLink(subresult.url)}
-										>
-											{subresult.title}
-										</a>
-									</div>
-									<p class="mt-2 text-sm font-light opacity-75">
-										{@html subresult.excerpt}
-									</p>
-								</div>
-							{/each}
 						</div>
-					{/await}
-				{:else}
-					<li class="relative cursor-pointer rounded-md py-1 px-4">No results found</li>
+					{/each}
+					{#if !isLast}
+						<hr class="mx-4 my-2 border-neutral-700" />
+					{/if}
 				{/each}
 			</div>
 		</div>
@@ -177,20 +223,13 @@
 		font-weight: 300;
 	}
 
-	[data-highlighted] .title {
-		position: relative;
-		color: theme('colors.magnum.400');
+	[data-highlighted] {
+		background-color: theme('colors.magnum.400/0.25');
+		color: theme('colors.white');
 
-		&::before {
-			content: '';
-			position: absolute;
-			top: 50%;
-			translate: 0 -30%;
-			left: -12px;
-			width: 6px;
-			height: 6px;
-			border-radius: 50%;
-			background-color: theme('colors.magnum.400');
-		}
+		/* :global(mark) {
+			background-color: theme('colors.magnum.500');
+			color: theme('colors.magnum.100');
+		} */
 	}
 </style>

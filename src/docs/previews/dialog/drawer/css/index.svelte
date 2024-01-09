@@ -15,7 +15,9 @@
 			portalled,
 		},
 		states: { open },
-	} = createDialog();
+	} = createDialog({
+		forceVisible: true,
+	});
 </script>
 
 <button use:melt={$trigger} class="trigger"> View Notifications </button>

@@ -5,13 +5,15 @@ import type { BuilderData } from './index.js';
 import { builder as dropdownBuilder } from './dropdown-menu.js';
 import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu.js';
 import { menubarEvents } from '$lib/builders/menubar/events.js';
+import { menubarIdParts } from '$lib';
 
-const OPTION_PROPS = [PROPS.CLOSE_ON_ESCAPE, PROPS.LOOP];
+const OPTION_PROPS = [PROPS.CLOSE_ON_ESCAPE, PROPS.LOOP, PROPS.PREVENT_SCROLL];
 const BUILDER_NAME = 'menubar';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: menubarIdParts,
 	title: 'createMenubar',
-	props: OPTION_PROPS,
+	props: [...OPTION_PROPS],
 	builders: [
 		{
 			name: 'createMenu',
@@ -21,9 +23,16 @@ const builder = builderSchema(BUILDER_NAME, {
 	options: OPTION_PROPS,
 });
 
+const menubarMenuBuilderProps = dropdownBuilder.props?.filter((p) => p.name !== 'preventScroll');
+const menubarMenuBuilderOptions = dropdownBuilder.options?.filter(
+	(opt) => opt.name !== 'preventScroll'
+);
+
 const menuBuilder = {
 	...dropdownBuilder,
 	title: 'createMenu',
+	props: menubarMenuBuilderProps,
+	options: menubarMenuBuilderOptions,
 };
 const {
 	menu,

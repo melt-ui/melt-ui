@@ -28,7 +28,7 @@
 		use:setCodeString
 		use:setIsPPBlock
 		class={cn(
-			'mb-4 mt-6 max-h-[650px] overflow-x-auto !rounded-xl border !border-neutral-700/50 !bg-neutral-800/50 py-4 font-bold',
+			'force-dark mb-4 mt-6 max-h-[650px] overflow-x-auto !rounded-xl border !border-neutral-700/50 !bg-neutral-800 py-4 dark:!bg-neutral-800/50',
 			isPPBlock === undefined && 'data-[non-pp]:hidden',
 			className
 		)}
