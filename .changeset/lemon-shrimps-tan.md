@@ -2,4 +2,4 @@
 "@melt-ui/svelte": minor
 ---
 
-Add `preventScroll` prop to `createMenubar` and remove it from `createMenu` builders returned from the menubar builder
+Menubar: Add `preventScroll` prop. Removes it from the returned `createMenu` builders (closes #821)
