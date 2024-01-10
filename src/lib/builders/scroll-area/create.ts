@@ -2,6 +2,7 @@ import {
 	builder,
 	createElHelpers,
 	effect,
+	generateId,
 	noop,
 	styleToString,
 	toWritableStores,
@@ -9,6 +10,7 @@ import {
 import { writable, type Writable } from 'svelte/store';
 import type { CreateScrollAreaProps } from './types';
 import { safeOnDestroy, safeOnMount } from '$lib/internal/helpers/lifecycle';
+import type { Orientation } from '$lib/internal/types';
 
 const defaults = {
 	type: 'hover' as const,
@@ -80,8 +82,20 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		},
 	});
 
+	const scrollbar = builder(name('scrollbar'), {
+		stores: [],
+		returned: () => {
+			return (orientation: Orientation = 'vertical') => {};
+		},
+	});
+
 	return {
 		options,
+		elements: {
+			root,
+			viewport,
+			content,
+		},
 	};
 }
 
