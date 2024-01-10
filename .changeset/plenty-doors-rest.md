@@ -1,5 +1,5 @@
 ---
-'@melt-ui/svelte': patch
+'@melt-ui/svelte': minor
 ---
 
-feat: add `group` and `groupLabel` elements to combobox
+Combobox: add `group` and `groupLabel` elements (closes: #831)
