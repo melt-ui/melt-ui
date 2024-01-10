@@ -136,7 +136,7 @@ export async function getDocData(slug: string) {
 	const doc = await match?.resolver?.();
 
 	if (!doc || !doc.metadata) {
-		throw error(404);
+		return error(404);
 	}
 	return doc;
 }
@@ -201,7 +201,7 @@ export async function getAllPreviewComponents(slug: string) {
 
 export async function getMainPreviewComponent(slug: string) {
 	if (!isBuilderName(slug)) {
-		throw error(500);
+		return error(500);
 	}
 
 	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
@@ -215,7 +215,7 @@ export async function getMainPreviewComponent(slug: string) {
 
 	const mainPreview = await mainPreviewObj.resolver?.();
 	if (!mainPreview) {
-		throw error(500);
+		return error(500);
 	}
 
 	return mainPreview.default;
@@ -275,7 +275,7 @@ export async function getDoc(slug: string) {
 	const doc = await match?.resolver?.();
 
 	if (!doc || !doc.metadata) {
-		throw error(404);
+		return error(404);
 	}
 	return doc;
 }

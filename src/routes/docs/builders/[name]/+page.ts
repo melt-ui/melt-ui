@@ -11,7 +11,7 @@ export const entries = (() => {
 
 export const load = async ({ params, data }) => {
 	if (!isBuilderName(params.name)) {
-		throw error(404);
+		error(404);
 	}
 
 	return {

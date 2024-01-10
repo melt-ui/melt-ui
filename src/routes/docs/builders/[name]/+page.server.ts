@@ -12,7 +12,7 @@ export const entries = (() => {
 
 export const load = async ({ params, fetch }) => {
 	if (!isBuilderName(params.name)) {
-		throw error(404);
+		error(404);
 	}
 
 	// Init the highlighter
