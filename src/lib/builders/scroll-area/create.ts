@@ -1,16 +1,20 @@
 import {
+	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	effect,
+	executeCallbacks,
 	generateId,
+	isHTMLElement,
 	noop,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import { writable, type Writable } from 'svelte/store';
-import type { CreateScrollAreaProps } from './types';
+import { derived, get, writable, type Writable } from 'svelte/store';
+import type { CreateScrollAreaProps, ScrollAreaType } from './types';
 import { safeOnDestroy, safeOnMount } from '$lib/internal/helpers/lifecycle';
-import type { Orientation } from '$lib/internal/types';
+import type { Orientation, TextDirection } from '$lib/internal/types';
 
 const defaults = {
 	type: 'hover' as const,
@@ -41,6 +45,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 
 	const viewportEl = writable<HTMLElement | null>(null);
 	const contentEl = writable<HTMLElement | null>(null);
+	const scrollbarEl = writable<HTMLElement | null>(null);
 
 	const root = builder(name(), {
 		stores: [cornerWidth, cornerHeight],
@@ -85,9 +90,205 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 	const scrollbar = builder(name('scrollbar'), {
 		stores: [],
 		returned: () => {
-			return (orientation: Orientation = 'vertical') => {};
+			return (orientation: Orientation = 'vertical') => {
+				return {
+					style: styleToString({
+						'data-orientation': orientation,
+					}),
+				};
+			};
 		},
 	});
+
+	function createScrollbar(orientationProp: Orientation = 'vertical', node: HTMLElement) {
+		const orientation = writable(orientationProp);
+		const isHorizontal = writable(orientationProp === 'horizontal');
+		const domRect = writable<DOMRect | null>(null);
+		const prevWebkitUserSelect = writable('');
+		const pointerOffset = writable(0);
+		const thumbEl = writable<HTMLElement | null>(null);
+		const sizes = writable<Sizes>({
+			content: 0,
+			viewport: 0,
+			scrollbar: {
+				size: 0,
+				paddingStart: 0,
+				paddingEnd: 0,
+			},
+		});
+
+		function handleWheelScroll(e: WheelEvent, payload: number) {
+			const $viewportEl = get(viewportEl);
+			if (!$viewportEl) return;
+			if (get(isHorizontal)) {
+				const scrollPos = $viewportEl.scrollLeft + e.deltaY;
+
+				$viewportEl.scrollLeft = scrollPos;
+
+				if (isScrollingWithinScrollbarBounds(scrollPos, payload)) {
+					e.preventDefault();
+				}
+			} else {
+				const scrollPos = $viewportEl.scrollTop + e.deltaY;
+
+				$viewportEl.scrollTop = scrollPos;
+
+				if (isScrollingWithinScrollbarBounds(scrollPos, payload)) {
+					e.preventDefault();
+				}
+			}
+		}
+
+		function handleThumbDown(payload: { x: number; y: number }) {
+			if (get(isHorizontal)) {
+				pointerOffset.set(payload.x);
+			} else {
+				pointerOffset.set(payload.y);
+			}
+		}
+
+		function handleThumbUp() {
+			pointerOffset.set(0);
+		}
+
+		function getScrollPosition(pointerPos: number, dir?: TextDirection) {
+			return getScrollPositionFromPointer(pointerPos, get(pointerOffset), get(sizes), dir);
+		}
+
+		function handleDragScroll(e: MouseEvent) {
+			const $domRect = get(domRect);
+			if ($domRect) {
+				const x = e.clientX - $domRect.left;
+				const y = e.clientY - $domRect.top;
+				// TODO: dispatch dragScroll
+			}
+		}
+
+		function handlePointerDown(e: PointerEvent) {
+			const mainPointer = 0;
+			if (e.button === mainPointer) {
+				const target = e.target;
+				if (!isHTMLElement(target)) return;
+				target.setPointerCapture(e.pointerId);
+				domRect.set(node.getBoundingClientRect());
+
+				prevWebkitUserSelect.set(document.body.style.webkitUserSelect);
+				document.body.style.webkitUserSelect = 'none';
+
+				const $viewportEl = get(viewportEl);
+				if ($viewportEl) {
+					$viewportEl.style.scrollBehavior = 'auto';
+				}
+
+				handleDragScroll(e);
+			}
+		}
+
+		function handlePointerMove(e: PointerEvent) {
+			handleDragScroll(e);
+		}
+
+		function handlePointerUp(e: PointerEvent) {
+			const target = e.target;
+			if (!isHTMLElement(target)) return;
+			if (target.hasPointerCapture(e.pointerId)) {
+				target.releasePointerCapture(e.pointerId);
+			}
+
+			document.body.style.webkitUserSelect = get(prevWebkitUserSelect);
+			const $viewportEl = get(viewportEl);
+			if ($viewportEl) {
+				$viewportEl.style.scrollBehavior = '';
+			}
+			domRect.set(null);
+		}
+
+		function handleWheel(e: WheelEvent) {
+			const target = e.target;
+			if (!isHTMLElement(target)) return;
+			const $scrollbarEl = get(scrollbarEl);
+			if (!$scrollbarEl) return;
+			const isScrollbarWheel = $scrollbarEl.contains(target);
+			const $sizes = get(sizes);
+			const maxScrollWheelPos = $sizes.content - $sizes.viewport;
+			if (isScrollbarWheel) {
+				handleWheelScroll(e, maxScrollWheelPos);
+			}
+		}
+
+		function handleSizeChange() {
+			const $scrollbarEl = get(scrollbarEl);
+			const $viewportEl = get(viewportEl);
+			if (!$scrollbarEl || !$viewportEl) return;
+			if (get(isHorizontal)) {
+				sizes.set({
+					content: $viewportEl.scrollWidth,
+					viewport: $viewportEl.offsetWidth,
+					scrollbar: {
+						size: $scrollbarEl.clientWidth,
+						paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
+						paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
+					},
+				});
+			} else {
+				sizes.set({
+					content: $viewportEl.scrollHeight,
+					viewport: $viewportEl.offsetHeight,
+					scrollbar: {
+						size: $scrollbarEl.clientHeight,
+						paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
+						paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
+					},
+				});
+			}
+		}
+
+		function baseScrollbarAction(node: HTMLElement) {
+			scrollbarEl.set(node);
+
+			const unsubDocumentEvents = executeCallbacks(
+				addEventListener(document, 'wheel', handleWheel, { passive: false }),
+				addEventListener(node, 'wheel', handleWheel)
+			);
+			const unsubScrollbarEvents = executeCallbacks(
+				addMeltEventListener(node, 'pointerdown', handlePointerDown),
+				addMeltEventListener(node, 'pointermove', handlePointerMove),
+				addMeltEventListener(node, 'pointerup', handlePointerUp)
+			);
+
+			const unsubContentResize = effect([contentEl], ([$contentEl]) => {
+				if (!$contentEl) return noop;
+				return resizeObserver($contentEl, handleSizeChange);
+			});
+
+			const unsubScrollbarResize = resizeObserver(node, handleSizeChange);
+
+			return {
+				destroy() {
+					unsubDocumentEvents();
+					unsubScrollbarEvents();
+					unsubContentResize();
+					unsubScrollbarResize();
+				},
+			};
+		}
+
+		effect([isHorizontal], ([$isHorizontal]) => {
+			if ($isHorizontal) {
+				scrollbarXEnabled.set(true);
+			} else {
+				scrollbarYEnabled.set(true);
+			}
+
+			return () => {
+				if ($isHorizontal) {
+					scrollbarXEnabled.set(false);
+				} else {
+					scrollbarYEnabled.set(false);
+				}
+			};
+		});
+	}
 
 	return {
 		options,
@@ -97,6 +298,11 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			content,
 		},
 	};
+}
+
+function getOrientation(node: HTMLElement) {
+	const orientation = node.getAttribute('data-orientation');
+	return orientation === 'horizontal' ? 'horizontal' : 'vertical';
 }
 
 type Sizes = {
@@ -189,7 +395,7 @@ function getScrollPositionFromPointer(
 	pointerPos: number,
 	pointerOffset: number,
 	sizes: Sizes,
-	dir: Direction = 'ltr'
+	dir: TextDirection = 'ltr'
 ) {
 	const thumbSizePx = getThumbSize(sizes);
 	const thumbCenter = thumbSizePx / 2;
@@ -203,7 +409,11 @@ function getScrollPositionFromPointer(
 	return interpolate(pointerPos);
 }
 
-function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes, dir: Direction = 'ltr') {
+function clamp(value: number, [min, max]: [number, number]): number {
+	return Math.min(max, Math.max(min, value));
+}
+
+function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes, dir: TextDirection = 'ltr') {
 	const thumbSizePx = getThumbSize(sizes);
 	const scrollbarPadding = sizes.scrollbar.paddingStart + sizes.scrollbar.paddingEnd;
 	const scrollbar = sizes.scrollbar.size - scrollbarPadding;
