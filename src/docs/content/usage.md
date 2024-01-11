@@ -120,25 +120,30 @@ the component from being hidden while the transition is in progress. </Callout>
 ### Componentization
 
 Usually, you'll use Melt's builders to **build** components. You can use them in an uncontrolled
-manner, where props don't reactively affect the builder's internal state, or you can use them in a
-controlled manner, where props do affect the builder's internal state.
+manner, where props don't reactively affect the builder's internal state.
 
 ```svelte
 <!-- Uncontrolled -->
 <script>
 	import { createCollapsible, melt } from '@melt-ui/svelte'
 
-	export let defaultOpen = false; // This prop only affects the initial state of the component
+	// This prop only affects the initial state of the component
+	export let defaultOpen = false
 
 	const {
 		elements: { root, content, trigger }
 	} = createCollapsible({ defaultOpen })
 </script>
+```
 
+Or you can use them in a controlled manner, where props do affect the builder's internal state.
+
+```svelte {11-13}
 <!-- Controlled -->
 <script>
 	import { createCollapsible, melt, createSync } from '@melt-ui/svelte'
-	export let open = false;
+
+	export let open = false
 
 	const {
 		elements: { root, content, trigger },

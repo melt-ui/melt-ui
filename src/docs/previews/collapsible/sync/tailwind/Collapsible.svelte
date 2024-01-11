@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCollapsible, melt } from '$lib/index.js';
-	import { syncAll } from '$lib/sync';
+	import { createSync } from '$lib/sync';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
@@ -13,7 +13,9 @@
 		options,
 	} = createCollapsible({ forceVisible: true });
 
-	syncAll({ ...states, ...options }, { open, disabled });
+	const sync = createSync({ ...states, ...options });
+	$: sync.open(open, (v) => (open = v));
+	$: sync.disabled(disabled);
 </script>
 
 <div

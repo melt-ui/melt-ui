@@ -75,7 +75,7 @@ interaction.
 A common use case for controlling the state of a component is to sync it with props, or other
 internal state. You can do it manually...
 
-```svelte {12,13}
+```svelte {11,12}
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte'
 
@@ -148,11 +148,9 @@ We provide a `createSync` function that will improve this situation.
 **first argument** of the `sync` function is the value that the store should be set to, and the
 **second argument** is a setter function that will be called with the new value of the store.
 
-It's still a bit to write, due to the necessity of setters, but it's much more manageable. The
-`sync` function will also ignore updates that are the same as the current value, so you don't have
-to worry about unnecessary updates.
-
-**P.S.** We're working on a pre-processor to vastly reduce the amount of code needed to sync state.
+It's still a bit to write, but it's much more manageable. The `sync` function will also ignore
+updates that are the same as the current value, so you don't have to worry about unnecessary
+updates.
 
 ## Bring Your Own Store
 

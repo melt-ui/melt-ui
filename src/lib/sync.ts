@@ -18,9 +18,7 @@ function keys<T extends Record<string, unknown>>(obj: T): (keyof T)[] {
 	return Object.keys(obj);
 }
 
-export function createSync<Stores extends Record<string, Writable<unknown>>>(
-	stores: Stores,
-) {
+export function createSync<Stores extends Record<string, Writable<unknown>>>(stores: Stores) {
 	let setters = {} as {
 		[K in keyof Stores]?: (value: WritableValue<Stores[K]>) => void;
 	};
@@ -34,24 +32,27 @@ export function createSync<Stores extends Record<string, Writable<unknown>>>(
 		});
 	});
 
-	return keys(stores).reduce((acc, key) => {
-		type Value = WritableValue<Stores[typeof key]>;
-		return {
-			...acc,
-			[key]: function sync(value: Value, setter: (value: Value) => void) {
-				stores[key].update((p) => {
-					if (dequal(p, value)) return p;
-					return value;
-				});
-				setters = { ...setters, [key]: setter };
-			},
-		};
-	}, {} as { [K in keyof Stores]: (value: WritableValue<Stores[K]>, setter: (value: WritableValue<Stores[K]>) => void) => void });
-}
-
-
-export function syncAll<Stores extends Record<string, Writable<unknown>>>(stores: Stores, props: { [K in keyof Stores]?: WritableValue<Stores[K]> }) {
-	throw new Error(
-		"[MELTUI ERROR]: The `syncAll` action cannot be used without MeltUI's Preprocessor. See: https://www.melt-ui.com/docs/preprocessor"
+	return keys(stores).reduce(
+		(acc, key) => {
+			type Value = WritableValue<Stores[typeof key]>;
+			return {
+				...acc,
+				[key]: function sync(value: Value, setter?: (value: Value) => void) {
+					stores[key].update((p) => {
+						if (dequal(p, value)) return p;
+						return value;
+					});
+					if (setter) {
+						setters = { ...setters, [key]: setter };
+					}
+				},
+			};
+		},
+		{} as {
+			[K in keyof Stores]: (
+				value: WritableValue<Stores[K]>,
+				setter?: (value: WritableValue<Stores[K]>) => void
+			) => void;
+		}
 	);
-} 
+}
