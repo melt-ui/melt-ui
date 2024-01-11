@@ -128,7 +128,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					if (!isHTMLElement(root)) return;
 
 					const items = Array.from(root.querySelectorAll(selector('item'))).filter(
-						(el): el is HTMLElement => isHTMLElement(el)
+						(el): el is HTMLElement => isHTMLElement(el) && !el.hasAttribute('data-disabled')
 					);
 					const currentIndex = items.indexOf(el);
 

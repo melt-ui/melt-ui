@@ -27,6 +27,7 @@ const defaults = {
 	},
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
+	onOutsideClick: undefined,
 	preventScroll: false,
 	forceVisible: false,
 	locale: 'en',
@@ -72,6 +73,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		forceVisible: withDefaults.forceVisible,
 		openFocus: pickerOpenFocus,
 		ids: withDefaults.popoverIds,
+		onOutsideClick: withDefaults.onOutsideClick,
 	});
 
 	const trigger = builder('popover-trigger', {

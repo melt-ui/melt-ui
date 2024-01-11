@@ -74,6 +74,20 @@ describe('LinkPreview (Default)', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
+	test.skip('Closes on outside click by default', async () => {
+		const { getByTestId, trigger, user } = setup();
+		const content = getByTestId('content');
+
+		expect(content).not.toBeVisible();
+		await user.hover(trigger);
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		await waitFor(() => expect(content).toBeVisible());
+		const start = getByTestId('start');
+		await user.click(start);
+		await waitFor(() => expect(content).not.toBeVisible());
+	});
+
 	test('Custom ids are applied when provided', async () => {
 		const ids = {
 			content: 'id-content',

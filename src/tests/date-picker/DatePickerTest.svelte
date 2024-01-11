@@ -2,7 +2,6 @@
 	import { createDatePicker, type CreateDatePickerProps } from '$lib/builders';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
-	import { fade } from 'svelte/transition';
 	import { removeUndefined } from '../utils';
 
 	export let value: CreateDatePickerProps['value'] = undefined;
@@ -28,6 +27,7 @@
 	export let placeholder: CreateDatePickerProps['placeholder'] = undefined;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = undefined;
 	export let weekdayFormat: CreateDatePickerProps['weekdayFormat'] = undefined;
+	export let onOutsideClick: CreateDatePickerProps['onOutsideClick'] = undefined;
 
 	const {
 		elements: {
@@ -71,6 +71,7 @@
 			isDateDisabled,
 			weekdayFormat,
 			popoverIds,
+			onOutsideClick,
 		})
 	);
 
@@ -118,7 +119,6 @@
 	</div>
 	<div
 		class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
-		transition:fade={{ duration: 100 }}
 		use:melt={$content}
 		data-testid="content"
 	>

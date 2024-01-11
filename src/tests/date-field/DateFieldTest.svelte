@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createDateField, type CreateDateFieldProps } from '$lib/builders';
 	import { melt } from '$lib';
+	import { removeUndefined } from '../utils';
 
 	export let value: CreateDateFieldProps['value'] = undefined;
 	export let defaultValue: CreateDateFieldProps['defaultValue'] = undefined;
@@ -10,6 +11,7 @@
 	export let isDateUnavailable: CreateDateFieldProps['isDateUnavailable'] = undefined;
 	export let disabled: CreateDateFieldProps['disabled'] = undefined;
 	export let readonly: CreateDateFieldProps['readonly'] = undefined;
+	export let readonlySegments: CreateDateFieldProps['readonlySegments'] = undefined;
 	export let hourCycle: CreateDateFieldProps['hourCycle'] = undefined;
 	export let locale: CreateDateFieldProps['locale'] = 'en';
 	export let hideTimeZone: CreateDateFieldProps['hideTimeZone'] = undefined;
@@ -19,21 +21,24 @@
 	const {
 		elements: { field, segment, label, validation },
 		states: { value: insideValue, segmentContents },
-	} = createDateField({
-		value,
-		defaultValue,
-		defaultPlaceholder,
-		onValueChange,
-		onPlaceholderChange,
-		isDateUnavailable,
-		disabled,
-		readonly,
-		hourCycle,
-		locale,
-		hideTimeZone,
-		ids,
-		granularity,
-	});
+	} = createDateField(
+		removeUndefined({
+			value,
+			defaultValue,
+			defaultPlaceholder,
+			onValueChange,
+			onPlaceholderChange,
+			isDateUnavailable,
+			disabled,
+			readonly,
+			readonlySegments,
+			hourCycle,
+			locale,
+			hideTimeZone,
+			ids,
+			granularity,
+		})
+	);
 </script>
 
 <main>

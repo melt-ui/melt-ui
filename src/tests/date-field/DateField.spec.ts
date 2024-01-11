@@ -258,6 +258,29 @@ describe('DateField', () => {
 		}
 	});
 
+	test('readonlySegments prop prevents modifying given segments', async () => {
+		const { getByTestId, user } = setup({
+			readonlySegments: ['month'],
+			defaultValue: calendarDateOther,
+		});
+
+		// month should not change
+		const monthSegment = getByTestId('month');
+		expect(monthSegment).toHaveTextContent(String(calendarDateOther['month']));
+		await user.click(monthSegment);
+		expect(monthSegment).toHaveFocus();
+		await user.keyboard(kbd.ARROW_UP);
+		expect(monthSegment).toHaveTextContent(String(calendarDateOther['month']));
+
+		// day should change
+		const daySegment = getByTestId('day');
+		expect(daySegment).toHaveTextContent(String(calendarDateOther['day']));
+		await user.click(daySegment);
+		expect(daySegment).toHaveFocus();
+		await user.keyboard(kbd.ARROW_UP);
+		expect(daySegment).toHaveTextContent(String(calendarDateOther['day'] + 1));
+	});
+
 	test('if selected date unavailable, mark field as invalid', async () => {
 		const { getByTestId, user } = setup({
 			granularity: 'day',

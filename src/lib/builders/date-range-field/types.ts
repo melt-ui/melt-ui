@@ -3,6 +3,7 @@ import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { DateRangeFieldIdParts, createDateRangeField } from './create.js';
 import type { DateValue } from '@internationalized/date';
 import type { CreateDateFieldProps, DateFieldIdParts, DateRange, Matcher } from '$lib/index.js';
+import type { EditableSegmentPart } from '$lib/shared/index.js';
 
 export type DateRangeFieldProps = {
 	/**
@@ -100,6 +101,14 @@ export type DateRangeFieldProps = {
 	endName?: string;
 
 	/**
+	 *
+	 * Lists of segment names that will be readonly on the start and end fields.
+	 *
+	 * @default undefined
+	 */
+	readonlySegments?: { start: EditableSegmentPart[]; end: EditableSegmentPart[] };
+
+	/**
 	 * Override any of the element IDs set by the builder.
 	 *
 	 * NOTE: you should only use this prop if you know what
@@ -114,6 +123,9 @@ export type DateRangeFieldProps = {
 
 export type CreateDateRangeFieldProps = Expand<
 	DateRangeFieldProps &
-		Omit<CreateDateFieldProps, 'value' | 'defaultValue' | 'onValueChange' | 'ids' | 'name'>
+		Omit<
+			CreateDateFieldProps,
+			'value' | 'defaultValue' | 'onValueChange' | 'ids' | 'name' | 'readonlySegments'
+		>
 >;
 export type DateRangeField = ReturnType<typeof createDateRangeField>;

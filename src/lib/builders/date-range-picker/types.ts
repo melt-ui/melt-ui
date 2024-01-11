@@ -8,7 +8,7 @@ import type { RenameProperties } from '$lib/internal/types.js';
 import type { CreateDateRangeFieldProps } from '../date-range-field/types.js';
 import type { CreateRangeCalendarProps } from '../range-calendar/types.js';
 
-export type DateRangePickerProps = {
+type DateRangePickerProps = {
 	/**
 	 * The default value for the date field. When provided,
 	 * the `placeholder` will also assume this value.
@@ -125,7 +125,10 @@ export type DateRangePickerProps = {
 	locale?: string;
 };
 
-type ModifiedDateFieldProps = RenameProperties<CreateDateRangeFieldProps, { ids: 'dateFieldIds' }>;
+type ModifiedDateFieldProps = Omit<
+	RenameProperties<CreateDateRangeFieldProps, { ids: 'dateFieldIds' }>,
+	'readonlySegments'
+>;
 type ModifiedCalendarProps = RenameProperties<CreateRangeCalendarProps, { ids: 'calendarIds' }>;
 type ModifiedPopoverProps = Omit<
 	RenameProperties<CreatePopoverProps, { ids: 'popoverIds' }>,
