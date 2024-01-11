@@ -90,7 +90,7 @@ describe('DateField', () => {
 		expect(yearSegment).toHaveTextContent(String(zonedDateTimeOther.year));
 		expect(hourSegment).toHaveTextContent(String(zonedDateTimeOther.hour));
 		expect(minuteSegment).toHaveTextContent(String(zonedDateTimeOther.minute));
-		expect(dayPeriodSegment).toHaveTextContent('PM');
+		expect(dayPeriodSegment).toHaveTextContent('AM');
 		expect(timeZoneSegment).toHaveTextContent(String('EST'));
 		expect(insideValue).toHaveTextContent(zonedDateTimeOther.toString());
 	});
@@ -367,7 +367,7 @@ describe('DateField', () => {
 		}
 	});
 
-	test('changing the dayperiod segment changes the value', async () => {
+	test('changing the dayPeriod segment changes the value - when time segments are filled', async () => {
 		const { getByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 		});
@@ -382,6 +382,33 @@ describe('DateField', () => {
 		await user.keyboard(kbd.ARROW_UP);
 		expect(dayPeriodSegment).toHaveTextContent('AM');
 		expect(insideValue).toHaveTextContent('1980-01-20T00:30');
+	});
+
+	test('changing the dayPeriod segment changes the value - when time segments are not filled', async () => {
+		const { getByTestId, user } = setup({
+			defaultPlaceholder: calendarDateOther,
+			granularity: 'second',
+		});
+
+		const dayPeriodSegment = getByTestId('dayPeriod');
+		await user.click(dayPeriodSegment);
+
+		expect(dayPeriodSegment).toHaveTextContent('AM');
+		await user.keyboard(kbd.ARROW_UP);
+		expect(dayPeriodSegment).toHaveTextContent('PM');
+		await user.keyboard(kbd.ARROW_UP);
+		expect(dayPeriodSegment).toHaveTextContent('AM');
+
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(dayPeriodSegment).toHaveTextContent('PM');
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(dayPeriodSegment).toHaveTextContent('AM');
+
+		await user.keyboard('p');
+		expect(dayPeriodSegment).toHaveTextContent('PM');
+
+		await user.keyboard('a');
+		expect(dayPeriodSegment).toHaveTextContent('AM');
 	});
 
 	test('spamming 3 takes you all the way through the segment', async () => {
