@@ -1,0 +1,126 @@
+#################### 🚧 WARNING: READ THIS BEFORE USING THIS FILE 🚧 ####################
+#
+#
+#
+# IF YOU DON'T KNOW WHAT YOU'RE DOING, YOU CAN EASILY LEAK SECRETS BY USING A
+# `pull_request_target` WORKFLOW INSTEAD OF `pull_request`! SERIOUSLY, DO NOT
+# BLINDLY COPY AND PASTE THIS FILE WITHOUT UNDERSTANDING THE FULL IMPLICATIONS
+# OF WHAT YOU'RE DOING! WE HAVE TESTED THIS FOR OUR OWN USE CASES, WHICH ARE
+# NOT NECESSARILY THE SAME AS YOURS! WHILE WE AREN'T EXPOSING ANY OF OUR SECRETS,
+# ONE COULD EASILY DO SO BY MODIFYING OR ADDING A STEP TO THIS WORKFLOW!
+#
+#
+#
+#################### 🚧 WARNING: READ THIS BEFORE USING THIS FILE 🚧 ####################
+
+name: Preview Deployment
+on:
+  pull_request_target:
+
+# cancel in-progress runs on new commits to same PR (github.event.number)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  # default contents: read & write (in forked repos, only read)
+  contents: write
+  # default deployments: read & write (in forked repos, only read)
+  deployments: write
+  # default pull-requests: read & write (in forked repos, only read)
+  pull-requests: write
+
+jobs:
+  trusted-preview:
+    if: ${{ github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'COLLABORATOR' || github.event.pull_request.author_association == 'OWNER' }}
+    runs-on: ubuntu-latest
+    name: Deploy Preview to Cloudflare Pages (admin)
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # PNPM Store cache setup
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build site
+        run: pnpm build
+
+      - name: Deploy to Cloudflare Pages
+        id: cloudflare-pages-deploy
+        uses: AdrianGonz97/refined-cf-pages-action@v1
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          projectName: melt-ui
+          directory: ./.svelte-kit/cloudflare
+          deploymentName: Preview
+
+  untrusted-preview:
+    if: ${{ !(github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'COLLABORATOR' || github.event.pull_request.author_association == 'OWNER') }}
+    environment: Preview
+    runs-on: ubuntu-latest
+    name: Deploy Preview to Cloudflare Pages
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # PNPM Store cache setup
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build site
+        run: pnpm build
+
+      - name: Deploy to Cloudflare Pages
+        id: cloudflare-pages-deploy
+        uses: AdrianGonz97/refined-cf-pages-action@v1
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          projectName: melt-ui
+          directory: ./.svelte-kit/cloudflare
+          deploymentName: Preview
+
