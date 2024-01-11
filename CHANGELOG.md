@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.69.0
+
+### Minor Changes
+
+- Feature: `createSync` utility ([`f018010f`](https://github.com/melt-ui/melt-ui/commit/f018010ff922b70a5eeaaa5b94ae519e8ccbf7c1))
+
 ## 0.68.0
 
 ### Minor Changes
