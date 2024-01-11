@@ -88,6 +88,22 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'label',
 			description: 'The builder store used to create the label for the combobox.',
 		},
+		{
+			name: 'group',
+			description: 'The builder store used to create the combobox group.',
+		},
+		{
+			name: 'groupLabel',
+			description: 'The builder store used to create the combobox group label.',
+		},
+		{
+			name: 'hiddenInput',
+			description: 'The builder store used to create the combobox hidden input.',
+		},
+		{
+			name: 'arrow',
+			description: 'The builder store used to create the combobox arrow.',
+		},
 	],
 	states: [
 		{
@@ -217,6 +233,40 @@ const label = elementSchema('label', {
 	],
 });
 
+const group = elementSchema('group', {
+	description: 'A function which takes in a unique key to group options together.',
+	props: [
+		{
+			name: 'key',
+			type: 'string',
+			description: 'A unique key for the group.',
+		},
+	],
+	dataAttributes: [
+		{
+			name: 'data-melt-combobox-group',
+			value: ATTRS.MELT('group'),
+		},
+	],
+});
+
+const groupLabel = elementSchema('group-label', {
+	description: 'A function which takes in a unique key to group options together.',
+	props: [
+		{
+			name: 'key',
+			type: 'string',
+			description: 'A unique key for the group.',
+		},
+	],
+	dataAttributes: [
+		{
+			name: 'data-melt-combobox-group-label',
+			value: ATTRS.MELT('group-label'),
+		},
+	],
+});
+
 const hiddenInput = elementSchema('hidden-input', {
 	description: 'The hidden input element. Used for form submission.',
 	dataAttributes: [
@@ -265,7 +315,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, label, arrow, hiddenInput];
+const schemas = [builder, menu, input, item, label, group, groupLabel, arrow, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',

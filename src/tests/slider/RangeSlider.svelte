@@ -4,8 +4,7 @@
 	export let values = [20, 80];
 
 	const {
-		elements: { root, range, thumb, tick },
-		states: { value, ticks },
+		elements: { root, range, thumbs, ticks },
 	} = createSlider({
 		defaultValue: values,
 		max: 100,
@@ -18,17 +17,17 @@
 			<span data-testid="range" use:melt={$range} class="h-[3px] bg-white" />
 		</span>
 
-		{#each $value as _, i}
+		{#each $ticks as tick}
+			<span use:melt={tick} data-testid="tick" />
+		{/each}
+
+		{#each $thumbs as thumb, i}
 			<span
 				aria-label="Volume"
 				data-testid="thumb-{i}"
-				use:melt={$thumb()}
+				use:melt={thumb}
 				class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 			/>
-		{/each}
-
-		{#each { length: $ticks } as _}
-			<span use:melt={$tick()} data-testid="tick" />
 		{/each}
 	</span>
 </main>

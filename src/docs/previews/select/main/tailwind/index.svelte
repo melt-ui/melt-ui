@@ -12,7 +12,7 @@
 		elements: { trigger, menu, option, group, groupLabel, label },
 		states: { selectedLabel, open },
 		helpers: { isSelected },
-	} = createSelect({
+	} = createSelect<string>({
 		forceVisible: true,
 		positioning: {
 			placement: 'bottom',
