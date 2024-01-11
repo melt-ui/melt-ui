@@ -70,8 +70,8 @@ jobs:
         id: cloudflare-pages-deploy
         uses: AdrianGonz97/refined-cf-pages-action@v1
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           projectName: melt-ui
           directory: ./.svelte-kit/cloudflare
@@ -117,8 +117,8 @@ jobs:
         id: cloudflare-pages-deploy
         uses: AdrianGonz97/refined-cf-pages-action@v1
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           projectName: melt-ui
           directory: ./.svelte-kit/cloudflare
