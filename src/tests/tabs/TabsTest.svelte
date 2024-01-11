@@ -1,25 +1,16 @@
 <script lang="ts">
 	import { type CreateTabsProps, melt, createTabs } from '$lib/index.js';
 
-	export let activateOnFocus: CreateTabsProps['activateOnFocus'] = undefined;
-	export let autoSet: CreateTabsProps['autoSet'] = undefined;
-	export let defaultValue: CreateTabsProps['defaultValue'] = undefined;
-	export let loop: CreateTabsProps['loop'] = undefined;
-	export let onValueChange: CreateTabsProps['onValueChange'] = undefined;
-	export let orientation: CreateTabsProps['orientation'] = undefined;
-	export let value: CreateTabsProps['value'] = undefined;
+	type $$Props = CreateTabsProps & {
+		tabValues: string[];
+	};
+
 	export let tabValues: string[] = [];
 
 	const {
 		elements: { content, root, list, trigger },
 	} = createTabs({
-		activateOnFocus,
-		autoSet,
-		defaultValue,
-		loop,
-		onValueChange,
-		orientation,
-		value,
+		...($$restProps as $$Props),
 	});
 </script>
 
