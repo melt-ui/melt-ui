@@ -138,7 +138,7 @@ manner, where props don't reactively affect the builder's internal state.
 
 Or you can use them in a controlled manner, where props do affect the builder's internal state.
 
-```svelte {11-13}
+```svelte {12-14}
 <!-- Controlled -->
 <script>
 	import { createCollapsible, melt, createSync } from '@melt-ui/svelte'

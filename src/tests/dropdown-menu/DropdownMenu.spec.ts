@@ -1,13 +1,12 @@
-import { render, act, waitFor } from '@testing-library/svelte';
-import { axe } from 'jest-axe';
-import { describe, vi } from 'vitest';
-import userEvent from '@testing-library/user-event';
-import { testKbd as kbd } from '../utils.js';
-import DropdownMenuTest from './DropdownMenuTest.svelte';
-import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
 import type { CreateDropdownMenuProps } from '$lib';
 import { sleep } from '$lib/internal/helpers/sleep.js';
-import { tick } from 'svelte';
+import { act, render, waitFor } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
+import { describe, vi } from 'vitest';
+import { testKbd as kbd } from '../utils.js';
+import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
+import DropdownMenuTest from './DropdownMenuTest.svelte';
 
 const OPEN_KEYS = [kbd.ENTER, kbd.ARROW_DOWN, kbd.SPACE];
 
