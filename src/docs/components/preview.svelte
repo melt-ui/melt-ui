@@ -48,7 +48,7 @@
 	};
 
 	export let code: $$Props['code'];
-	export let variant: $$Props['variant'] = 'default';
+	export let variant: $$Props['variant'] = 'dark';
 	export let size: $$Props['size'] = 'default';
 
 	const usingPreprocessor = getUsingPreprocessor();
