@@ -218,7 +218,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					const isBackspaceKey = e.key === 'Backspace';
+					const isBackspaceKey = e.key === kbd.BACKSPACE;
 					if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}

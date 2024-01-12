@@ -252,7 +252,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					const isBackspaceKey = e.key === 'Backspace';
+					const isBackspaceKey = e.key === kbd.BACKSPACE;
 					if (!isModifierKey && (isCharacterKey || isBackspaceKey) && get(typeahead) === true) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
@@ -785,7 +785,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
 						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 						const isCharacterKey = e.key.length === 1;
-						const isBackspaceKey = e.key === 'Backspace';
+						const isBackspaceKey = e.key === kbd.BACKSPACE;
 
 						// close the submenu if the user presses a close key
 						if (isCloseKey) {

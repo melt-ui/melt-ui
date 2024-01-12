@@ -230,7 +230,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						 */
 						const isCharacterKey = e.key.length === 1;
 						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-						const isBackspaceKey = e.key === 'Backspace';
+						const isBackspaceKey = e.key === kbd.BACKSPACE;
 						if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
 							m.handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
