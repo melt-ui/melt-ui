@@ -16,6 +16,7 @@
 name: Preview Deployment
 on:
   pull_request_target:
+    types: [opened, synchronize]
 
 # cancel in-progress runs on new commits to same PR (github.event.number)
 concurrency:
