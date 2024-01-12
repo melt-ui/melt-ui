@@ -7,11 +7,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		unsub();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 
-		if (!enabled) {
-			return {
-				destroy: unsub,
-			};
-		}
+		if (!enabled) return;
 
 		let isPointerDown = false;
 		let ignoreEmulatedMouseEvents = false;
