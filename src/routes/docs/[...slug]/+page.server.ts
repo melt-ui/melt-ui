@@ -1,6 +1,8 @@
 import { navConfig } from '$docs/config.js';
 import type { EntryGenerator, PageLoad } from './$types.js';
 
+import { env } from '$env/dynamic/private';
+
 export const entries = (() => {
 	return navConfig.sidebarNav[0].items.map((item) => {
 		return { slug: item.title.toLowerCase().replaceAll(' ', '-') };
@@ -36,15 +38,25 @@ let storedContributors: FullContributor[] | undefined;
 const getContributors = async () => {
 	if (!storedContributors) {
 		try {
+			if (env.GITHUB_TOKEN === undefined) return [];
+
 			// eslint-disable-next-line no-console
 			console.log('Fetching contributors...');
-			const res = await fetch(`https://api.github.com/repos/melt-ui/melt-ui/contributors`);
+			const res = await fetch(`https://api.github.com/repos/melt-ui/melt-ui/contributors`, {
+				headers: {
+					Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+				},
+			});
 
 			const contributors = (await res.json()) as Contributor[];
 
 			const contributorsWithName = (await Promise.all(
 				contributors.map(async (contributor) => {
-					const res = await fetch(`https://api.github.com/users/${contributor.login}`);
+					const res = await fetch(`https://api.github.com/users/${contributor.login}`, {
+						headers: {
+							Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+						},
+					});
 					const { name, bio } = await res.json();
 					return {
 						...contributor,
