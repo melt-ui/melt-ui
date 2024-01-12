@@ -65,6 +65,8 @@ jobs:
 
       - name: Build site
         run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Cloudflare Pages
         id: cloudflare-pages-deploy
