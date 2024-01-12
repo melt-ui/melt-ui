@@ -393,7 +393,25 @@ describe('DateField', () => {
 			expect(insideValue).toHaveTextContent('1980-01-20T22:30');
 		});
 
-		test('changing the dayPeriod segment changes the value - when time segments are filled', async () => {
+		test('when hour segment is not filled, changing the dayPeriod segment does not update hour value', async () => {
+			const { getByTestId, user } = setup({
+				defaultValue: undefined,
+				granularity: 'minute',
+			});
+
+			const dayPeriodSegment = getByTestId('dayPeriod');
+			const hourSegment = getByTestId('hour');
+
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+
+			await user.click(dayPeriodSegment);
+			expect(dayPeriodSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+			expect(hourSegment).toHaveTextContent('––');
+		});
+
+		test('when time segments are filled, changing the dayPeriod segment changes the dayPeriod value', async () => {
 			const { getByTestId, user } = setup({
 				defaultValue: calendarDateTimeOther,
 			});
@@ -410,7 +428,7 @@ describe('DateField', () => {
 			expect(insideValue).toHaveTextContent('1980-01-20T22:30');
 		});
 
-		test('changing the dayPeriod segment changes the value - when time segments are not filled', async () => {
+		test('when time segments are not filled, changing the dayPeriod segment changes the value', async () => {
 			const { getByTestId, user } = setup({
 				defaultPlaceholder: calendarDateOther,
 				granularity: 'second',
