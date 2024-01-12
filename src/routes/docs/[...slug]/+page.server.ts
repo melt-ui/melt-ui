@@ -1,10 +1,6 @@
 import { navConfig } from '$docs/config.js';
 import type { EntryGenerator, PageLoad } from './$types.js';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { GITHUB_TOKEN } from '$env/static/private';
-
 export const entries = (() => {
 	return navConfig.sidebarNav[0].items.map((item) => {
 		return { slug: item.title.toLowerCase().replaceAll(' ', '-') };
@@ -42,21 +38,13 @@ const getContributors = async () => {
 		try {
 			// eslint-disable-next-line no-console
 			console.log('Fetching contributors...');
-			const res = await fetch(`https://api.github.com/repos/melt-ui/melt-ui/contributors`, {
-				headers: {
-					Authorization: `Bearer ${GITHUB_TOKEN}`,
-				},
-			});
+			const res = await fetch(`https://api.github.com/repos/melt-ui/melt-ui/contributors`);
 
 			const contributors = (await res.json()) as Contributor[];
 
 			const contributorsWithName = (await Promise.all(
 				contributors.map(async (contributor) => {
-					const res = await fetch(`https://api.github.com/users/${contributor.login}`, {
-						headers: {
-							Authorization: `Bearer ${GITHUB_TOKEN}`,
-						},
-					});
+					const res = await fetch(`https://api.github.com/users/${contributor.login}`);
 					const { name, bio } = await res.json();
 					return {
 						...contributor,
