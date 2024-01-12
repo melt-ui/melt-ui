@@ -20,9 +20,12 @@ import {
 	getPreviousFocusable,
 	handleFocus,
 	handleRovingFocus,
+	isBackspaceKey,
 	isBrowser,
+	isCharacterKey,
 	isElementDisabled,
 	isHTMLElement,
+	isModifierKey,
 	kbd,
 	noop,
 	omit,
@@ -250,10 +253,11 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					/**
 					 * Check for typeahead search and handle it.
 					 */
-					const isCharacterKey = e.key.length === 1;
-					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					const isBackspaceKey = e.key === kbd.BACKSPACE;
-					if (!isModifierKey && (isCharacterKey || isBackspaceKey) && get(typeahead) === true) {
+					if (
+						!isModifierKey(e) &&
+						(isCharacterKey(e) || isBackspaceKey(e)) &&
+						get(typeahead) === true
+					) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
@@ -783,9 +787,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						}
 
 						const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
-						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-						const isCharacterKey = e.key.length === 1;
-						const isBackspaceKey = e.key === kbd.BACKSPACE;
 
 						// close the submenu if the user presses a close key
 						if (isCloseKey) {
@@ -811,7 +812,11 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return;
 						}
 
-						if (!isModifierKey && (isCharacterKey || isBackspaceKey) && get(typeahead) === true) {
+						if (
+							!isModifierKey(e) &&
+							(isCharacterKey(e) || isBackspaceKey(e)) &&
+							get(typeahead) === true
+						) {
 							// typeahead logic
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}

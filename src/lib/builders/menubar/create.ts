@@ -25,6 +25,9 @@ import {
 	toWritableStores,
 	generateIds,
 	omit,
+	isModifierKey,
+	isCharacterKey,
+	isBackspaceKey,
 } from '$lib/internal/helpers/index.js';
 import { safeOnDestroy, safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
@@ -228,10 +231,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						/**
 						 * Check for typeahead search and handle it.
 						 */
-						const isCharacterKey = e.key.length === 1;
-						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-						const isBackspaceKey = e.key === kbd.BACKSPACE;
-						if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
+						if (!isModifierKey(e) && (isCharacterKey(e) || isBackspaceKey(e))) {
 							m.handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
 					})

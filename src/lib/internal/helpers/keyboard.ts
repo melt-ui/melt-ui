@@ -76,3 +76,9 @@ export const getDirectionalKeys = (
 		prevKey: getPrevKey(dir, orientation),
 	};
 };
+
+export const isCharacterKey = (e: KeyboardEvent) => e.key.length === 1;
+
+export const isModifierKey = (e: KeyboardEvent) => e.ctrlKey || e.altKey || e.metaKey;
+
+export const isBackspaceKey = (e: Pick<KeyboardEvent, 'key'>) => e.key === kbd.BACKSPACE;

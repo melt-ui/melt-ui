@@ -11,8 +11,11 @@ import {
 	getNextFocusable,
 	getPortalDestination,
 	getPreviousFocusable,
+	isBackspaceKey,
+	isCharacterKey,
 	isHTMLElement,
 	isLeftClick,
+	isModifierKey,
 	kbd,
 	noop,
 	omit,
@@ -216,10 +219,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					/**
 					 * Check for typeahead search and handle it.
 					 */
-					const isCharacterKey = e.key.length === 1;
-					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					const isBackspaceKey = e.key === kbd.BACKSPACE;
-					if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
+					if (!isModifierKey(e) && (isCharacterKey(e) || isBackspaceKey(e))) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})

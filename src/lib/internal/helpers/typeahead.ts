@@ -3,7 +3,7 @@ import { debounce } from './debounce.js';
 import { handleRovingFocus } from './rovingFocus.js';
 import { isHTMLElement } from './is.js';
 import { wrapArray } from './array.js';
-import { kbd } from './keyboard.js';
+import { isBackspaceKey } from './keyboard.js';
 
 export type TypeaheadArgs = {
 	/**
@@ -54,8 +54,7 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
 		if (ignoredKeys.has(key)) return;
-		const isBackspaceKey = key === kbd.BACKSPACE;
-		if (isBackspaceKey) {
+		if (isBackspaceKey({ key })) {
 			typed.update(() => []);
 			return;
 		}
