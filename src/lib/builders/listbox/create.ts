@@ -427,7 +427,7 @@ export function createListbox<
 						const menuEl = document.getElementById(get(ids.menu));
 						if (!isHTMLElement(menuEl)) return;
 
-						handleTypeaheadSearch(e.key, getOptions(menuEl));
+						handleTypeaheadSearch(e, getOptions(menuEl));
 					}
 				})
 			);

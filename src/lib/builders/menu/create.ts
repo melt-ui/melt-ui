@@ -20,12 +20,9 @@ import {
 	getPreviousFocusable,
 	handleFocus,
 	handleRovingFocus,
-	isBackspaceKey,
 	isBrowser,
-	isCharacterKey,
 	isElementDisabled,
 	isHTMLElement,
-	isModifierKey,
 	kbd,
 	noop,
 	omit,
@@ -253,12 +250,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					/**
 					 * Check for typeahead search and handle it.
 					 */
-					if (
-						!isModifierKey(e) &&
-						(isCharacterKey(e) || isBackspaceKey(e)) &&
-						get(typeahead) === true
-					) {
-						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
+					if (get(typeahead) === true) {
+						handleTypeaheadSearch(e, getMenuItems(menuEl));
 					}
 				})
 			);
@@ -812,13 +805,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return;
 						}
 
-						if (
-							!isModifierKey(e) &&
-							(isCharacterKey(e) || isBackspaceKey(e)) &&
-							get(typeahead) === true
-						) {
+						if (get(typeahead) === true) {
 							// typeahead logic
-							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
+							handleTypeaheadSearch(e, getMenuItems(menuEl));
 						}
 					}),
 					addMeltEventListener(node, 'pointermove', (e) => {
