@@ -252,7 +252,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
+					const isBackspaceKey = e.key === 'Backspace';
+					if (!isModifierKey && (isCharacterKey || isBackspaceKey) && get(typeahead) === true) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
@@ -784,6 +785,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
 						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 						const isCharacterKey = e.key.length === 1;
+						const isBackspaceKey = e.key === 'Backspace';
 
 						// close the submenu if the user presses a close key
 						if (isCloseKey) {
@@ -809,7 +811,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return;
 						}
 
-						if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
+						if (!isModifierKey && (isCharacterKey || isBackspaceKey) && get(typeahead) === true) {
 							// typeahead logic
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}

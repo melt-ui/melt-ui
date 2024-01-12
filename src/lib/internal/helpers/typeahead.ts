@@ -53,6 +53,11 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
 		if (ignoredKeys.has(key)) return;
+		const isBackspaceKey = key === 'Backspace';
+		if (isBackspaceKey) {
+			typed.update(() => []);
+			return;
+		}
 		const currentItem = withDefaults.getCurrentItem();
 
 		const $typed = get(typed);
