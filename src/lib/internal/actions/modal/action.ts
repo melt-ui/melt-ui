@@ -1,9 +1,14 @@
-import { isElement, last, noop, sleep } from '$lib/internal/helpers/index.js';
+import { effect, isElement, last, noop, sleep } from '$lib/internal/helpers/index.js';
 import type { InteractOutsideEvent } from '../interact-outside/types.js';
 import { useInteractOutside } from '..';
 import type { ModalConfig } from './types.js';
 
 const visibleModals: Element[] = [];
+
+type ModalUpdateConfig = Omit<ModalConfig, 'open' | 'closeOnInteractOutside'> & {
+	open: boolean;
+	closeOnInteractOutside: boolean;
+};
 
 export function useModal(node: HTMLElement, config: ModalConfig) {
 	let unsubInteractOutside = noop;
@@ -15,10 +20,10 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 		}
 	}
 
-	function update(config: ModalConfig) {
+	function update(config: ModalUpdateConfig) {
 		const { open, onClose, shouldCloseOnInteractOutside, closeOnInteractOutside } = config;
 
-		sleep(100).then(() => {
+		sleep(1).then(() => {
 			if (open) {
 				visibleModals.push(node);
 			} else {
@@ -61,7 +66,9 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 		}).destroy;
 	}
 
-	update(config);
+	effect([config.closeOnInteractOutside, config.open], ([$closeOnOutsideClick, $open]) => {
+		update({ ...config, open: $open, closeOnInteractOutside: $closeOnOutsideClick });
+	});
 
 	return {
 		update,

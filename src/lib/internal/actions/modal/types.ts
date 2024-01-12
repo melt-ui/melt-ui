@@ -1,10 +1,11 @@
 import type { InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type { Writable } from 'svelte/store';
 
 export type ModalConfig = {
 	/**
-	 * Whether the modal is currently open.
+	 * The open state of the modal.
 	 */
-	open: boolean;
+	open: Writable<boolean>;
 
 	/**
 	 * Handler called when the overlay closes.
@@ -16,9 +17,11 @@ export type ModalConfig = {
 	 * If true, the `onClose` callback will be called when the user interacts
 	 * outside of the modal.
 	 *
+	 * We pass a store here to handle the `effect` function inside the action.
+	 *
 	 * @default true
 	 */
-	closeOnInteractOutside?: boolean;
+	closeOnInteractOutside: Writable<boolean>;
 
 	/**
 	 * If `closeOnInteractOutside` is `true` and this function is provided,
@@ -31,4 +34,9 @@ export type ModalConfig = {
 	 * will not be called.
 	 */
 	shouldCloseOnInteractOutside?: (event: InteractOutsideEvent) => boolean;
+};
+
+export type ModalUpdateConfig = Omit<ModalConfig, 'open' | 'closeOnInteractOutside'> & {
+	open: boolean;
+	closeOnInteractOutside: boolean;
 };
