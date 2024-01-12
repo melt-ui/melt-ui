@@ -1,14 +1,21 @@
 <script lang="ts">
 	import { createCollapsible, melt } from '$lib/index.js';
+	import { createSync } from '$lib/sync';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
+	export let open = false;
+	export let disabled = false;
+
 	const {
 		elements: { root, content, trigger },
-		states: { open },
-	} = createCollapsible({
-		forceVisible: true,
-	});
+		states,
+		options,
+	} = createCollapsible({ forceVisible: true });
+
+	const sync = createSync({ ...states, ...options });
+	$: sync.open(open, (v) => (open = v));
+	$: sync.disabled(disabled);
 </script>
 
 <div
@@ -16,7 +23,7 @@
 	class="relative mx-auto mb-28 w-[18rem] max-w-full sm:w-[25rem]"
 >
 	<div class="flex items-center justify-between">
-		<span class="text-sm font-semibold text-magnum-900">
+		<span class="text-sm font-semibold text-magnum-200">
 			@thomasglopes starred 3 repositories
 		</span>
 		<button
@@ -27,7 +34,7 @@
 			aria-label="Toggle"
 		>
 			<div class="abs-center">
-				{#if $open}
+				{#if open}
 					<X class="square-4" />
 				{:else}
 					<ChevronsUpDown class="square-4" />
@@ -46,7 +53,7 @@
 		style:right="0"
 		style:left="0"
 	>
-		{#if $open}
+		{#if open}
 			<div use:melt={$content} transition:slide>
 				<div class="flex flex-col gap-2">
 					<div class="rounded-lg bg-white p-3 shadow">

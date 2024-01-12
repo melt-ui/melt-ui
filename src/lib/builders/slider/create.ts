@@ -2,6 +2,7 @@ import {
 	addEventListener,
 	addMeltEventListener,
 	builder,
+	builderArray,
 	createElHelpers,
 	disabledAttr,
 	effect,
@@ -109,27 +110,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 		}
 	});
 
-	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
-		const difference = $max - $min;
-
-		// min = 0, max = 8, step = 3:
-		// ----------------------------
-		// 0, 3, 6
-		// (8 - 0) / 3 = 2.666... = 3 ceiled
-		let count = Math.ceil(difference / $step);
-
-		// min = 0, max = 9, step = 3:
-		// ---------------------------
-		// 0, 3, 6, 9
-		// (9 - 0) / 3 = 3
-		// We need to add 1 because `difference` is a multiple of `step`.
-		if (difference % $step == 0) {
-			count++;
-		}
-
-		return count;
-	});
-
 	// Elements
 	const root = builder(name(), {
 		stores: [disabled, orientation, dir],
@@ -187,21 +167,17 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 	});
 
-	const thumb = builder(name('thumb'), {
+	const thumbs = builderArray(name('thumb'), {
 		stores: [value, position, min, max, disabled, orientation, direction],
 		returned: ([$value, $position, $min, $max, $disabled, $orientation, $direction]) => {
-			let index = -1;
-
-			return () => {
-				index++;
-
+			return Array.from({ length: $value.length || 1 }, (_, i) => {
 				const currentThumb = get(currentThumbIndex);
 
 				if (currentThumb < $value.length) {
 					currentThumbIndex.update((prev) => prev + 1);
 				}
 
-				const thumbValue = $value[index];
+				const thumbValue = $value[i];
 				const thumbPosition = `${$position(thumbValue)}%`;
 
 				const style: StyleObject = {
@@ -243,7 +219,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					style: styleToString(style),
 					tabindex: $disabled ? -1 : 0,
 				} as const;
-			};
+			});
 		},
 		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
@@ -346,21 +322,35 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 	});
 
-	const tick = builder(name('tick'), {
-		stores: [ticks, value, min, max, step, direction],
-		returned: ([$ticks, $value, $min, $max, $step, $direction]) => {
-			let index = -1;
-			return () => {
-				index++;
+	const ticks = builderArray(name('tick'), {
+		stores: [value, min, max, step, direction],
+		returned: ([$value, $min, $max, $step, $direction]) => {
+			const difference = $max - $min;
 
+			// min = 0, max = 8, step = 3:
+			// ----------------------------
+			// 0, 3, 6
+			// (8 - 0) / 3 = 2.666... = 3 ceiled
+			let count = Math.ceil(difference / $step);
+
+			// min = 0, max = 9, step = 3:
+			// ---------------------------
+			// 0, 3, 6, 9
+			// (9 - 0) / 3 = 3
+			// We need to add 1 because `difference` is a multiple of `step`.
+			if (difference % $step == 0) {
+				count++;
+			}
+
+			return Array.from({ length: count }, (_, i) => {
 				// The track is divided into sections of ratio `step / (max - min)`
-				const tickPosition = `${index * ($step / ($max - $min)) * 100}%`;
+				const tickPosition = `${i * ($step / ($max - $min)) * 100}%`;
 
 				// Offset each tick by -50% to center it, except the first and last ticks.
 				// The first tick is already positioned at the start of the slider.
 				// The last tick is offset by -100% to prevent it from being rendered outside.
-				const isFirst = index === 0;
-				const isLast = index === $ticks - 1;
+				const isFirst = i === 0;
+				const isLast = i === count - 1;
 				const offsetPercentage = isFirst ? 0 : isLast ? -100 : -50;
 
 				const style: StyleObject = {
@@ -390,7 +380,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					}
 				}
 
-				const tickValue = $min + index * $step;
+				const tickValue = $min + i * $step;
 				const bounded =
 					$value.length === 1
 						? tickValue <= $value[0]
@@ -401,7 +391,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					'data-value': tickValue,
 					style: styleToString(style),
 				};
-			};
+			});
 		},
 	});
 
@@ -552,13 +542,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 	return {
 		elements: {
 			root,
-			thumb,
+			thumbs,
 			range,
-			tick,
+			ticks,
 		},
 		states: {
 			value,
-			ticks,
 		},
 		options,
 	};
