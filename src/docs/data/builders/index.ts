@@ -65,6 +65,8 @@ export const builderMap = {
 	progress: progressData,
 	'radio-group': radioGroupData,
 	'range-calendar': rangeCalendarData,
+	// TODO: replace this with actual scroll area data
+	'scroll-area': labelData,
 	select: selectData,
 	separator: separatorData,
 	slider: sliderData,
