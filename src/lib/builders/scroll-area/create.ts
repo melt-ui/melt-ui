@@ -5,39 +5,43 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
+	generateIds,
 	isHTMLElement,
 	noop,
 	styleToString,
 	toWritableStores,
+	type IdObj,
 	type ToWritableStores,
 } from '$lib/internal/helpers/index.js';
 import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
-import type { CreateScrollAreaProps, ScrollAreaType } from './types.js';
+import type { CreateScrollAreaProps } from './types.js';
 import type { Orientation, TextDirection } from '$lib/internal/types.js';
-import type { Action } from 'svelte/action';
+import { omit } from '../../internal/helpers/object';
 import {
 	addUnlinkedScrollListener,
-	debounceCallback,
 	getScrollPositionFromPointer,
 	getThumbOffsetFromScroll,
 	getThumbRatio,
-	getThumbSize,
 	isScrollingWithinScrollbarBounds,
-	resizeObserver,
-	toInt,
 	type Sizes,
 } from './helpers.js';
-
-const defaults = {
-	type: 'hover' as const,
-	hideDelay: 600,
-	dir: 'ltr' as const,
-};
+import { createScrollbarX, createScrollbarY, getScrollbarActionByType } from './scrollbars.js';
 
 type ScrollAreaParts = 'root' | 'viewport' | 'content' | 'scrollbar' | 'thumb' | 'corner';
-const { name } = createElHelpers<ScrollAreaParts>('scroll-area');
+export const { name } = createElHelpers<ScrollAreaParts>('scroll-area');
 
-type ScrollAreaRootState = {
+const scrollAreaIdParts = [
+	'root',
+	'viewport',
+	'content',
+	'scrollbarX',
+	'scrollbarY',
+	'thumbX',
+	'thumbY',
+] as const;
+export type ScrollAreaIdParts = typeof scrollAreaIdParts;
+
+export type ScrollAreaRootState = {
 	cornerWidth: Writable<number>;
 	cornerHeight: Writable<number>;
 	scrollbarXEnabled: Writable<boolean>;
@@ -47,10 +51,11 @@ type ScrollAreaRootState = {
 	scrollAreaEl: Writable<HTMLElement | null>;
 	viewportEl: Writable<HTMLElement | null>;
 	contentEl: Writable<HTMLElement | null>;
-	options: ToWritableStores<Required<CreateScrollAreaProps>>;
+	options: ToWritableStores<Required<Omit<CreateScrollAreaProps, 'ids'>>>;
+	ids: ToWritableStores<IdObj<ScrollAreaIdParts>>;
 };
 
-type ScrollAreaScrollbarState = {
+export type ScrollAreaScrollbarState = {
 	isHorizontal: Writable<boolean>;
 	domRect: Writable<DOMRect | null>;
 	prevWebkitUserSelect: Writable<string>;
@@ -67,10 +72,16 @@ type ScrollAreaScrollbarState = {
 	onDragScroll: (payload: number) => void;
 };
 
+const defaults = {
+	type: 'hover' as const,
+	hideDelay: 600,
+	dir: 'ltr' as const,
+};
+
 export function createScrollArea(props?: CreateScrollAreaProps) {
 	const withDefaults = { ...defaults, ...props };
 
-	const options = toWritableStores(withDefaults);
+	const options = toWritableStores(omit(withDefaults, 'ids'));
 
 	const cornerWidth = writable(0);
 	const cornerHeight = writable(0);
@@ -83,6 +94,8 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 	const scrollbarXEl = writable<HTMLElement | null>(null);
 	const scrollbarYEl = writable<HTMLElement | null>(null);
 
+	const ids = toWritableStores({ ...generateIds(scrollAreaIdParts), ...withDefaults.ids });
+
 	const rootState: ScrollAreaRootState = {
 		cornerWidth,
 		cornerHeight,
@@ -94,17 +107,19 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		scrollbarXEl,
 		scrollbarYEl,
 		scrollAreaEl,
+		ids,
 	};
 
 	const root = builder(name(), {
-		stores: [cornerWidth, cornerHeight],
-		returned: ([$cornerWidth, $cornderHeight]) => {
+		stores: [cornerWidth, cornerHeight, ids.root],
+		returned: ([$cornerWidth, $cornderHeight, $rootId]) => {
 			return {
 				style: styleToString({
 					position: 'relative',
 					'--melt-scroll-area-corner-width': `${$cornerWidth}px`,
 					'--melt-scroll-area-corner-height': `${$cornderHeight}px`,
 				}),
+				id: $rootId,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -118,8 +133,8 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 	});
 
 	const viewport = builder(name('viewport'), {
-		stores: [scrollbarXEnabled, scrollbarYEnabled],
-		returned: ([$scrollbarXEnabled, $scrollbarYEnabled]) => {
+		stores: [scrollbarXEnabled, scrollbarYEnabled, ids.viewport],
+		returned: ([$scrollbarXEnabled, $scrollbarYEnabled, $viewportId]) => {
 			return {
 				style: styleToString({
 					'scrollbar-width': 'none',
@@ -129,6 +144,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 					'overflow-x': $scrollbarXEnabled ? 'scroll' : 'hidden',
 					'overflow-y': $scrollbarYEnabled ? 'scroll' : 'hidden',
 				}),
+				id: $viewportId,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -161,12 +177,14 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 	});
 
 	const content = builder(name('content'), {
-		returned: () => {
+		stores: [ids.content],
+		returned: ([$contentId]) => {
 			return {
 				style: styleToString({
 					'min-width': '100%',
 					display: 'table',
 				}),
+				id: $contentId,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -282,25 +300,14 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			scrollbarEl,
 		};
 
-		function getScrollbarActionByType(type: ScrollAreaType) {
-			switch (type) {
-				case 'always':
-					return createBaseScrollbarAction;
-				case 'auto':
-					return createScrollbarAuto;
-				case 'hover':
-					return createScrollbarHover;
-				default:
-					return createBaseScrollbarAction;
-			}
-		}
-
 		const scrollbarActionByType = getScrollbarActionByType(get(options.type));
+
+		const combinedState = { rootState, scrollbarState };
 
 		const scrollbar =
 			orientationProp === 'horizontal'
-				? createScrollbarX(rootState, scrollbarState, scrollbarActionByType)
-				: createScrollbarY(rootState, scrollbarState, scrollbarActionByType);
+				? createScrollbarX(combinedState, scrollbarActionByType)
+				: createScrollbarY(combinedState, scrollbarActionByType);
 
 		const thumb = createScrollbarThumb(rootState, scrollbarState);
 
@@ -326,317 +333,6 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			createScrollbar,
 		},
 	};
-}
-
-function createBaseScrollbarAction(
-	rootState: ScrollAreaRootState,
-	scrollbarState: ScrollAreaScrollbarState
-) {
-	const { viewportEl, contentEl } = rootState;
-	const { domRect, onDragScroll, isHorizontal, prevWebkitUserSelect, sizes, handleWheelScroll } =
-		scrollbarState;
-
-	const scrollbarEl = writable<HTMLElement | null>(null);
-
-	function handleDragScroll(e: MouseEvent, domRectProp?: DOMRect) {
-		if (domRectProp) {
-			const x = e.clientX - domRectProp.left;
-			const y = e.clientY - domRectProp.top;
-			if (get(isHorizontal)) {
-				onDragScroll(x);
-			} else {
-				onDragScroll(y);
-			}
-		} else {
-			const $domRect = get(domRect);
-			if ($domRect) {
-				const x = e.clientX - $domRect.left;
-				const y = e.clientY - $domRect.top;
-				if (get(isHorizontal)) {
-					onDragScroll(x);
-				} else {
-					onDragScroll(y);
-				}
-			}
-		}
-	}
-
-	function handlePointerDown(e: PointerEvent) {
-		if (e.button !== 0) return;
-		const target = e.target;
-		if (!isHTMLElement(target)) return;
-		target.setPointerCapture(e.pointerId);
-		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
-		domRect.set(currentTarget.getBoundingClientRect());
-		prevWebkitUserSelect.set(document.body.style.webkitUserSelect);
-		document.body.style.webkitUserSelect = 'none';
-		const $viewportEl = get(viewportEl);
-		if ($viewportEl) {
-			$viewportEl.style.scrollBehavior = 'auto';
-		}
-		handleDragScroll(e, currentTarget.getBoundingClientRect());
-	}
-
-	function handlePointerMove(e: PointerEvent) {
-		handleDragScroll(e);
-	}
-
-	function handlePointerUp(e: PointerEvent) {
-		const target = e.target;
-		if (!isHTMLElement(target)) return;
-		if (target.hasPointerCapture(e.pointerId)) {
-			target.releasePointerCapture(e.pointerId);
-		}
-		document.body.style.webkitUserSelect = get(prevWebkitUserSelect);
-		const $viewportEl = get(viewportEl);
-		if ($viewportEl) {
-			$viewportEl.style.scrollBehavior = '';
-		}
-		domRect.set(null);
-	}
-
-	function handleWheel(e: WheelEvent) {
-		const target = e.target;
-		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(target) || !isHTMLElement(currentTarget)) return;
-
-		const isScrollbarWheel = currentTarget.contains(target);
-		if (!isScrollbarWheel) return;
-
-		const $sizes = get(sizes);
-		if (!$sizes) return;
-		const maxScrollPos = $sizes.content - $sizes.viewport;
-		handleWheelScroll(e, maxScrollPos);
-	}
-
-	function handleSizeChange() {
-		const $scrollbarEl = get(scrollbarEl);
-		if (!$scrollbarEl) return;
-		const $isHorizontal = get(isHorizontal);
-		const $viewportEl = get(viewportEl);
-		if ($isHorizontal) {
-			sizes.set({
-				content: $viewportEl?.scrollWidth ?? 0,
-				viewport: $viewportEl?.offsetWidth ?? 0,
-				scrollbar: {
-					size: $scrollbarEl.clientWidth ?? 0,
-					paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
-					paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
-				},
-			});
-		} else {
-			sizes.set({
-				content: $viewportEl?.scrollHeight ?? 0,
-				viewport: $viewportEl?.offsetHeight ?? 0,
-				scrollbar: {
-					size: $scrollbarEl.clientHeight ?? 0,
-					paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
-					paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
-				},
-			});
-		}
-	}
-
-	function baseAction(node: HTMLElement) {
-		scrollbarEl.set(node);
-		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'pointerdown', handlePointerDown),
-			addMeltEventListener(node, 'pointermove', handlePointerMove),
-			addMeltEventListener(node, 'pointerup', handlePointerUp),
-			addEventListener(document, 'wheel', handleWheel, { passive: false })
-		);
-
-		const unsubResizeContent = effect([contentEl], ([$contentEl]) => {
-			if (!$contentEl) return noop;
-			return resizeObserver($contentEl, handleSizeChange);
-		});
-
-		return {
-			destroy() {
-				unsubEvents();
-				unsubResizeContent();
-			},
-		};
-	}
-
-	return {
-		action: baseAction,
-		visible: writable(true),
-	};
-}
-
-function createScrollbarAuto(
-	rootState: ScrollAreaRootState,
-	scrollbarState: ScrollAreaScrollbarState
-) {
-	const visible = writable(false);
-	const { viewportEl, contentEl } = rootState;
-	const { isHorizontal } = scrollbarState;
-	const { action } = createBaseScrollbarAction(rootState, scrollbarState);
-
-	const handleResize = debounceCallback(() => {
-		const $viewportEl = get(rootState.viewportEl);
-		if ($viewportEl) {
-			const isOverflowX = $viewportEl.offsetWidth < $viewportEl.scrollWidth;
-			const isOverflowY = $viewportEl.offsetHeight < $viewportEl.scrollHeight;
-
-			visible.set(get(isHorizontal) ? isOverflowX : isOverflowY);
-		}
-	}, 10);
-
-	function scrollbarAutoAction(node: HTMLElement) {
-		const unsubBaseAction = action(node)?.destroy;
-		handleResize();
-		const unsubObservers: Array<() => void> = [];
-
-		const $viewportEl = get(viewportEl);
-		if ($viewportEl) {
-			unsubObservers.push(resizeObserver($viewportEl, handleResize));
-		}
-		const $contentEl = get(contentEl);
-		if ($contentEl) {
-			unsubObservers.push(resizeObserver($contentEl, handleResize));
-		}
-
-		return {
-			destroy() {
-				unsubObservers.forEach((unsub) => unsub());
-				unsubBaseAction();
-			},
-		};
-	}
-
-	return {
-		visible,
-		action: scrollbarAutoAction,
-	};
-}
-
-type CreateBaseAction = (
-	rootState: ScrollAreaRootState,
-	scrollbarState: ScrollAreaScrollbarState
-) => { action: Action<HTMLElement>; visible: Writable<boolean> };
-
-function createScrollbarHover(
-	rootState: ScrollAreaRootState,
-	scrollbarStart: ScrollAreaScrollbarState
-) {
-	let timeout: ReturnType<typeof setTimeout> | number | undefined;
-	const { action } = createBaseScrollbarAction(rootState, scrollbarStart);
-	const visible = writable(false);
-
-	function handlePointerEnter() {
-		window.clearTimeout(timeout);
-		visible.set(true);
-	}
-
-	function handlePointerLeave() {
-		timeout = window.setTimeout(() => {
-			visible.set(false);
-		}, get(rootState.options.hideDelay));
-	}
-
-	function scrollbarHoverAction(node: HTMLElement) {
-		const scrollAreaEl = node.closest('[data-melt-scroll-area]');
-		let unsubScrollAreaListeners = noop;
-		if (scrollAreaEl) {
-			unsubScrollAreaListeners = executeCallbacks(
-				addEventListener(scrollAreaEl, 'pointerenter', handlePointerEnter),
-				addEventListener(scrollAreaEl, 'pointerleave', handlePointerLeave)
-			);
-		}
-		const unsubBaseAction = action(node)?.destroy;
-
-		return {
-			destroy() {
-				unsubBaseAction?.();
-				unsubScrollAreaListeners();
-			},
-		};
-	}
-
-	return {
-		action: scrollbarHoverAction,
-		visible,
-	};
-}
-
-function createScrollbarX(
-	rootState: ScrollAreaRootState,
-	scrollbarState: ScrollAreaScrollbarState,
-	createBaseAction: CreateBaseAction
-) {
-	const { dir } = rootState.options;
-	const { sizes } = scrollbarState;
-	const { action, visible } = createBaseAction(rootState, scrollbarState);
-
-	return builder(name('scrollbar'), {
-		stores: [sizes, dir, visible],
-		returned: ([$sizes, $dir, $visible]) => {
-			return {
-				style: styleToString({
-					position: 'absolute',
-					bottom: 0,
-					left: $dir === 'rtl' ? 'var(--melt-scroll-area-corner-width)' : 0,
-					right: $dir === 'ltr' ? 'var(--melt-scroll-area-corner-width' : 0,
-					'--melt-scroll-area-thumb-width': $sizes ? `${getThumbSize($sizes)}px` : undefined,
-					display: $visible ? 'block' : 'none',
-				}),
-				'data-state': $visible ? 'visible' : 'hidden',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubBaseAction = action(node)?.destroy;
-			rootState.scrollbarXEl.set(node);
-			rootState.scrollbarXEnabled.set(true);
-			return {
-				destroy() {
-					unsubBaseAction?.();
-					rootState.scrollbarXEl.set(null);
-				},
-			};
-		},
-	});
-}
-
-function createScrollbarY(
-	rootState: ScrollAreaRootState,
-	scrollbarState: ScrollAreaScrollbarState,
-	createBaseAction: CreateBaseAction
-) {
-	const { dir } = rootState.options;
-	const { sizes } = scrollbarState;
-	const { action, visible } = createBaseAction(rootState, scrollbarState);
-
-	return builder(name('scrollbar'), {
-		stores: [sizes, dir, visible],
-		returned: ([$sizes, $dir, $visible]) => {
-			return {
-				style: styleToString({
-					position: 'absolute',
-					top: 0,
-					right: $dir === 'ltr' ? 0 : undefined,
-					left: $dir === 'rtl' ? 0 : undefined,
-					bottom: 'var(--melt-scroll-area-corner-height)',
-					'--melt-scroll-area-thumb-height': $sizes ? `${getThumbSize($sizes)}px` : undefined,
-					opacity: $visible ? 1 : 0,
-				}),
-				'data-state': $visible ? 'visible' : 'hidden',
-			};
-		},
-		action: (node: HTMLElement) => {
-			rootState.scrollbarYEl.set(node);
-			rootState.scrollbarYEnabled.set(true);
-			const unsubBaseAction = action(node)?.destroy;
-			return {
-				destroy() {
-					unsubBaseAction?.();
-					rootState.scrollbarYEl.set(null);
-				},
-			};
-		},
-	});
 }
 
 function createScrollbarThumb(

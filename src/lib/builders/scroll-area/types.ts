@@ -1,4 +1,6 @@
+import type { IdObj } from '$lib/internal/helpers';
 import type { TextDirection } from '$lib/internal/types';
+import type { ScrollAreaIdParts } from '.';
 
 export type ScrollAreaType = 'auto' | 'always' | 'scroll' | 'hover';
 
@@ -24,5 +26,11 @@ export type CreateScrollAreaProps = {
 	 *
 	 * @default 'ltr'
 	 */
-	dir: TextDirection;
+	dir?: TextDirection;
+
+	/**
+	 * Optionally override the default ids assigned to the
+	 * elements.
+	 */
+	ids?: Partial<IdObj<ScrollAreaIdParts>>;
 };
