@@ -11,7 +11,7 @@ import {
 	last,
 	overridable,
 	styleToString,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, writable, type Writable } from 'svelte/store';
 

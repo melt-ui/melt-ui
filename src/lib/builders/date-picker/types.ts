@@ -3,7 +3,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
 import type { CreateCalendarProps, CreatePopoverProps } from '$lib/builders/index.js';
 import type { DateValue } from '@internationalized/date';
-import type { CreateDateFieldProps } from '../date-field/types';
+import type { CreateDateFieldProps } from '../date-field/types.js';
 import type { Matcher } from '$lib/index.js';
 import type { RenameProperties } from '$lib/internal/types.js';
 

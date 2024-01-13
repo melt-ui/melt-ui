@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers';
+import { kbd } from '$lib/internal/helpers/index.js';
 import { queryByText, render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';

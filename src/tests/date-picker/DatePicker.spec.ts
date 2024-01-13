@@ -6,7 +6,7 @@ import { describe } from 'vitest';
 import DatePickerTest from './DatePickerTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, today } from '@internationalized/date';
 import { tick } from 'svelte';
-import { sleep } from '$lib/internal/helpers';
+import { sleep } from '$lib/internal/helpers/index.js';
 import type { CreateDatePickerProps } from '$lib';
 
 const calendarDateToday = today('America/New_York');

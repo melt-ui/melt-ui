@@ -4,7 +4,7 @@ import PopoverTest from './PopoverTest.svelte';
 import userEvent from '@testing-library/user-event';
 import type { CreatePopoverProps } from '$lib';
 import { testKbd as kbd } from '../utils';
-import { sleep } from '$lib/internal/helpers';
+import { sleep } from '$lib/internal/helpers/index.js';
 
 function setup(props: CreatePopoverProps = {}) {
 	const user = userEvent.setup();

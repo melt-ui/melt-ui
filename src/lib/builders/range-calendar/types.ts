@@ -1,6 +1,6 @@
 import type { RangeCalendarIdParts, createRangeCalendar } from './create';
 import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { DateValue } from '@internationalized/date';
 import type { DateRange, Matcher } from '$lib/index.js';
 import type { IdObj } from '$lib/internal/helpers/index.js';

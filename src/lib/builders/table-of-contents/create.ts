@@ -3,7 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 import type { Defaults } from '$lib/internal/types';
 
 import { dequal } from 'dequal';

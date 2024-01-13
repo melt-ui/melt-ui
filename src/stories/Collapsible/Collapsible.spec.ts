@@ -1,4 +1,4 @@
-import { sleep, type ChangeFn } from '$lib/internal/helpers';
+import { sleep, type ChangeFn } from '$lib/internal/helpers/index.js';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
