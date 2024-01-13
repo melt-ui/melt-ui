@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { melt } from '$lib';
+	import { melt } from '$lib/index.js';
 	import ThemeIcon from './theme-icon.svelte';
 	import { getThemeCtx, themes } from './theme-switch.svelte';
 

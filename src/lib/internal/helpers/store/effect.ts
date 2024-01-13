@@ -1,6 +1,6 @@
 import type { Stores, StoresValues } from 'svelte/store';
-import { safeOnDestroy } from '../lifecycle';
-import { derivedWithUnsubscribe } from './derivedWithUnsubscribe';
+import { safeOnDestroy } from '../lifecycle.js';
+import { derivedWithUnsubscribe } from './derivedWithUnsubscribe.js';
 
 /**
  * A utility function that creates an effect from a set of stores and a function.

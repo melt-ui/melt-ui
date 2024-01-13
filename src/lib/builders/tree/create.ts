@@ -12,12 +12,12 @@ import {
 	overridable,
 	styleToString,
 } from '$lib/internal/helpers/index.js';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
 
-import { generateIds } from '../../internal/helpers/id';
-import type { TreeEvents } from './events';
-import type { CreateTreeViewProps, TreeParts } from './types';
+import { generateIds } from '../../internal/helpers/id.js';
+import type { TreeEvents } from './events.js';
+import type { CreateTreeViewProps, TreeParts } from './types.js';
 
 const defaults = {
 	forceVisible: false,

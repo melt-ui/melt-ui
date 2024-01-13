@@ -1,8 +1,8 @@
 import { render, act, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
-import userEvent from '@testing-library/user-event';
-import { testKbd as kbd } from '../utils';
+import { userEvent } from '@testing-library/user-event';
+import { testKbd as kbd } from '../utils.js';
 import SelectTest from './SelectTest.svelte';
 
 const OPEN_KEYS = [kbd.ENTER, kbd.SPACE];

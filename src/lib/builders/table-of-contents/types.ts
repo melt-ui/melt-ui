@@ -1,4 +1,4 @@
-import type { createTableOfContents } from './create';
+import type { createTableOfContents } from './create.js';
 
 export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 

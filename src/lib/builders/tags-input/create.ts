@@ -21,7 +21,7 @@ import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
 import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
 import { tick } from 'svelte';
 import type { TagsInputEvents } from './events.js';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 
 const defaults = {
 	placeholder: '',

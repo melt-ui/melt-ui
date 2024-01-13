@@ -1,7 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { tooltipIdParts } from '$lib';
+import { tooltipIdParts } from '$lib/index.js';
 import { tooltipEvents } from '$lib/builders/tooltip/events.js';
 import type { BuilderData } from './index.js';
 

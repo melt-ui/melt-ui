@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDatePicker, melt } from '$lib';
+	import { createDatePicker, melt } from '$lib/index.js';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
 	import { CalendarDate } from '@internationalized/date';

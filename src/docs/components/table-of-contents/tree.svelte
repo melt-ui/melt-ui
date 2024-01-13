@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TableOfContentsItem, TableOfContentsElements } from '$lib';
+	import type { TableOfContentsItem, TableOfContentsElements } from '$lib/index.js';
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];

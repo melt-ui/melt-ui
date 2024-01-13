@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCalendar, melt, type CreateSelectProps } from '$lib';
+	import { createCalendar, melt, type CreateSelectProps } from '$lib/index.js';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import MonthSelect from './MonthSelect.svelte';
 	import { writable } from 'svelte/store';

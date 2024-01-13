@@ -1,6 +1,6 @@
 import { kbd } from '$lib/internal/helpers/index.js';
 import { queryByText, render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe, test } from 'vitest';
 import TagsInput from './TagsInput.svelte';

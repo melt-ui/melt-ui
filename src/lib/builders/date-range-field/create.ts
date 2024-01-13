@@ -23,7 +23,7 @@ import { derived, get, writable } from 'svelte/store';
 import { removeDescriptionElement } from './_internal/helpers.js';
 import { createDateField } from '$lib/index.js';
 import type { DateValue } from '@internationalized/date';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 
 const defaults = {
 	isDateUnavailable: undefined,

@@ -1,9 +1,9 @@
 import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import PopoverTest from './PopoverTest.svelte';
-import userEvent from '@testing-library/user-event';
-import type { CreatePopoverProps } from '$lib';
-import { testKbd as kbd } from '../utils';
+import { userEvent } from '@testing-library/user-event';
+import type { CreatePopoverProps } from '$lib/index.js';
+import { testKbd as kbd } from '../utils.js';
 import { sleep } from '$lib/internal/helpers/index.js';
 
 function setup(props: CreatePopoverProps = {}) {

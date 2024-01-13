@@ -1,13 +1,13 @@
 import { testKbd as kbd } from './../utils.js';
 import { render, waitFor } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DatePickerTest from './DatePickerTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, today } from '@internationalized/date';
 import { tick } from 'svelte';
 import { sleep } from '$lib/internal/helpers/index.js';
-import type { CreateDatePickerProps } from '$lib';
+import type { CreateDatePickerProps } from '$lib/index.js';
 
 const calendarDateToday = today('America/New_York');
 const calendarDate = new CalendarDate(1980, 1, 20);

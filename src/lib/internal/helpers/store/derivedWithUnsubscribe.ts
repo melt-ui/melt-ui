@@ -1,5 +1,5 @@
 import { derived, type Readable, type Stores, type StoresValues } from 'svelte/store';
-import { safeOnDestroy } from '../lifecycle';
+import { safeOnDestroy } from '../lifecycle.js';
 
 /**
  * A utility function that creates a derived store that automatically

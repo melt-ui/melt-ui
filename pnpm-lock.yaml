@@ -92,8 +92,8 @@ devDependencies:
     specifier: ^4.0.3
     version: 4.0.3(svelte@4.0.0)
   '@testing-library/user-event':
-    specifier: ^14.4.3
-    version: 14.4.3(@testing-library/dom@9.3.1)
+    specifier: ^14.5.2
+    version: 14.5.2(@testing-library/dom@9.3.1)
   '@types/jest-axe':
     specifier: ^3.5.5
     version: 3.5.5
@@ -146,8 +146,8 @@ devDependencies:
     specifier: ^22.1.0
     version: 22.1.0
   lucide-svelte:
-    specifier: ^0.263.0
-    version: 0.263.0(svelte@4.0.0)
+    specifier: ^0.309.0
+    version: 0.309.0(svelte@4.0.0)
   mode-watcher:
     specifier: ^0.1.2
     version: 0.1.2(svelte@4.0.0)
@@ -4201,7 +4201,7 @@ packages:
     resolution: {integrity: sha512-L8sXFJUHmrlyU2BsWWZGuAjv39Jl1uAqUHdxmN42JY15M4+XCMjGlArdCCjDe1wpTSW6USYISA9axjZojgtvnw==}
     dependencies:
       '@testing-library/dom': 9.3.1
-      '@testing-library/user-event': 14.4.3(@testing-library/dom@9.3.1)
+      '@testing-library/user-event': 14.5.2(@testing-library/dom@9.3.1)
       ts-dedent: 2.2.0
     dev: true
 
@@ -4437,8 +4437,8 @@ packages:
       svelte: 4.0.0
     dev: true
 
-  /@testing-library/user-event@14.4.3(@testing-library/dom@9.3.1):
-    resolution: {integrity: sha512-kCUc5MEwaEMakkO5x7aoD+DLi02ehmEM2QCGWvNqAS1dV/fAvORWEjnjsEIvml59M7Y5kCkWN6fCCyPOe8OL6Q==}
+  /@testing-library/user-event@14.5.2(@testing-library/dom@9.3.1):
+    resolution: {integrity: sha512-YAh82Wh4TIrxYLmfGcixwD18oIjyC1pFQC2Y01F2lzV2HTMiYrI0nze0FD0ocB//CKS/7jIUgae+adPqxK5yCQ==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
       '@testing-library/dom': '>=7.21.4'
@@ -8803,8 +8803,8 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /lucide-svelte@0.263.0(svelte@4.0.0):
-    resolution: {integrity: sha512-1cB+DPsX7PbHJ+aDbc2nKKRdv3DYHK81mRVUw7kNb7bVw2Dh9QsNVON918WjnSlmXEt9lUnJ7TkNymreZwnLgg==}
+  /lucide-svelte@0.309.0(svelte@4.0.0):
+    resolution: {integrity: sha512-+t85+5Y696FVDoJHiiMhJGalv+UiWUX46gMudOQfYrVGjsyC2MGSZRNAGAHkdykA4RJSh/wUtSgnTgCmd0Swvw==}
     peerDependencies:
       svelte: '>=3 <5'
     dependencies:

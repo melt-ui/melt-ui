@@ -38,12 +38,12 @@ import {
 	toWritableStores,
 	toggle,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import { createLabel } from '../label/create.js';
 import type { ListboxEvents } from './events.js';
 import type {

@@ -24,7 +24,7 @@ import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 
