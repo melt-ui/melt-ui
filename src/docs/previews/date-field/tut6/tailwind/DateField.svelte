@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { createDateField, melt, type CreateDateFieldProps } from '$lib/index.js';
+	import {
+		createDateField,
+		melt,
+		type CreateDateFieldProps,
+	} from '$lib/index.js';
 	import { CalendarDate } from '@internationalized/date';
 
 	export let defaultValue: CreateDateFieldProps['defaultValue'] = undefined;
