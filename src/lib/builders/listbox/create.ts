@@ -81,6 +81,17 @@ const defaults = {
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
 export type ListboxIdParts = typeof listboxIdParts;
 
+type ListboxParts =
+	| 'trigger'
+	| 'menu'
+	| 'item'
+	| 'label'
+	| 'option'
+	| 'group'
+	| 'group-label'
+	| 'hidden-input'
+	| 'arrow';
+
 /**
  * Creates an ARIA-1.2-compliant listbox.
  *
@@ -136,7 +147,7 @@ export function createListbox<
 		highlightOnHover,
 		onOutsideClick,
 	} = options;
-	const { name, selector } = createElHelpers(withDefaults.builder);
+	const { name, selector } = createElHelpers<ListboxParts>(withDefaults.builder);
 
 	const ids = toWritableStores({ ...generateIds(listboxIdParts), ...withDefaults.ids });
 
@@ -577,6 +588,23 @@ export function createListbox<
 		},
 	});
 
+	const group = builder(name('group'), {
+		returned: () => {
+			return (groupId: string) => ({
+				role: 'group',
+				'aria-labelledby': groupId,
+			});
+		},
+	});
+
+	const groupLabel = builder(name('group-label'), {
+		returned: () => {
+			return (groupId: string) => ({
+				id: groupId,
+			});
+		},
+	});
+
 	const hiddenInput = builder(name('hidden-input'), {
 		stores: [selected, required, nameProp],
 		returned: ([$selected, $required, $name]) => {
@@ -655,8 +683,10 @@ export function createListbox<
 		ids,
 		elements: {
 			trigger,
+			group,
 			option,
 			menu,
+			groupLabel,
 			label,
 			hiddenInput,
 			arrow,

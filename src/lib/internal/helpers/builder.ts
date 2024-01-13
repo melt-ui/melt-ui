@@ -135,6 +135,60 @@ export type ExplicitBuilderReturn<
 	Name extends string
 > = BuilderStore<S, A, R, Name> & A;
 
+type BuilderArrayArgs<
+	S extends Stores,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R
+> = {
+	stores: S;
+	returned: (values: StoresValues<S>) => R[];
+	action?: A;
+};
+
+export function builderArray<
+	S extends Stores,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R,
+	Name extends string
+>(name: Name, args: BuilderArrayArgs<S, A, R>): ExplicitBuilderArrayReturn<A, R, Name> {
+	const { stores, returned, action } = args;
+
+	const { subscribe } = derived(stores, (values) =>
+		returned(values).map(
+			(value) =>
+				hiddenAction({
+					...value,
+					[`data-melt-${name}`]: '',
+					action: action ?? noop,
+				}) as BuilderArrayElement<A, R, Name>
+		)
+	);
+
+	const actionFn = (action ??
+		(() => {
+			/** noop */
+		})) as A & { subscribe: typeof subscribe };
+	actionFn.subscribe = subscribe;
+
+	return actionFn;
+}
+
+type BuilderArrayElement<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R,
+	Name extends string
+> = R & { [K in `data-melt-${Name}`]: '' } & { action: A };
+
+export type ExplicitBuilderArrayReturn<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R,
+	Name extends string
+> = Readable<BuilderArrayElement<A, R, Name>[]> & A;
+
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
 	const attribute = (part?: Part) => `data-melt-${prefix}${part ? `-${part}` : ''}`;

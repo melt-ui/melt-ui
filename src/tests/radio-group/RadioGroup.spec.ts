@@ -1,10 +1,10 @@
-import { render, waitFor } from '@testing-library/svelte';
+import type { CreateRadioGroupProps } from '$lib';
+import { render } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
-import RadioGroupTest from './RadioGroupTest.svelte';
-import userEvent from '@testing-library/user-event';
 import { testKbd as kbd } from '../utils.js';
-import type { CreateRadioGroupProps } from '$lib';
+import RadioGroupTest from './RadioGroupTest.svelte';
 
 const items = [
 	{

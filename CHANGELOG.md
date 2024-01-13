@@ -1,5 +1,19 @@
 # @melt-ui/svelte
 
+## 0.70.0
+
+### Minor Changes
+
+- Slider: Refactor thumb and tick ([#849](https://github.com/melt-ui/melt-ui/pull/849))
+
+- Combobox: add `group` and `groupLabel` elements (closes: #831) ([#891](https://github.com/melt-ui/melt-ui/pull/891))
+
+## 0.69.0
+
+### Minor Changes
+
+- Feature: `createSync` utility ([`f018010f`](https://github.com/melt-ui/melt-ui/commit/f018010ff922b70a5eeaaa5b94ae519e8ccbf7c1))
+
 ## 0.68.0
 
 ### Minor Changes
