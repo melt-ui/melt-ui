@@ -1,11 +1,18 @@
-import { isHTMLElement } from '$lib/internal/helpers/is.js';
 import { name, type ScrollAreaState } from './create.js';
 import type { Action } from 'svelte/action';
 import { get } from 'svelte/store';
 import { debounceCallback, getThumbSize, resizeObserver, toInt } from './helpers.js';
-import { executeCallbacks, noop } from '$lib/internal/helpers/callbacks.js';
-import { addEventListener, addMeltEventListener } from '$lib/internal/helpers/event.js';
-import { builder, effect, sleep, styleToString } from '$lib/internal/helpers/index.js';
+import {
+	executeCallbacks,
+	noop,
+	addEventListener,
+	addMeltEventListener,
+	builder,
+	effect,
+	sleep,
+	styleToString,
+	isHTMLElement,
+} from '$lib/internal/helpers/index.js';
 import type { ScrollAreaType } from './types.js';
 
 export type CreateScrollbarAction = (state: ScrollAreaState) => Action<HTMLElement>;

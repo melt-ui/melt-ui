@@ -12,11 +12,11 @@ import {
 	toWritableStores,
 	type IdObj,
 	type ToWritableStores,
+	omit,
 } from '$lib/internal/helpers/index.js';
 import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
 import type { CreateScrollAreaProps } from './types.js';
 import type { Orientation, TextDirection } from '$lib/internal/types.js';
-import { omit } from '../../internal/helpers/object';
 import {
 	addUnlinkedScrollListener,
 	getScrollPositionFromPointer,
@@ -154,6 +154,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
+			// Ensure we hide any native scrollbars on the viewport element
 			const styleNode = document.createElement('style');
 			styleNode.innerHTML = `
 				/* Hide scrollbars cross-browser and enable momentum scroll for touch
@@ -168,7 +169,6 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 					display:none;
 				}
 			`;
-
 			node.parentElement?.insertBefore(styleNode, node);
 
 			viewportEl.set(node);
