@@ -319,12 +319,13 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		const thumb = createScrollbarThumb(scrollAreaState);
 
 		return {
-			elements: {
-				scrollbar,
-				thumb,
-			},
+			scrollbar,
+			thumb,
 		};
 	}
+
+	const { scrollbar: scrollbarX, thumb: thumbX } = createScrollbar('horizontal');
+	const { scrollbar: scrollbarY, thumb: thumbY } = createScrollbar('vertical');
 
 	const corner = createScrollAreaCorner(rootState);
 
@@ -335,9 +336,10 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			viewport,
 			content,
 			corner,
-		},
-		builders: {
-			createScrollbar,
+			scrollbarX,
+			scrollbarY,
+			thumbX,
+			thumbY,
 		},
 	};
 }

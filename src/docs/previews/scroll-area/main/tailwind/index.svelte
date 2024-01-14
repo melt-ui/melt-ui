@@ -3,16 +3,20 @@
 	import { flavors } from './flavors.js';
 
 	const {
-		elements: { root, content, viewport, corner },
-		builders: { createScrollbar },
+		elements: {
+			root,
+			content,
+			viewport,
+			corner,
+			scrollbarX,
+			thumbX,
+			scrollbarY,
+			thumbY,
+		},
 	} = createScrollArea({
 		type: 'hover',
 		dir: 'ltr',
 	});
-
-	const {
-		elements: { scrollbar, thumb },
-	} = createScrollbar('vertical');
 </script>
 
 <div
@@ -33,10 +37,22 @@
 		</div>
 	</div>
 	<div
-		use:melt={$scrollbar}
+		use:melt={$scrollbarY}
 		class="flex h-full w-2.5 touch-none select-none border-l border-l-transparent bg-magnum-800/10 p-px transition-colors"
 	>
-		<div use:melt={$thumb} class="relative flex-1 rounded-full bg-magnum-600" />
+		<div
+			use:melt={$thumbY}
+			class="relative flex-1 rounded-full bg-magnum-600"
+		/>
+	</div>
+	<div
+		use:melt={$scrollbarX}
+		class="flex h-2.5 w-full touch-none select-none border-t border-t-transparent bg-magnum-800/10 p-px transition-colors"
+	>
+		<div
+			use:melt={$thumbX}
+			class="relative flex-1 rounded-full bg-magnum-600"
+		/>
 	</div>
 	<div use:melt={$corner} />
 </div>

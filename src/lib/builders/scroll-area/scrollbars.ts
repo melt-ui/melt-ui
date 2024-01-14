@@ -335,7 +335,7 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 					left: $dir === 'rtl' ? 'var(--melt-scroll-area-corner-width)' : 0,
 					right: $dir === 'ltr' ? 'var(--melt-scroll-area-corner-width' : 0,
 					'--melt-scroll-area-thumb-width': $sizes ? `${getThumbSize($sizes)}px` : undefined,
-					display: $isVisible ? 'block' : 'none',
+					display: !$isVisible ? 'none' : undefined,
 				}),
 				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
@@ -372,7 +372,7 @@ export function createScrollbarY(state: ScrollAreaState, createAction: CreateScr
 					left: $dir === 'rtl' ? 0 : undefined,
 					bottom: 'var(--melt-scroll-area-corner-height)',
 					'--melt-scroll-area-thumb-height': $sizes ? `${getThumbSize($sizes)}px` : undefined,
-					display: $isVisible ? 'block' : 'none',
+					display: !$isVisible ? 'none' : undefined,
 				}),
 				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
