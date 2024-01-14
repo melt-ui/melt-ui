@@ -5,7 +5,7 @@
 		elements: { root, content, viewport, corner },
 		builders: { createScrollbar },
 	} = createScrollArea({
-		type: 'always',
+		type: 'hover',
 		dir: 'ltr',
 	});
 

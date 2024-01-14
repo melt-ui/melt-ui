@@ -8,6 +8,7 @@ import {
 	generateIds,
 	isHTMLElement,
 	noop,
+	sleep,
 	styleToString,
 	toWritableStores,
 	type IdObj,
@@ -357,12 +358,14 @@ function createScrollbarThumb(state: ScrollAreaState) {
 		scrollbarState.handleThumbUp(e);
 	}
 
-	let listener: (() => void) | undefined = undefined;
+	let unsubListener: (() => void) | undefined = undefined;
 
 	function handleScroll() {
+		if (unsubListener) return;
 		const $viewportEl = get(rootState.viewportEl);
-		if (listener || !$viewportEl) return;
-		listener = addUnlinkedScrollListener($viewportEl, scrollbarState.onThumbPositionChange);
+		if ($viewportEl) {
+			unsubListener = addUnlinkedScrollListener($viewportEl, scrollbarState.onThumbPositionChange);
+		}
 		scrollbarState.onThumbPositionChange();
 	}
 
@@ -379,18 +382,18 @@ function createScrollbarThumb(state: ScrollAreaState) {
 		},
 		action: (node: HTMLElement) => {
 			scrollbarState.thumbEl.set(node);
-			const $viewportEl = get(rootState.viewportEl);
 
 			let effectHasRan = 0;
 			let unsubViewportScroll = noop;
 
 			effect([scrollbarState.sizes], ([_]) => {
 				if (effectHasRan === 2) return;
+				const $viewportEl = get(rootState.viewportEl);
 				if ($viewportEl) {
 					scrollbarState.onThumbPositionChange();
 					unsubViewportScroll = addEventListener($viewportEl, 'scroll', handleScroll);
+					effectHasRan++;
 				}
-				effectHasRan++;
 			});
 
 			const unsubEvents = executeCallbacks(
@@ -400,6 +403,7 @@ function createScrollbarThumb(state: ScrollAreaState) {
 
 			return {
 				destroy() {
+					unsubListener?.();
 					unsubViewportScroll();
 					unsubEvents();
 				},

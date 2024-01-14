@@ -5,11 +5,19 @@ import { get } from 'svelte/store';
 import { debounceCallback, getThumbSize, resizeObserver, toInt } from './helpers.js';
 import { executeCallbacks, noop } from '$lib/internal/helpers/callbacks.js';
 import { addEventListener, addMeltEventListener } from '$lib/internal/helpers/event.js';
-import { builder, effect, styleToString } from '$lib/internal/helpers/index.js';
+import { builder, effect, sleep, styleToString } from '$lib/internal/helpers/index.js';
 import type { ScrollAreaType } from './types.js';
 
 export type CreateScrollbarAction = (state: ScrollAreaState) => Action<HTMLElement>;
 
+/**
+ * The base scrollbar action is used for all scrollbar types,
+ * and provides the basic functionality for dragging the scrollbar
+ * thumb and scrolling the content.
+ *
+ * The other scrollbar actions will extend this one, preventing a ton
+ * of code duplication.
+ */
 export function createBaseScrollbarAction(state: ScrollAreaState) {
 	const { rootState, scrollbarState } = state;
 	scrollbarState.isVisible.set(true);
@@ -104,6 +112,12 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		}
 	}
 
+	// We need to recompute the sizes when the visibility of
+	// the scrollbar changes
+	effect([scrollbarState.isVisible], ([_]) => {
+		sleep(1).then(() => handleSizeChange());
+	});
+
 	function baseAction(node: HTMLElement) {
 		scrollbarState.scrollbarEl.set(node);
 		const unsubEvents = executeCallbacks(
@@ -129,7 +143,13 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 	return baseAction;
 }
 
+/**
+ * The auto scrollbar action will show the scrollbar when the content
+ * overflows the viewport, and hide it when it doesn't.
+ */
 export function createAutoScrollbarAction(state: ScrollAreaState) {
+	// always create the base action first, so we can override any
+	// state mutations that occur there
 	const baseAction = createBaseScrollbarAction(state);
 	const { rootState, scrollbarState } = state;
 
@@ -168,7 +188,14 @@ export function createAutoScrollbarAction(state: ScrollAreaState) {
 	return scrollbarAutoAction;
 }
 
+/**
+ * The hover scrollbar action will show the scrollbar when the user
+ * hovers over the scroll area, and hide it when they leave after
+ * an optionally specified delay.
+ */
 export function createHoverScrollbarAction(state: ScrollAreaState) {
+	// always create the base action first, so we can override any
+	// state mutations that occur there
 	const baseAction = createBaseScrollbarAction(state);
 	const { rootState, scrollbarState } = state;
 
@@ -210,6 +237,9 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 	return scrollbarHoverAction;
 }
 
+/**
+ * Creates the horizontal/x-axis scrollbar builder.
+ */
 export function createScrollbarX(state: ScrollAreaState, createAction: CreateScrollbarAction) {
 	const action = createAction(state);
 	const { rootState, scrollbarState } = state;
@@ -230,12 +260,12 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 			};
 		},
 		action: (node: HTMLElement) => {
-			const unsubBaseAction = action(node)?.destroy;
+			const unsubAction = action(node)?.destroy;
 			rootState.scrollbarXEl.set(node);
 			rootState.scrollbarXEnabled.set(true);
 			return {
 				destroy() {
-					unsubBaseAction?.();
+					unsubAction?.();
 					rootState.scrollbarXEl.set(null);
 				},
 			};
@@ -243,6 +273,9 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 	});
 }
 
+/**
+ * Creates the vertical/y-axis scrollbar builder.
+ */
 export function createScrollbarY(state: ScrollAreaState, createAction: CreateScrollbarAction) {
 	const action = createAction(state);
 	const { rootState, scrollbarState } = state;
@@ -264,12 +297,12 @@ export function createScrollbarY(state: ScrollAreaState, createAction: CreateScr
 			};
 		},
 		action: (node: HTMLElement) => {
+			const unsubAction = action(node)?.destroy;
 			rootState.scrollbarYEl.set(node);
 			rootState.scrollbarYEnabled.set(true);
-			const unsubBaseAction = action(node)?.destroy;
 			return {
 				destroy() {
-					unsubBaseAction?.();
+					unsubAction?.();
 					rootState.scrollbarYEl.set(null);
 				},
 			};
