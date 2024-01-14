@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { createTooltip, melt } from '$lib';
+	import { createTooltip, melt } from '$lib/index.js';
 
 	const {
 		elements: { trigger, content, arrow },

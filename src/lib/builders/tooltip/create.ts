@@ -5,6 +5,7 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
+	generateIds,
 	getPortalDestination,
 	isBrowser,
 	isTouch,
@@ -23,7 +24,6 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable, type Writable } from 'svelte/store';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
-import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {

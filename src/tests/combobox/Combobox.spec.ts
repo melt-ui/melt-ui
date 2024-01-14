@@ -1,10 +1,10 @@
 import { act, render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
-import { testKbd as kbd } from '../utils';
+import { testKbd as kbd } from '../utils.js';
 import ComboboxTest from './ComboboxTest.svelte';
-import type { ComboboxOptionProps } from '$lib';
+import type { ComboboxOptionProps } from '$lib/index.js';
 
 const options: ComboboxOptionProps[] = [
 	{

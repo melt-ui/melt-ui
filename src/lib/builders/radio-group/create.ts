@@ -13,9 +13,9 @@ import {
 	kbd,
 	omit,
 	overridable,
+	safeOnMount,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
 import type { RadioGroupEvents } from './events.js';

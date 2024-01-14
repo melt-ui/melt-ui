@@ -1,7 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { it, describe } from 'vitest';
 import LabelTest from './LabelTest.svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
 describe('LabelTest', () => {
 	it('renders the label with the correct text', () => {

@@ -1,8 +1,8 @@
-import { DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { treeEvents } from '$lib/builders/tree/events';
-import type { BuilderData } from '.';
+import { DESCRIPTIONS, KBD, PROPS } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { treeEvents } from '$lib/builders/tree/events.js';
+import type { BuilderData } from './index.js';
 
 const BUILDER_NAME = 'tree-view';
 

@@ -1,10 +1,10 @@
-import { sleep, type ChangeFn } from '$lib/internal/helpers';
+import { sleep, type ChangeFn } from '$lib/internal/helpers/index.js';
 import { render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { get, writable } from 'svelte/store';
 import { describe } from 'vitest';
-import Meta, { Example, type StoryProps } from './Collapsible.stories';
+import Meta, { Example, type StoryProps } from './Collapsible.stories.js';
 
 function setup(props: StoryProps = {}) {
 	const user = userEvent.setup();

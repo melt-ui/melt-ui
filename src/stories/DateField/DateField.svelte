@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { createDateField, type CreateDateFieldProps } from '$lib/builders';
-	import { melt } from '$lib';
-	import { PreviewWrapper } from '$docs/components';
+	import { createDateField, melt, type CreateDateFieldProps } from '$lib/index.js';
+	import { PreviewWrapper } from '$docs/components/index.js';
 
 	export let value: CreateDateFieldProps['value'] = undefined;
 	export let defaultValue: CreateDateFieldProps['defaultValue'] = undefined;

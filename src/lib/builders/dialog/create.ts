@@ -18,6 +18,7 @@ import {
 	kbd,
 	last,
 	noop,
+	omit,
 	overridable,
 	removeScroll,
 	sleep,
@@ -27,7 +28,6 @@ import {
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import { omit } from '../../internal/helpers/object';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
 

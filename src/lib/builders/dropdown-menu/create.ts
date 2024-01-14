@@ -1,8 +1,7 @@
-import { overridable, toWritableStores } from '$lib/internal/helpers/index.js';
+import { omit, overridable, toWritableStores } from '$lib/internal/helpers/index.js';
 import { writable } from 'svelte/store';
 import { createMenuBuilder } from '../menu/index.js';
 import type { CreateDropdownMenuProps } from './types.js';
-import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	arrowSize: 8,

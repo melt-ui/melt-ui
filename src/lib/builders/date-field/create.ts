@@ -1,8 +1,9 @@
-import type { CreateDateFieldProps } from './types';
+import type { CreateDateFieldProps } from './types.js';
 import {
 	builder,
 	createElHelpers,
 	effect,
+	generateIds,
 	kbd,
 	overridable,
 	toWritableStores,
@@ -60,9 +61,8 @@ import type {
 	TimeSegmentPart,
 } from './_internal/types.js';
 import type { DateValue } from '@internationalized/date';
-import type { MeltActionReturn } from '$lib/internal/types';
-import type { DateFieldEvents } from './events';
-import { generateIds } from '../../internal/helpers/id';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { DateFieldEvents } from './events.js';
 
 const defaults = {
 	isDateUnavailable: undefined,

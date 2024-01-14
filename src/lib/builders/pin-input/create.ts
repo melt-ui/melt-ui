@@ -4,6 +4,7 @@ import {
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
+	generateIds,
 	hiddenInputAttrs,
 	isBrowser,
 	isHTMLElement,
@@ -20,7 +21,6 @@ import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { PinInputEvents } from './events.js';
 import type { CreatePinInputProps } from './types.js';
-import { generateIds } from '../../internal/helpers/id';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 

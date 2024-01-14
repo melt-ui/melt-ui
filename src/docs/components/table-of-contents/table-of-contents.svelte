@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Tree from './tree.svelte';
 
-	import { createTableOfContents } from '$lib';
+	import { createTableOfContents } from '$lib/index.js';
 
 	/**
 	 * The filter function is for removing headings from the ToC

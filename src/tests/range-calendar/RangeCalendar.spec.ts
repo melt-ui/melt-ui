@@ -1,13 +1,14 @@
 import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import RangeCalendarTest from './RangeCalendarTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
 import { writable } from 'svelte/store';
 import { tick } from 'svelte';
-import type { CreateRangeCalendarProps, DateRange } from '$lib';
+import type { CreateRangeCalendarProps, DateRange } from '$lib/index.js';
 
 const calendarDateRange = {
 	start: new CalendarDate(1980, 1, 20),

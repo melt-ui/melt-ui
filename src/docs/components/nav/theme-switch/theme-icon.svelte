@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Monitor, Moon, Sun } from 'lucide-svelte';
-	import type { Theme } from './types';
+	import type { Theme } from './types.js';
 
 	export let theme: Theme = 'light';
 	export let size: 'sm' | 'md' | 'lg' = 'md';

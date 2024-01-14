@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Tooltip } from '$docs/components/index.js';
-	import { createCombobox, createDialog, melt } from '$lib';
+	import { createCombobox, createDialog, melt } from '$lib/index.js';
 	import { CornerDownRight, Search as SearchIcon } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import type {
@@ -9,7 +9,7 @@
 		PagefindSearchFragment,
 		PagefindSearchResult,
 		PagefindSubResult,
-	} from '../../pagefind';
+	} from '../../pagefind.js';
 
 	type Promised<T> = T extends Promise<infer U> ? U : T;
 

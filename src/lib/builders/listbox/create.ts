@@ -14,6 +14,7 @@ import {
 	executeCallbacks,
 	forward,
 	generateId,
+	generateIds,
 	getOptions,
 	getPortalDestination,
 	hiddenInputAttrs,
@@ -33,17 +34,16 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	safeOnMount,
 	stripValues,
 	styleToString,
 	toWritableStores,
 	toggle,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
 import { createLabel } from '../label/create.js';
 import type { ListboxEvents } from './events.js';
 import type {

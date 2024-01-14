@@ -1,10 +1,6 @@
 <script lang="ts">
-	import { melt } from '$lib';
-	import {
-		createDateRangeField,
-		type CreateDateRangeFieldProps,
-	} from '$lib/builders/date-range-field';
-	import { removeUndefined } from '../utils';
+	import { createDateRangeField, melt, type CreateDateRangeFieldProps } from '$lib/index.js';
+	import { removeUndefined } from '../utils.js';
 
 	export let value: CreateDateRangeFieldProps['value'] = undefined;
 	export let defaultValue: CreateDateRangeFieldProps['defaultValue'] = undefined;

@@ -5,6 +5,7 @@ import {
 	derivedVisible,
 	effect,
 	executeCallbacks,
+	generateIds,
 	getPortalDestination,
 	handleFocus,
 	isBrowser,
@@ -15,16 +16,15 @@ import {
 	omit,
 	overridable,
 	removeScroll,
+	safeOnMount,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper } from '$lib/internal/actions/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 

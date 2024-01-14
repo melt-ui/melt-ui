@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { createDateRangePicker } from '$lib/builders';
+	import { createDateRangePicker, melt } from '$lib/index.js';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
-	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
 	import LocaleCombobox from './LocaleCombobox.svelte';
 

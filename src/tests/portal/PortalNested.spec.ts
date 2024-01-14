@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import PortalNestedTest, { structure, type Structure } from './PortalNested.svelte';
 
 // Recursive function to test the components

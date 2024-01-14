@@ -6,6 +6,7 @@ import {
 	derivedVisible,
 	effect,
 	executeCallbacks,
+	generateIds,
 	getPortalDestination,
 	getTabbableNodes,
 	isBrowser,
@@ -14,16 +15,15 @@ import {
 	isHTMLElement,
 	isTouch,
 	noop,
+	omit,
 	overridable,
 	sleep,
+	safeOnMount,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
-import { omit } from '../../internal/helpers/object';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
 

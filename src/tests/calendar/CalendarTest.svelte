@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { createCalendar, type CreateCalendarProps } from '$lib/builders';
+	import { createCalendar, melt, type CreateCalendarProps } from '$lib/index.js';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
-	import { melt } from '$lib';
-	import { removeUndefined } from '../utils';
+	import { removeUndefined } from '../utils.js';
 
 	export let value: CreateCalendarProps['value'] = undefined;
 	export let defaultValue: CreateCalendarProps['defaultValue'] = undefined;

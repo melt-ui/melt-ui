@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { createDatePicker, type CreateDatePickerProps } from '$lib/builders';
+	import { createDatePicker, melt, type CreateDatePickerProps } from '$lib/index.js';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
-	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
-	import { removeUndefined } from '../utils';
+	import { removeUndefined } from '../utils.js';
 
 	export let value: CreateDatePickerProps['value'] = undefined;
 	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;

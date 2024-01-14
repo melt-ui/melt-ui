@@ -30,6 +30,7 @@ import {
 	removeHighlight,
 	removeScroll,
 	sleep,
+	safeOnMount,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
@@ -37,7 +38,6 @@ import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/ty
 import { tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MenuEvents } from './events.js';
 import type {
 	Selector,

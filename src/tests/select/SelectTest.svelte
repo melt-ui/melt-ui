@@ -2,7 +2,7 @@
 	import { createSelect, melt, type CreateSelectProps } from '$lib/index.js';
 	import { Check } from 'lucide-svelte';
 	import { tick } from 'svelte';
-	import { removeUndefined } from '../utils';
+	import { removeUndefined } from '../utils.js';
 
 	export let multiple = false;
 	export let defaultValue: string | undefined = undefined;

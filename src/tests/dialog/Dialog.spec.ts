@@ -2,10 +2,10 @@ import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers/index.js';
-import { testKbd as kbd } from '../utils';
-import type { CreateDialogProps } from '$lib';
+import { testKbd as kbd } from '../utils.js';
+import type { CreateDialogProps } from '$lib/index.js';
 
 function setup(props: CreateDialogProps = {}) {
 	const user = userEvent.setup();

@@ -3,6 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	disabledAttr,
+	executeCallbacks,
 	kbd,
 	omit,
 	overridable,
@@ -11,7 +12,6 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { get, writable } from 'svelte/store';
-import { executeCallbacks } from '../../internal/helpers/callbacks.js';
 import type { SwitchEvents } from './events.js';
 import type { CreateSwitchProps } from './types.js';
 

@@ -3,20 +3,20 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+	safeOnMount,
+} from '$lib/internal/helpers/index.js';
+import type { Defaults } from '$lib/internal/types.js';
 
 import { dequal } from 'dequal';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
-import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type {
 	CreateTableOfContentsArgs,
 	ElementHeadingLU,
 	Heading,
 	HeadingParentsLU,
 	TableOfContentsItem,
-} from './types';
+} from './types.js';
 
 const defaults = {
 	exclude: ['h1'],

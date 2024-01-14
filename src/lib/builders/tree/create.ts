@@ -3,6 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	generateIds,
 	getElementByMeltId,
 	isHTMLElement,
 	isHidden,
@@ -11,13 +12,11 @@ import {
 	last,
 	overridable,
 	styleToString,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
-
-import { generateIds } from '../../internal/helpers/id';
-import type { TreeEvents } from './events';
-import type { CreateTreeViewProps, TreeParts } from './types';
+import type { TreeEvents } from './events.js';
+import type { CreateTreeViewProps, TreeParts } from './types.js';
 
 const defaults = {
 	forceVisible: false,

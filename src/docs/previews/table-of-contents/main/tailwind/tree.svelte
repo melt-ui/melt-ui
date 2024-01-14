@@ -1,9 +1,9 @@
 <script lang="ts">
 	import {
+		melt,
 		type TableOfContentsItem,
 		type TableOfContentsElements,
-		melt,
-	} from '$lib';
+	} from '$lib/index.js';
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];

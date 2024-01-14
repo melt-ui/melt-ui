@@ -4,6 +4,7 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
+	generateIds,
 	getElementByMeltId,
 	isBrowser,
 	isHTMLElement,
@@ -21,7 +22,6 @@ import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
 import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
 import { tick } from 'svelte';
 import type { TagsInputEvents } from './events.js';
-import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	placeholder: '',
