@@ -1,28 +1,18 @@
 import { isHTMLElement } from '$lib/internal/helpers/is.js';
-import { name, type ScrollAreaRootState, type ScrollAreaScrollbarState } from './create.js';
+import { name, type ScrollAreaState } from './create.js';
 import type { Action } from 'svelte/action';
-import { writable, get, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 import { debounceCallback, getThumbSize, resizeObserver, toInt } from './helpers.js';
 import { executeCallbacks, noop } from '$lib/internal/helpers/callbacks.js';
 import { addEventListener, addMeltEventListener } from '$lib/internal/helpers/event.js';
 import { builder, effect, styleToString } from '$lib/internal/helpers/index.js';
 import type { ScrollAreaType } from './types.js';
 
-type ScrollAreaState = {
-	rootState: ScrollAreaRootState;
-	scrollbarState: ScrollAreaScrollbarState;
-};
-
-export type CreateScrollbarAction = (state: ScrollAreaState) => {
-	action: Action<HTMLElement>;
-	visible: Writable<boolean>;
-};
+export type CreateScrollbarAction = (state: ScrollAreaState) => Action<HTMLElement>;
 
 export function createBaseScrollbarAction(state: ScrollAreaState) {
 	const { rootState, scrollbarState } = state;
-	const { viewportEl, contentEl } = rootState;
-
-	const scrollbarEl = writable<HTMLElement | null>(null);
+	scrollbarState.isVisible.set(true);
 
 	function handleDragScroll(e: MouseEvent) {
 		const $domRect = get(scrollbarState.domRect);
@@ -47,7 +37,7 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		scrollbarState.domRect.set(currentTarget.getBoundingClientRect());
 		scrollbarState.prevWebkitUserSelect.set(document.body.style.webkitUserSelect);
 		document.body.style.webkitUserSelect = 'none';
-		const $viewportEl = get(viewportEl);
+		const $viewportEl = get(rootState.viewportEl);
 		if ($viewportEl) {
 			$viewportEl.style.scrollBehavior = 'auto';
 		}
@@ -65,7 +55,7 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 			target.releasePointerCapture(e.pointerId);
 		}
 		document.body.style.webkitUserSelect = get(scrollbarState.prevWebkitUserSelect);
-		const $viewportEl = get(viewportEl);
+		const $viewportEl = get(rootState.viewportEl);
 		if ($viewportEl) {
 			$viewportEl.style.scrollBehavior = '';
 		}
@@ -87,10 +77,10 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 	}
 
 	function handleSizeChange() {
-		const $scrollbarEl = get(scrollbarEl);
+		const $scrollbarEl = get(scrollbarState.scrollbarEl);
 		if (!$scrollbarEl) return;
 		const $isHorizontal = get(scrollbarState.isHorizontal);
-		const $viewportEl = get(viewportEl);
+		const $viewportEl = get(rootState.viewportEl);
 		if ($isHorizontal) {
 			scrollbarState.sizes.set({
 				content: $viewportEl?.scrollWidth ?? 0,
@@ -115,7 +105,7 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 	}
 
 	function baseAction(node: HTMLElement) {
-		scrollbarEl.set(node);
+		scrollbarState.scrollbarEl.set(node);
 		const unsubEvents = executeCallbacks(
 			addMeltEventListener(node, 'pointerdown', handlePointerDown),
 			addMeltEventListener(node, 'pointermove', handlePointerMove),
@@ -123,7 +113,7 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 			addEventListener(document, 'wheel', handleWheel, { passive: false })
 		);
 
-		const unsubResizeContent = effect([contentEl], ([$contentEl]) => {
+		const unsubResizeContent = effect([rootState.contentEl], ([$contentEl]) => {
 			if (!$contentEl) return noop;
 			return resizeObserver($contentEl, handleSizeChange);
 		});
@@ -136,17 +126,12 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		};
 	}
 
-	return {
-		action: baseAction,
-		visible: writable(true),
-	};
+	return baseAction;
 }
 
 export function createAutoScrollbarAction(state: ScrollAreaState) {
-	const { action } = createBaseScrollbarAction(state);
+	const baseAction = createBaseScrollbarAction(state);
 	const { rootState, scrollbarState } = state;
-	const visible = writable(false);
-	const { viewportEl, contentEl } = rootState;
 
 	const handleResize = debounceCallback(() => {
 		const $viewportEl = get(rootState.viewportEl);
@@ -154,20 +139,20 @@ export function createAutoScrollbarAction(state: ScrollAreaState) {
 			const isOverflowX = $viewportEl.offsetWidth < $viewportEl.scrollWidth;
 			const isOverflowY = $viewportEl.offsetHeight < $viewportEl.scrollHeight;
 
-			visible.set(get(scrollbarState.isHorizontal) ? isOverflowX : isOverflowY);
+			scrollbarState.isVisible.set(get(scrollbarState.isHorizontal) ? isOverflowX : isOverflowY);
 		}
 	}, 10);
 
 	function scrollbarAutoAction(node: HTMLElement) {
-		const unsubBaseAction = action(node)?.destroy;
+		const unsubBaseAction = baseAction(node)?.destroy;
 		handleResize();
 		const unsubObservers: Array<() => void> = [];
 
-		const $viewportEl = get(viewportEl);
+		const $viewportEl = get(rootState.viewportEl);
 		if ($viewportEl) {
 			unsubObservers.push(resizeObserver($viewportEl, handleResize));
 		}
-		const $contentEl = get(contentEl);
+		const $contentEl = get(rootState.contentEl);
 		if ($contentEl) {
 			unsubObservers.push(resizeObserver($contentEl, handleResize));
 		}
@@ -180,30 +165,31 @@ export function createAutoScrollbarAction(state: ScrollAreaState) {
 		};
 	}
 
-	return {
-		visible,
-		action: scrollbarAutoAction,
-	};
+	return scrollbarAutoAction;
 }
 
 export function createHoverScrollbarAction(state: ScrollAreaState) {
-	const { action } = createBaseScrollbarAction(state);
-	const { rootState } = state;
+	const baseAction = createBaseScrollbarAction(state);
+	const { rootState, scrollbarState } = state;
+
+	// with the hover scrollbar, we want it to be hidden by default
+	scrollbarState.isVisible.set(false);
+
 	let timeout: ReturnType<typeof setTimeout> | number | undefined;
-	const visible = writable(false);
 
 	function handlePointerEnter() {
 		window.clearTimeout(timeout);
-		visible.set(true);
+		scrollbarState.isVisible.set(true);
 	}
 
 	function handlePointerLeave() {
 		timeout = window.setTimeout(() => {
-			visible.set(false);
+			scrollbarState.isVisible.set(false);
 		}, get(rootState.options.hideDelay));
 	}
 
 	function scrollbarHoverAction(node: HTMLElement) {
+		const unsubBaseAction = baseAction(node)?.destroy;
 		const scrollAreaEl = node.closest('[data-melt-scroll-area]');
 		let unsubScrollAreaListeners = noop;
 		if (scrollAreaEl) {
@@ -212,7 +198,6 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 				addEventListener(scrollAreaEl, 'pointerleave', handlePointerLeave)
 			);
 		}
-		const unsubBaseAction = action(node)?.destroy;
 
 		return {
 			destroy() {
@@ -222,19 +207,16 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 		};
 	}
 
-	return {
-		action: scrollbarHoverAction,
-		visible,
-	};
+	return scrollbarHoverAction;
 }
 
 export function createScrollbarX(state: ScrollAreaState, createAction: CreateScrollbarAction) {
-	const { action, visible } = createAction(state);
+	const action = createAction(state);
 	const { rootState, scrollbarState } = state;
 
 	return builder(name('scrollbar'), {
-		stores: [scrollbarState.sizes, rootState.options.dir, visible],
-		returned: ([$sizes, $dir, $visible]) => {
+		stores: [scrollbarState.sizes, rootState.options.dir, scrollbarState.isVisible],
+		returned: ([$sizes, $dir, $isVisible]) => {
 			return {
 				style: styleToString({
 					position: 'absolute',
@@ -242,9 +224,9 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 					left: $dir === 'rtl' ? 'var(--melt-scroll-area-corner-width)' : 0,
 					right: $dir === 'ltr' ? 'var(--melt-scroll-area-corner-width' : 0,
 					'--melt-scroll-area-thumb-width': $sizes ? `${getThumbSize($sizes)}px` : undefined,
-					display: $visible ? 'block' : 'none',
+					display: $isVisible ? 'block' : 'none',
 				}),
-				'data-state': $visible ? 'visible' : 'hidden',
+				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -262,12 +244,12 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 }
 
 export function createScrollbarY(state: ScrollAreaState, createAction: CreateScrollbarAction) {
-	const { action, visible } = createAction(state);
+	const action = createAction(state);
 	const { rootState, scrollbarState } = state;
 
 	return builder(name('scrollbar'), {
-		stores: [scrollbarState.sizes, rootState.options.dir, visible],
-		returned: ([$sizes, $dir, $visible]) => {
+		stores: [scrollbarState.sizes, rootState.options.dir, scrollbarState.isVisible],
+		returned: ([$sizes, $dir, $isVisible]) => {
 			return {
 				style: styleToString({
 					position: 'absolute',
@@ -276,9 +258,9 @@ export function createScrollbarY(state: ScrollAreaState, createAction: CreateScr
 					left: $dir === 'rtl' ? 0 : undefined,
 					bottom: 'var(--melt-scroll-area-corner-height)',
 					'--melt-scroll-area-thumb-height': $sizes ? `${getThumbSize($sizes)}px` : undefined,
-					opacity: $visible ? 1 : 0,
+					display: $isVisible ? 'block' : 'none',
 				}),
-				'data-state': $visible ? 'visible' : 'hidden',
+				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
 		},
 		action: (node: HTMLElement) => {

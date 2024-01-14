@@ -65,11 +65,17 @@ export type ScrollAreaScrollbarState = {
 	sizes: Writable<Sizes>;
 	orientation: Writable<Orientation>;
 	hasThumb: Readable<boolean>;
+	isVisible: Writable<boolean>;
 	handleWheelScroll: (e: WheelEvent, payload: number) => void;
 	handleThumbDown: (payload: { x: number; y: number }) => void;
 	handleThumbUp: (e: MouseEvent) => void;
 	onThumbPositionChange: () => void;
 	onDragScroll: (payload: number) => void;
+};
+
+export type ScrollAreaState = {
+	rootState: ScrollAreaRootState;
+	scrollbarState: ScrollAreaScrollbarState;
 };
 
 const defaults = {
@@ -214,6 +220,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 				paddingEnd: 0,
 			},
 		});
+		const isVisible = writable(false);
 
 		const hasThumb = derived(sizes, ($sizes) => {
 			const thumbRatio = getThumbRatio($sizes.viewport, $sizes.content);
@@ -298,18 +305,18 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			handleWheelScroll,
 			hasThumb,
 			scrollbarEl,
+			isVisible,
 		};
 
 		const scrollbarActionByType = getScrollbarActionByType(get(options.type));
-
-		const combinedState = { rootState, scrollbarState };
+		const scrollAreaState = { rootState, scrollbarState };
 
 		const scrollbar =
 			orientationProp === 'horizontal'
-				? createScrollbarX(combinedState, scrollbarActionByType)
-				: createScrollbarY(combinedState, scrollbarActionByType);
+				? createScrollbarX(scrollAreaState, scrollbarActionByType)
+				: createScrollbarY(scrollAreaState, scrollbarActionByType);
 
-		const thumb = createScrollbarThumb(rootState, scrollbarState);
+		const thumb = createScrollbarThumb(scrollAreaState);
 
 		return {
 			elements: {
@@ -335,10 +342,8 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 	};
 }
 
-function createScrollbarThumb(
-	rootState: ScrollAreaRootState,
-	scrollbarState: ScrollAreaScrollbarState
-) {
+function createScrollbarThumb(state: ScrollAreaState) {
+	const { scrollbarState, rootState } = state;
 	function handlePointerDown(e: MouseEvent) {
 		const thumb = e.target;
 		if (!isHTMLElement(thumb)) return;
