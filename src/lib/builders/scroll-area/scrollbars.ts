@@ -14,6 +14,7 @@ import {
 	isHTMLElement,
 } from '$lib/internal/helpers/index.js';
 import type { ScrollAreaType } from './types.js';
+import { createStateMachine } from '$lib/internal/helpers/store/stateMachine.js';
 
 export type CreateScrollbarAction = (state: ScrollAreaState) => Action<HTMLElement>;
 
@@ -207,6 +208,7 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 	const { rootState, scrollbarState } = state;
 
 	// with the hover scrollbar, we want it to be hidden by default
+	// and only show it when the user hovers over the scroll area
 	scrollbarState.isVisible.set(false);
 
 	let timeout: ReturnType<typeof setTimeout> | number | undefined;
@@ -245,7 +247,79 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 }
 
 /**
- * Creates the horizontal/x-axis scrollbar builder.
+ * The scroll scrollbar action will only show the scrollbar
+ * when the user is actively scrolling the content.
+ */
+export function createScrollScrollbarAction(state: ScrollAreaState) {
+	// always create the base action first, so we can
+	// override any state mutations that occur there
+	const baseAction = createBaseScrollbarAction(state);
+	const { rootState, scrollbarState } = state;
+
+	const { state: status, dispatch } = createStateMachine('hidden', {
+		hidden: {
+			SCROLL: 'scrolling',
+		},
+		scrolling: {
+			SCROLL_END: 'idle',
+			POINTER_ENTER: 'interacting',
+		},
+		interacting: {
+			SCROLL: 'interacting',
+			POINTER_LEAVE: 'scrolling',
+		},
+		idle: {
+			HIDE: 'hidden',
+			SCROLL: 'scrolling',
+			POINTER_ENTER: 'interacting',
+		},
+	});
+
+	effect([status], ([$status]) => {
+		if ($status === 'idle') {
+			window.setTimeout(() => {
+				dispatch('HIDE');
+			}, get(rootState.options.hideDelay));
+		}
+		if ($status === 'hidden') {
+			scrollbarState.isVisible.set(false);
+		} else {
+			scrollbarState.isVisible.set(true);
+		}
+	});
+
+	const debounceScrollEnd = debounceCallback(() => dispatch('SCROLL_END'), 100);
+
+	effect([rootState.viewportEl, scrollbarState.isHorizontal], ([$viewportEl, $isHorizontal]) => {
+		const scrollDirection = $isHorizontal ? 'scrollLeft' : 'scrollTop';
+
+		let unsub = noop;
+
+		if ($viewportEl) {
+			let prevScrollPos = $viewportEl[scrollDirection];
+			const handleScroll = () => {
+				const scrollPos = $viewportEl[scrollDirection];
+				const hasScrollInDirectionChanged = prevScrollPos !== scrollPos;
+				if (hasScrollInDirectionChanged) {
+					dispatch('SCROLL');
+					debounceScrollEnd();
+				}
+				prevScrollPos = scrollPos;
+			};
+
+			unsub = addEventListener($viewportEl, 'scroll', handleScroll);
+		}
+
+		return () => {
+			unsub();
+		};
+	});
+
+	return baseAction;
+}
+
+/**
+ * Creates the horizontal/x-axis scrollbar builder element.
  */
 export function createScrollbarX(state: ScrollAreaState, createAction: CreateScrollbarAction) {
 	const action = createAction(state);
@@ -281,7 +355,7 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 }
 
 /**
- * Creates the vertical/y-axis scrollbar builder.
+ * Creates the vertical/y-axis scrollbar builder element.
  */
 export function createScrollbarY(state: ScrollAreaState, createAction: CreateScrollbarAction) {
 	const action = createAction(state);
@@ -325,6 +399,8 @@ export function getScrollbarActionByType(type: ScrollAreaType) {
 			return createAutoScrollbarAction;
 		case 'hover':
 			return createHoverScrollbarAction;
+		case 'scroll':
+			return createScrollScrollbarAction;
 		default:
 			return createBaseScrollbarAction;
 	}
