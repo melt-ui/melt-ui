@@ -8,7 +8,6 @@ import {
 	generateIds,
 	isHTMLElement,
 	noop,
-	sleep,
 	styleToString,
 	toWritableStores,
 	type IdObj,
