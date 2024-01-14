@@ -1,7 +1,7 @@
 import { name, type ScrollAreaState } from './create.js';
 import type { Action } from 'svelte/action';
-import { get } from 'svelte/store';
-import { debounceCallback, getThumbSize, resizeObserver, toInt } from './helpers.js';
+import { derived, get } from 'svelte/store';
+import { debounceCallback, getThumbSize, resizeObserver, toInt, type Sizes } from './helpers.js';
 import {
 	executeCallbacks,
 	noop,
@@ -30,12 +30,50 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 	const { rootState, scrollbarState } = state;
 	scrollbarState.isVisible.set(true);
 
+	// Hear me out, rather than having a bunch of `get` calls
+	// in the various hot path handlers, we can just use a local
+	// variable, initialize them with the value of the stores,
+	// and only update it when the store changes.
+
+	// This feels much more performant than having to call `get` in
+	// every handler
+
+	let domRect = get(scrollbarState.domRect);
+	let isHorizontal = get(scrollbarState.isHorizontal);
+	let viewportEl = get(rootState.viewportEl);
+	let scrollbarEl = get(scrollbarState.scrollbarEl);
+	let prevWebkitUserSelect = get(scrollbarState.prevWebkitUserSelect);
+	let sizes: Sizes = get(scrollbarState.sizes);
+
+	derived(scrollbarState.domRect, ($domRect) => {
+		domRect = $domRect;
+	});
+
+	derived(scrollbarState.isHorizontal, ($isHorizontal) => {
+		isHorizontal = $isHorizontal;
+	});
+
+	derived(rootState.viewportEl, ($viewportEl) => {
+		viewportEl = $viewportEl;
+	});
+
+	derived(scrollbarState.prevWebkitUserSelect, ($prevWebkitUserSelect) => {
+		prevWebkitUserSelect = $prevWebkitUserSelect;
+	});
+
+	derived(scrollbarState.sizes, ($sizes) => {
+		sizes = $sizes;
+	});
+
+	derived(scrollbarState.scrollbarEl, ($scrollbarEl) => {
+		scrollbarEl = $scrollbarEl;
+	});
+
 	function handleDragScroll(e: MouseEvent) {
-		const $domRect = get(scrollbarState.domRect);
-		if ($domRect) {
-			const x = e.clientX - $domRect.left;
-			const y = e.clientY - $domRect.top;
-			if (get(scrollbarState.isHorizontal)) {
+		if (domRect) {
+			const x = e.clientX - domRect.left;
+			const y = e.clientY - domRect.top;
+			if (isHorizontal) {
 				scrollbarState.onDragScroll(x);
 			} else {
 				scrollbarState.onDragScroll(y);
@@ -53,9 +91,8 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		scrollbarState.domRect.set(currentTarget.getBoundingClientRect());
 		scrollbarState.prevWebkitUserSelect.set(document.body.style.webkitUserSelect);
 		document.body.style.webkitUserSelect = 'none';
-		const $viewportEl = get(rootState.viewportEl);
-		if ($viewportEl) {
-			$viewportEl.style.scrollBehavior = 'auto';
+		if (viewportEl) {
+			viewportEl.style.scrollBehavior = 'auto';
 		}
 		handleDragScroll(e);
 	}
@@ -70,10 +107,9 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		if (target.hasPointerCapture(e.pointerId)) {
 			target.releasePointerCapture(e.pointerId);
 		}
-		document.body.style.webkitUserSelect = get(scrollbarState.prevWebkitUserSelect);
-		const $viewportEl = get(rootState.viewportEl);
-		if ($viewportEl) {
-			$viewportEl.style.scrollBehavior = '';
+		document.body.style.webkitUserSelect = prevWebkitUserSelect;
+		if (viewportEl) {
+			viewportEl.style.scrollBehavior = '';
 		}
 		scrollbarState.domRect.set(null);
 	}
@@ -86,35 +122,31 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		const isScrollbarWheel = currentTarget.contains(target);
 		if (!isScrollbarWheel) return;
 
-		const $sizes = get(scrollbarState.sizes);
-		if (!$sizes) return;
-		const maxScrollPos = $sizes.content - $sizes.viewport;
+		if (!sizes) return;
+		const maxScrollPos = sizes.content - sizes.viewport;
 		scrollbarState.handleWheelScroll(e, maxScrollPos);
 	}
 
 	function handleSizeChange() {
-		const $scrollbarEl = get(scrollbarState.scrollbarEl);
-		if (!$scrollbarEl) return;
-		const $isHorizontal = get(scrollbarState.isHorizontal);
-		const $viewportEl = get(rootState.viewportEl);
-		if ($isHorizontal) {
+		if (!scrollbarEl) return;
+		if (isHorizontal) {
 			scrollbarState.sizes.set({
-				content: $viewportEl?.scrollWidth ?? 0,
-				viewport: $viewportEl?.offsetWidth ?? 0,
+				content: viewportEl?.scrollWidth ?? 0,
+				viewport: viewportEl?.offsetWidth ?? 0,
 				scrollbar: {
-					size: $scrollbarEl.clientWidth ?? 0,
-					paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
-					paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
+					size: scrollbarEl.clientWidth ?? 0,
+					paddingStart: toInt(getComputedStyle(scrollbarEl).paddingLeft),
+					paddingEnd: toInt(getComputedStyle(scrollbarEl).paddingRight),
 				},
 			});
 		} else {
 			scrollbarState.sizes.set({
-				content: $viewportEl?.scrollHeight ?? 0,
-				viewport: $viewportEl?.offsetHeight ?? 0,
+				content: viewportEl?.scrollHeight ?? 0,
+				viewport: viewportEl?.offsetHeight ?? 0,
 				scrollbar: {
-					size: $scrollbarEl.clientHeight ?? 0,
-					paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
-					paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
+					size: scrollbarEl.clientHeight ?? 0,
+					paddingStart: toInt(getComputedStyle(scrollbarEl).paddingLeft),
+					paddingEnd: toInt(getComputedStyle(scrollbarEl).paddingRight),
 				},
 			});
 		}
