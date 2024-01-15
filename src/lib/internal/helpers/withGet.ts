@@ -19,23 +19,23 @@ export function withGet<T extends Readable<unknown>>(store: T): WithGet<T> {
 	let value = get(store);
 
 	if (isWritable(store)) {
-		const update = ((cb) => {
-			store.update((v) => {
+		const { update: _update, set: _set } = store;
+
+		store.update = ((cb) => {
+			_update((v) => {
 				const nv = cb(v);
 				value = nv;
 				return nv;
 			});
 		}) as (typeof store)['update'];
 
-		const set = ((v) => {
-			update(() => v);
+		store.set = ((v) => {
+			store.update(() => v);
 		}) as (typeof store)['set'];
 
 		return {
 			...store,
 			get: () => value as ReadableValue<T>,
-			update,
-			set,
 		};
 	} else {
 		effect(store, ($value) => {

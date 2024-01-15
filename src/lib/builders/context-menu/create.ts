@@ -5,7 +5,6 @@ import {
 	builder,
 	createElHelpers,
 	derivedVisible,
-	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
 	getNextFocusable,
@@ -25,7 +24,7 @@ import {
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
-import { writable, type Readable } from 'svelte/store';
+import { derived, writable, type Readable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	clearTimerStore,
@@ -99,7 +98,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 	const point = writable<Point | null>(null);
 	const virtual: WithGet<Readable<VirtualElement | null>> = withGet(
-		derivedWithUnsubscribe([point], ([$point]) => {
+		derived([point], ([$point]) => {
 			if ($point === null) return null;
 
 			return {
@@ -177,8 +176,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick
 									? {
-										handler: handleClickOutside,
-									}
+											handler: handleClickOutside,
+									  }
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

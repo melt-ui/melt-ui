@@ -10,7 +10,6 @@ import {
 	createElHelpers,
 	createTypeaheadSearch,
 	derivedVisible,
-	derivedWithUnsubscribe,
 	disabledAttr,
 	effect,
 	executeCallbacks,
@@ -38,6 +37,7 @@ import { tick } from 'svelte';
 import { derived, writable, type Writable } from 'svelte/store';
 
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MenuEvents } from './events.js';
 import type {
 	Selector,
@@ -49,7 +49,6 @@ import type {
 	_MenuParts,
 	_RadioItemProps,
 } from './types.js';
-import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
@@ -134,16 +133,13 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	const currentFocusedItem = withGet(writable<HTMLElement | null>(null));
 
 	const pointerMovingToSubmenu = withGet(
-		derivedWithUnsubscribe(
-			[pointerDir, pointerGraceIntent],
-			([$pointerDir, $pointerGraceIntent]) => {
-				return (e: PointerEvent) => {
-					const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
+		derived([pointerDir, pointerGraceIntent], ([$pointerDir, $pointerGraceIntent]) => {
+			return (e: PointerEvent) => {
+				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
 
-					return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
-				};
-			}
-		)
+				return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
+			};
+		})
 	);
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
@@ -196,19 +192,19 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick
 									? {
-										handler: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return;
+											handler: (e) => {
+												onOutsideClick.get()?.(e);
+												if (e.defaultPrevented) return;
 
-											if (
-												isHTMLElement($rootActiveTrigger) &&
-												!$rootActiveTrigger.contains(e.target as Element)
-											) {
-												rootOpen.set(false);
-												$rootActiveTrigger.focus();
-											}
-										},
-									}
+												if (
+													isHTMLElement($rootActiveTrigger) &&
+													!$rootActiveTrigger.contains(e.target as Element)
+												) {
+													rootOpen.set(false);
+													$rootActiveTrigger.focus();
+												}
+											},
+									  }
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
