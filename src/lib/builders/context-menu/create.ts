@@ -19,11 +19,13 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	withGet,
+	type WithGet,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
-import { get, writable, type Readable } from 'svelte/store';
+import { writable, type Readable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	clearTimerStore,
@@ -32,8 +34,8 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	setMeltMenuAttribute,
-	type _MenuParts,
 	type Point,
+	type _MenuParts,
 } from '../menu/index.js';
 import type { ContextMenuEvents } from './events.js';
 import type { CreateContextMenuProps } from './types.js';
@@ -70,8 +72,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
-	const nextFocusable = writable<HTMLElement | null>(null);
-	const prevFocusable = writable<HTMLElement | null>(null);
+	const nextFocusable = withGet(writable<HTMLElement | null>(null));
+	const prevFocusable = withGet(writable<HTMLElement | null>(null));
 
 	const {
 		item,
@@ -86,17 +88,17 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		groupLabel,
 	} = createMenuBuilder({
 		rootOpen,
-		rootActiveTrigger,
 		rootOptions,
-		nextFocusable,
-		prevFocusable,
+		rootActiveTrigger: withGet(rootActiveTrigger),
+		nextFocusable: withGet(nextFocusable),
+		prevFocusable: withGet(prevFocusable),
 		selector: 'context-menu',
 		removeScroll: true,
 		ids: withDefaults.ids,
 	});
 
 	const point = writable<Point | null>(null);
-	const virtual: Readable<VirtualElement | null> = derivedWithUnsubscribe([point], ([$point]) => {
+	const virtual: WithGet<Readable<VirtualElement | null>> = withGet(derivedWithUnsubscribe([point], ([$point]) => {
 		if ($point === null) return null;
 
 		return {
@@ -107,8 +109,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					...$point,
 				}),
 		};
-	});
-	const longPressTimer = writable(0);
+	}))
+	const longPressTimer = withGet(writable(0));
 
 	function handleClickOutside(e: PointerEvent) {
 		rootOptions.onOutsideClick.get()?.(e);

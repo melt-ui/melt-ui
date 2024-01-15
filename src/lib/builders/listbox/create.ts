@@ -37,6 +37,7 @@ import {
 	styleToString,
 	toWritableStores,
 	toggle,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -106,9 +107,9 @@ export function createListbox<
 	const withDefaults = { ...defaults, ...props } satisfies CreateListboxProps<Value, Multiple, S>;
 
 	// Trigger element for the popper portal. This will be our input element.
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const activeTrigger = withGet(writable<HTMLElement | null>(null));
 	// The currently highlighted menu item.
-	const highlightedItem = writable<HTMLElement | null>(null);
+	const highlightedItem = withGet(writable<HTMLElement | null>(null));
 
 	const selectedWritable =
 		withDefaults.selected ?? writable<S | undefined>(withDefaults.defaultSelected);
@@ -524,7 +525,7 @@ export function createListbox<
 	const {
 		elements: { root: labelBuilder },
 	} = createLabel();
-	const { action: labelAction } = labelBuilder.get();
+	const { action: labelAction } = get(labelBuilder);
 
 	const label = builder(name('label'), {
 		stores: [ids.label, ids.trigger],

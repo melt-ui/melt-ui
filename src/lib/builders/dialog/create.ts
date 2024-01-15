@@ -18,16 +18,17 @@ import {
 	kbd,
 	last,
 	noop,
+	omit,
 	overridable,
 	removeScroll,
 	sleep,
 	styleToString,
 	toWritableStores,
-	omit,
 } from '$lib/internal/helpers/index.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
 
@@ -54,7 +55,7 @@ const defaults = {
 	onOutsideClick: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
-const openDialogIds = writable<string[]>([]);
+const openDialogIds = withGet(writable<string[]>([]));
 
 export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
@@ -76,7 +77,7 @@ export function createDialog(props?: CreateDialogProps) {
 		onOutsideClick,
 	} = options;
 
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const activeTrigger = withGet(writable<HTMLElement | null>(null));
 
 	const ids = toWritableStores({
 		...generateIds(dialogIdParts),

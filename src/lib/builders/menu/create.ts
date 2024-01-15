@@ -35,7 +35,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MenuEvents } from './events.js';
@@ -49,6 +49,7 @@ import type {
 	_MenuParts,
 	_RadioItemProps,
 } from './types.js';
+import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
@@ -116,23 +117,23 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	 * This is used to determine how we handle focus on open behavior differently
 	 * than when the user is using the mouse.
 	 */
-	const isUsingKeyboard = writable(false);
+	const isUsingKeyboard = withGet(writable(false));
 
 	/**
 	 * Stores used to manage the grace area for submenus. This prevents us
 	 * from closing a submenu when the user is moving their mouse from the
 	 * trigger to the submenu.
 	 */
-	const lastPointerX = writable(0);
-	const pointerGraceIntent = writable<GraceIntent | null>(null);
-	const pointerDir = writable<Side>('right');
+	const lastPointerX = withGet(writable(0));
+	const pointerGraceIntent = withGet(writable<GraceIntent | null>(null));
+	const pointerDir = withGet(writable<Side>('right'));
 
 	/**
 	 * Track currently focused item in the menu.
 	 */
-	const currentFocusedItem = writable<HTMLElement | null>(null);
+	const currentFocusedItem = withGet(writable<HTMLElement | null>(null));
 
-	const pointerMovingToSubmenu = derivedWithUnsubscribe(
+	const pointerMovingToSubmenu = withGet(derivedWithUnsubscribe(
 		[pointerDir, pointerGraceIntent],
 		([$pointerDir, $pointerGraceIntent]) => {
 			return (e: PointerEvent) => {
@@ -141,7 +142,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
 			};
 		}
-	);
+	))
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
@@ -686,9 +687,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const { positioning, arrowSize, disabled } = options;
 
-		const subActiveTrigger = writable<HTMLElement | null>(null);
-		const subOpenTimer = writable<number | null>(null);
-		const pointerGraceTimer = writable(0);
+		const subActiveTrigger = withGet(writable<HTMLElement | null>(null));
+		const subOpenTimer = withGet(writable<number | null>(null));
+		const pointerGraceTimer = withGet(writable(0));
 
 		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
@@ -1381,8 +1382,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 export function handleTabNavigation(
 	e: KeyboardEvent,
-	nextFocusable: Writable<HTMLElement | null>,
-	prevFocusable: Writable<HTMLElement | null>
+	nextFocusable: WithGet<Writable<HTMLElement | null>>,
+	prevFocusable: WithGet<Writable<HTMLElement | null>>
 ) {
 	if (e.shiftKey) {
 		const $prevFocusable = prevFocusable.get();
@@ -1424,7 +1425,7 @@ export function applyAttrsIfDisabled(element: HTMLElement | null) {
  * Given a timer store, clear the timeout and set the store to null
  * @param openTimer The timer store
  */
-export function clearTimerStore(timerStore: Writable<number | null>) {
+export function clearTimerStore(timerStore: WithGet<Writable<number | null>>) {
 	if (!isBrowser) return;
 	const timer = timerStore.get();
 	if (timer) {

@@ -1,68 +1,67 @@
-import type { CreateDateFieldProps } from './types';
 import {
+	createFormatter,
+	dateStore,
+	getAnnouncer,
+	getDaysInMonth,
+	getDefaultDate,
+	getFirstSegment,
+	handleSegmentNavigation,
+	isBefore,
+	isSegmentNavigationKey,
+	moveToNextSegment,
+	toDate,
+} from '$lib/internal/helpers/date/index.js';
+import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	effect,
-	kbd,
-	overridable,
-	toWritableStores,
-	omit,
-	isHTMLElement,
-	addMeltEventListener,
 	executeCallbacks,
+	isHTMLElement,
 	isNumberString,
-	styleToString,
+	kbd,
 	noop,
+	omit,
+	overridable,
 	sleep,
+	styleToString,
+	toWritableStores,
+	withGet,
 } from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types';
+import type { DateValue } from '@internationalized/date';
+import { derived, writable, type Updater } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id';
 import {
-	dateStore,
-	getDaysInMonth,
-	getDefaultDate,
-	toDate,
-	createFormatter,
-	getAnnouncer,
-	isBefore,
-	getFirstSegment,
-} from '$lib/internal/helpers/date/index.js';
-import { derived, get, writable, type Updater } from 'svelte/store';
-import {
-	isFirstSegment,
 	areAllSegmentsFilled,
 	createContent,
+	getPartFromNode,
 	getValueFromSegments,
+	inferGranularity,
 	initSegmentStates,
 	initializeSegmentValues,
+	isAcceptableSegmentKey,
 	isDateAndTimeSegmentObj,
 	isDateSegmentPart,
-	getPartFromNode,
-	isAcceptableSegmentKey,
+	isFirstSegment,
 	removeDescriptionElement,
-	syncSegmentValues,
 	setDescription,
-	inferGranularity,
+	syncSegmentValues,
 } from './_internal/helpers.js';
-import {
-	handleSegmentNavigation,
-	isSegmentNavigationKey,
-	moveToNextSegment,
-} from '$lib/internal/helpers/date/index.js';
 import type {
 	AnyExceptLiteral,
-	SegmentPart,
 	DateAndTimeSegmentObj,
 	DateSegmentObj,
 	DateSegmentPart,
 	DayPeriod,
 	SegmentAttrProps,
 	SegmentBuilders,
+	SegmentPart,
 	TimeSegmentObj,
 	TimeSegmentPart,
 } from './_internal/types.js';
-import type { DateValue } from '@internationalized/date';
-import type { MeltActionReturn } from '$lib/internal/types';
 import type { DateFieldEvents } from './events';
-import { generateIds } from '../../internal/helpers/id';
+import type { CreateDateFieldProps } from './types';
 
 const defaults = {
 	isDateUnavailable: undefined,
@@ -146,7 +145,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		withDefaults.defaultPlaceholder ?? defaultDate
 	);
 
-	const inferredGranularity = derived(
+	const inferredGranularity = withGet(derived(
 		[placeholder, granularity],
 		([$placeholder, $granularity]) => {
 			if ($granularity) {
@@ -155,11 +154,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 				return inferGranularity($placeholder, $granularity);
 			}
 		}
-	);
+	))
 
 	const formatter = createFormatter(locale.get());
 	const initialSegments = initializeSegmentValues(inferredGranularity.get());
-	const segmentValues = writable(structuredClone(initialSegments));
+	const segmentValues = withGet(writable(structuredClone(initialSegments)));
 
 	let announcer = getAnnouncer();
 
@@ -170,10 +169,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 	const updatingDayPeriod = writable<DayPeriod>(null);
 
-	const readonlySegmentsSet = derived(
+	const readonlySegmentsSet = withGet(derived(
 		readonlySegments,
 		($readonlySegments) => new Set<SegmentPart>($readonlySegments)
-	);
+	))
 
 	const ids = toWritableStores({ ...generateIds(dateFieldIdParts), ...withDefaults.ids });
 

@@ -21,11 +21,12 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
 import { omit } from '../../internal/helpers/object';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
+import { withGet } from '$lib/internal/helpers/withGet';
 
 type LinkPreviewParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<LinkPreviewParts>('hover-card');
@@ -79,7 +80,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
-	const handleOpen = derived(openDelay, ($openDelay) => {
+	const handleOpen = withGet(derived(openDelay, ($openDelay) => {
 		return () => {
 			if (timeout) {
 				window.clearTimeout(timeout);
@@ -90,9 +91,9 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				open.set(true);
 			}, $openDelay);
 		};
-	}) as Readable<() => void>;
+	}) as Readable<() => void>);
 
-	const handleClose = derived(
+	const handleClose = withGet(derived(
 		[closeDelay, isPointerDownOnContent, hasSelection],
 		([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
 			return () => {
@@ -107,7 +108,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}
 			};
 		}
-	) as Readable<() => void>;
+	) as Readable<() => void>)
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, ids.trigger, ids.content],

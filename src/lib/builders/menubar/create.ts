@@ -10,6 +10,7 @@ import {
 	derivedVisible,
 	effect,
 	executeCallbacks,
+	generateIds,
 	getNextFocusable,
 	getPortalDestination,
 	getPreviousFocusable,
@@ -19,17 +20,16 @@ import {
 	isHTMLElement,
 	kbd,
 	noop,
+	omit,
 	removeHighlight,
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	generateIds,
-	omit,
 } from '$lib/internal/helpers/index.js';
 import { safeOnDestroy, safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	createMenuBuilder,
@@ -40,6 +40,7 @@ import {
 } from '../menu/index.js';
 import type { MenubarEvents } from './events.js';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -59,12 +60,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 	const options = toWritableStores(omit(withDefaults, 'ids'));
 	const { loop, closeOnEscape, preventScroll } = options;
-	const activeMenu = writable<string>('');
+	const activeMenu = withGet(writable<string>(''));
 
-	const nextFocusable = writable<HTMLElement | null>(null);
-	const prevFocusable = writable<HTMLElement | null>(null);
-	const lastFocusedMenuTrigger = writable<HTMLElement | null>(null);
-	const closeTimer = writable(0);
+	const nextFocusable = withGet(writable<HTMLElement | null>(null));
+	const prevFocusable = withGet(writable<HTMLElement | null>(null));
+	const lastFocusedMenuTrigger = withGet(writable<HTMLElement | null>(null));
+	const closeTimer = withGet(writable(0));
 	let scrollRemoved = false;
 
 	const ids = toWritableStores({ ...generateIds(menubarIdParts), ...withDefaults.ids });
@@ -111,8 +112,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
 		const withDefaults = { ...menuDefaults, ...props } satisfies CreateMenubarMenuProps;
-		const rootOpen = writable(false);
-		const rootActiveTrigger = writable<HTMLElement | null>(null);
+		const rootOpen = withGet(writable(false));
+		const rootActiveTrigger = withGet(writable<HTMLElement | null>(null));
 
 		// options
 		const options = toWritableStores(withDefaults);
@@ -120,10 +121,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		const m = createMenuBuilder({
 			rootOptions: { ...options, preventScroll },
-			rootOpen,
-			rootActiveTrigger,
-			nextFocusable,
-			prevFocusable,
+			rootOpen: withGet(rootOpen),
+			rootActiveTrigger: withGet(rootActiveTrigger),
+			nextFocusable: withGet(nextFocusable),
+			prevFocusable: withGet(prevFocusable),
 			selector: 'menubar-menu',
 			removeScroll: false,
 		});

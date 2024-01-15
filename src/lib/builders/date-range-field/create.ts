@@ -1,29 +1,30 @@
-import type { CreateDateRangeFieldProps } from './types.js';
+import { createDateField } from '$lib/index.js';
 import {
+	areAllDaysBetweenValid,
+	dateStore,
+	getAnnouncer,
+	getDefaultDate,
+	getFirstSegment,
+	isBefore,
+} from '$lib/internal/helpers/date/index.js';
+import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
-	overridable,
-	toWritableStores,
-	omit,
 	effect,
-	styleToString,
 	executeCallbacks,
-	addMeltEventListener,
+	omit,
+	overridable,
 	sleep,
+	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import {
-	dateStore,
-	getDefaultDate,
-	getAnnouncer,
-	isBefore,
-	areAllDaysBetweenValid,
-	getFirstSegment,
-} from '$lib/internal/helpers/date/index.js';
-import { derived, get, writable } from 'svelte/store';
-import { removeDescriptionElement } from './_internal/helpers.js';
-import { createDateField } from '$lib/index.js';
 import type { DateValue } from '@internationalized/date';
+import { derived, writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
+import { removeDescriptionElement } from './_internal/helpers.js';
+import type { CreateDateRangeFieldProps } from './types.js';
+import { withGet } from '$lib/internal/helpers/withGet';
 
 const defaults = {
 	isDateUnavailable: undefined,
@@ -68,12 +69,9 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const defaultStart = withDefaults.value ? withDefaults.value.get()?.start : undefined;
-	const startValue = writable<DateValue | undefined>(
-		defaultStart ?? withDefaults.defaultValue?.start
-	);
-	const defaultEnd = withDefaults.value ? withDefaults.value.get()?.end : undefined;
-	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
+
+	const startValue = withGet(writable<DateValue | undefined>(value.get().start ?? withDefaults.defaultValue?.start));
+	const endValue = withGet(writable<DateValue | undefined>(value.get().end ?? withDefaults.defaultValue?.end));
 
 	const isCompleted = derived(value, ($value) => {
 		return $value?.start && $value?.end;
