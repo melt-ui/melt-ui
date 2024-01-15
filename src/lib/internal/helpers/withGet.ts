@@ -63,7 +63,7 @@ withGet.derived = function withGetDerived<S extends Stores, T>(
 		value = nv;
 		return nv;
 	});
-
+	value = get(store);
 	return {
 		...store,
 		get: () => value,
