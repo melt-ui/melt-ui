@@ -319,9 +319,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const close = builder(name('close'), {
 		returned: () =>
-		({
-			type: 'button',
-		} as const),
+			({
+				type: 'button',
+			} as const),
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {

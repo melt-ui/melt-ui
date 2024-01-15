@@ -80,35 +80,39 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
-	const handleOpen = withGet(derived(openDelay, ($openDelay) => {
-		return () => {
-			if (timeout) {
-				window.clearTimeout(timeout);
-				timeout = null;
-			}
-
-			timeout = window.setTimeout(() => {
-				open.set(true);
-			}, $openDelay);
-		};
-	}) as Readable<() => void>);
-
-	const handleClose = withGet(derived(
-		[closeDelay, isPointerDownOnContent, hasSelection],
-		([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
+	const handleOpen = withGet(
+		derived(openDelay, ($openDelay) => {
 			return () => {
 				if (timeout) {
 					window.clearTimeout(timeout);
 					timeout = null;
 				}
-				if (!$isPointerDownOnContent && !$hasSelection) {
-					timeout = window.setTimeout(() => {
-						open.set(false);
-					}, $closeDelay);
-				}
+
+				timeout = window.setTimeout(() => {
+					open.set(true);
+				}, $openDelay);
 			};
-		}
-	) as Readable<() => void>)
+		}) as Readable<() => void>
+	);
+
+	const handleClose = withGet(
+		derived(
+			[closeDelay, isPointerDownOnContent, hasSelection],
+			([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
+				return () => {
+					if (timeout) {
+						window.clearTimeout(timeout);
+						timeout = null;
+					}
+					if (!$isPointerDownOnContent && !$hasSelection) {
+						timeout = window.setTimeout(() => {
+							open.set(false);
+						}, $closeDelay);
+					}
+				};
+			}
+		) as Readable<() => void>
+	);
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, ids.trigger, ids.content],
@@ -195,19 +199,19 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							floating: $positioning,
 							clickOutside: $closeOnOutsideClick
 								? {
-									handler: (e) => {
-										onOutsideClick.get()?.(e);
-										if (e.defaultPrevented) return;
+										handler: (e) => {
+											onOutsideClick.get()?.(e);
+											if (e.defaultPrevented) return;
 
-										if (
-											isHTMLElement($activeTrigger) &&
-											!$activeTrigger.contains(e.target as Element)
-										) {
-											open.set(false);
-											$activeTrigger.focus();
-										}
-									},
-								}
+											if (
+												isHTMLElement($activeTrigger) &&
+												!$activeTrigger.contains(e.target as Element)
+											) {
+												open.set(false);
+												$activeTrigger.focus();
+											}
+										},
+								  }
 								: null,
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,

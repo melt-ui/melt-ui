@@ -98,18 +98,20 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	const point = writable<Point | null>(null);
-	const virtual: WithGet<Readable<VirtualElement | null>> = withGet(derivedWithUnsubscribe([point], ([$point]) => {
-		if ($point === null) return null;
+	const virtual: WithGet<Readable<VirtualElement | null>> = withGet(
+		derivedWithUnsubscribe([point], ([$point]) => {
+			if ($point === null) return null;
 
-		return {
-			getBoundingClientRect: () =>
-				DOMRect.fromRect({
-					width: 0,
-					height: 0,
-					...$point,
-				}),
-		};
-	}))
+			return {
+				getBoundingClientRect: () =>
+					DOMRect.fromRect({
+						width: 0,
+						height: 0,
+						...$point,
+					}),
+			};
+		})
+	);
 	const longPressTimer = withGet(writable(0));
 
 	function handleClickOutside(e: PointerEvent) {
@@ -175,8 +177,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick
 									? {
-										handler: handleClickOutside,
-									}
+											handler: handleClickOutside,
+									  }
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

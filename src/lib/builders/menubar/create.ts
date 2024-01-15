@@ -170,18 +170,18 @@ export function createMenubar(props?: CreateMenubarProps) {
 									portal: getPortalDestination(node, $portal),
 									clickOutside: $closeOnOutsideClick
 										? {
-											ignore: (e) => {
-												const target = e.target;
-												const menubarEl = document.getElementById(ids.menubar.get());
-												if (!menubarEl || !isElement(target)) return false;
-												return menubarEl.contains(target);
-											},
-											handler: (e) => {
-												onOutsideClick.get()?.(e);
-												if (e.defaultPrevented) return;
-												activeMenu.set('');
-											},
-										}
+												ignore: (e) => {
+													const target = e.target;
+													const menubarEl = document.getElementById(ids.menubar.get());
+													if (!menubarEl || !isElement(target)) return false;
+													return menubarEl.contains(target);
+												},
+												handler: (e) => {
+													onOutsideClick.get()?.(e);
+													if (e.defaultPrevented) return;
+													activeMenu.set('');
+												},
+										  }
 										: null,
 								},
 							});

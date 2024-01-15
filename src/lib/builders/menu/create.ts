@@ -133,16 +133,18 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	 */
 	const currentFocusedItem = withGet(writable<HTMLElement | null>(null));
 
-	const pointerMovingToSubmenu = withGet(derivedWithUnsubscribe(
-		[pointerDir, pointerGraceIntent],
-		([$pointerDir, $pointerGraceIntent]) => {
-			return (e: PointerEvent) => {
-				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
+	const pointerMovingToSubmenu = withGet(
+		derivedWithUnsubscribe(
+			[pointerDir, pointerGraceIntent],
+			([$pointerDir, $pointerGraceIntent]) => {
+				return (e: PointerEvent) => {
+					const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
 
-				return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
-			};
-		}
-	))
+					return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
+				};
+			}
+		)
+	);
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
@@ -194,19 +196,19 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick
 									? {
-										handler: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return;
+											handler: (e) => {
+												onOutsideClick.get()?.(e);
+												if (e.defaultPrevented) return;
 
-											if (
-												isHTMLElement($rootActiveTrigger) &&
-												!$rootActiveTrigger.contains(e.target as Element)
-											) {
-												rootOpen.set(false);
-												$rootActiveTrigger.focus();
-											}
-										},
-									}
+												if (
+													isHTMLElement($rootActiveTrigger) &&
+													!$rootActiveTrigger.contains(e.target as Element)
+												) {
+													rootOpen.set(false);
+													$rootActiveTrigger.focus();
+												}
+											},
+									  }
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

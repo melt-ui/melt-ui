@@ -87,7 +87,7 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 			set,
 			subscribe,
 			update,
-			get
+			get,
 		};
 	}
 

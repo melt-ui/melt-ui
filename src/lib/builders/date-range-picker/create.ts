@@ -1,22 +1,21 @@
-import {
-	effect,
-	toWritableStores,
-	omit,
-	builder,
-	addMeltEventListener,
-} from '$lib/internal/helpers/index.js';
-import { get } from 'svelte/store';
-import { createRangeCalendar, createPopover } from '$lib/builders/index.js';
-import type { CreateDateRangePickerProps } from './types.js';
+import { createPopover, createRangeCalendar } from '$lib/builders/index.js';
 import {
 	handleSegmentNavigation,
 	isSegmentNavigationKey,
 } from '$lib/internal/helpers/date/index.js';
+import {
+	addMeltEventListener,
+	builder,
+	effect,
+	omit,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import type { CreateDateRangePickerProps } from './types.js';
 
-import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
-import { createDateRangeField } from '../date-range-field/create.js';
 import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
+import { createFormatter, dateStore, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
+import { createDateRangeField } from '../date-range-field/create.js';
 import type { DateRangePickerEvents } from './events.js';
 
 const defaults = {

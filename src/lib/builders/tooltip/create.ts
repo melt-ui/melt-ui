@@ -98,7 +98,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 				openReason.update((prev) => prev ?? reason);
 				openTimeout = null;
 			}, openDelay.get());
-
 		}
 	}
 
@@ -293,7 +292,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 				const triggerEl = getEl('trigger');
 				if (!contentEl || !triggerEl) return;
 
-				const polygonElements = disableHoverableContent.get() ? [triggerEl] : [triggerEl, contentEl];
+				const polygonElements = disableHoverableContent.get()
+					? [triggerEl]
+					: [triggerEl, contentEl];
 				const polygon = makeHullFromElements(polygonElements);
 
 				isMouseInTooltipArea = pointInPolygon(

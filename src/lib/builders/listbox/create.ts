@@ -488,19 +488,19 @@ export function createListbox<
 								focusTrap: null,
 								clickOutside: $closeOnOutsideClick
 									? {
-										handler: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return;
+											handler: (e) => {
+												onOutsideClick.get()?.(e);
+												if (e.defaultPrevented) return;
 
-											const target = e.target;
-											if (!isElement(target)) return;
-											if (target === $activeTrigger || $activeTrigger.contains(target)) {
-												return;
-											}
-											closeMenu();
-										},
-										ignore: ignoreHandler,
-									}
+												const target = e.target;
+												if (!isElement(target)) return;
+												if (target === $activeTrigger || $activeTrigger.contains(target)) {
+													return;
+												}
+												closeMenu();
+											},
+											ignore: ignoreHandler,
+									  }
 									: null,
 								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),
@@ -542,20 +542,20 @@ export function createListbox<
 		stores: [isSelected],
 		returned:
 			([$isSelected]) =>
-				(props: ListboxOptionProps<Value>) => {
-					const selected = $isSelected(props.value);
+			(props: ListboxOptionProps<Value>) => {
+				const selected = $isSelected(props.value);
 
-					return {
-						'data-value': JSON.stringify(props.value),
-						'data-label': props.label,
-						'data-disabled': disabledAttr(props.disabled),
-						'aria-disabled': props.disabled ? true : undefined,
-						'aria-selected': selected,
-						'data-selected': selected ? '' : undefined,
-						id: generateId(),
-						role: 'option',
-					} as const;
-				},
+				return {
+					'data-value': JSON.stringify(props.value),
+					'data-label': props.label,
+					'data-disabled': disabledAttr(props.disabled),
+					'aria-disabled': props.disabled ? true : undefined,
+					'aria-selected': selected,
+					'data-selected': selected ? '' : undefined,
+					id: generateId(),
+					role: 'option',
+				} as const;
+			},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['item']> => {
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
