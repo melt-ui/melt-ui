@@ -1,13 +1,13 @@
 import {
-	derived,
 	get,
 	writable,
 	type Readable,
 	type Writable,
 	type Stores,
 	type StoresValues,
+	derived,
 } from 'svelte/store';
-import { effect, isWritable } from '.';
+import { effect, isWritable, noop } from '.';
 
 type ReadableValue<T> = T extends Readable<infer V> ? V : never;
 
@@ -38,22 +38,23 @@ export function withGet<T extends Readable<unknown>>(store: T): WithGet<T> {
 			get: () => value as ReadableValue<T>,
 		};
 	} else {
-		effect(store, ($value) => {
+		const destroy = effect(store, ($value) => {
 			value = $value;
 		});
 
 		return {
 			...store,
 			get: () => value as ReadableValue<T>,
+			destroy,
 		};
 	}
 }
 
-withGet.writable = <T>(value: T): WithGet<Writable<T>> => {
+withGet.writable = function <T>(value: T): WithGet<Writable<T>> {
 	return withGet(writable(value));
 };
 
-withGet.derived = function withGetDerived<S extends Stores, T>(
+withGet.derived = function <S extends Stores, T>(
 	stores: S,
 	fn: (values: StoresValues<S>) => T
 ): WithGet<Readable<T>> {
@@ -63,6 +64,7 @@ withGet.derived = function withGetDerived<S extends Stores, T>(
 		value = nv;
 		return nv;
 	});
+
 	value = get(store);
 	return {
 		...store,

@@ -33,4 +33,22 @@ describe('withGet', () => {
 		w.set(2);
 		expect(get()).toBe(3);
 	});
+
+	it('withGet.writable', async () => {
+		const { get, set } = withGet.writable(1);
+		expect(get()).toBe(1);
+
+		set(2);
+		expect(get()).toBe(2);
+	});
+
+	it('withGet.derived', async () => {
+		const w = writable(1);
+		const d = withGet.derived(w, ($w) => $w + 1);
+
+		expect(d.get()).toBe(2);
+
+		w.set(2);
+		expect(d.get()).toBe(3);
+	});
 });
