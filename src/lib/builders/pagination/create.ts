@@ -35,11 +35,10 @@ export function createPagination(props: CreatePaginationProps) {
 
 	const { perPage, siblingCount, count } = options;
 
-	const totalPages = withGet(
-		derived([count, perPage], ([$count, $perPage]) => {
-			return Math.ceil($count / $perPage);
-		})
-	);
+	const totalPages = withGet.derived([count, perPage], ([$count, $perPage]) => {
+		return Math.ceil($count / $perPage);
+	})
+
 
 	const range = derived([page, perPage, count], ([$page, $perPage, $count]) => {
 		const start = ($page - 1) * $perPage;

@@ -55,7 +55,7 @@ const defaults = {
 	onOutsideClick: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
-const openDialogIds = withGet(writable<string[]>([]));
+const openDialogIds = withGet.writable<string[]>([]);
 
 export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
@@ -77,7 +77,7 @@ export function createDialog(props?: CreateDialogProps) {
 		onOutsideClick,
 	} = options;
 
-	const activeTrigger = withGet(writable<HTMLElement | null>(null));
+	const activeTrigger = withGet.writable<HTMLElement | null>(null);
 
 	const ids = toWritableStores({
 		...generateIds(dialogIdParts),
@@ -319,9 +319,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const close = builder(name('close'), {
 		returned: () =>
-			({
-				type: 'button',
-			} as const),
+		({
+			type: 'button',
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {

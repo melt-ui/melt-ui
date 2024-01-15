@@ -72,8 +72,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
-	const nextFocusable = withGet(writable<HTMLElement | null>(null));
-	const prevFocusable = withGet(writable<HTMLElement | null>(null));
+	const nextFocusable = withGet.writable<HTMLElement | null>(null);
+	const prevFocusable = withGet.writable<HTMLElement | null>(null);
 
 	const {
 		item,
@@ -112,7 +112,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			};
 		})
 	);
-	const longPressTimer = withGet(writable(0));
+	const longPressTimer = withGet.writable(0);
 
 	function handleClickOutside(e: PointerEvent) {
 		rootOptions.onOutsideClick.get()?.(e);
@@ -177,8 +177,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick
 									? {
-											handler: handleClickOutside,
-									  }
+										handler: handleClickOutside,
+									}
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

@@ -145,19 +145,18 @@ export function createDateField(props?: CreateDateFieldProps) {
 		withDefaults.defaultPlaceholder ?? defaultDate
 	);
 
-	const inferredGranularity = withGet(
-		derived([placeholder, granularity], ([$placeholder, $granularity]) => {
-			if ($granularity) {
-				return $granularity;
-			} else {
-				return inferGranularity($placeholder, $granularity);
-			}
-		})
-	);
+	const inferredGranularity = withGet.derived([placeholder, granularity], ([$placeholder, $granularity]) => {
+		if ($granularity) {
+			return $granularity;
+		} else {
+			return inferGranularity($placeholder, $granularity);
+		}
+	})
+
 
 	const formatter = createFormatter(locale.get());
 	const initialSegments = initializeSegmentValues(inferredGranularity.get());
-	const segmentValues = withGet(writable(structuredClone(initialSegments)));
+	const segmentValues = withGet.writable(structuredClone(initialSegments));
 
 	let announcer = getAnnouncer();
 

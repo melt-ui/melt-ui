@@ -103,15 +103,13 @@ export const createSlider = (props?: CreateSliderProps) => {
 		};
 	});
 
-	const direction = withGet(
-		derived([orientation, dir], ([$orientation, $dir]) => {
-			if ($orientation === 'horizontal') {
-				return $dir === 'rtl' ? 'rl' : 'lr';
-			} else {
-				return $dir === 'rtl' ? 'tb' : 'bt';
-			}
-		})
-	);
+	const direction = withGet.derived([orientation, dir], ([$orientation, $dir]) => {
+		if ($orientation === 'horizontal') {
+			return $dir === 'rtl' ? 'rl' : 'lr';
+		} else {
+			return $dir === 'rtl' ? 'tb' : 'bt';
+		}
+	});
 
 	// Elements
 	const root = builder(name(), {

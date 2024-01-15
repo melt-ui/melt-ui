@@ -69,12 +69,9 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const startValue = withGet(
-		writable<DateValue | undefined>(value.get().start ?? withDefaults.defaultValue?.start)
-	);
-	const endValue = withGet(
-		writable<DateValue | undefined>(value.get().end ?? withDefaults.defaultValue?.end)
-	);
+	const startValue = withGet.writable<DateValue | undefined>(value.get().start ?? withDefaults.defaultValue?.start)
+	const endValue = withGet.writable<DateValue | undefined>(value.get().end ?? withDefaults.defaultValue?.end)
+
 
 	const isCompleted = derived(value, ($value) => {
 		return $value?.start && $value?.end;

@@ -117,7 +117,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	 * This is used to determine how we handle focus on open behavior differently
 	 * than when the user is using the mouse.
 	 */
-	const isUsingKeyboard = withGet(writable(false));
+	const isUsingKeyboard = withGet.writable(false);
 
 	/**
 	 * Stores used to manage the grace area for submenus. This prevents us
@@ -196,19 +196,19 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick
 									? {
-											handler: (e) => {
-												onOutsideClick.get()?.(e);
-												if (e.defaultPrevented) return;
+										handler: (e) => {
+											onOutsideClick.get()?.(e);
+											if (e.defaultPrevented) return;
 
-												if (
-													isHTMLElement($rootActiveTrigger) &&
-													!$rootActiveTrigger.contains(e.target as Element)
-												) {
-													rootOpen.set(false);
-													$rootActiveTrigger.focus();
-												}
-											},
-									  }
+											if (
+												isHTMLElement($rootActiveTrigger) &&
+												!$rootActiveTrigger.contains(e.target as Element)
+											) {
+												rootOpen.set(false);
+												$rootActiveTrigger.focus();
+											}
+										},
+									}
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

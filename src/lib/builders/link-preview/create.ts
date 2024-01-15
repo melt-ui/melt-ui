@@ -20,13 +20,13 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle';
+import { withGet, type WithGet } from '$lib/internal/helpers/withGet';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable, type Readable } from 'svelte/store';
+import { writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
 import { omit } from '../../internal/helpers/object';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
-import { withGet } from '$lib/internal/helpers/withGet';
 
 type LinkPreviewParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<LinkPreviewParts>('hover-card');
@@ -80,39 +80,37 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
-	const handleOpen = withGet(
-		derived(openDelay, ($openDelay) => {
+	const handleOpen = withGet.derived(openDelay, ($openDelay) => {
+		return () => {
+			if (timeout) {
+				window.clearTimeout(timeout);
+				timeout = null;
+			}
+
+			timeout = window.setTimeout(() => {
+				open.set(true);
+			}, $openDelay);
+		};
+	}) as WithGet<Readable<() => void>>
+
+
+	const handleClose = withGet.derived(
+		[closeDelay, isPointerDownOnContent, hasSelection],
+		([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
 			return () => {
 				if (timeout) {
 					window.clearTimeout(timeout);
 					timeout = null;
 				}
-
-				timeout = window.setTimeout(() => {
-					open.set(true);
-				}, $openDelay);
+				if (!$isPointerDownOnContent && !$hasSelection) {
+					timeout = window.setTimeout(() => {
+						open.set(false);
+					}, $closeDelay);
+				}
 			};
-		}) as Readable<() => void>
-	);
+		}
+	) as WithGet<Readable<() => void>>
 
-	const handleClose = withGet(
-		derived(
-			[closeDelay, isPointerDownOnContent, hasSelection],
-			([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
-				return () => {
-					if (timeout) {
-						window.clearTimeout(timeout);
-						timeout = null;
-					}
-					if (!$isPointerDownOnContent && !$hasSelection) {
-						timeout = window.setTimeout(() => {
-							open.set(false);
-						}, $closeDelay);
-					}
-				};
-			}
-		) as Readable<() => void>
-	);
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, ids.trigger, ids.content],
@@ -199,19 +197,19 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							floating: $positioning,
 							clickOutside: $closeOnOutsideClick
 								? {
-										handler: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return;
+									handler: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return;
 
-											if (
-												isHTMLElement($activeTrigger) &&
-												!$activeTrigger.contains(e.target as Element)
-											) {
-												open.set(false);
-												$activeTrigger.focus();
-											}
-										},
-								  }
+										if (
+											isHTMLElement($activeTrigger) &&
+											!$activeTrigger.contains(e.target as Element)
+										) {
+											open.set(false);
+											$activeTrigger.focus();
+										}
+									},
+								}
 								: null,
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,

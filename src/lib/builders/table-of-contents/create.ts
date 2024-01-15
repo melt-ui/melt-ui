@@ -49,9 +49,9 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	/** Lookup to see which parent headings a heading has. */
 	let headingParentsLU: HeadingParentsLU = {};
 	/** List of the active parent indexes. */
-	const activeParentIdxs = withGet(writable<number[]>([]));
+	const activeParentIdxs = withGet.writable<number[]>([]);
 	/** List of the indexes of the visible elements. */
-	const visibleElementIdxs = withGet(writable<number[]>([]));
+	const visibleElementIdxs = withGet.writable<number[]>([]);
 
 	let elementTarget: Element | null = null;
 

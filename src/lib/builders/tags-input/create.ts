@@ -95,9 +95,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	const tags = overridable<Tag[]>(tagsWritable, withDefaults?.onTagsChange);
 
 	// Selected tag store. When `null`, no tag is selected
-	const selected = withGet(writable<Tag | null>(withDefaults.selected ?? null));
+	const selected = withGet.writable<Tag | null>(withDefaults.selected ?? null);
 
-	const editing = withGet(writable<Tag | null>(null));
+	const editing = withGet.writable<Tag | null>(null);
 
 	// Run validation checks and if a validation fails return false immediately
 	const isInputValid = (v: string) => {
@@ -491,11 +491,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};
@@ -632,11 +632,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};

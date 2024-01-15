@@ -112,11 +112,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const startValue = withGet(
-		writable<DateValue | undefined>(value.get().start ?? withDefaults.defaultValue?.start)
+	const startValue = withGet.writable<DateValue | undefined>(
+		value.get().start ?? withDefaults.defaultValue?.start
 	);
-	const endValue = withGet(
-		writable<DateValue | undefined>(value.get().end ?? withDefaults.defaultValue?.end)
+	const endValue = withGet.writable<DateValue | undefined>(
+		value.get().end ?? withDefaults.defaultValue?.end
 	);
 
 	const placeholderWritable =
@@ -147,13 +147,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * which we use to determine how keyboard navigation and if we should apply
 	 * `data-outside-month` to cells.
 	 */
-	const visibleMonths = withGet(
-		derived([months], ([$months]) => {
-			return $months.map((month) => {
-				return month.value;
-			});
-		})
-	);
+	const visibleMonths = withGet.derived([months], ([$months]) => {
+		return $months.map((month) => {
+			return month.value;
+		});
+	});
 
 	const isOutsideVisibleMonths = derived([visibleMonths], ([$visibleMonths]) => {
 		return (date: DateValue) => {
@@ -161,28 +159,24 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		};
 	});
 
-	const isDateDisabled = withGet(
-		derived(
-			[options.isDateDisabled, minValue, maxValue],
-			([$isDateDisabled, $minValue, $maxValue]) => {
-				return (date: DateValue) => {
-					if ($isDateDisabled?.(date)) return true;
-					if ($minValue && isBefore(date, $minValue)) return true;
-					if ($maxValue && isAfter(date, $maxValue)) return true;
-					return false;
-				};
-			}
-		)
-	);
-
-	const isDateUnavailable = withGet(
-		derived([options.isDateUnavailable], ([$isDateUnavailable]) => {
+	const isDateDisabled = withGet.derived(
+		[options.isDateDisabled, minValue, maxValue],
+		([$isDateDisabled, $minValue, $maxValue]) => {
 			return (date: DateValue) => {
-				if ($isDateUnavailable?.(date)) return true;
+				if ($isDateDisabled?.(date)) return true;
+				if ($minValue && isBefore(date, $minValue)) return true;
+				if ($maxValue && isAfter(date, $maxValue)) return true;
 				return false;
 			};
-		})
+		}
 	);
+
+	const isDateUnavailable = withGet.derived([options.isDateUnavailable], ([$isDateUnavailable]) => {
+		return (date: DateValue) => {
+			if ($isDateUnavailable?.(date)) return true;
+			return false;
+		};
+	});
 
 	const isStartInvalid = derived(
 		[startValue, isDateUnavailable, isDateDisabled],
@@ -212,24 +206,26 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		}
 	);
 
-	const isNextButtonDisabled = withGet(
-		derived([months, maxValue, disabled], ([$months, $maxValue, $disabled]) => {
+	const isNextButtonDisabled = withGet.derived(
+		[months, maxValue, disabled],
+		([$months, $maxValue, $disabled]) => {
 			if (!$maxValue || !$months.length) return false;
 			if ($disabled) return true;
 			const lastMonthInView = $months[$months.length - 1].value;
 			const firstMonthOfNextPage = lastMonthInView.add({ months: 1 }).set({ day: 1 });
 			return isAfter(firstMonthOfNextPage, $maxValue);
-		})
+		}
 	);
 
-	const isPrevButtonDisabled = withGet(
-		derived([months, minValue, disabled], ([$months, $minValue, $disabled]) => {
+	const isPrevButtonDisabled = withGet.derived(
+		[months, minValue, disabled],
+		([$months, $minValue, $disabled]) => {
 			if (!$minValue || !$months.length) return false;
 			if ($disabled) return true;
 			const firstMonthInView = $months[0].value;
 			const lastMonthOfPrevPage = firstMonthInView.subtract({ months: 1 }).set({ day: 35 });
 			return isBefore(lastMonthOfPrevPage, $minValue);
-		})
+		}
 	);
 
 	let announcer = getAnnouncer();
