@@ -125,17 +125,17 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					get(handleOpen)();
+					handleOpen.get()();
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)();
+					handleClose.get()();
 				}),
 				addMeltEventListener(node, 'focus', (e) => {
 					if (!isElement(e.currentTarget) || !isFocusVisible(e.currentTarget)) return;
-					get(handleOpen)();
+					handleOpen.get()();
 				}),
-				addMeltEventListener(node, 'blur', () => get(handleClose)())
+				addMeltEventListener(node, 'blur', () => handleClose.get()())
 			);
 
 			return {
@@ -194,19 +194,19 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							floating: $positioning,
 							clickOutside: $closeOnOutsideClick
 								? {
-										handler: (e) => {
-											get(onOutsideClick)?.(e);
-											if (e.defaultPrevented) return;
+									handler: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return;
 
-											if (
-												isHTMLElement($activeTrigger) &&
-												!$activeTrigger.contains(e.target as Element)
-											) {
-												open.set(false);
-												$activeTrigger.focus();
-											}
-										},
-								  }
+										if (
+											isHTMLElement($activeTrigger) &&
+											!$activeTrigger.contains(e.target as Element)
+										) {
+											open.set(false);
+											$activeTrigger.focus();
+										}
+									},
+								}
 								: null,
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,
@@ -235,11 +235,11 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					get(handleOpen)();
+					handleOpen.get()();
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)();
+					handleClose.get()();
 				}),
 				addMeltEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
@@ -272,7 +272,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	effect([containSelection], ([$containSelection]) => {
 		if (!isBrowser || !$containSelection) return;
 		const body = document.body;
-		const contentElement = document.getElementById(get(ids.content));
+		const contentElement = document.getElementById(ids.content.get());
 		if (!contentElement) return;
 		// prefix for safari
 		originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
@@ -292,7 +292,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	});
 
 	safeOnMount(() => {
-		const triggerEl = document.getElementById(get(ids.trigger));
+		const triggerEl = document.getElementById(ids.trigger.get());
 		if (!triggerEl) return;
 		activeTrigger.set(triggerEl);
 	});
@@ -317,7 +317,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 		document.addEventListener('pointerup', handlePointerUp);
 
-		const contentElement = document.getElementById(get(ids.content));
+		const contentElement = document.getElementById(ids.content.get());
 		if (!contentElement) return;
 		const tabbables = getTabbableNodes(contentElement);
 		tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));

@@ -1,19 +1,19 @@
-import { derived, get, writable, readonly } from 'svelte/store';
+import { usePortal } from '$lib/internal/actions/index.js';
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
 	generateId,
 	isTouch,
+	kbd,
 	noop,
 	toWritableStores,
-	addMeltEventListener,
-	kbd,
 } from '$lib/internal/helpers/index.js';
-import type { AddToastProps, CreateToasterProps, Toast } from './types.js';
-import { usePortal } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
+import { derived, readonly, writable } from 'svelte/store';
 import type { ToastEvents } from './events.js';
+import type { AddToastProps, CreateToasterProps, Toast } from './types.js';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
@@ -33,8 +33,8 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
-			closeDelay: get(closeDelay),
-			type: get(type),
+			closeDelay: closeDelay.get(),
+			type: type.get(),
 			...props,
 		} satisfies AddToastProps<T>;
 
@@ -48,8 +48,8 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			propsWithDefaults.closeDelay === 0
 				? null
 				: window.setTimeout(() => {
-						removeToast(ids.content);
-				  }, propsWithDefaults.closeDelay);
+					removeToast(ids.content);
+				}, propsWithDefaults.closeDelay);
 
 		const getPercentage = () => {
 			const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;

@@ -169,18 +169,18 @@ export function createMenubar(props?: CreateMenubarProps) {
 									portal: getPortalDestination(node, $portal),
 									clickOutside: $closeOnOutsideClick
 										? {
-												ignore: (e) => {
-													const target = e.target;
-													const menubarEl = document.getElementById(get(ids.menubar));
-													if (!menubarEl || !isElement(target)) return false;
-													return menubarEl.contains(target);
-												},
-												handler: (e) => {
-													get(onOutsideClick)?.(e);
-													if (e.defaultPrevented) return;
-													activeMenu.set('');
-												},
-										  }
+											ignore: (e) => {
+												const target = e.target;
+												const menubarEl = document.getElementById(ids.menubar.get());
+												if (!menubarEl || !isElement(target)) return false;
+												return menubarEl.contains(target);
+											},
+											handler: (e) => {
+												onOutsideClick.get()?.(e);
+												if (e.defaultPrevented) return;
+												activeMenu.set('');
+											},
+										}
 										: null,
 								},
 							});
@@ -261,7 +261,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			action: (node: HTMLElement): MeltActionReturn<MenubarEvents['trigger']> => {
 				applyAttrsIfDisabled(node);
 
-				const menubarEl = document.getElementById(get(ids.menubar));
+				const menubarEl = document.getElementById(ids.menubar.get());
 				if (!menubarEl) return {};
 
 				const menubarTriggers = Array.from(
@@ -288,7 +288,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 				const unsub = executeCallbacks(
 					addMeltEventListener(node, 'click', (e) => {
-						const $rootOpen = get(rootOpen);
+						const $rootOpen = rootOpen.get();
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
@@ -319,11 +319,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
-						const $activeMenu = get(activeMenu);
-						const $rootOpen = get(rootOpen);
+						const $activeMenu = activeMenu.get();
+						const $rootOpen = rootOpen.get();
 						if ($activeMenu && !$rootOpen) {
 							rootOpen.set(true);
-							activeMenu.set(get(m.ids.menu));
+							activeMenu.set(m.ids.menu.get());
 							rootActiveTrigger.set(triggerEl);
 						}
 					})
@@ -345,7 +345,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 					nextFocusable.set(getNextFocusable(triggerEl));
 					prevFocusable.set(getPreviousFocusable(triggerEl));
 					rootActiveTrigger.set(triggerEl);
-					activeMenu.set(get(m.ids.menu));
+					activeMenu.set(m.ids.menu.get());
 				} else {
 					rootActiveTrigger.set(null);
 				}
@@ -356,10 +356,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		effect([activeMenu], ([$activeMenu]) => {
 			if (!isBrowser) return;
-			if ($activeMenu === get(m.ids.menu)) {
-				if (get(rootOpen)) return;
+			if ($activeMenu === m.ids.menu.get()) {
+				if (rootOpen.get()) return;
 
-				const triggerEl = document.getElementById(get(m.ids.trigger));
+				const triggerEl = document.getElementById(m.ids.trigger.get());
 				if (!triggerEl) return;
 				rootActiveTrigger.set(triggerEl);
 				addHighlight(triggerEl);
@@ -367,10 +367,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 				return;
 			}
 
-			if ($activeMenu !== get(m.ids.menu)) {
+			if ($activeMenu !== m.ids.menu.get()) {
 				if (!isBrowser) return;
-				if (get(rootOpen)) {
-					const triggerEl = document.getElementById(get(m.ids.trigger));
+				if (rootOpen.get()) {
+					const triggerEl = document.getElementById(m.ids.trigger.get());
 					if (!triggerEl) return;
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
@@ -382,9 +382,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		effect([rootOpen], ([$rootOpen]) => {
 			if (!isBrowser) return;
-			const triggerEl = document.getElementById(get(m.ids.trigger));
+			const triggerEl = document.getElementById(m.ids.trigger.get());
 			if (!triggerEl) return;
-			if (!$rootOpen && get(activeMenu) === get(m.ids.menu)) {
+			if (!$rootOpen && activeMenu.get() === m.ids.menu.get()) {
 				rootActiveTrigger.set(null);
 				activeMenu.set('');
 				removeHighlight(triggerEl);
@@ -398,8 +398,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		safeOnMount(() => {
 			if (!isBrowser) return;
-			const triggerEl = document.getElementById(get(m.ids.trigger));
-			if (isHTMLElement(triggerEl) && get(rootOpen)) {
+			const triggerEl = document.getElementById(m.ids.trigger.get());
+			if (isHTMLElement(triggerEl) && rootOpen.get()) {
 				rootActiveTrigger.set(triggerEl);
 			}
 		});
@@ -457,7 +457,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		if (isPrevKey && isKeyDownInsideSubMenu) return;
 
 		// Index of the currently focused item in the candidate nodes array
-		const menubarEl = document.getElementById(get(ids.menubar));
+		const menubarEl = document.getElementById(ids.menubar.get());
 		if (!isHTMLElement(menubarEl)) return;
 		const triggers = getMenuTriggers(menubarEl);
 		const currTriggerId = currentTarget.getAttribute('aria-labelledby');
@@ -527,7 +527,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// Calculate the index of the next menu item
 		let nextIndex: number;
-		const $loop = get(loop);
+		const $loop = loop.get();
 		switch (e.key) {
 			case kbd.ARROW_RIGHT:
 				nextIndex =
@@ -556,7 +556,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	safeOnMount(() => {
 		if (!isBrowser) return;
 
-		const menubarEl = document.getElementById(get(ids.menubar));
+		const menubarEl = document.getElementById(ids.menubar.get());
 		if (!menubarEl) return;
 		const unsubEvents = executeCallbacks(
 			addMeltEventListener(menubarEl, 'keydown', (e) => {
@@ -575,8 +575,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 			}),
 			addEventListener(document, 'keydown', (e) => {
-				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
-					window.clearTimeout(get(closeTimer));
+				if (closeOnEscape.get() && e.key === kbd.ESCAPE) {
+					window.clearTimeout(closeTimer.get());
 					activeMenu.set('');
 				}
 			})

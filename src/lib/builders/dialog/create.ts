@@ -102,8 +102,8 @@ export function createDialog(props?: CreateDialogProps) {
 	function handleClose() {
 		open.set(false);
 		handleFocus({
-			prop: get(closeFocus),
-			defaultEl: get(activeTrigger),
+			prop: closeFocus.get(),
+			defaultEl: activeTrigger.get(),
 		});
 	}
 
@@ -112,11 +112,11 @@ export function createDialog(props?: CreateDialogProps) {
 		sleep(100).then(() => {
 			if ($open) {
 				openDialogIds.update((prev) => {
-					prev.push(get(ids.content));
+					prev.push(ids.content.get());
 					return prev;
 				});
 			} else {
-				openDialogIds.update((prev) => prev.filter((id) => id !== get(ids.content)));
+				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content.get()));
 			}
 		});
 	});
@@ -164,7 +164,7 @@ export function createDialog(props?: CreateDialogProps) {
 		action: (node: HTMLElement) => {
 			let unsubEscapeKeydown = noop;
 
-			if (get(closeOnEscape)) {
+			if (closeOnEscape.get()) {
 				const escapeKeydown = useEscapeKeydown(node, {
 					handler: () => {
 						handleClose();
@@ -188,7 +188,7 @@ export function createDialog(props?: CreateDialogProps) {
 		returned: ([$isVisible, $contentId, $descriptionId, $titleId]) => {
 			return {
 				id: $contentId,
-				role: get(role),
+				role: role.get(),
 				'aria-describedby': $descriptionId,
 				'aria-labelledby': $titleId,
 				'aria-modal': $isVisible ? ('true' as const) : undefined,
@@ -231,11 +231,11 @@ export function createDialog(props?: CreateDialogProps) {
 					return useClickOutside(node, {
 						enabled: $open,
 						handler: (e: PointerEvent) => {
-							get(onOutsideClick)?.(e);
+							onOutsideClick.get()?.(e);
 							if (e.defaultPrevented) return;
 
-							const $openDialogIds = get(openDialogIds);
-							const isLast = last($openDialogIds) === get(ids.content);
+							const $openDialogIds = openDialogIds.get();
+							const isLast = last($openDialogIds) === ids.content.get();
 							if ($closeOnOutsideClick && isLast) {
 								handleClose();
 							}
@@ -318,9 +318,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const close = builder(name('close'), {
 		returned: () =>
-			({
-				type: 'button',
-			} as const),
+		({
+			type: 'button',
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
@@ -345,14 +345,14 @@ export function createDialog(props?: CreateDialogProps) {
 		if ($preventScroll && $open) unsubScroll = removeScroll();
 
 		if ($open) {
-			const contentEl = document.getElementById(get(ids.content));
-			handleFocus({ prop: get(openFocus), defaultEl: contentEl });
+			const contentEl = document.getElementById(ids.content.get());
+			handleFocus({ prop: openFocus.get(), defaultEl: contentEl });
 		}
 
 		return () => {
 			// we only want to remove the scroll lock if the dialog is not forced visible
 			// otherwise the scroll removal is handled in the `destroy` of the `content` builder
-			if (!get(forceVisible)) {
+			if (!forceVisible.get()) {
 				unsubScroll();
 			}
 		};

@@ -11,7 +11,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { ToolbarEvents } from './events.js';
 import type {
 	CreateToolbarGroupProps,
@@ -45,11 +45,11 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 	const button = builder(name('button'), {
 		returned: () =>
-			({
-				role: 'button',
-				type: 'button',
-				tabIndex: -1,
-			} as const),
+		({
+			role: 'button',
+			type: 'button',
+			tabIndex: -1,
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['button']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
@@ -61,11 +61,11 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 	const link = builder(name('link'), {
 		returned: () =>
-			({
-				role: 'link',
-				'data-melt-toolbar-item': '',
-				tabIndex: -1,
-			} as const),
+		({
+			role: 'link',
+			'data-melt-toolbar-item': '',
+			tabIndex: -1,
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['link']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
@@ -102,8 +102,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		const defaultValue = groupWithDefaults.defaultValue
 			? groupWithDefaults.defaultValue
 			: groupWithDefaults.type === 'single'
-			? undefined
-			: [];
+				? undefined
+				: [];
 
 		const valueWritable =
 			groupWithDefaults.value ?? writable<string | string[] | undefined>(defaultValue);
@@ -231,8 +231,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 	}
 
 	function handleKeyDown(e: KeyboardEvent) {
-		const $orientation = get(orientation);
-		const $loop = get(loop);
+		const $orientation = orientation.get();
+		const $loop = loop.get();
 
 		const dir = 'ltr' as 'ltr' | 'rtl';
 		const nextKey = {

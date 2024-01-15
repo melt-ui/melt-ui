@@ -20,10 +20,10 @@ import {
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
-import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {
@@ -79,7 +79,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const getEl = (part: keyof typeof ids) => {
 		if (!isBrowser) return null;
-		return document.getElementById(get(ids[part]));
+		return document.getElementById(ids[part].get());
 	};
 
 	let openTimeout: number | null = null;
@@ -97,7 +97,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 				// Don't override the reason if it's already set.
 				openReason.update((prev) => prev ?? reason);
 				openTimeout = null;
-			}, get(openDelay));
+			}, openDelay.get());
+
 		}
 	}
 
@@ -122,7 +123,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				openReason.set(null);
 				if (isBlur) clickedTrigger = false;
 				closeTimeout = null;
-			}, get(closeDelay));
+			}, closeDelay.get());
 		}
 	}
 
@@ -141,7 +142,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
 			const keydownHandler = (e: KeyboardEvent) => {
-				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
+				if (closeOnEscape.get() && e.key === kbd.ESCAPE) {
 					if (openTimeout) {
 						window.clearTimeout(openTimeout);
 						openTimeout = null;
@@ -153,7 +154,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', () => {
-					const $closeOnPointerDown = get(closeOnPointerDown);
+					const $closeOnPointerDown = closeOnPointerDown.get();
 					if (!$closeOnPointerDown) return;
 					open.set(false);
 					clickedTrigger = true;
@@ -264,7 +265,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 	let isMouseInTooltipArea = false;
 
 	effect(open, ($open) => {
-		const currentGroup = get(group);
+		const currentGroup = group.get();
 		if (currentGroup === undefined || currentGroup === false) {
 			return;
 		}
@@ -292,7 +293,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				const triggerEl = getEl('trigger');
 				if (!contentEl || !triggerEl) return;
 
-				const polygonElements = get(disableHoverableContent) ? [triggerEl] : [triggerEl, contentEl];
+				const polygonElements = disableHoverableContent.get() ? [triggerEl] : [triggerEl, contentEl];
 				const polygon = makeHullFromElements(polygonElements);
 
 				isMouseInTooltipArea = pointInPolygon(

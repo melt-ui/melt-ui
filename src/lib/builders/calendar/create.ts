@@ -118,7 +118,7 @@ export function createCalendar<
 	 */
 	const months = writable<Month<DateValue>[]>(
 		createMonths({
-			dateObj: get(placeholder),
+			dateObj: placeholder.get(),
 			weekStartsOn: withDefaults.weekStartsOn,
 			locale: withDefaults.locale,
 			fixedWeeks: withDefaults.fixedWeeks,
@@ -289,7 +289,7 @@ export function createCalendar<
 			 * The label is dynamically updated through an effect whenever there
 			 * are changes in the active date or label.
 			 */
-			createAccessibleHeading(node, get(fullCalendarLabel));
+			createAccessibleHeading(node, fullCalendarLabel.get());
 			announcer = getAnnouncer();
 
 			const unsubKb = addMeltEventListener(node, 'keydown', handleCalendarKeydown);
@@ -364,7 +364,7 @@ export function createCalendar<
 		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['prevButton']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					if (get(isPrevButtonDisabled)) return;
+					if (isPrevButtonDisabled.get()) return;
 					prevPage();
 				})
 			);
@@ -395,7 +395,7 @@ export function createCalendar<
 		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['nextButton']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					if (get(isNextButtonDisabled)) return;
+					if (isNextButtonDisabled.get()) return;
 					nextPage();
 				})
 			);
@@ -484,7 +484,7 @@ export function createCalendar<
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					handleCellClick(parseStringToDateValue(args.value, get(placeholder)));
+					handleCellClick(parseStringToDateValue(args.value, placeholder.get()));
 				})
 			);
 
@@ -512,7 +512,7 @@ export function createCalendar<
 		([$placeholder, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
 			if (!isBrowser || !$placeholder) return;
 
-			const $visibleMonths = get(visibleMonths);
+			const $visibleMonths = visibleMonths.get();
 
 			/**
 			 * If the placeholder's month is already in the visible months,
@@ -544,7 +544,7 @@ export function createCalendar<
 	 */
 	effect([fullCalendarLabel], ([$fullCalendarLabel]) => {
 		if (!isBrowser) return;
-		const node = document.getElementById(get(ids.accessibleHeading));
+		const node = document.getElementById(ids.accessibleHeading.get());
 		if (!isHTMLElement(node)) return;
 		node.textContent = $fullCalendarLabel;
 	});
@@ -555,10 +555,10 @@ export function createCalendar<
 	effect([value], ([$value]) => {
 		if (Array.isArray($value) && $value.length) {
 			const lastValue = $value[$value.length - 1];
-			if (lastValue && get(placeholder) !== lastValue) {
+			if (lastValue && placeholder.get() !== lastValue) {
 				placeholder.set(lastValue);
 			}
-		} else if (!Array.isArray($value) && $value && get(placeholder) !== $value) {
+		} else if (!Array.isArray($value) && $value && placeholder.get() !== $value) {
 			placeholder.set($value);
 		}
 	});
@@ -645,7 +645,7 @@ export function createCalendar<
 		});
 		const h2 = document.createElement('div');
 		h2.textContent = label;
-		h2.id = get(ids.accessibleHeading);
+		h2.id = ids.accessibleHeading.get();
 		h2.role = 'heading';
 		h2.ariaLevel = '2';
 		node.insertBefore(div, node.firstChild);
@@ -672,18 +672,18 @@ export function createCalendar<
 	 * ```
 	 */
 	function nextPage() {
-		const $months = get(months);
-		const $numberOfMonths = get(numberOfMonths);
-		if (get(pagedNavigation)) {
+		const $months = months.get();
+		const $numberOfMonths = numberOfMonths.get();
+		if (pagedNavigation.get()) {
 			const firstMonth = $months[0].value;
 			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 		} else {
 			const firstMonth = $months[0].value;
 			const newMonths = createMonths({
 				dateObj: firstMonth.add({ months: 1 }),
-				weekStartsOn: get(weekStartsOn),
-				locale: get(locale),
-				fixedWeeks: get(fixedWeeks),
+				weekStartsOn: weekStartsOn.get(),
+				locale: locale.get(),
+				fixedWeeks: fixedWeeks.get(),
 				numberOfMonths: $numberOfMonths,
 			});
 
@@ -713,18 +713,18 @@ export function createCalendar<
 	 * ```
 	 */
 	function prevPage() {
-		const $months = get(months);
-		const $numberOfMonths = get(numberOfMonths);
-		if (get(pagedNavigation)) {
+		const $months = months.get();
+		const $numberOfMonths = numberOfMonths.get();
+		if (pagedNavigation.get()) {
 			const firstMonth = $months[0].value;
 			placeholder.set(firstMonth.subtract({ months: $numberOfMonths }));
 		} else {
 			const firstMonth = $months[0].value;
 			const newMonths = createMonths({
 				dateObj: firstMonth.subtract({ months: 1 }),
-				weekStartsOn: get(weekStartsOn),
-				locale: get(locale),
-				fixedWeeks: get(fixedWeeks),
+				weekStartsOn: weekStartsOn.get(),
+				locale: locale.get(),
+				fixedWeeks: fixedWeeks.get(),
 				numberOfMonths: $numberOfMonths,
 			});
 
@@ -839,14 +839,14 @@ export function createCalendar<
 	}
 
 	function handleCellClick(date: DateValue) {
-		const $readonly = get(readonly);
+		const $readonly = readonly.get();
 		if ($readonly) return;
-		const $isDateDisabled = get(isDateDisabled);
-		const $isUnavailable = get(options.isDateUnavailable);
+		const $isDateDisabled = isDateDisabled.get();
+		const $isUnavailable = options.isDateUnavailable.get();
 		if ($isDateDisabled?.(date) || $isUnavailable?.(date)) return;
 
 		value.update((prev) => {
-			const $multiple = get(multiple);
+			const $multiple = multiple.get();
 			if ($multiple) {
 				return handleMultipleUpdate(prev, date) as S;
 			} else {
@@ -864,7 +864,7 @@ export function createCalendar<
 	function handleSingleUpdate(prev: S | undefined, date: DateValue) {
 		if (Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
 		if (!prev) return date;
-		const $preventDeselect = get(preventDeselect);
+		const $preventDeselect = preventDeselect.get();
 		if (!$preventDeselect && isSameDay(prev, date)) {
 			placeholder.set(date);
 			return undefined;
@@ -876,7 +876,7 @@ export function createCalendar<
 		if (!prev) return [date];
 		if (!Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
 		const index = prev.findIndex((d) => isSameDay(d, date));
-		const $preventDeselect = get(preventDeselect);
+		const $preventDeselect = preventDeselect.get();
 
 		if (index === -1) {
 			return [...prev, date];
@@ -919,12 +919,12 @@ export function createCalendar<
 			const cellValue = currentCell.getAttribute('data-value');
 			if (!cellValue) return;
 
-			handleCellClick(parseStringToDateValue(cellValue, get(placeholder)));
+			handleCellClick(parseStringToDateValue(cellValue, placeholder.get()));
 		}
 	}
 
 	function shiftFocus(node: HTMLElement, add: number) {
-		const candidateCells = getSelectableCells(get(ids.calendar));
+		const candidateCells = getSelectableCells(ids.calendar.get());
 		if (!candidateCells.length) return;
 
 		const index = candidateCells.indexOf(node);
@@ -955,17 +955,17 @@ export function createCalendar<
 			 */
 
 			// shift the calendar back a month unless previous month is disabled
-			if (get(isPrevButtonDisabled)) return;
+			if (isPrevButtonDisabled.get()) return;
 
-			const $months = get(months);
+			const $months = months.get();
 			const firstMonth = $months[0].value;
-			const $numberOfMonths = get(numberOfMonths);
+			const $numberOfMonths = numberOfMonths.get();
 			placeholder.set(firstMonth.subtract({ months: $numberOfMonths }));
 
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells(get(ids.calendar));
+				const newCandidateCells = getSelectableCells(ids.calendar.get());
 				if (!newCandidateCells.length) {
 					return;
 				}
@@ -994,15 +994,15 @@ export function createCalendar<
 			 */
 
 			// shift the calendar forward a month unless next month is disabled
-			if (get(isNextButtonDisabled)) return;
+			if (isNextButtonDisabled.get()) return;
 
-			const $months = get(months);
+			const $months = months.get();
 			const firstMonth = $months[0].value;
-			const $numberOfMonths = get(numberOfMonths);
+			const $numberOfMonths = numberOfMonths.get();
 			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells(get(ids.calendar));
+				const newCandidateCells = getSelectableCells(ids.calendar.get());
 				if (!newCandidateCells.length) {
 					return;
 				}

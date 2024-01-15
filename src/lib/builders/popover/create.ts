@@ -23,7 +23,7 @@ import { usePopper } from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
@@ -78,13 +78,13 @@ export function createPopover(args?: CreatePopoverProps) {
 	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
 
 	safeOnMount(() => {
-		activeTrigger.set(document.getElementById(get(ids.trigger)));
+		activeTrigger.set(document.getElementById(ids.trigger.get()));
 	});
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(get(ids.trigger));
-		handleFocus({ prop: get(closeFocus), defaultEl: triggerEl });
+		const triggerEl = document.getElementById(ids.trigger.get());
+		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
 	}
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
@@ -136,21 +136,21 @@ export function createPopover(args?: CreatePopoverProps) {
 							focusTrap: $disableFocusTrap
 								? null
 								: {
-										returnFocusOnDeactivate: false,
-										clickOutsideDeactivates: true,
-										escapeDeactivates: true,
-								  },
+									returnFocusOnDeactivate: false,
+									clickOutsideDeactivates: true,
+									escapeDeactivates: true,
+								},
 							clickOutside: $closeOnOutsideClick
 								? {
-										handler: handleClickOutside,
-								  }
+									handler: handleClickOutside,
+								}
 								: null,
 							escapeKeydown: $closeOnEscape
 								? {
-										handler: () => {
-											handleClose();
-										},
-								  }
+									handler: () => {
+										handleClose();
+									},
+								}
 								: null,
 							portal: getPortalDestination(node, $portal),
 						},
@@ -181,10 +181,10 @@ export function createPopover(args?: CreatePopoverProps) {
 	}
 
 	function handleClickOutside(e: PointerEvent) {
-		get(onOutsideClick)?.(e);
+		onOutsideClick.get()?.(e);
 		if (e.defaultPrevented) return;
 		const target = e.target;
-		const triggerEl = document.getElementById(get(ids.trigger));
+		const triggerEl = document.getElementById(ids.trigger.get());
 
 		if (triggerEl && isElement(target)) {
 			if (target === triggerEl || triggerEl.contains(target)) return;
@@ -236,9 +236,9 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const close = builder(name('close'), {
 		returned: () =>
-			({
-				type: 'button',
-			} as const),
+		({
+			type: 'button',
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -267,7 +267,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		if ($open) {
 			if (!$activeTrigger) {
 				tick().then(() => {
-					const triggerEl = document.getElementById(get(ids.trigger));
+					const triggerEl = document.getElementById(ids.trigger.get());
 					if (!isHTMLElement(triggerEl)) return;
 					activeTrigger.set(triggerEl);
 				});
@@ -277,8 +277,8 @@ export function createPopover(args?: CreatePopoverProps) {
 				unsubs.push(removeScroll());
 			}
 
-			const triggerEl = $activeTrigger ?? document.getElementById(get(ids.trigger));
-			handleFocus({ prop: get(openFocus), defaultEl: triggerEl });
+			const triggerEl = $activeTrigger ?? document.getElementById(ids.trigger.get());
+			handleFocus({ prop: openFocus.get(), defaultEl: triggerEl });
 		}
 
 		return () => {

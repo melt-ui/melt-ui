@@ -157,8 +157,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	);
 
-	const formatter = createFormatter(get(locale));
-	const initialSegments = initializeSegmentValues(get(inferredGranularity));
+	const formatter = createFormatter(locale.get());
+	const initialSegments = initializeSegmentValues(inferredGranularity.get());
 	const segmentValues = writable(structuredClone(initialSegments));
 
 	let announcer = getAnnouncer();
@@ -250,7 +250,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				formatter,
 				locale: $locale,
 				granularity: $inferredGranularity,
-				dateRef: get(placeholder),
+				dateRef: placeholder.get(),
 				hideTimeZone: $hideTimeZone,
 				hourCycle: $hourCycle,
 			});
@@ -279,7 +279,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const firstSegment = getFirstSegment(get(ids.field));
+					const firstSegment = getFirstSegment(ids.field.get());
 					if (!firstSegment) return;
 					sleep(1).then(() => firstSegment.focus());
 				}),
@@ -377,7 +377,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 			return {
 				destroy() {
-					removeDescriptionElement(get(ids.description));
+					removeDescriptionElement(ids.description.get());
 				},
 			};
 		},
@@ -495,9 +495,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 			? Updater<TimeSegmentObj[T]>
 			: Updater<DateAndTimeSegmentObj[T]>
 	) {
-		if (get(disabled) || get(readonly) || get(readonlySegmentsSet).has(part)) return;
+		if (disabled.get() || readonly.get() || readonlySegmentsSet.get().has(part)) return;
 		segmentValues.update((prev) => {
-			const dateRef = get(placeholder);
+			const dateRef = placeholder.get();
 			if (isDateAndTimeSegmentObj(prev)) {
 				const pVal = prev[part];
 				const castCb = cb as Updater<DateAndTimeSegmentObj[T]>;
@@ -517,7 +517,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				} else if (part === 'dayPeriod') {
 					const next = castCb(pVal) as DateAndTimeSegmentObj['dayPeriod'];
 					updatingDayPeriod.set(next);
-					const date = get(placeholder);
+					const date = placeholder.get();
 					if ('hour' in date) {
 						const trueHour = date.hour;
 						if (next === 'AM') {
@@ -573,14 +573,14 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 			return prev;
 		});
-		const $segmentValues = get(segmentValues);
-		const $fieldId = get(ids.field);
+		const $segmentValues = segmentValues.get();
+		const $fieldId = ids.field.get();
 		if (areAllSegmentsFilled($segmentValues, $fieldId)) {
 			value.set(
 				getValueFromSegments({
 					segmentObj: $segmentValues,
 					id: $fieldId,
-					dateRef: get(placeholder),
+					dateRef: placeholder.get(),
 				})
 			);
 			updatingDayPeriod.set(null);
@@ -597,7 +597,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * the handlers.
 	 */
 	function handleSegmentKeydown(e: KeyboardEvent, part: AnyExceptLiteral) {
-		const $disabled = get(disabled);
+		const $disabled = disabled.get();
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
 		}
@@ -622,7 +622,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * focusing the segment if the field is disabled.
 	 */
 	function handleSegmentClick(e: MouseEvent) {
-		const $disabled = get(disabled);
+		const $disabled = disabled.get();
 		if ($disabled) {
 			e.preventDefault();
 			return;
@@ -677,8 +677,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $segmentMonthValue = get(segmentValues).month;
-		const $placeholder = get(placeholder);
+		const $segmentMonthValue = segmentValues.get().month;
+		const $placeholder = placeholder.get();
 
 		const daysInMonth = $segmentMonthValue
 			? getDaysInMonth($placeholder.set({ month: $segmentMonthValue }))
@@ -711,7 +711,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $fieldId = get(ids.field);
+		const $fieldId = ids.field.get();
 
 		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
@@ -865,7 +865,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $placeholder = get(placeholder);
+		const $placeholder = placeholder.get();
 		function getMonthAnnouncement(month: number) {
 			return `${month} - ${formatter.fullMonth(toDate($placeholder.set({ month })))}`;
 		}
@@ -900,7 +900,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			});
 			return;
 		}
-		const $fieldId = get(ids.field);
+		const $fieldId = ids.field.get();
 
 		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
@@ -1052,7 +1052,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		states.year.hasTouched = true;
-		const $placeholder = get(placeholder);
+		const $placeholder = placeholder.get();
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('year', (prev) => {
@@ -1081,7 +1081,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $fieldId = get(ids.field);
+		const $fieldId = ids.field.get();
 
 		if (isNumberString(e.key)) {
 			let moveToNext = false;
@@ -1181,14 +1181,14 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleHourSegmentKeydown(e: KeyboardEvent) {
-		const dateRef = get(placeholder);
+		const dateRef = placeholder.get();
 		if (!isAcceptableSegmentKey(e.key) || !('hour' in dateRef)) {
 			return;
 		}
 
 		states.hour.hasTouched = true;
 
-		const $hourCycle = get(hourCycle);
+		const $hourCycle = hourCycle.get();
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('hour', (prev) => {
@@ -1217,7 +1217,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $fieldId = get(ids.field);
+		const $fieldId = ids.field.get();
 
 		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
@@ -1366,7 +1366,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
-		const dateRef = get(placeholder);
+		const dateRef = placeholder.get();
 		if (!isAcceptableSegmentKey(e.key) || !('minute' in dateRef)) {
 			return;
 		}
@@ -1401,7 +1401,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $fieldId = get(ids.field);
+		const $fieldId = ids.field.get();
 
 		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
@@ -1550,7 +1550,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleSecondSegmentKeydown(e: KeyboardEvent) {
-		const dateRef = get(placeholder);
+		const dateRef = placeholder.get();
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
@@ -1586,7 +1586,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $fieldId = get(ids.field);
+		const $fieldId = ids.field.get();
 
 		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
@@ -1779,7 +1779,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, get(ids.field));
+			handleSegmentNavigation(e, ids.field.get());
 		}
 	}
 
@@ -1837,7 +1837,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function handleTimeZoneSegmentKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, get(ids.field));
+			handleSegmentNavigation(e, ids.field.get());
 		}
 	}
 
@@ -1857,7 +1857,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * Gets the `aria-labelledby` value for a given segment part.
 	 */
 	function getLabelledBy(part: AnyExceptLiteral) {
-		return `${get(ids[part])} ${get(ids.label)}`;
+		return `${ids[part].get()} ${ids.label.get()}`;
 	}
 
 	/**
@@ -1872,9 +1872,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 	effect(value, ($value) => {
 		if ($value) {
 			// Set the description of the field for screen readers
-			setDescription(get(ids.description), formatter, $value);
+			setDescription(ids.description.get(), formatter, $value);
 		}
-		if ($value && get(placeholder) !== $value) {
+		if ($value && placeholder.get() !== $value) {
 			placeholder.set($value);
 		}
 	});

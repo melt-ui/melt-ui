@@ -84,7 +84,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		granularity: withDefaults.granularity,
 	});
 
-	const formatter = createFormatter(get(locale));
+	const formatter = createFormatter(locale.get());
 
 	const placeholder = dateStore(rfPlaceholder, withDefaults.defaultPlaceholder ?? defaultDate);
 
@@ -144,7 +144,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 
 	effect([popover.states.open], ([$open]) => {
 		if (!$open) {
-			const $value = get(value);
+			const $value = value.get();
 			if ($value?.start) {
 				placeholder.set($value.start);
 			} else {
@@ -178,7 +178,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
-			handleSegmentNavigation(e, get(rangeField.ids.field.field));
+			handleSegmentNavigation(e, rangeField.ids.field.field.get());
 		}
 	}
 

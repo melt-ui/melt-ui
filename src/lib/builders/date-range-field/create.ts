@@ -68,11 +68,11 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const defaultStart = withDefaults.value ? get(withDefaults.value)?.start : undefined;
+	const defaultStart = withDefaults.value ? withDefaults.value.get()?.start : undefined;
 	const startValue = writable<DateValue | undefined>(
 		defaultStart ?? withDefaults.defaultValue?.start
 	);
-	const defaultEnd = withDefaults.value ? get(withDefaults.value)?.end : undefined;
+	const defaultEnd = withDefaults.value ? withDefaults.value.get()?.end : undefined;
 	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
 
 	const isCompleted = derived(value, ($value) => {
@@ -185,7 +185,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const firstSegment = getFirstSegment(get(ids.field));
+					const firstSegment = getFirstSegment(ids.field.get());
 					if (!firstSegment) return;
 					sleep(1).then(() => firstSegment.focus());
 				}),
@@ -233,7 +233,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			getAnnouncer();
 			return {
 				destroy() {
-					removeDescriptionElement(get(ids.description));
+					removeDescriptionElement(ids.description.get());
 				},
 			};
 		},
@@ -287,8 +287,8 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	 */
 
 	effect([value], ([$value]) => {
-		const $startValue = get(startValue);
-		const $endValue = get(endValue);
+		const $startValue = startValue.get();
+		const $endValue = endValue.get();
 
 		if ($value?.start && $value?.end) {
 			if ($value.start !== $startValue) {
@@ -302,7 +302,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
-		const $value = get(value);
+		const $value = value.get();
 
 		if ($value && $value?.start === $startValue && $value?.end === $endValue) return;
 

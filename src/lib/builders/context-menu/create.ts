@@ -111,13 +111,13 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const longPressTimer = writable(0);
 
 	function handleClickOutside(e: PointerEvent) {
-		get(rootOptions.onOutsideClick)?.(e);
+		rootOptions.onOutsideClick.get()?.(e);
 		if (e.defaultPrevented) return;
 
 		const target = e.target;
 		if (!(target instanceof Element)) return;
 
-		const isClickInsideTrigger = target.closest(`[data-id="${get(ids.trigger)}"]`) !== null;
+		const isClickInsideTrigger = target.closest(`[data-id="${ids.trigger.get()}"]`) !== null;
 
 		if (!isClickInsideTrigger || isLeftClick(e)) {
 			rootOpen.set(false);
@@ -165,7 +165,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
-						const $virtual = get(virtual);
+						const $virtual = virtual.get();
 						const popper = usePopper(node, {
 							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
 							open: rootOpen,
@@ -173,8 +173,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick
 									? {
-											handler: handleClickOutside,
-									  }
+										handler: handleClickOutside,
+									}
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
@@ -199,7 +199,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					const isKeyDownInside = target.closest("[role='menu']") === menuEl;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e, get(loop));
+						handleMenuNavigation(e, loop.get());
 					}
 
 					/**

@@ -98,7 +98,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 	});
-	const formatter = createFormatter(get(options.locale));
+	const formatter = createFormatter(options.locale.get());
 
 	effect([options.locale], ([$locale]) => {
 		dateField.options.locale.set($locale);
@@ -162,7 +162,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	effect([open], ([$open]) => {
 		if (!$open) {
-			const $value = get(value);
+			const $value = value.get();
 			if ($value) {
 				placeholder.set($value);
 			} else {
@@ -174,7 +174,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
-			handleSegmentNavigation(e, get(dateField.ids.field));
+			handleSegmentNavigation(e, dateField.ids.field.get());
 		}
 	}
 
