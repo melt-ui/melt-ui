@@ -1138,55 +1138,50 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}
 	});
 
-	effect(
-		[rootOpen, rootActiveTrigger, preventScroll],
-		([$rootOpen, $rootActiveTrigger, $preventScroll]) => {
-			if (!isBrowser) return;
-
-			const unsubs: Array<() => void> = [];
-
-			if (opts.removeScroll && $rootOpen && $preventScroll) {
-				unsubs.push(removeScroll());
-			}
-
+	effect([rootOpen], ([$rootOpen]) => {
+		if (!isBrowser) return;
+		if (!$rootOpen) {
+			const $rootActiveTrigger = get(rootActiveTrigger);
+			if (!$rootActiveTrigger) return;
 			const $closeFocus = get(closeFocus);
 
-			if (!$rootOpen) {
-				if ($rootActiveTrigger) {
-					// If we already have a reference to the trigger, focus it
-					handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
-				} else {
-					// otherwise we'll get the trigger el and focus it
-					handleFocus({
-						prop: $closeFocus,
-						defaultEl: document.getElementById(get(rootIds.trigger)),
-					});
-				}
+			if (!$rootOpen && $rootActiveTrigger) {
+				handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
 			}
-
-			// if the menu is open, we'll sleep for a sec so the menu can render
-			// before we focus on either the first item or the menu itself.
-			sleep(1).then(() => {
-				const menuEl = document.getElementById(get(rootIds.menu));
-				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-					if (get(disableFocusFirstItem)) {
-						handleRovingFocus(menuEl);
-						return;
-					}
-					// Get menu items belonging to the root menu
-					const menuItems = getMenuItems(menuEl);
-					if (!menuItems.length) return;
-
-					// Focus on first menu item
-					handleRovingFocus(menuItems[0]);
-				}
-			});
-
-			return () => {
-				unsubs.forEach((unsub) => unsub());
-			};
 		}
-	);
+	});
+
+	effect([rootOpen, preventScroll], ([$rootOpen, $preventScroll]) => {
+		if (!isBrowser) return;
+
+		const unsubs: Array<() => void> = [];
+
+		if (opts.removeScroll && $rootOpen && $preventScroll) {
+			unsubs.push(removeScroll());
+		}
+
+		// if the menu is open, we'll sleep for a sec so the menu can render
+		// before we focus on either the first item or the menu itself.
+		sleep(1).then(() => {
+			const menuEl = document.getElementById(get(rootIds.menu));
+			if (menuEl && $rootOpen && get(isUsingKeyboard)) {
+				if (get(disableFocusFirstItem)) {
+					handleRovingFocus(menuEl);
+					return;
+				}
+				// Get menu items belonging to the root menu
+				const menuItems = getMenuItems(menuEl);
+				if (!menuItems.length) return;
+
+				// Focus on first menu item
+				handleRovingFocus(menuItems[0]);
+			}
+		});
+
+		return () => {
+			unsubs.forEach((unsub) => unsub());
+		};
+	});
 
 	effect(rootOpen, ($rootOpen) => {
 		if (!isBrowser) return;

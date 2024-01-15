@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { createCollapsible, melt } from '$lib/index.js';
-	import { slide } from 'svelte/transition';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
+	import { slide } from 'svelte/transition';
 
 	const {
 		elements: { root, content, trigger },
 		states: { open },
-	} = createCollapsible();
+	} = createCollapsible({
+		forceVisible: true,
+	});
 </script>
 
 <div

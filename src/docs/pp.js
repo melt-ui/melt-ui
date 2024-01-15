@@ -1,14 +1,21 @@
 /**
- * @typedef {Object} MeltAttribute
+ * @typedef {Object} Builder
  * @property {string} builder - The builder of the melt attribute.
- * @property {string|null} args - The arguments of the melt attribute.
+ *
+ * @typedef {Object} Args
+ * @property {string} args - The arguments of the melt attribute.
+ *
+ * @typedef {Object} Index
+ * @property {string} index - The index of the melt attribute in the string.
+ *
+ * @typedef {Builder | Builder & Args | Builder & Index} MeltAttribute
  */
 
 /**
  * Extracts the builder and arguments from a melt attribute in a string.
  *
  * @param {string} input - The string containing the melt attribute.
- * @returns {MeltAttribute|null} - The builder and arguments of the melt attribute, or null if no melt attribute is found.
+ * @returns {MeltAttribute | null} - The builder and arguments of the melt attribute, or null if no melt attribute is found.
  */
 export function extractMeltAttribute(input) {
 	const meltStart = input.indexOf('use:melt={');
@@ -26,20 +33,28 @@ export function extractMeltAttribute(input) {
 
 	if (balance !== 0) return null;
 
-	const meltContent = substring.slice(1, index - 1);
+	const meltContent = substring.slice(0, index - 1);
 	const argStart = meltContent.indexOf('(');
 	const argEnd = meltContent.lastIndexOf(')');
 
-	// If there are no arguments
-	if (argStart === -1 || argEnd === -1) {
-		return { builder: meltContent, args: null };
+	// If there are arguments
+	if (argStart !== -1 && argEnd !== -1) {
+		const builder = meltContent.slice(0, argStart);
+		const args = meltContent.slice(argStart + 1, argEnd);
+		return { builder, args };
 	}
 
-	// If there are arguments
-	const builder = meltContent.slice(0, argStart);
-	const args = meltContent.slice(argStart + 1, argEnd);
+	const indexStart = meltContent.indexOf('[');
+	const indexEnd = meltContent.lastIndexOf(']');
 
-	return { builder, args };
+	// If there is an index
+	if (indexStart !== -1 && indexEnd !== -1) {
+		const builder = meltContent.slice(0, indexStart);
+		const index = meltContent.slice(indexStart + 1, indexEnd);
+		return { builder, index };
+	}
+
+	return { builder: meltContent };
 }
 
 /**
@@ -55,16 +70,25 @@ export function processMeltAttributes(input) {
 	let tries = 0;
 	while (meltAttribute !== null && tries < 100000) {
 		tries++;
-		const oldMelt = `use:melt={$${
-			meltAttribute.args !== null
-				? `${meltAttribute.builder}(${meltAttribute.args})`
-				: meltAttribute.builder
-		}}`;
-		const newMelt = `{...$${
-			meltAttribute.args !== null
-				? `${meltAttribute.builder}(${meltAttribute.args})`
-				: meltAttribute.builder
-		}} use:${meltAttribute.builder}`;
+		const { builder } = meltAttribute;
+		const store = builder.startsWith('$') ? builder.slice(1) : builder;
+
+		let /** @type {string} */ oldMelt, /** @type {string} */ newMelt;
+		if ('args' in meltAttribute) {
+			const { args } = meltAttribute;
+			oldMelt = `use:melt={${builder}(${args})}`;
+			newMelt = `{...${builder}(${args})} use:${store}`;
+		} else if ('index' in meltAttribute) {
+			const { index } = meltAttribute;
+			oldMelt = `use:melt={${builder}[${index}]}`;
+			newMelt = `{...${builder}[${index}]} use:${store}`;
+		} else if (builder.startsWith('$')) {
+			oldMelt = `use:melt={${builder}}`;
+			newMelt = `{...${builder}} use:${store}`;
+		} else {
+			oldMelt = `use:melt={${builder}}`;
+			newMelt = `{...${builder}} use:${builder}.action`;
+		}
 
 		output = output.replace(oldMelt, newMelt);
 		meltAttribute = extractMeltAttribute(output);

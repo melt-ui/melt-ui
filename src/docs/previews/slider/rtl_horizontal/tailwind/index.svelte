@@ -2,8 +2,7 @@
 	import { createSlider, melt } from '$lib/index.js';
 
 	const {
-		elements: { root, range, thumb },
-		states: { value },
+		elements: { root, range, thumbs },
 	} = createSlider({
 		dir: 'rtl',
 		defaultValue: [30],
@@ -16,10 +15,8 @@
 		<span use:melt={$range} class="h-[3px] bg-white" />
 	</span>
 
-	{#each $value as _}
-		<span
-			use:melt={$thumb()}
-			class="h-5 w-5 rounded-full bg-white focus:ring-4 focus:!ring-black/40"
-		/>
-	{/each}
+	<span
+		use:melt={$thumbs[0]}
+		class="h-5 w-5 rounded-full bg-white focus:ring-4 focus:!ring-black/40"
+	/>
 </span>

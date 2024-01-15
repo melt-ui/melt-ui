@@ -16,8 +16,18 @@ export type CreateMenubarProps = {
 
 	/**
 	 * Whether to close the active menu when the escape key is pressed.
+	 *
+	 * @default true
 	 */
 	closeOnEscape?: boolean;
+
+	/**
+	 * Whether to prevent scrolling the body when any menu within
+	 * the menubar is open.
+	 *
+	 * @default true
+	 */
+	preventScroll?: boolean;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
@@ -25,7 +35,7 @@ export type CreateMenubarProps = {
 	ids?: Partial<IdObj<MenubarIdParts>>;
 };
 
-export type CreateMenubarMenuProps = _Menu['builder'];
+export type CreateMenubarMenuProps = Omit<_Menu['builder'], 'preventScroll'>;
 export type CreateMenubarSubmenuProps = _Menu['submenu'];
 export type MenubarMenuItemProps = _Menu['item'];
 export type CreateMenuRadioGroupProps = _Menu['radioGroup'];

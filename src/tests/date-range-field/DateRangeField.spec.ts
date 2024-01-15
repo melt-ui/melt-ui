@@ -258,4 +258,68 @@ describe('DateField', () => {
 		expect(getByTestId('start-value')).toHaveTextContent(overrideDay.start.toString());
 		expect(getByTestId('end-value')).toHaveTextContent(overrideDay.end.toString());
 	});
+
+	test('readonlySegments prop prevents modifying given segments', async () => {
+		const { getByTestId, user } = setup({
+			defaultValue: exampleDate,
+			readonlySegments: {
+				start: ['month'],
+				end: ['month', 'year'],
+			},
+		});
+
+		// start field
+		{
+			// start month should not change
+			const monthSegment = getByTestId('start-month');
+			expect(monthSegment).toHaveTextContent(String(exampleDate.start['month']));
+			await user.click(monthSegment);
+			expect(monthSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(monthSegment).toHaveTextContent(String(exampleDate.start['month']));
+
+			// start day should change
+			const daySegment = getByTestId('start-day');
+			expect(daySegment).toHaveTextContent(String(exampleDate.start['day']));
+			await user.click(daySegment);
+			expect(daySegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(daySegment).toHaveTextContent(String(exampleDate.start['day'] + 1));
+
+			// start year should change
+			const yearSegment = getByTestId('start-year');
+			expect(yearSegment).toHaveTextContent(String(exampleDate.start['year']));
+			await user.click(yearSegment);
+			expect(yearSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(yearSegment).toHaveTextContent(String(exampleDate.start['year'] + 1));
+		}
+
+		// end field
+		{
+			// end month should not change
+			const monthSegment = getByTestId('end-month');
+			expect(monthSegment).toHaveTextContent(String(exampleDate.end['month']));
+			await user.click(monthSegment);
+			expect(monthSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(monthSegment).toHaveTextContent(String(exampleDate.end['month']));
+
+			// end day should change
+			const daySegment = getByTestId('end-day');
+			expect(daySegment).toHaveTextContent(String(exampleDate.end['day']));
+			await user.click(daySegment);
+			expect(daySegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(daySegment).toHaveTextContent(String(exampleDate.end['day'] + 1));
+
+			// end year should not change
+			const yearSegment = getByTestId('end-year');
+			expect(yearSegment).toHaveTextContent(String(exampleDate.end['year']));
+			await user.click(yearSegment);
+			expect(yearSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(yearSegment).toHaveTextContent(String(exampleDate.end['year']));
+		}
+	});
 });

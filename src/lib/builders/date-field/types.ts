@@ -3,6 +3,7 @@ import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { DateFieldIdParts, createDateField } from './create.js';
 import type { DateValue } from '@internationalized/date';
 import type { Granularity, Matcher } from '$lib/index.js';
+import type { EditableSegmentPart } from '$lib/shared/index.js';
 
 export type DateFieldProps = {
 	/**
@@ -115,6 +116,14 @@ export type DateFieldProps = {
 	 * @default false
 	 */
 	readonly?: boolean;
+
+	/**
+	 *
+	 * List of segment names that will be readonly.
+	 *
+	 * @default undefined
+	 */
+	readonlySegments?: EditableSegmentPart[];
 
 	/**
 	 * The format to use for displaying the time in the input.

@@ -40,6 +40,7 @@ const defaults = {
 	endName: undefined,
 	disabled: false,
 	readonly: false,
+	readonlySegments: undefined,
 	minValue: undefined,
 	maxValue: undefined,
 } satisfies CreateDateRangeFieldProps;
@@ -86,9 +87,17 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	);
 
 	const startField = createDateField({
-		...omit(withDefaults, 'defaultValue', 'onValueChange', 'startName', 'endName'),
+		...omit(
+			withDefaults,
+			'defaultValue',
+			'onValueChange',
+			'startName',
+			'endName',
+			'readonlySegments'
+		),
 		value: startValue,
 		name: withDefaults.startName,
+		readonlySegments: withDefaults.readonlySegments?.start,
 		ids: {
 			...generatedIds,
 			...withDefaults.ids,
@@ -97,9 +106,17 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	const endField = createDateField({
-		...omit(withDefaults, 'defaultValue', 'onValueChange', 'endName', 'startName'),
+		...omit(
+			withDefaults,
+			'defaultValue',
+			'onValueChange',
+			'endName',
+			'startName',
+			'readonlySegments'
+		),
 		value: endValue,
 		name: withDefaults.endName,
+		readonlySegments: withDefaults.readonlySegments?.end,
 		ids: {
 			...generatedIds,
 			...withDefaults.ids,
@@ -314,6 +331,10 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	effect([options.readonly], ([$readonly]) => {
 		startField.options.readonly.set($readonly);
 		endField.options.readonly.set($readonly);
+	});
+	effect([options.readonlySegments], ([$readonlySegments]) => {
+		startField.options.readonlySegments.set($readonlySegments?.start);
+		endField.options.readonlySegments.set($readonlySegments?.end);
 	});
 	effect([options.minValue], ([$minValue]) => {
 		startField.options.minValue.set($minValue);
