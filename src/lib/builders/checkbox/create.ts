@@ -10,7 +10,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { CheckboxEvents } from './events.js';
 import type { CreateCheckboxProps } from './types.js';
 
@@ -53,7 +53,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 					if (e.key === kbd.ENTER) e.preventDefault();
 				}),
 				addMeltEventListener(node, 'click', () => {
-					if (get(disabled)) return;
+					if (disabled.get()) return;
 
 					checked.update((value) => {
 						if (value === 'indeterminate') return true;
