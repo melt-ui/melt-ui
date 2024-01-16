@@ -86,7 +86,7 @@
 		"@storybook/testing-library": "^0.2.2",
 		"@sveltejs/adapter-static": "^2.0.3",
 		"@sveltejs/kit": "^1.22.3",
-		"@sveltejs/package": "^2.2.0",
+		"@sveltejs/package": "^2.2.5",
 		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
 		"@tailwindcss/typography": "^0.5.9",
 		"@testing-library/dom": "^9.3.1",
