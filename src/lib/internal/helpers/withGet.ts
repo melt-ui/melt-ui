@@ -1,13 +1,13 @@
 import {
+	derived,
 	get,
 	writable,
 	type Readable,
-	type Writable,
 	type Stores,
 	type StoresValues,
-	derived,
+	type Writable,
 } from 'svelte/store';
-import { effect, isWritable, noop } from '.';
+import { effect, isWritable } from '.';
 
 type ReadableValue<T> = T extends Readable<infer V> ? V : never;
 
