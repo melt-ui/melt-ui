@@ -183,19 +183,6 @@ export function createDialog(props?: CreateDialogProps) {
 			let activate = noop;
 			let deactivate = noop;
 
-			const unsubModal = useModal(node, {
-				open,
-				closeOnInteractOutside: closeOnOutsideClick,
-				onClose() {
-					handleClose();
-				},
-				shouldCloseOnInteractOutside(e) {
-					get(onOutsideClick)?.(e);
-					if (e.defaultPrevented) return false;
-					return true;
-				},
-			}).destroy;
-
 			const destroy = executeCallbacks(
 				effect([open], ([$open]) => {
 					if (!$open) return;
@@ -216,6 +203,20 @@ export function createDialog(props?: CreateDialogProps) {
 					} else {
 						return focusTrap.deactivate;
 					}
+				}),
+				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
+					return useModal(node, {
+						open: $open,
+						closeOnInteractOutside: $closeOnOutsideClick,
+						onClose() {
+							handleClose();
+						},
+						shouldCloseOnInteractOutside(e) {
+							get(onOutsideClick)?.(e);
+							if (e.defaultPrevented) return false;
+							return true;
+						},
+					}).destroy;
 				}),
 				effect([closeOnEscape], ([$closeOnEscape]) => {
 					if (!$closeOnEscape) return noop;
@@ -245,7 +246,6 @@ export function createDialog(props?: CreateDialogProps) {
 			return {
 				destroy: () => {
 					unsubScroll();
-					unsubModal();
 					destroy();
 				},
 			};

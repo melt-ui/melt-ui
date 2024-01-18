@@ -3,6 +3,7 @@ import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 
 export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
 	let unsub = noop;
+
 	function update(config: InteractOutsideConfig) {
 		unsub();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
