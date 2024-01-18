@@ -372,7 +372,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 					// Add items hash to URL
 					if (id) {
-						window.location.hash = id;
+						history.pushState(null, '', `#${id}`);
 					}
 				})
 			);
