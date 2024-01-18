@@ -12,6 +12,7 @@ vite.config.ts.timestamp-*
 dist/
 .github/
 .vscode/
+static
 
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
