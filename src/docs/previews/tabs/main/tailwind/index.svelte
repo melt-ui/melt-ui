@@ -99,7 +99,7 @@
 			>
 				New email
 			</label>
-			<input id="new" type="password" />
+			<input id="new" type="email" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
 			<button class="save">Save changes</button>

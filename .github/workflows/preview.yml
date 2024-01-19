@@ -16,6 +16,7 @@
 name: Preview Deployment
 on:
   pull_request_target:
+    types: [opened, synchronize]
 
 # cancel in-progress runs on new commits to same PR (github.event.number)
 concurrency:
@@ -74,7 +75,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           projectName: melt-ui
-          directory: ./.svelte-kit/cloudflare
+          directory: ./build
           deploymentName: Preview
 
   untrusted-preview:
@@ -121,6 +122,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           projectName: melt-ui
-          directory: ./.svelte-kit/cloudflare
+          directory: ./build
           deploymentName: Preview
 
