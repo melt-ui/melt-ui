@@ -285,6 +285,7 @@ export function createListbox<
 				id: $triggerId,
 				role: 'combobox',
 				disabled: disabledAttr($disabled),
+				type: withDefaults.builder === 'select' ? 'button' : undefined,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['trigger']> => {
