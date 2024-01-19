@@ -80,7 +80,7 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		});
 
 		const isRepeated = $typed.length > 1 && $typed.every((char) => char === $typed[0]);
-		const normalizeSearch = isRepeated ? $typed[0] : $typed.join('');
+		const normalizeSearch = isRepeated ? $typed[0].toLowerCase() : $typed.join('').toLowerCase();
 		const currentItemIndex = isHTMLElement(currentItem) ? candidateItems.indexOf(currentItem) : -1;
 
 		let wrappedItems = wrapArray(candidateItems, Math.max(currentItemIndex, 0));
@@ -90,8 +90,7 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		}
 
 		const nextItem = wrappedItems.find(
-			(item) =>
-				item?.innerText && item.innerText.toLowerCase().startsWith(normalizeSearch.toLowerCase())
+			(item) => item?.innerText && item.innerText.toLowerCase().startsWith(normalizeSearch)
 		);
 
 		if (isHTMLElement(nextItem) && nextItem !== currentItem) {
