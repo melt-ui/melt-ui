@@ -9,6 +9,7 @@
 	export let closeOnEscape = true;
 	export let closeOnOutsideClick = true;
 	export let ids: CreateSelectProps['ids'] = undefined;
+	export let onOutsideClick: CreateSelectProps['onOutsideClick'] = undefined;
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
 		states: { selected, selectedLabel },
@@ -26,6 +27,7 @@
 			closeOnEscape,
 			closeOnOutsideClick,
 			ids,
+			onOutsideClick,
 		})
 	);
 

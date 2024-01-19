@@ -38,7 +38,7 @@
 		</div>
 		<div use:melt={$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
-			<Preview code={snippets.main} viewCode={false}>
+			<Preview code={snippets.main} viewCode={false} variant="default">
 				<svelte:component this={mainPreview} />
 			</Preview>
 			<Features {features} />

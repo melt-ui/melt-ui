@@ -18,10 +18,26 @@ you're unsure if you should be using the components in a controlled way, you lik
 
 There are various definitions for controlled/uncontrolled components, but in the context of Melt UI,
 uncontrolled means that the state and stores of a component are created and managed automatically.
-Controlled means that the user (you) can create and manage the state and stores.
+This is the default behavior, and in most cases, it is more than enough.
 
-All components are uncontrolled by default, and in most cases, this is more than enough. However,
-our goal is to provide as much flexibility as possible, so we offer a few ways to give you more
+```svelte {6}
+<script lang="ts">
+	import { createDialog } from '@melt-ui/svelte'
+
+	const {
+		elements: { trigger, overlay, content, title, description, close },
+		states: { open }
+	} = createDialog()
+</script>
+```
+
+In the example above, `open` is a store that `createDialog` returns. You can read its value to
+determine whether the `Dialog` is open or not. Since we're not altering the state in any way besides
+user interaction, we consider this to be **uncontrolled**.
+
+**Controlled** means that the user (you) can create and/or manage the state and/or stores.
+
+Our goal is to provide as much flexibility as possible, so we offer a few ways to give you more
 control over the state and behavior of the components.
 
 <Callout>
@@ -53,6 +69,88 @@ interaction.
 	open.set(true)
 </script>
 ```
+
+## Syncing State
+
+A common use case for controlling the state of a component is to sync it with props, or other
+internal state. You can do it manually...
+
+```svelte {11,12}
+<script lang="ts">
+	import { createDialog } from '@melt-ui/svelte'
+
+	export let open = false
+
+	const {
+		elements: { trigger, overlay, content, title, description, close },
+		states: { open: localOpen }
+	} = createDialog()
+
+	$: $localOpen = open
+	$: open = $localOpen
+</script>
+```
+
+But it's harder to manage, can be error prone, and with multiple states and options, it can get
+messy quickly.
+
+```svelte {14-23}
+<script lang="ts">
+	import { createDialog } from '@melt-ui/svelte'
+
+	export let a
+	export let b
+	export let c
+	export let d
+	export let e
+
+	const {
+		states: { a: localA, b: localB, c: localC, d: localD, e: localE }
+	} = createDialog()
+
+	$: $localA = a
+	$: a = $localA
+	$: $localB = b
+	$: b = $localB
+	$: $localC = c
+	$: c = $localC
+	$: $localD = d
+	$: d = $localD
+	$: $localE = e
+	$: e = $localE
+</script>
+```
+
+We provide a `createSync` function that will improve this situation.
+
+```svelte {12-18}
+<script lang="ts">
+	import { createDialog, createSync } from '@melt-ui/svelte'
+
+	export let a
+	export let b
+	export let c
+	export let d
+	export let e
+
+	const { states } = createDialog()
+
+	const sync = createSync(states)
+	$: sync.a(a, (v) => (a = v))
+	$: sync.b(b, (v) => (b = v))
+	$: sync.c(c, (v) => (c = v))
+	$: sync.d(d, (v) => (d = v))
+	$: sync.e(e, (v) => (e = v))
+</script>
+```
+
+`createSync` takes an object of writable stores and returns an object with `sync` functions. The
+**first argument** of the `sync` function is the value that the store should be set to, and the
+**second argument** is a setter function that will be called with the new value of the store.
+
+It's still a bit to write, but it's much more manageable. The `sync` function will also ignore
+updates that are the same as the current value, so you don't have to worry about unnecessary
+updates.
 
 ## Bring Your Own Store
 

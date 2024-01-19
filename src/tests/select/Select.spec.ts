@@ -14,10 +14,10 @@ describe('Select', () => {
 	});
 
 	test('Opens/Closes when trigger is clicked', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await user.click(trigger);
@@ -27,11 +27,26 @@ describe('Select', () => {
 		expect(menu).not.toBeVisible();
 	});
 
-	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
+	test('Closes on escape keydown', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+		expect(trigger).toHaveFocus();
+
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).not.toBeVisible();
+	});
+
+	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
 		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
 
 		expect(menu).not.toBeVisible();
 		await act(() => trigger.focus());
@@ -40,10 +55,10 @@ describe('Select', () => {
 	});
 
 	test('Toggles when trigger is clicked', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await user.click(trigger);
@@ -54,10 +69,10 @@ describe('Select', () => {
 	});
 
 	test('Toggles when icon within trigger is clicked', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest);
 		const icon = getByTestId('icon');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await user.click(icon);
@@ -68,10 +83,10 @@ describe('Select', () => {
 	});
 
 	test('Selects item when clicked', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(trigger).not.toHaveTextContent('Caramel');
 
@@ -98,10 +113,10 @@ describe('Select', () => {
 	});
 
 	test('Selects multiple items when `multiple` is true', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest, { multiple: true });
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(trigger).not.toHaveTextContent('Caramel');
 
@@ -156,10 +171,10 @@ describe('Select', () => {
 	});
 
 	test('Respects the `closeOnEscape` prop', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest, { closeOnEscape: false });
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await user.click(trigger);
@@ -170,10 +185,29 @@ describe('Select', () => {
 	});
 
 	test('Respects the `closeOnOutsideClick` prop', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest, { closeOnOutsideClick: false });
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		const outside = getByTestId('outside');
+		await user.click(outside);
+		expect(menu).toBeVisible();
+	});
+
+	test("doesn't close when preventDefault called in `onOutsideClick`", async () => {
 		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest, {
+			onOutsideClick: (e) => {
+				e.preventDefault();
+			},
+		});
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
 
 		expect(menu).not.toBeVisible();
 		await user.click(trigger);
@@ -201,6 +235,12 @@ describe('Select', () => {
 		expect(trigger.id).toBe(ids.trigger);
 		expect(menu.id).toBe(ids.menu);
 		expect(label.id).toBe(ids.label);
+	});
+
+	test('Applies type="button" to the select trigger', async () => {
+		const { getByTestId } = render(SelectTest, { closeOnEscape: false });
+		const trigger = getByTestId('trigger');
+		expect(trigger).toHaveAttribute('type', 'button');
 	});
 
 	test.todo('Disabled select cannot be opened');

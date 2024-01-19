@@ -15,8 +15,10 @@ description: Presents a selection of choices to the user, activated by a button.
 
 - **Trigger**: The button that opens/closes the select menu
 - **Menu**: The popover select menu
-- **Option**: The individual select options
-- **Arrow**: An optional arrow component
+  - **Option**: The individual select options
+  - **Label**: The label for the input
+  - **Arrow**: An optional arrow element which points to the menu's input
+  - **Group**: An optional group and group label element which can be used to group options
 
 ## Usage
 

@@ -75,10 +75,22 @@ const defaults = {
 	name: undefined,
 	typeahead: true,
 	highlightOnHover: true,
+	onOutsideClick: undefined,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
 export type ListboxIdParts = typeof listboxIdParts;
+
+type ListboxParts =
+	| 'trigger'
+	| 'menu'
+	| 'item'
+	| 'label'
+	| 'option'
+	| 'group'
+	| 'group-label'
+	| 'hidden-input'
+	| 'arrow';
 
 /**
  * Creates an ARIA-1.2-compliant listbox.
@@ -133,8 +145,9 @@ export function createListbox<
 		typeahead,
 		name: nameProp,
 		highlightOnHover,
+		onOutsideClick,
 	} = options;
-	const { name, selector } = createElHelpers(withDefaults.builder);
+	const { name, selector } = createElHelpers<ListboxParts>(withDefaults.builder);
 
 	const ids = toWritableStores({ ...generateIds(listboxIdParts), ...withDefaults.ids });
 
@@ -272,6 +285,7 @@ export function createListbox<
 				id: $triggerId,
 				role: 'combobox',
 				disabled: disabledAttr($disabled),
+				type: withDefaults.builder === 'select' ? 'button' : undefined,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['trigger']> => {
@@ -458,15 +472,8 @@ export function createListbox<
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[isVisible, closeOnEscape, portal, closeOnOutsideClick, positioning, activeTrigger],
-					([
-						$isVisible,
-						$closeOnEscape,
-						$portal,
-						$closeOnOutsideClick,
-						$positioning,
-						$activeTrigger,
-					]) => {
+					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
+					([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
 						unsubPopper();
 
 						if (!$isVisible || !$activeTrigger) return;
@@ -482,6 +489,9 @@ export function createListbox<
 								clickOutside: $closeOnOutsideClick
 									? {
 											handler: (e) => {
+												get(onOutsideClick)?.(e);
+												if (e.defaultPrevented) return;
+
 												const target = e.target;
 												if (!isElement(target)) return;
 												if (target === $activeTrigger || $activeTrigger.contains(target)) {
@@ -492,13 +502,7 @@ export function createListbox<
 											ignore: ignoreHandler,
 									  }
 									: null,
-								escapeKeydown: $closeOnEscape
-									? {
-											handler: () => {
-												closeMenu();
-											},
-									  }
-									: null,
+								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),
 							},
 						});
@@ -585,6 +589,23 @@ export function createListbox<
 		},
 	});
 
+	const group = builder(name('group'), {
+		returned: () => {
+			return (groupId: string) => ({
+				role: 'group',
+				'aria-labelledby': groupId,
+			});
+		},
+	});
+
+	const groupLabel = builder(name('group-label'), {
+		returned: () => {
+			return (groupId: string) => ({
+				id: groupId,
+			});
+		},
+	});
+
 	const hiddenInput = builder(name('hidden-input'), {
 		stores: [selected, required, nameProp],
 		returned: ([$selected, $required, $name]) => {
@@ -663,8 +684,10 @@ export function createListbox<
 		ids,
 		elements: {
 			trigger,
+			group,
 			option,
 			menu,
+			groupLabel,
 			label,
 			hiddenInput,
 			arrow,

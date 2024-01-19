@@ -125,7 +125,11 @@ export type DatePickerProps = {
 	locale?: string;
 };
 
-type ModifiedDateFieldProps = RenameProperties<CreateDateFieldProps, { ids: 'dateFieldIds' }>;
+type ModifiedDateFieldProps = Omit<
+	RenameProperties<CreateDateFieldProps, { ids: 'dateFieldIds' }>,
+	'readonlySegments'
+>;
+
 type ModifiedCalendarProps = RenameProperties<CreateCalendarProps, { ids: 'calendarIds' }>;
 type ModifiedPopoverProps = Omit<
 	RenameProperties<CreatePopoverProps, { ids: 'popoverIds' }>,

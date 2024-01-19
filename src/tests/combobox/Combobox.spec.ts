@@ -140,6 +140,47 @@ describe('Combobox', () => {
 		expect(label.id).toBe(ids.label);
 	});
 
+	test("Doesn't close on outside click if defaultPrevented on `onOutsideClick` handler", async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(ComboboxTest, { onOutsideClick: (e) => e.preventDefault() });
+		const input = getByTestId('input');
+
+		await user.click(input);
+		expect(getByTestId('menu')).toBeVisible();
+
+		const outsideClick = getByTestId('outside-click');
+		await user.click(outsideClick);
+		expect(getByTestId('menu')).toBeVisible();
+	});
+
+	test('Closes on escape by default', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(ComboboxTest);
+
+		const input = getByTestId('input');
+		const menu = getByTestId('menu');
+
+		await user.click(input);
+		expect(menu).toBeVisible();
+
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).not.toBeVisible();
+	});
+
+	test('Respects the `closeOnEscape` prop', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(ComboboxTest, { closeOnEscape: false });
+
+		const input = getByTestId('input');
+		const menu = getByTestId('menu');
+
+		await user.click(input);
+		expect(menu).toBeVisible();
+
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).toBeVisible();
+	});
+
 	test.todo('Selects multiple items when `multiple` is true');
 	test.todo('Manually setting the value updates the label');
 	test.todo('Updating options and setting the value updates the label');

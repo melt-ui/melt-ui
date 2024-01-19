@@ -21,6 +21,7 @@ const defaults = {
 	closeFocus: undefined,
 	disableFocusFirstItem: false,
 	closeOnItemClick: true,
+	onOutsideClick: undefined,
 } satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {

@@ -37,6 +37,7 @@ const defaults = {
 	minValue: undefined,
 	maxValue: undefined,
 	weekdayFormat: 'narrow',
+	onOutsideClick: undefined,
 } satisfies CreateDateRangePickerProps;
 
 export function createDateRangePicker(props?: CreateDateRangePickerProps) {
@@ -68,6 +69,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		portal: withDefaults.portal,
 		forceVisible: withDefaults.forceVisible,
 		openFocus: pickerOpenFocus,
+		onOutsideClick: withDefaults.onOutsideClick,
 	});
 
 	const options = toWritableStores({
@@ -149,6 +151,10 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 				placeholder.reset();
 			}
 		}
+	});
+
+	effect([options.onOutsideClick], ([$onOutsideClick]) => {
+		popover.options.onOutsideClick.set($onOutsideClick);
 	});
 
 	const rangeFieldOptions = omit(

@@ -543,6 +543,36 @@ Here's an example showcasing a few different locales:
 Notice that they all have the same `defaultPlaceholder`, yet the segments are formatted differently
 depending on the locale, and all it took was changing the `locale` prop. Pretty cool, right?
 
+### Readonly Segments
+
+The entire Date Field builder can be set as readonly using the `readonly` prop. But in some
+situations, you may want a user to be able to edit the time but not the date, or the month but not
+the year.
+
+The `readonlySegments` prop can be used for this.
+
+```svelte showLineNumbers {9-10}
+<script lang="ts">
+	import { createDateField, melt } from '$lib'
+	import { CalendarDate } from '@internationalized/date'
+
+	const {
+		elements: { field, segment, label },
+		states: { segmentContents }
+	} = createDateField({
+		defaultValue: new CalendarDate(2023, 10, 11),
+		readonlySegments: ['year']
+	})
+</script>
+```
+
+In this example, the `year` segment is readonly, but the `month` and `day` segments are focusable
+and editable.
+
+<Preview code={snippets.readonlySegments} variant="dark" size="sm">
+	<svelte:component this={previews.readonlySegments} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />
