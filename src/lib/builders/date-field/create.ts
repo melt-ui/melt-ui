@@ -1424,7 +1424,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num === 0) {
 						states.minute.lastKeyZero = true;
 						announcer.announce(null);
-						return null;
+						return 0;
 					}
 
 					/**
@@ -1609,7 +1609,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num === 0) {
 						states.second.lastKeyZero = true;
 						announcer.announce(null);
-						return null;
+						return 0;
 					}
 
 					/**
