@@ -90,7 +90,8 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		}
 
 		const nextItem = wrappedItems.find(
-			(item) => item?.innerText && item.innerText.toLowerCase().startsWith(normalizeSearch)
+			(item) =>
+				item?.textContent && item.textContent.trim().toLowerCase().startsWith(normalizeSearch)
 		);
 
 		if (isHTMLElement(nextItem) && nextItem !== currentItem) {
