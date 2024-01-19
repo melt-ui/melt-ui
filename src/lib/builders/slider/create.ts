@@ -19,7 +19,7 @@ import {
 	toWritableStores,
 	type StyleObject,
 } from '$lib/internal/helpers/index.js';
-import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { MeltActionReturn, NonEmptyArray } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
 import type { SliderEvents } from './events.js';
 
@@ -170,7 +170,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const thumbs = builderArray(name('thumb'), {
 		stores: [value, position, min, max, disabled, orientation, direction],
 		returned: ([$value, $position, $min, $max, $disabled, $orientation, $direction]) => {
-			return Array.from({ length: $value.length || 1 }, (_, i) => {
+			const result = Array.from({ length: $value.length || 1 }, (_, i) => {
 				const currentThumb = get(currentThumbIndex);
 
 				if (currentThumb < $value.length) {
@@ -220,6 +220,9 @@ export const createSlider = (props?: CreateSliderProps) => {
 					tabindex: $disabled ? -1 : 0,
 				} as const;
 			});
+
+			type Thumb = (typeof result)[number];
+			return result as NonEmptyArray<Thumb>;
 		},
 		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
