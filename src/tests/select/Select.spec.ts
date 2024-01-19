@@ -243,6 +243,34 @@ describe('Select', () => {
 		expect(trigger).toHaveAttribute('type', 'button');
 	});
 
+	test('Resets typeahead when backspace is pressed', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(SelectTest);
+
+		const trigger = getByTestId('trigger');
+		await user.click(trigger);
+
+		const options: Record<string, string[]> = {
+			sweet: ['caramel', 'chocolate', 'strawberry', 'cookies'],
+			savory: ['basil', 'bacon', 'rosemary'],
+		};
+
+		for (const group in options) {
+			for (let i = 0; i < options[group].length; i++) {
+				const optionText = options[group][i];
+				await user.keyboard(kbd.BACKSPACE + optionText);
+
+				const el = getByTestId(`${group}-option-${i}`);
+
+				if (i === 2) {
+					expect(el).not.toHaveAttribute('data-highlighted');
+				} else {
+					expect(el).toHaveAttribute('data-highlighted');
+				}
+			}
+		}
+	});
+
 	test.todo('Disabled select cannot be opened');
 	test.todo('Options loop when loop prop is set');
 });
