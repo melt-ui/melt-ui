@@ -217,4 +217,14 @@ describe('Context Menu', () => {
 		await user.click(outsideClick);
 		expect(menu).toBeVisible();
 	});
+
+	test('Resets typeahead when backspace is pressed', async () => {
+		const { user, getByTestId } = await open();
+		const options = ['copy', 'cut', 'paste'];
+
+		for (const option of options) {
+			await user.keyboard(kbd.BACKSPACE + option);
+			expect(getByTestId(option)).toHaveFocus();
+		}
+	});
 });

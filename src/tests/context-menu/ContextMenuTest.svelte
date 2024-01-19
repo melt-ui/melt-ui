@@ -115,6 +115,10 @@
 				<div>⇧⌘N</div>
 			</div>
 			<div use:melt={$separator} />
+			<div use:melt={$item} data-testid="copy">Copy</div>
+			<div use:melt={$item} data-testid="cut">Cut</div>
+			<div use:melt={$item} data-testid="paste">Paste</div>
+			<div use:melt={$separator} />
 			<div use:melt={$arrow} data-testid="arrow" />
 		</div>
 	{/if}
