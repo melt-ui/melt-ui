@@ -39,14 +39,16 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 			const target = e.target;
 			if (!isElement(target)) return;
 			if (target && isLastModal()) {
-				e.stopPropagation();
 				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation()
 			}
 		}
 		function onInteractOutside(e: InteractOutsideEvent) {
 			if (shouldCloseOnInteractOutside?.(e) && isLastModal()) {
-				e.stopPropagation();
 				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation()
 				closeModal();
 			}
 		}
