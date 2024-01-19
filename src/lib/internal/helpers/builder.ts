@@ -139,10 +139,10 @@ type BuilderArrayArgs<
 	S extends Stores,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R
+	R extends object[]
 > = {
 	stores: S;
-	returned: (values: StoresValues<S>) => R[];
+	returned: (values: StoresValues<S>) => R;
 	action?: A;
 };
 
@@ -150,21 +150,20 @@ export function builderArray<
 	S extends Stores,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R,
+	R extends object[],
 	Name extends string
 >(name: Name, args: BuilderArrayArgs<S, A, R>): ExplicitBuilderArrayReturn<A, R, Name> {
 	const { stores, returned, action } = args;
 
 	const { subscribe } = derived(stores, (values) =>
-		returned(values).map(
-			(value) =>
-				hiddenAction({
-					...value,
-					[`data-melt-${name}`]: '',
-					action: action ?? noop,
-				}) as BuilderArrayElement<A, R, Name>
+		returned(values).map((value) =>
+			hiddenAction({
+				...value,
+				[`data-melt-${name}`]: '',
+				action: action ?? noop,
+			})
 		)
-	);
+	) as BuilderArrayStore<A, R, Name>;
 
 	const actionFn = (action ??
 		(() => {
@@ -175,19 +174,21 @@ export function builderArray<
 	return actionFn;
 }
 
-type BuilderArrayElement<
+type BuilderArrayStore<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R,
+	R extends object[],
 	Name extends string
-> = R & { [K in `data-melt-${Name}`]: '' } & { action: A };
+> = Readable<{
+	[K in keyof R]: R[K] & { [K in `data-melt-${Name}`]: '' } & { action: A };
+}>;
 
 export type ExplicitBuilderArrayReturn<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R,
+	R extends object[],
 	Name extends string
-> = Readable<BuilderArrayElement<A, R, Name>[]> & A;
+> = BuilderArrayStore<A, R, Name> & A;
 
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
