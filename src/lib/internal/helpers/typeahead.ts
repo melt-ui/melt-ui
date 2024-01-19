@@ -3,7 +3,7 @@ import { debounce } from './debounce.js';
 import { handleRovingFocus } from './rovingFocus.js';
 import { isHTMLElement } from './is.js';
 import { wrapArray } from './array.js';
-import { isBackspaceKey, isCharacterKey, isModifierKey } from './keyboard.js';
+import { isCharacterKey, isModifierKey, kbd } from './keyboard.js';
 
 export type TypeaheadArgs = {
 	/**
@@ -49,13 +49,14 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	const typed: Writable<string[]> = writable([]);
 
 	const resetTyped = debounce(() => {
-		typed.update(() => []);
+		typed.set([]);
 	});
 
 	const handleTypeaheadSearch = (e: KeyboardEvent, items: HTMLElement[]) => {
 		if (ignoredKeys.has(e.key) || isModifierKey(e)) return;
-		if (isBackspaceKey(e)) {
-			typed.update(() => []);
+		const isBackspaceKey = e.key === kbd.BACKSPACE;
+		if (isBackspaceKey) {
+			typed.set([]);
 			return;
 		}
 		if (!isCharacterKey(e)) return;
@@ -65,8 +66,10 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		if (!Array.isArray($typed)) {
 			return;
 		}
-		$typed.push(e.key.toLowerCase());
-		typed.set($typed);
+		typed.update((prev) => {
+			prev.push(e.key.toLowerCase());
+			return prev;
+		});
 
 		const candidateItems = items.filter((item) => {
 			if (
