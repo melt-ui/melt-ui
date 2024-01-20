@@ -112,6 +112,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
+	if (!value.get()) {
+		value.set(withDefaults.defaultValue);
+	}
+
 	const startValue = withGet.writable<DateValue | undefined>(
 		value.get().start ?? withDefaults.defaultValue?.start
 	);
