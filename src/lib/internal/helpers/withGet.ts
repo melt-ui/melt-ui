@@ -1,4 +1,4 @@
-import { get, type Readable, type StoresValues, type Writable } from 'svelte/store';
+import { get, writable, type Readable, type StoresValues, type Writable } from 'svelte/store';
 import { effect } from '.';
 
 type ReadableValue<T> = T extends Readable<infer V> ? V : never;
@@ -33,34 +33,23 @@ export function withGet<T extends Readable<unknown>>(store: T): WithGet<T> {
 }
 
 withGet.writable = function <T>(initial: T): WithGet<Writable<T>> {
-	const subscribers: ((value: T) => void)[] = [];
+	const internal = writable(initial);
 	let value = initial;
 
-	const update = (fn: (value: T) => T) => {
-		value = fn(value);
-		for (const subscriber of subscribers) {
-			subscriber(value);
-		}
-	};
-
-	const set = (value: T) => update(() => value);
-
-	const subscribe = (subscriber: (value: T) => void) => {
-		subscribers.push(subscriber);
-		subscriber(value);
-		return () => {
-			const index = subscribers.indexOf(subscriber);
-			if (index !== -1) {
-				subscribers.splice(index, 1);
-			}
-		};
-	};
-
 	return {
-		set,
-		update,
-		subscribe,
-		get: () => value,
+		subscribe: internal.subscribe,
+		set(newValue) {
+			internal.set(newValue);
+			value = newValue;
+		},
+		update(updater) {
+			const newValue = updater(value);
+			internal.set(newValue);
+			value = newValue;
+		},
+		get() {
+			return value;
+		},
 	};
 };
 
