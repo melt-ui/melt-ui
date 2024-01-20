@@ -46,7 +46,8 @@
 
 		color: rgb(var(--color-magnum-600) / 1);
 
-		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+		box-shadow:
+			0 10px 15px -3px rgb(var(--color-black) / 0.1),
 			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 

@@ -174,7 +174,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								clickOutside: $closeOnOutsideClick
 									? {
 											handler: handleClickOutside,
-									  }
+										}
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

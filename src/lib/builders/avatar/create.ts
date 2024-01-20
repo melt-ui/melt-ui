@@ -66,7 +66,7 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 					$loadingStatus === 'loaded'
 						? styleToString({
 								display: 'none',
-						  })
+							})
 						: undefined,
 				hidden: $loadingStatus === 'loaded' ? true : undefined,
 			};

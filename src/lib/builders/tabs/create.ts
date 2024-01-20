@@ -191,8 +191,8 @@ export function createTabs(props?: CreateTabsProps) {
 							? undefined
 							: true
 						: ssrValue === tabValue
-						? undefined
-						: true,
+							? undefined
+							: true,
 					tabindex: 0,
 				};
 			};

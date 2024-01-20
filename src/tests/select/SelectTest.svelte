@@ -22,7 +22,7 @@
 				? {
 						value: defaultValue,
 						label: defaultValue,
-				  }
+					}
 				: undefined,
 			closeOnEscape,
 			closeOnOutsideClick,

@@ -41,8 +41,8 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 	const defaultValue = withDefaults.defaultValue
 		? withDefaults.defaultValue
 		: withDefaults.type === 'single'
-		? 'undefined'
-		: [];
+			? 'undefined'
+			: [];
 
 	const valueWritable = withDefaults.value ?? writable(defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);

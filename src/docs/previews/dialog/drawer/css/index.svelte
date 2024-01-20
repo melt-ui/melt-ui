@@ -77,7 +77,8 @@
 
 		color: rgb(var(--color-magnum-700) / 1);
 
-		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+		box-shadow:
+			0 10px 15px -3px rgb(var(--color-black) / 0.1),
 			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
@@ -109,7 +110,8 @@
 
 		background-color: rgb(var(--color-white) / 1);
 
-		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+		box-shadow:
+			0 10px 15px -3px rgb(var(--color-black) / 0.1),
 			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
@@ -173,7 +175,9 @@
 
 		color: rgb(var(--color-zinc-800) / 1);
 
-		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+		box-shadow:
+			0 1px 3px 0 rgb(0 0 0 / 0.1),
+			0 1px 2px -1px rgb(0 0 0 / 0.1);
 	}
 
 	.invitation h3 {

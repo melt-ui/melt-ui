@@ -492,8 +492,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 		cb: T extends DateSegmentPart
 			? Updater<DateSegmentObj[T]>
 			: T extends TimeSegmentPart
-			? Updater<TimeSegmentObj[T]>
-			: Updater<DateAndTimeSegmentObj[T]>
+				? Updater<TimeSegmentObj[T]>
+				: Updater<DateAndTimeSegmentObj[T]>
 	) {
 		if (get(disabled) || get(readonly) || get(readonlySegmentsSet).has(part)) return;
 		segmentValues.update((prev) => {

@@ -14,7 +14,7 @@ export type CalendarValue<Multiple extends boolean, Value extends DateValue = Da
 export type CreateCalendarProps<
 	Multiple extends boolean = false,
 	Value extends DateValue = DateValue,
-	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>
+	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>,
 > = {
 	/**
 	 * Prevent deselecting the selected date(s), which would set the

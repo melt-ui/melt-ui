@@ -1,11 +1,8 @@
 import type { ActionReturn } from 'svelte/action';
 
 // Check if type are equal or just extends
-export type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <
-	G
->() => G extends U ? 1 : 2
-	? Y
-	: N;
+export type IfEquals<T, U, Y = unknown, N = never> =
+	(<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? Y : N;
 
 export type WrapWithCustomEvent<T> = {
 	[K in keyof T]: CustomEvent<T[K]>;
@@ -109,12 +106,12 @@ export type MeltComponentEvents<T> = {
 // };
 
 export type WhenTrue<TrueOrFalse, IfTrue, IfFalse, IfNeither = IfTrue | IfFalse> = [
-	TrueOrFalse
+	TrueOrFalse,
 ] extends [true]
 	? IfTrue
 	: [TrueOrFalse] extends [false]
-	? IfFalse
-	: IfNeither;
+		? IfFalse
+		: IfNeither;
 
 export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>>> = Expand<{
 	[K in keyof T as K extends keyof NewNames

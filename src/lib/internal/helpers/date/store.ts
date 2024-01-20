@@ -16,14 +16,14 @@ type AnyDateTime = ZonedDateTime | CalendarDateTime;
 type DerivedDuration<T> = T extends AnyDateTime
 	? DateTimeDuration
 	: T extends CalendarDate
-	? DateDuration
-	: never;
+		? DateDuration
+		: never;
 
 type DerivedFields<T> = T extends AnyDateTime
 	? DateFields & TimeFields
 	: T extends CalendarDate
-	? DateFields
-	: never;
+		? DateFields
+		: never;
 
 /**
  * A higher order store that encapsulates a writable store holding a `DateValue` from the

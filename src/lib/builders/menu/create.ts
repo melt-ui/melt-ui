@@ -205,7 +205,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 													$rootActiveTrigger.focus();
 												}
 											},
-									  }
+										}
 									: null,
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

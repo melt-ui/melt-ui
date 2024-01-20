@@ -12,35 +12,35 @@ export type {
 export type CreateSelectProps<
 	Value = unknown,
 	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>,
 > = Omit<CreateListboxProps<Value, Multiple, S>, 'builder'>;
 
 export type Select<
 	Value = unknown,
 	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>,
 > = BuilderReturn<typeof createSelect<Value, Multiple, S>>;
 
 export type SelectElements<
 	Value = unknown,
 	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>,
 > = Select<Value, Multiple, S>['elements'];
 
 export type SelectOptions<
 	Value = unknown,
 	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>,
 > = Select<Value, Multiple, S>['options'];
 
 export type SelectStates<
 	Value = unknown,
 	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>,
 > = Select<Value, Multiple, S>['states'];
 
 export type SelectHelpers<
 	Value = unknown,
 	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>,
 > = Select<Value, Multiple, S>['helpers'];

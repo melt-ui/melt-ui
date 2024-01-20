@@ -150,7 +150,7 @@
 					if (a.includes('/') && !b.includes('/')) return 1;
 					if (!a.includes('/') && b.includes('/')) return -1;
 					return a.localeCompare(b);
-			  })
+				})
 			: [];
 
 	export let viewCode = false;

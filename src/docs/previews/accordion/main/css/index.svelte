@@ -52,7 +52,8 @@
 		width: 100%;
 		max-width: 28rem;
 		border-radius: 0.375rem;
-		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+		box-shadow:
+			0 10px 15px -3px rgb(0 0 0 / 0.1),
 			0 4px 6px -4px rgb(0 0 0 / 0.1);
 	}
 
@@ -61,8 +62,14 @@
 
 		overflow: hidden;
 
-		transition-property: color, background-color, border-color,
-			text-decoration-color, fill, stroke, -webkit-text-decoration-color;
+		transition-property:
+			color,
+			background-color,
+			border-color,
+			text-decoration-color,
+			fill,
+			stroke,
+			-webkit-text-decoration-color;
 
 		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 		transition-duration: 150ms;
@@ -108,8 +115,14 @@
 
 		box-shadow: none;
 
-		transition-property: color, background-color, border-color,
-			text-decoration-color, fill, stroke, -webkit-text-decoration-color;
+		transition-property:
+			color,
+			background-color,
+			border-color,
+			text-decoration-color,
+			fill,
+			stroke,
+			-webkit-text-decoration-color;
 		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 		transition-duration: 150ms;
 	}

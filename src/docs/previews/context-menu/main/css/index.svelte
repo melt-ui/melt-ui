@@ -117,7 +117,8 @@
 
 		background-color: rgb(var(--color-white) / 1);
 
-		box-shadow: 0 10px 15px -3px rgb(var(--color-neutral-900) / 0.3),
+		box-shadow:
+			0 10px 15px -3px rgb(var(--color-neutral-900) / 0.3),
 			0 4px 6px -4px rgb(var(--color-neutral-900) / 0.3);
 	}
 
@@ -130,7 +131,8 @@
 	.subMenu {
 		min-width: 220px;
 
-		box-shadow: 0 4px 6px -1px rgb(var(--color-neutral-900) / 0.3),
+		box-shadow:
+			0 4px 6px -1px rgb(var(--color-neutral-900) / 0.3),
 			0 2px 4px -2px rgb(var(--color-neutral-900) / 0.3);
 	}
 

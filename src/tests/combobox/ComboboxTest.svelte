@@ -30,7 +30,7 @@
 				? {
 						value: defaultValue,
 						label: defaultValue,
-				  }
+					}
 				: undefined,
 			ids,
 			onOutsideClick,

@@ -101,7 +101,7 @@ export function createListbox<
 	Value,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>,
 >(props?: CreateListboxProps<Value, Multiple, S>) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateListboxProps<Value, Multiple, S>;
 
@@ -500,7 +500,7 @@ export function createListbox<
 												closeMenu();
 											},
 											ignore: ignoreHandler,
-									  }
+										}
 									: null,
 								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),

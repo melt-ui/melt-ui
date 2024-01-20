@@ -2,13 +2,13 @@
 	"name": "melt-ui",
 	"dockerFile": "Dockerfile",
 	"build": {
-		"args": { "NODE_MAJOR_VERSION": "18", "PNPM_VERSION": "8.6.3" }
+		"args": { "NODE_MAJOR_VERSION": "18", "PNPM_VERSION": "8.6.3" },
 	},
 	"postCreateCommand": [".devcontainer/post-create.sh"],
 	"portsAttributes": {
 		"5173": { "label": "Melt UI" },
 		"6006": { "label": "Storybook" },
-		"9323": { "label": "Playwright Report" }
+		"9323": { "label": "Playwright Report" },
 	},
 	"customizations": {
 		"vscode": {
@@ -16,8 +16,8 @@
 				"bradlc.vscode-tailwindcss",
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
-				"svelte.svelte-vscode"
-			]
-		}
-	}
+				"svelte.svelte-vscode",
+			],
+		},
+	},
 }

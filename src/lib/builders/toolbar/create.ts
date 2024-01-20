@@ -49,7 +49,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				role: 'button',
 				type: 'button',
 				tabIndex: -1,
-			} as const),
+			}) as const,
 		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['button']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
@@ -65,7 +65,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				role: 'link',
 				'data-melt-toolbar-item': '',
 				tabIndex: -1,
-			} as const),
+			}) as const,
 		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['link']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
@@ -102,8 +102,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		const defaultValue = groupWithDefaults.defaultValue
 			? groupWithDefaults.defaultValue
 			: groupWithDefaults.type === 'single'
-			? undefined
-			: [];
+				? undefined
+				: [];
 
 		const valueWritable =
 			groupWithDefaults.value ?? writable<string | string[] | undefined>(defaultValue);

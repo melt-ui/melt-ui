@@ -104,7 +104,7 @@
 						author.toLowerCase().includes(normalizedInput)
 					);
 				}),
-		  }
+			}
 		: mangas;
 </script>
 

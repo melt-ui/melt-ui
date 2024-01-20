@@ -180,7 +180,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 													if (e.defaultPrevented) return;
 													activeMenu.set('');
 												},
-										  }
+											}
 										: null,
 								},
 							});

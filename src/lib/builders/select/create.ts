@@ -6,7 +6,7 @@ export function createSelect<
 	Value = unknown,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>,
 >(props?: CreateSelectProps<Value, Multiple, S>) {
 	const listbox = createListbox({ ...props, builder: 'select' });
 

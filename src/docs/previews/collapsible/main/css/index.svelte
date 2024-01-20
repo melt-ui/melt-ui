@@ -75,7 +75,8 @@
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 
-		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+		box-shadow:
+			0 10px 15px -3px rgb(var(--color-black) / 0.1),
 			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
@@ -89,7 +90,8 @@
 
 		background-color: rgb(var(--color-white) / 1);
 
-		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+		box-shadow:
+			0 10px 15px -3px rgb(var(--color-black) / 0.1),
 			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 

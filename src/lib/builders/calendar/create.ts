@@ -69,7 +69,7 @@ export type CalendarIdParts = typeof calendarIdParts;
 export function createCalendar<
 	Multiple extends boolean = false,
 	Value extends DateValue = DateValue,
-	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>
+	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>,
 >(props?: CreateCalendarProps<Multiple, Value, S>) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCalendarProps<Multiple, Value, S>;
 

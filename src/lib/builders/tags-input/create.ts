@@ -494,7 +494,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 								opacity: 0,
 								'pointer-events': 'none',
 								margin: 0,
-						  })
+							})
 						: undefined,
 				};
 			};
@@ -635,7 +635,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 								opacity: 0,
 								'pointer-events': 'none',
 								margin: 0,
-						  })
+							})
 						: undefined,
 				};
 			};

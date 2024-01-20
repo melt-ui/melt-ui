@@ -139,18 +139,18 @@ export function createPopover(args?: CreatePopoverProps) {
 										returnFocusOnDeactivate: false,
 										clickOutsideDeactivates: true,
 										escapeDeactivates: true,
-								  },
+									},
 							clickOutside: $closeOnOutsideClick
 								? {
 										handler: handleClickOutside,
-								  }
+									}
 								: null,
 							escapeKeydown: $closeOnEscape
 								? {
 										handler: () => {
 											handleClose();
 										},
-								  }
+									}
 								: null,
 							portal: getPortalDestination(node, $portal),
 						},
@@ -238,7 +238,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		returned: () =>
 			({
 				type: 'button',
-			} as const),
+			}) as const,
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {

@@ -7,7 +7,7 @@ type StoresObjValues<S extends StoresObj> = {
 
 export function derivedFromObject<
 	S extends StoresObj,
-	Callback extends (values: StoresObjValues<S>) => unknown
+	Callback extends (values: StoresObjValues<S>) => unknown,
 >(stores: S, fn: Callback): Readable<ReturnType<Callback>> {
 	return derived(Object.values(stores), (values) => {
 		// map the values back to the keys

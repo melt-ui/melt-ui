@@ -49,7 +49,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				? null
 				: window.setTimeout(() => {
 						removeToast(ids.content);
-				  }, propsWithDefaults.closeDelay);
+					}, propsWithDefaults.closeDelay);
 
 		const getPercentage = () => {
 			const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;

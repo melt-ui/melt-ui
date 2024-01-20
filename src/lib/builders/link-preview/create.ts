@@ -206,7 +206,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 												$activeTrigger.focus();
 											}
 										},
-								  }
+									}
 								: null,
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,

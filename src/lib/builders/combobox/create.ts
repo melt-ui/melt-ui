@@ -32,7 +32,7 @@ export function createCombobox<
 	Value,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>,
 >(props?: CreateComboboxProps<Value, Multiple, S>) {
 	const listbox = createListbox({ ...props, builder: 'combobox', typeahead: false });
 

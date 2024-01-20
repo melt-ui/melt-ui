@@ -78,7 +78,7 @@
 					title.toLowerCase().includes(normalizedInput) ||
 					author.toLowerCase().includes(normalizedInput)
 				);
-		  })
+			})
 		: mangas;
 </script>
 
