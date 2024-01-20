@@ -18,10 +18,15 @@ export function effect<S extends Stores>(
 	let cb: (() => void) | void = undefined;
 
 	// Create a derived store that contains the stores object and an onUnsubscribe function
-	const unsub = derived(stores, (stores) => {
+	const destroy = derived(stores, (stores) => {
 		cb?.();
 		cb = fn(stores);
 	}).subscribe(noop);
+
+	const unsub = () => {
+		destroy();
+		cb?.();
+	};
 
 	// Automatically unsubscribe the effect when the component is destroyed
 	safeOnDestroy(unsub);
