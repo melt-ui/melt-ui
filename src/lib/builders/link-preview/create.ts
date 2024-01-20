@@ -54,8 +54,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
-	const hasSelection = writable(false);
-	const isPointerDownOnContent = writable(false);
+	const hasSelection = withGet.writable(false);
+	const isPointerDownOnContent = withGet.writable(false);
 	const containSelection = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -91,8 +91,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				open.set(true);
 			}, $openDelay);
 		};
-	}) as WithGet<Readable<() => void>>
-
+	}) as WithGet<Readable<() => void>>;
 
 	const handleClose = withGet.derived(
 		[closeDelay, isPointerDownOnContent, hasSelection],
@@ -109,8 +108,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}
 			};
 		}
-	) as WithGet<Readable<() => void>>
-
+	) as WithGet<Readable<() => void>>;
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, ids.trigger, ids.content],
@@ -197,19 +195,19 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							floating: $positioning,
 							clickOutside: $closeOnOutsideClick
 								? {
-									handler: (e) => {
-										onOutsideClick.get()?.(e);
-										if (e.defaultPrevented) return;
+										handler: (e) => {
+											onOutsideClick.get()?.(e);
+											if (e.defaultPrevented) return;
 
-										if (
-											isHTMLElement($activeTrigger) &&
-											!$activeTrigger.contains(e.target as Element)
-										) {
-											open.set(false);
-											$activeTrigger.focus();
-										}
-									},
-								}
+											if (
+												isHTMLElement($activeTrigger) &&
+												!$activeTrigger.contains(e.target as Element)
+											) {
+												open.set(false);
+												$activeTrigger.focus();
+											}
+										},
+								  }
 								: null,
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,

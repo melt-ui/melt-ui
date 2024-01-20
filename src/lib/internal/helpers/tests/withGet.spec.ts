@@ -43,7 +43,7 @@ describe('withGet', () => {
 	});
 
 	it('withGet.derived', async () => {
-		const w = writable(1);
+		const w = withGet.writable(1);
 		const d = withGet.derived(w, ($w) => $w + 1);
 
 		expect(d.get()).toBe(2);
