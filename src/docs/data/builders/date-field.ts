@@ -22,7 +22,7 @@ const dateFieldProps = [
 		name: 'onValueChange',
 		type: 'ChangeFn<DateValue | undefined>',
 		description:
-			'A function called when the value of the date field changes. It receives a single argument, which is an object containing `curr` and `prev` properties, whose values are the current and previous values of the value store. Whatever you return from this function will be set as the new value of the value store.',
+			'A function called when the value of the date field changes. It receives a single argument, which is an object containing `curr` and `next` properties, whose values are the current and previous values of the value store. Whatever you return from this function will be set as the new value of the value store.',
 	},
 	{
 		name: 'defaultPlaceholder',
@@ -41,7 +41,7 @@ const dateFieldProps = [
 		name: 'onPlaceholderChange',
 		type: 'ChangeFn<DateValue>',
 		description:
-			'A function called when the placeholder value changes. It receives a single argument, which is an object containing `curr` and `prev` properties, whose values are the current and previous values of the `placeholder` store. Whatever you return from this function will be set as the new value of the `placeholder` store.',
+			'A function called when the placeholder value changes. It receives a single argument, which is an object containing `curr` and `next` properties, whose values are the current and previous values of the `placeholder` store. Whatever you return from this function will be set as the new value of the `placeholder` store.',
 	},
 	{
 		name: 'isDateUnavailable',
