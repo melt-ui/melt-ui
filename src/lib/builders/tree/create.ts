@@ -3,19 +3,21 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	generateIds,
 	getElementByMeltId,
 	isHTMLElement,
 	isHidden,
 	isLetter,
 	kbd,
 	last,
+	omit,
 	overridable,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, writable, type Writable } from 'svelte/store';
 
-import { generateIds } from '../../internal/helpers/id';
 import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
 
@@ -33,9 +35,16 @@ const ATTRS = {
 
 const { name } = createElHelpers<TreeParts>('tree-view');
 
+const treeIdParts = ['tree'] as const;
+export type TreeIdParts = typeof treeIdParts;
+
 export function createTreeView(args?: CreateTreeViewProps) {
-	const withDefaults = { ...defaults, ...args };
-	const { forceVisible } = withDefaults;
+	const withDefaults = { ...defaults, ...args } satisfies CreateTreeViewProps;
+
+	const options = toWritableStores(
+		omit(withDefaults, 'defaultExpanded', 'expanded', 'onExpandedChange', 'ids')
+	);
+	const { forceVisible } = options;
 
 	/**
 	 * Track currently focused item in the tree.
@@ -46,7 +55,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	const expandedWritable = withDefaults.expanded ?? writable(withDefaults.defaultExpanded);
 	const expanded = overridable(expandedWritable, withDefaults?.onExpandedChange);
 
-	const selectedId = derived([selectedItem], ([$selectedItem]) => {
+	const selectedId = derived(selectedItem, ($selectedItem) => {
 		return $selectedItem?.getAttribute('data-id');
 	});
 
@@ -54,7 +63,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	 * Determines if the tree view item is selected.
 	 * This is useful for displaying additional markup.
 	 */
-	const isSelected = derived([selectedItem], ([$value]) => {
+	const isSelected = derived(selectedItem, ($value) => {
 		return (itemId: string) => $value?.getAttribute('data-id') === itemId;
 	});
 
@@ -63,17 +72,18 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	 * This is useful for displaying additional markup or using Svelte transitions
 	 * on the group item.
 	 */
-	const isExpanded = derived([expanded], ([$expanded]) => {
+	const isExpanded = derived(expanded, ($expanded) => {
 		return (itemId: string) => $expanded.includes(itemId);
 	});
 
-	const metaIds = generateIds(['tree']);
+	const ids = toWritableStores({ ...generateIds(treeIdParts), ...withDefaults.ids });
 
 	const rootTree = builder(name(), {
-		returned: () => {
+		stores: ids.tree,
+		returned: (id) => {
 			return {
 				role: 'tree',
-				'data-melt-id': metaIds.tree,
+				'data-melt-id': id,
 			} as const;
 		},
 	});
@@ -122,7 +132,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						return;
 					}
 
-					const rootEl = getElementByMeltId(metaIds.tree);
+					const rootEl = getElementByMeltId(ids.tree.get());
 					if (!rootEl || !isHTMLElement(node) || node.getAttribute('role') !== 'treeitem') {
 						return;
 					}
@@ -250,14 +260,14 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	});
 
 	const group = builder(name('group'), {
-		stores: [expanded],
-		returned: ([$expanded]) => {
-			return (opts: { id: string }) => ({
+		stores: [expanded, forceVisible],
+		returned: ([$expanded, $forceVisible]) => {
+			return ({ id }: { id: string }) => ({
 				role: 'group',
-				'data-group-id': opts.id,
-				hidden: !forceVisible && !$expanded.includes(opts.id) ? true : undefined,
+				'data-group-id': id,
+				hidden: !$forceVisible && !$expanded.includes(id) ? true : undefined,
 				style: styleToString({
-					display: !forceVisible && !$expanded.includes(opts.id) ? 'none' : undefined,
+					display: !$forceVisible && !$expanded.includes(id) ? 'none' : undefined,
 				}),
 			});
 		},
@@ -276,16 +286,13 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	}
 
 	function getItems(): HTMLElement[] {
-		let items = [] as HTMLElement[];
-		const rootEl = getElementByMeltId(metaIds.tree);
-		if (!rootEl) return items;
+		const rootEl = getElementByMeltId(ids.tree.get());
+		if (!rootEl) return [];
 
 		// Select all 'treeitem' li elements within our root element.
-		items = Array.from(rootEl.querySelectorAll('[role="treeitem"]')).filter(
-			(el) => !isHidden(el as HTMLElement)
-		) as HTMLElement[];
-
-		return items;
+		return Array.from(rootEl.querySelectorAll('[role="treeitem"]')).filter(
+			(el): el is HTMLElement => isHTMLElement(el) && !isHidden(el)
+		);
 	}
 
 	function getElementAttributes(el: HTMLElement) {
@@ -320,7 +327,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	}
 
 	return {
-		ids: metaIds,
+		ids,
 		elements: {
 			tree: rootTree,
 			item,
@@ -330,6 +337,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 			expanded,
 			selectedItem,
 		},
+		options,
 		helpers: {
 			isExpanded,
 			isSelected,
