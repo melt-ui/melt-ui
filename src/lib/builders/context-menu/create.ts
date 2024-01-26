@@ -109,10 +109,12 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		};
 	});
 	const longPressTimer = writable(0);
+	let hasOpened = get(rootOpen);
 
 	function handleClickOutside(e: PointerEvent) {
 		get(rootOptions.onOutsideClick)?.(e);
 		if (e.defaultPrevented) return;
+		if (!hasOpened) return;
 
 		const target = e.target;
 		if (!(target instanceof Element)) return;
@@ -257,6 +259,9 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				prevFocusable.set(getPreviousFocusable(node));
 				rootActiveTrigger.set(node);
 				rootOpen.set(true);
+				setTimeout(() => {
+					hasOpened = true;
+				}, 50);
 			};
 
 			const unsubTimer = () => {
