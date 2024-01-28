@@ -56,13 +56,13 @@ const builder = builderSchema(BUILDER_NAME, {
 		},
 		{
 			name: 'value',
-			type: 'Writable<number>',
+			type: 'Writable<number[]>',
 			description: 'A writable store that can be used to update the slider value.',
 			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
 			name: 'onValueChange',
-			type: 'ChangeFn<number>',
+			type: 'ChangeFn<number[]>',
 			description: 'A callback that is called when the value of the slider changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},

@@ -563,6 +563,101 @@ describe('DateField', () => {
 		expect(minuteSegment).toHaveTextContent('1');
 	});
 
+	test('fully overwrite on first click and type - second', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = setup({
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const secondSegment = getByTestId('second');
+		await user.click(secondSegment);
+		expect(secondSegment).toHaveFocus();
+		expect(secondSegment).toHaveTextContent('30');
+		await user.keyboard(`{1}`);
+		expect(secondSegment).toHaveTextContent('1');
+	});
+
+	test('disallows 00 as value - month', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = setup({
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const monthSegment = getByTestId('month');
+		await user.click(monthSegment);
+		expect(monthSegment).toHaveFocus();
+		expect(monthSegment).toHaveTextContent('1');
+		await user.keyboard(`{0}`);
+		await user.keyboard(`{0}`);
+		expect(monthSegment).toHaveTextContent('mm');
+	});
+
+	test('disallows 00 as value - day', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = setup({
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const daySegment = getByTestId('day');
+		await user.click(daySegment);
+		expect(daySegment).toHaveFocus();
+		expect(daySegment).toHaveTextContent('20');
+		await user.keyboard(`{0}`);
+		await user.keyboard(`{0}`);
+		expect(daySegment).toHaveTextContent('dd');
+	});
+
+	test('disallows 00 as value - hour', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = setup({
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const hourSegment = getByTestId('hour');
+		await user.click(hourSegment);
+		expect(hourSegment).toHaveFocus();
+		expect(hourSegment).toHaveTextContent('12');
+		await user.keyboard(`{0}`);
+		await user.keyboard(`{0}`);
+		expect(hourSegment).toHaveTextContent('––');
+	});
+
+	test('allows 00 as value - minute', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = setup({
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const minuteSegment = getByTestId('minute');
+		await user.click(minuteSegment);
+		expect(minuteSegment).toHaveFocus();
+		expect(minuteSegment).toHaveTextContent('30');
+		await user.keyboard(`{0}`);
+		await user.keyboard(`{0}`);
+		expect(minuteSegment).toHaveTextContent('00');
+	});
+
+	test('allows 00 as value - second', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = setup({
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const secondSegment = getByTestId('second');
+		await user.click(secondSegment);
+		expect(secondSegment).toHaveFocus();
+		expect(secondSegment).toHaveTextContent('30');
+		await user.keyboard(`{0}`);
+		await user.keyboard(`{0}`);
+		expect(secondSegment).toHaveTextContent('00');
+	});
+
 	test('displays correct timezone with ZonedDateTime value - now', async () => {
 		const { getByTestId } = setup({
 			defaultValue: now('America/Los_Angeles'),

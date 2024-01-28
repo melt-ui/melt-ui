@@ -14,7 +14,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { ToggleGroupEvents } from './events.js';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types.js';
 
@@ -89,7 +89,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 			if (!isHTMLElement(parentGroup)) return {};
 
 			const items = Array.from(parentGroup.querySelectorAll(selector('item')));
-			const $value = get(value);
+			const $value = value.get();
 			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
 
 			if (!anyPressed && items[0] === node) {
@@ -130,7 +130,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 						handleValueUpdate();
 						return;
 					}
-					if (!get(rovingFocus)) return;
+					if (!rovingFocus.get()) return;
 
 					const el = e.currentTarget;
 					if (!isHTMLElement(el)) return;
@@ -145,7 +145,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(el);
-					const $orientation = get(orientation);
+					const $orientation = orientation.get();
 					const nextKey = {
 						horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
 						vertical: kbd.ARROW_DOWN,
@@ -156,7 +156,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 						vertical: kbd.ARROW_UP,
 					}[$orientation ?? 'horizontal'];
 
-					const $loop = get(loop);
+					const $loop = loop.get();
 
 					if (e.key === nextKey) {
 						e.preventDefault();

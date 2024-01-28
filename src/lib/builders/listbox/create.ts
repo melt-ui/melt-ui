@@ -37,6 +37,7 @@ import {
 	styleToString,
 	toWritableStores,
 	toggle,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -106,9 +107,9 @@ export function createListbox<
 	const withDefaults = { ...defaults, ...props } satisfies CreateListboxProps<Value, Multiple, S>;
 
 	// Trigger element for the popper portal. This will be our input element.
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const activeTrigger = withGet(writable<HTMLElement | null>(null));
 	// The currently highlighted menu item.
-	const highlightedItem = writable<HTMLElement | null>(null);
+	const highlightedItem = withGet(writable<HTMLElement | null>(null));
 
 	const selectedWritable =
 		withDefaults.selected ?? writable<S | undefined>(withDefaults.defaultSelected);
@@ -154,10 +155,10 @@ export function createListbox<
 	const { handleTypeaheadSearch } = createTypeaheadSearch({
 		onMatch: (element) => {
 			highlightedItem.set(element);
-			element.scrollIntoView({ block: get(scrollAlignment) });
+			element.scrollIntoView({ block: scrollAlignment.get() });
 		},
 		getCurrentItem() {
-			return get(highlightedItem);
+			return highlightedItem.get();
 		},
 	});
 
@@ -178,7 +179,7 @@ export function createListbox<
 
 	const setOption = (newOption: ListboxOption<Value>) => {
 		selected.update(($option) => {
-			const $multiple = get(multiple);
+			const $multiple = multiple.get();
 			if ($multiple) {
 				const optionArr = Array.isArray($option) ? $option : [];
 				return toggle(newOption, optionArr, (itemA, itemB) =>
@@ -207,7 +208,7 @@ export function createListbox<
 	async function openMenu() {
 		open.set(true);
 
-		const triggerEl = document.getElementById(get(ids.trigger));
+		const triggerEl = document.getElementById(ids.trigger.get());
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
@@ -216,7 +217,7 @@ export function createListbox<
 		// Wait a tick for the menu to open then highlight the selected item.
 		await tick();
 
-		const menuElement = document.getElementById(get(ids.menu));
+		const menuElement = document.getElementById(ids.menu.get());
 		if (!isHTMLElement(menuElement)) return;
 
 		const selectedItem = menuElement.querySelector('[aria-selected=true]');
@@ -285,6 +286,7 @@ export function createListbox<
 				id: $triggerId,
 				role: 'combobox',
 				disabled: disabledAttr($disabled),
+				type: withDefaults.builder === 'select' ? 'button' : undefined,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['trigger']> => {
@@ -293,7 +295,7 @@ export function createListbox<
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					node.focus(); // Fix for safari not adding focus on trigger
-					const $open = get(open);
+					const $open = open.get();
 					if ($open) {
 						closeMenu();
 					} else {
@@ -302,7 +304,7 @@ export function createListbox<
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addMeltEventListener(node, 'keydown', (e) => {
-					const $open = get(open);
+					const $open = open.get();
 					/**
 					 * When the menu is closed...
 					 */
@@ -332,10 +334,10 @@ export function createListbox<
 						openMenu();
 
 						tick().then(() => {
-							const $selectedItem = get(selected);
+							const $selectedItem = selected.get();
 							if ($selectedItem) return;
 
-							const menuEl = document.getElementById(get(ids.menu));
+							const menuEl = document.getElementById(ids.menu.get());
 							if (!isHTMLElement(menuEl)) return;
 
 							const enabledItems = Array.from(
@@ -348,10 +350,10 @@ export function createListbox<
 
 							if (e.key === kbd.ARROW_DOWN) {
 								highlightedItem.set(enabledItems[0]);
-								enabledItems[0].scrollIntoView({ block: get(scrollAlignment) });
+								enabledItems[0].scrollIntoView({ block: scrollAlignment.get() });
 							} else if (e.key === kbd.ARROW_UP) {
 								highlightedItem.set(last(enabledItems));
-								last(enabledItems).scrollIntoView({ block: get(scrollAlignment) });
+								last(enabledItems).scrollIntoView({ block: scrollAlignment.get() });
 							}
 						});
 					}
@@ -366,11 +368,11 @@ export function createListbox<
 					// Pressing enter with a highlighted item should select it.
 					if (e.key === kbd.ENTER || (e.key === kbd.SPACE && isHTMLButtonElement(node))) {
 						e.preventDefault();
-						const $highlightedItem = get(highlightedItem);
+						const $highlightedItem = highlightedItem.get();
 						if ($highlightedItem) {
 							selectItem($highlightedItem);
 						}
-						if (!get(multiple)) {
+						if (!multiple.get()) {
 							closeMenu();
 						}
 					}
@@ -383,7 +385,7 @@ export function createListbox<
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
 						// Get all the menu items.
-						const menuElement = document.getElementById(get(ids.menu));
+						const menuElement = document.getElementById(ids.menu.get());
 						if (!isHTMLElement(menuElement)) return;
 						const itemElements = getOptions(menuElement);
 						if (!itemElements.length) return;
@@ -392,11 +394,11 @@ export function createListbox<
 							(opt) => !isElementDisabled(opt) && opt.dataset.hidden === undefined
 						);
 						// Get the index of the currently highlighted item.
-						const $currentItem = get(highlightedItem);
+						const $currentItem = highlightedItem.get();
 						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
 						// Find the next menu item to highlight.
-						const $loop = get(loop);
-						const $scrollAlignment = get(scrollAlignment);
+						const $loop = loop.get();
+						const $scrollAlignment = scrollAlignment.get();
 						let nextItem: HTMLElement;
 						switch (e.key) {
 							case kbd.ARROW_DOWN:
@@ -423,8 +425,8 @@ export function createListbox<
 						// Highlight the new item and scroll it into view.
 						highlightedItem.set(nextItem);
 						nextItem?.scrollIntoView({ block: $scrollAlignment });
-					} else if (get(typeahead)) {
-						const menuEl = document.getElementById(get(ids.menu));
+					} else if (typeahead.get()) {
+						const menuEl = document.getElementById(ids.menu.get());
 						if (!isHTMLElement(menuEl)) return;
 
 						handleTypeaheadSearch(e.key, getOptions(menuEl));
@@ -477,7 +479,7 @@ export function createListbox<
 
 						if (!$isVisible || !$activeTrigger) return;
 
-						const ignoreHandler = createClickOutsideIgnore(get(ids.trigger));
+						const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
 
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
@@ -488,7 +490,7 @@ export function createListbox<
 								clickOutside: $closeOnOutsideClick
 									? {
 											handler: (e) => {
-												get(onOutsideClick)?.(e);
+												onOutsideClick.get()?.(e);
 												if (e.defaultPrevented) return;
 
 												const target = e.target;
@@ -565,7 +567,7 @@ export function createListbox<
 					}
 					// Otherwise, select the item and close the menu.
 					selectItem(node);
-					if (!get(multiple)) {
+					if (!multiple.get()) {
 						closeMenu();
 					}
 				}),
@@ -636,10 +638,10 @@ export function createListbox<
 
 	safeOnMount(() => {
 		if (!isBrowser) return;
-		const menuEl = document.getElementById(get(ids.menu));
+		const menuEl = document.getElementById(ids.menu.get());
 		if (!menuEl) return;
 
-		const triggerEl = document.getElementById(get(ids.trigger));
+		const triggerEl = document.getElementById(ids.trigger.get());
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
@@ -654,7 +656,7 @@ export function createListbox<
 	 */
 	effect([highlightedItem], ([$highlightedItem]) => {
 		if (!isBrowser) return;
-		const menuElement = document.getElementById(get(ids.menu));
+		const menuElement = document.getElementById(ids.menu.get());
 		if (!isHTMLElement(menuElement)) return;
 		getOptions(menuElement).forEach((node) => {
 			if (node === $highlightedItem) {
@@ -670,7 +672,7 @@ export function createListbox<
 
 		let unsubScroll = noop;
 
-		if (get(preventScroll) && $open) {
+		if (preventScroll.get() && $open) {
 			unsubScroll = removeScroll();
 		}
 

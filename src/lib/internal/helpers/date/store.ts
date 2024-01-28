@@ -10,6 +10,7 @@ import type {
 	Disambiguation,
 	TimeFields,
 } from '@internationalized/date';
+import { withGet } from '../withGet';
 
 type AnyDateTime = ZonedDateTime | CalendarDateTime;
 
@@ -33,7 +34,7 @@ type DerivedFields<T> = T extends AnyDateTime
  * @see [@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
  */
 export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue: T) {
-	const { set, update, subscribe } = store;
+	const { set, update, subscribe, get } = withGet(store);
 
 	function add(duration: DerivedDuration<T>) {
 		update((d) => {
@@ -86,10 +87,12 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 			set,
 			subscribe,
 			update,
+			get,
 		};
 	}
 
 	return {
+		get,
 		set,
 		update,
 		subscribe,
