@@ -1,6 +1,6 @@
-import type { Stores, StoresValues } from 'svelte/store';
+import { derived, type Stores, type StoresValues } from 'svelte/store';
 import { safeOnDestroy } from '../lifecycle';
-import { derivedWithUnsubscribe } from './derivedWithUnsubscribe';
+import { noop } from '..';
 
 /**
  * A utility function that creates an effect from a set of stores and a function.
@@ -15,19 +15,18 @@ export function effect<S extends Stores>(
 	stores: S,
 	fn: (values: StoresValues<S>) => (() => void) | void
 ): () => void {
+	let cb: (() => void) | void = undefined;
+
 	// Create a derived store that contains the stores object and an onUnsubscribe function
-	const unsub = derivedWithUnsubscribe(stores, (stores, onUnsubscribe) => {
-		return {
-			stores,
-			onUnsubscribe,
-		};
-	}).subscribe(({ stores, onUnsubscribe }) => {
-		const returned = fn(stores);
-		// If the function returns a cleanup function, call it when the effect is unsubscribed
-		if (returned) {
-			onUnsubscribe(returned);
-		}
-	});
+	const destroy = derived(stores, (stores) => {
+		cb?.();
+		cb = fn(stores);
+	}).subscribe(noop);
+
+	const unsub = () => {
+		destroy();
+		cb?.();
+	};
 
 	// Automatically unsubscribe the effect when the component is destroyed
 	safeOnDestroy(unsub);

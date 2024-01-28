@@ -1,8 +1,9 @@
-import { get, writable, type Writable } from 'svelte/store';
-import { debounce } from './debounce.js';
-import { handleRovingFocus } from './rovingFocus.js';
-import { isHTMLElement } from './is.js';
+import { get, writable } from 'svelte/store';
 import { wrapArray } from './array.js';
+import { debounce } from './debounce.js';
+import { isHTMLElement } from './is.js';
+import { handleRovingFocus } from './rovingFocus.js';
+import { withGet } from './withGet.js';
 
 export type TypeaheadArgs = {
 	/**
@@ -45,7 +46,7 @@ const defaults = {
 
 export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
-	const typed: Writable<string[]> = writable([]);
+	const typed = withGet(writable<string[]>([]));
 
 	const resetTyped = debounce(() => {
 		typed.update(() => []);
