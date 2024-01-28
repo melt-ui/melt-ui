@@ -1,5 +1,4 @@
 import { get, writable, type Readable, type StoresValues, type Writable } from 'svelte/store';
-import { effect } from '.';
 
 type ReadableValue<T> = T extends Readable<infer V> ? V : never;
 
@@ -19,16 +18,9 @@ export type WithGet<T extends Readable<unknown>> = T & {
  * @returns {WithGet<T>}
  */
 export function withGet<T extends Readable<unknown>>(store: T): WithGet<T> {
-	let value = get(store);
-
-	const destroy = effect(store, ($value) => {
-		value = $value;
-	});
-
 	return {
 		...store,
-		get: () => value as ReadableValue<T>,
-		destroy,
+		get: () => get(store) as ReadableValue<T>,
 	};
 }
 

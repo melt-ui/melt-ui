@@ -116,11 +116,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		value.set(withDefaults.defaultValue);
 	}
 
-	const startValue = withGet.writable<DateValue | undefined>(
-		value.get().start ?? withDefaults.defaultValue?.start
+	const startValue = withGet(
+		writable<DateValue | undefined>(value.get().start ?? withDefaults.defaultValue?.start)
 	);
-	const endValue = withGet.writable<DateValue | undefined>(
-		value.get().end ?? withDefaults.defaultValue?.end
+	const endValue = withGet(
+		writable<DateValue | undefined>(value.get().end ?? withDefaults.defaultValue?.end)
 	);
 
 	const placeholderWritable =
@@ -130,7 +130,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		withDefaults.defaultPlaceholder ?? defaultDate
 	);
 
-	const focusedValue = writable<DateValue | null>(null);
+	const focusedValue = withGet(writable<DateValue | null>(null));
 
 	const lastPressedDateValue = withGet(writable<DateValue | null>(null));
 
@@ -151,36 +151,44 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * which we use to determine how keyboard navigation and if we should apply
 	 * `data-outside-month` to cells.
 	 */
-	const visibleMonths = withGet.derived([months], ([$months]) => {
-		return $months.map((month) => {
-			return month.value;
-		});
-	});
-
-	const isOutsideVisibleMonths = derived([visibleMonths], ([$visibleMonths]) => {
-		return (date: DateValue) => {
-			return !$visibleMonths.some((month) => isSameMonth(date, month));
-		};
-	});
-
-	const isDateDisabled = withGet.derived(
-		[options.isDateDisabled, minValue, maxValue],
-		([$isDateDisabled, $minValue, $maxValue]) => {
-			return (date: DateValue) => {
-				if ($isDateDisabled?.(date)) return true;
-				if ($minValue && isBefore(date, $minValue)) return true;
-				if ($maxValue && isAfter(date, $maxValue)) return true;
-				return false;
-			};
-		}
+	const visibleMonths = withGet(
+		derived([months], ([$months]) => {
+			return $months.map((month) => {
+				return month.value;
+			});
+		})
 	);
 
-	const isDateUnavailable = withGet.derived([options.isDateUnavailable], ([$isDateUnavailable]) => {
-		return (date: DateValue) => {
-			if ($isDateUnavailable?.(date)) return true;
-			return false;
-		};
-	});
+	const isOutsideVisibleMonths = withGet(
+		derived([visibleMonths], ([$visibleMonths]) => {
+			return (date: DateValue) => {
+				return !$visibleMonths.some((month) => isSameMonth(date, month));
+			};
+		})
+	);
+
+	const isDateDisabled = withGet(
+		derived(
+			[options.isDateDisabled, minValue, maxValue],
+			([$isDateDisabled, $minValue, $maxValue]) => {
+				return (date: DateValue) => {
+					if ($isDateDisabled?.(date)) return true;
+					if ($minValue && isBefore(date, $minValue)) return true;
+					if ($maxValue && isAfter(date, $maxValue)) return true;
+					return false;
+				};
+			}
+		)
+	);
+
+	const isDateUnavailable = withGet(
+		derived([options.isDateUnavailable], ([$isDateUnavailable]) => {
+			return (date: DateValue) => {
+				if ($isDateUnavailable?.(date)) return true;
+				return false;
+			};
+		})
+	);
 
 	const isStartInvalid = derived(
 		[startValue, isDateUnavailable, isDateDisabled],
@@ -234,7 +242,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	let announcer = getAnnouncer();
 
-	const headingValue = derived([months, locale], ([$months, $locale]) => {
+	const headingValue = withGet.derived([months, locale], ([$months, $locale]) => {
 		if (!$months.length) return '';
 		if ($locale !== formatter.getLocale()) {
 			formatter.setLocale($locale);
@@ -260,10 +268,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		return content;
 	});
 
-	const fullCalendarLabel = withGet(
-		derived([headingValue, calendarLabel], ([$headingValue, $calendarLabel]) => {
+	const fullCalendarLabel = withGet.derived(
+		[headingValue, calendarLabel],
+		([$headingValue, $calendarLabel]) => {
 			return `${$calendarLabel}, ${$headingValue}`;
-		})
+		}
 	);
 
 	const calendar = builder(name(), {
@@ -392,33 +401,31 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		};
 	});
 
-	const highlightedRange = withGet(
-		derived(
-			[startValue, endValue, focusedValue, isDateDisabled, isDateUnavailable],
-			([$startValue, $endValue, $focusedValue, $isDateDisabled, $isDateUnavailable]) => {
-				if ($startValue && $endValue) return null;
-				if (!$startValue || !$focusedValue) return null;
-				const isStartBeforeFocused = isBefore($startValue, $focusedValue);
-				const start = isStartBeforeFocused ? $startValue : $focusedValue;
-				const end = isStartBeforeFocused ? $focusedValue : $startValue;
+	const highlightedRange = withGet.derived(
+		[startValue, endValue, focusedValue, isDateDisabled, isDateUnavailable],
+		([$startValue, $endValue, $focusedValue, $isDateDisabled, $isDateUnavailable]) => {
+			if ($startValue && $endValue) return null;
+			if (!$startValue || !$focusedValue) return null;
+			const isStartBeforeFocused = isBefore($startValue, $focusedValue);
+			const start = isStartBeforeFocused ? $startValue : $focusedValue;
+			const end = isStartBeforeFocused ? $focusedValue : $startValue;
 
-				if (isSameDay(start.add({ days: 1 }), end)) {
-					return {
-						start: start,
-						end: end,
-					};
-				}
-
-				const isValid = areAllDaysBetweenValid(start, end, $isDateUnavailable, $isDateDisabled);
-				if (isValid) {
-					return {
-						start: start,
-						end: end,
-					};
-				}
-				return null;
+			if (isSameDay(start.add({ days: 1 }), end)) {
+				return {
+					start: start,
+					end: end,
+				};
 			}
-		)
+
+			const isValid = areAllDaysBetweenValid(start, end, $isDateUnavailable, $isDateDisabled);
+			if (isValid) {
+				return {
+					start: start,
+					end: end,
+				};
+			}
+			return null;
+		}
 	);
 
 	/**
