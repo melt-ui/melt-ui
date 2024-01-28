@@ -491,11 +491,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				};
 			};
@@ -632,11 +632,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				};
 			};
