@@ -15,7 +15,7 @@ import {
 	omit,
 	withGet,
 } from '$lib/internal/helpers/index.js';
-import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
+import { derived, writable, type Readable, type Writable } from 'svelte/store';
 import type { CreateScrollAreaProps } from './types.js';
 import type { Orientation, TextDirection } from '$lib/internal/types.js';
 import {
@@ -232,13 +232,13 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		});
 
 		function getScrollPosition(pointerPos: number, dir?: TextDirection) {
-			return getScrollPositionFromPointer(pointerPos, get(pointerOffset), get(sizes), dir);
+			return getScrollPositionFromPointer(pointerPos, pointerOffset.get(), sizes.get(), dir);
 		}
 
 		function handleWheelScroll(e: WheelEvent, payload: number) {
-			const $viewportEl = get(viewportEl);
+			const $viewportEl = viewportEl.get();
 			if (!$viewportEl) return;
-			if (get(isHorizontal)) {
+			if (isHorizontal.get()) {
 				const scrollPos = $viewportEl.scrollLeft + e.deltaY;
 
 				$viewportEl.scrollLeft = scrollPos;
@@ -258,7 +258,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		}
 
 		function handleThumbDown(payload: { x: number; y: number }) {
-			if (get(isHorizontal)) {
+			if (isHorizontal.get()) {
 				pointerOffset.set(payload.x);
 			} else {
 				pointerOffset.set(payload.y);
@@ -270,25 +270,33 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		}
 
 		function onThumbPositionChange() {
-			const $viewportEl = get(viewportEl);
-			const $thumbEl = get(thumbEl);
+			const $viewportEl = viewportEl.get();
+			const $thumbEl = thumbEl.get();
 			if (!$viewportEl || !$thumbEl) return;
-			if (get(isHorizontal)) {
+			if (isHorizontal.get()) {
 				const scrollPos = $viewportEl.scrollLeft;
-				const offset = getThumbOffsetFromScroll(scrollPos, get(sizes), get(rootState.options.dir));
+				const offset = getThumbOffsetFromScroll(
+					scrollPos,
+					sizes.get(),
+					rootState.options.dir.get()
+				);
 				$thumbEl.style.transform = `translate3d(${offset}px, 0, 0)`;
 			} else {
 				const scrollPos = $viewportEl.scrollTop;
-				const offset = getThumbOffsetFromScroll(scrollPos, get(sizes), get(rootState.options.dir));
+				const offset = getThumbOffsetFromScroll(
+					scrollPos,
+					sizes.get(),
+					rootState.options.dir.get()
+				);
 				$thumbEl.style.transform = `translate3d(0, ${offset}px, 0)`;
 			}
 		}
 
 		function onDragScroll(payload: number) {
-			const $viewportEl = get(viewportEl);
+			const $viewportEl = viewportEl.get();
 			if (!$viewportEl) return;
-			if (get(isHorizontal)) {
-				$viewportEl.scrollLeft = getScrollPosition(payload, get(rootState.options.dir));
+			if (isHorizontal.get()) {
+				$viewportEl.scrollLeft = getScrollPosition(payload, rootState.options.dir.get());
 			} else {
 				$viewportEl.scrollTop = getScrollPosition(payload);
 			}
@@ -312,7 +320,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			isVisible,
 		};
 
-		const scrollbarActionByType = getScrollbarActionByType(get(options.type));
+		const scrollbarActionByType = getScrollbarActionByType(options.type.get());
 		const scrollAreaState = { rootState, scrollbarState };
 
 		const scrollbar =
@@ -367,7 +375,7 @@ function createScrollbarThumb(state: ScrollAreaState) {
 
 	function handleScroll() {
 		if (unsubListener) return;
-		const $viewportEl = get(rootState.viewportEl);
+		const $viewportEl = rootState.viewportEl.get();
 		if ($viewportEl) {
 			unsubListener = addUnlinkedScrollListener($viewportEl, scrollbarState.onThumbPositionChange);
 		}
@@ -393,7 +401,7 @@ function createScrollbarThumb(state: ScrollAreaState) {
 
 			effect([scrollbarState.sizes], ([_]) => {
 				if (effectHasRan === 2) return;
-				const $viewportEl = get(rootState.viewportEl);
+				const $viewportEl = rootState.viewportEl.get();
 				if ($viewportEl) {
 					scrollbarState.onThumbPositionChange();
 					unsubViewportScroll = addEventListener($viewportEl, 'scroll', handleScroll);
@@ -426,13 +434,13 @@ function createScrollAreaCorner(rootState: ScrollAreaRootState) {
 	const hasSize = derived([width, height], ([$width, $height]) => !!$width && !!$height);
 
 	function setCornerHeight() {
-		const offsetHeight = get(rootState.scrollbarXEl)?.offsetHeight || 0;
+		const offsetHeight = rootState.scrollbarXEl.get()?.offsetHeight || 0;
 		rootState.cornerHeight.set(offsetHeight);
 		height.set(offsetHeight);
 	}
 
 	function setCornerWidth() {
-		const offsetWidth = get(rootState.scrollbarYEl)?.offsetWidth || 0;
+		const offsetWidth = rootState.scrollbarYEl.get()?.offsetWidth || 0;
 		rootState.cornerWidth.set(offsetWidth);
 		width.set(offsetWidth);
 	}
