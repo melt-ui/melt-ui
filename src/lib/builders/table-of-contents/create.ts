@@ -7,9 +7,10 @@ import {
 import type { Defaults } from '$lib/internal/types';
 
 import { dequal } from 'dequal';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 import { safeOnMount } from '$lib/internal/helpers/lifecycle';
+import { withGet } from '$lib/internal/helpers/withGet';
 import type {
 	CreateTableOfContentsArgs,
 	ElementHeadingLU,
@@ -48,9 +49,9 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	/** Lookup to see which parent headings a heading has. */
 	let headingParentsLU: HeadingParentsLU = {};
 	/** List of the active parent indexes. */
-	const activeParentIdxs: Writable<number[]> = writable([]);
+	const activeParentIdxs = withGet.writable<number[]>([]);
 	/** List of the indexes of the visible elements. */
-	const visibleElementIdxs: Writable<number[]> = writable([]);
+	const visibleElementIdxs = withGet.writable<number[]>([]);
 
 	let elementTarget: Element | null = null;
 
@@ -60,8 +61,8 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	const observer_threshold = 0.01;
 
 	// Stores
-	const activeHeadingIdxs: Writable<number[]> = writable([]);
-	const headingsTree: Writable<TableOfContentsItem[]> = writable([]);
+	const activeHeadingIdxs = withGet(writable<number[]>([]));
+	const headingsTree = withGet(writable<TableOfContentsItem[]>([]));
 
 	// Helpers
 	function generateInitialLists(elementTarget: Element) {
@@ -181,7 +182,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			const el_idx = elementsList.indexOf(<HTMLElement>entries[i].target);
 			const toc_idx = elementHeadingLU[el_idx];
 
-			let tempVisibleElementIdxs = get(visibleElementIdxs);
+			let tempVisibleElementIdxs = visibleElementIdxs.get();
 
 			if (entries[i].intersectionRatio >= observer_threshold) {
 				// Only add the observed element to the visibleElementIdxs list if it isn't added yet.
@@ -217,7 +218,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		}
 
 		const allActiveHeaderIdxs = Array.from(
-			new Set(get(visibleElementIdxs).map((idx) => elementHeadingLU[idx]))
+			new Set(visibleElementIdxs.get().map((idx) => elementHeadingLU[idx]))
 		);
 
 		let activeHeaderIdxs: number[];
@@ -372,7 +373,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 					// Add items hash to URL
 					if (id) {
-						window.location.hash = id;
+						history.pushState({}, '', `#${id}`);
 					}
 				})
 			);

@@ -73,5 +73,5 @@ export function isReadable(value: unknown): value is Readable<unknown> {
 }
 
 export function isWritable(value: unknown): value is Writable<unknown> {
-	return isReadable(value) && 'subscribe' in value;
+	return isReadable(value) && 'set' in value;
 }
