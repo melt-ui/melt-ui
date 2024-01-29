@@ -13,6 +13,7 @@ import {
 	type IdObj,
 	type ToWritableStores,
 	omit,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
 import type { CreateScrollAreaProps } from './types.js';
@@ -26,6 +27,7 @@ import {
 	type Sizes,
 } from './helpers.js';
 import { createScrollbarX, createScrollbarY, getScrollbarActionByType } from './scrollbars.js';
+import type { WithGet } from '../../internal/helpers/withGet.js';
 
 type ScrollAreaParts = 'root' | 'viewport' | 'content' | 'scrollbar' | 'thumb' | 'corner';
 export const { name } = createElHelpers<ScrollAreaParts>('scroll-area');
@@ -42,30 +44,30 @@ const scrollAreaIdParts = [
 export type ScrollAreaIdParts = typeof scrollAreaIdParts;
 
 export type ScrollAreaRootState = {
-	cornerWidth: Writable<number>;
-	cornerHeight: Writable<number>;
-	scrollbarXEnabled: Writable<boolean>;
-	scrollbarYEnabled: Writable<boolean>;
-	scrollbarXEl: Writable<HTMLElement | null>;
-	scrollbarYEl: Writable<HTMLElement | null>;
-	scrollAreaEl: Writable<HTMLElement | null>;
-	viewportEl: Writable<HTMLElement | null>;
-	contentEl: Writable<HTMLElement | null>;
+	cornerWidth: WithGet<Writable<number>>;
+	cornerHeight: WithGet<Writable<number>>;
+	scrollbarXEnabled: WithGet<Writable<boolean>>;
+	scrollbarYEnabled: WithGet<Writable<boolean>>;
+	scrollbarXEl: WithGet<Writable<HTMLElement | null>>;
+	scrollbarYEl: WithGet<Writable<HTMLElement | null>>;
+	scrollAreaEl: WithGet<Writable<HTMLElement | null>>;
+	viewportEl: WithGet<Writable<HTMLElement | null>>;
+	contentEl: WithGet<Writable<HTMLElement | null>>;
 	options: ToWritableStores<Required<Omit<CreateScrollAreaProps, 'ids'>>>;
 	ids: ToWritableStores<IdObj<ScrollAreaIdParts>>;
 };
 
 export type ScrollAreaScrollbarState = {
-	isHorizontal: Writable<boolean>;
-	domRect: Writable<DOMRect | null>;
-	prevWebkitUserSelect: Writable<string>;
-	pointerOffset: Writable<number>;
-	thumbEl: Writable<HTMLElement | null>;
-	scrollbarEl: Writable<HTMLElement | null>;
-	sizes: Writable<Sizes>;
-	orientation: Writable<Orientation>;
-	hasThumb: Readable<boolean>;
-	isVisible: Writable<boolean>;
+	isHorizontal: WithGet<Writable<boolean>>;
+	domRect: WithGet<Writable<DOMRect | null>>;
+	prevWebkitUserSelect: WithGet<Writable<string>>;
+	pointerOffset: WithGet<Writable<number>>;
+	thumbEl: WithGet<Writable<HTMLElement | null>>;
+	scrollbarEl: WithGet<Writable<HTMLElement | null>>;
+	sizes: WithGet<Writable<Sizes>>;
+	orientation: WithGet<Writable<Orientation>>;
+	hasThumb: WithGet<Readable<boolean>>;
+	isVisible: WithGet<Writable<boolean>>;
 	handleWheelScroll: (e: WheelEvent, payload: number) => void;
 	handleThumbDown: (payload: { x: number; y: number }) => void;
 	handleThumbUp: (e: MouseEvent) => void;
@@ -89,16 +91,16 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 
 	const options = toWritableStores(omit(withDefaults, 'ids'));
 
-	const cornerWidth = writable(0);
-	const cornerHeight = writable(0);
-	const scrollbarXEnabled = writable(false);
-	const scrollbarYEnabled = writable(false);
+	const cornerWidth = withGet.writable(0);
+	const cornerHeight = withGet.writable(0);
+	const scrollbarXEnabled = withGet.writable(false);
+	const scrollbarYEnabled = withGet.writable(false);
 
-	const scrollAreaEl = writable<HTMLElement | null>(null);
-	const viewportEl = writable<HTMLElement | null>(null);
-	const contentEl = writable<HTMLElement | null>(null);
-	const scrollbarXEl = writable<HTMLElement | null>(null);
-	const scrollbarYEl = writable<HTMLElement | null>(null);
+	const scrollAreaEl = withGet.writable<HTMLElement | null>(null);
+	const viewportEl = withGet.writable<HTMLElement | null>(null);
+	const contentEl = withGet.writable<HTMLElement | null>(null);
+	const scrollbarXEl = withGet.writable<HTMLElement | null>(null);
+	const scrollbarYEl = withGet.writable<HTMLElement | null>(null);
 
 	const ids = toWritableStores({ ...generateIds(scrollAreaIdParts), ...withDefaults.ids });
 
@@ -204,14 +206,15 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 	});
 
 	function createScrollbar(orientationProp: Orientation = 'vertical') {
-		const orientation = writable(orientationProp);
-		const isHorizontal = writable(orientationProp === 'horizontal');
-		const domRect = writable<DOMRect | null>(null);
-		const prevWebkitUserSelect = writable('');
-		const pointerOffset = writable(0);
-		const thumbEl = writable<HTMLElement | null>(null);
-		const scrollbarEl = writable<HTMLElement | null>(null);
-		const sizes = writable<Sizes>({
+		const orientation = withGet.writable(orientationProp);
+		const isHorizontal = withGet.writable(orientationProp === 'horizontal');
+		const domRect = withGet.writable<DOMRect | null>(null);
+		const prevWebkitUserSelect = withGet.writable('');
+		const pointerOffset = withGet.writable(0);
+		const thumbEl = withGet.writable<HTMLElement | null>(null);
+		const scrollbarEl = withGet.writable<HTMLElement | null>(null);
+
+		const sizes = withGet.writable<Sizes>({
 			content: 0,
 			viewport: 0,
 			scrollbar: {
@@ -220,9 +223,10 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 				paddingEnd: 0,
 			},
 		});
-		const isVisible = writable(false);
 
-		const hasThumb = derived(sizes, ($sizes) => {
+		const isVisible = withGet.writable(false);
+
+		const hasThumb = withGet.derived(sizes, ($sizes) => {
 			const thumbRatio = getThumbRatio($sizes.viewport, $sizes.content);
 			return Boolean(thumbRatio > 0 && thumbRatio < 1);
 		});
