@@ -8,20 +8,9 @@
 
 	let pagefind: Pagefind | null = null;
 
-	async function getPagefind() {
-		const res = await fetch('/pagefind/pagefind.js');
-		if (!res.ok) {
-			return null;
-		}
-		const text = await res.text();
-		const blob = new Blob([text], { type: 'application/javascript' });
-		const url = URL.createObjectURL(blob);
-
-		return (await import(/* @vite-ignore */ url)) as Pagefind;
-	}
-
 	onMount(async () => {
-		pagefind = await getPagefind();
+		// @ts-expect-error - Pagefind will be present at runtime
+		pagefind = (await import('/pagefind/pagefind.js')) as Pagefind;
 		if (!pagefind) return;
 		await pagefind.init();
 	});
