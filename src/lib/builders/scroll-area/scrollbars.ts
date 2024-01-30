@@ -1,6 +1,6 @@
 import { name, type ScrollAreaState } from './create.js';
 import type { Action } from 'svelte/action';
-import { debounceCallback, getThumbSize, resizeObserver, toInt } from './helpers.js';
+import { debounceCallback, getThumbSize, resizeObserver } from './helpers.js';
 import {
 	executeCallbacks,
 	noop,
@@ -92,44 +92,15 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		scrollbarState.handleWheelScroll(e, maxScrollPos);
 	}
 
-	function handleSizeChange() {
-		const $scrollbarEl = scrollbarState.scrollbarEl.get();
-		if (!$scrollbarEl) return;
-
-		const $isHorizontal = scrollbarState.isHorizontal.get();
-		const $viewportEl = rootState.viewportEl.get();
-
-		if ($isHorizontal) {
-			scrollbarState.sizes.set({
-				content: $viewportEl?.scrollWidth ?? 0,
-				viewport: $viewportEl?.offsetWidth ?? 0,
-				scrollbar: {
-					size: $scrollbarEl.clientWidth ?? 0,
-					paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
-					paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
-				},
-			});
-		} else {
-			scrollbarState.sizes.set({
-				content: $viewportEl?.scrollHeight ?? 0,
-				viewport: $viewportEl?.offsetHeight ?? 0,
-				scrollbar: {
-					size: $scrollbarEl.clientHeight ?? 0,
-					paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
-					paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
-				},
-			});
-		}
-	}
-
 	// We need to recompute the sizes when the visibility of
 	// the scrollbar changes
 	effect([scrollbarState.isVisible], ([_]) => {
-		sleep(1).then(() => handleSizeChange());
+		sleep(1).then(() => scrollbarState.handleSizeChange());
 	});
 
 	function baseAction(node: HTMLElement) {
 		scrollbarState.scrollbarEl.set(node);
+
 		const unsubEvents = executeCallbacks(
 			addMeltEventListener(node, 'pointerdown', handlePointerDown),
 			addMeltEventListener(node, 'pointermove', handlePointerMove),
@@ -139,7 +110,8 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 
 		const unsubResizeContent = effect([rootState.contentEl], ([$contentEl]) => {
 			if (!$contentEl) return noop;
-			return resizeObserver($contentEl, handleSizeChange);
+
+			return resizeObserver($contentEl, scrollbarState.handleSizeChange);
 		});
 
 		return {
@@ -217,11 +189,13 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 
 	function handlePointerEnter() {
 		window.clearTimeout(timeout);
+		if (scrollbarState.isVisible.get()) return;
 		scrollbarState.isVisible.set(true);
 	}
 
 	function handlePointerLeave() {
 		timeout = window.setTimeout(() => {
+			if (!scrollbarState.isVisible.get()) return;
 			scrollbarState.isVisible.set(false);
 		}, rootState.options.hideDelay.get());
 	}
@@ -373,7 +347,7 @@ export function createScrollbarY(state: ScrollAreaState, createAction: CreateScr
 					right: $dir === 'ltr' ? 0 : undefined,
 					left: $dir === 'rtl' ? 0 : undefined,
 					bottom: 'var(--melt-scroll-area-corner-height)',
-					'--melt-scroll-area-thumb-height': $sizes ? `${getThumbSize($sizes)}px` : undefined,
+					'--melt-scroll-area-thumb-height': `${getThumbSize($sizes)}px`,
 					display: !$isVisible ? 'none' : undefined,
 				}),
 				'data-state': $isVisible ? 'visible' : 'hidden',

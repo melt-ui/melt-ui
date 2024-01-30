@@ -24,6 +24,7 @@ import {
 	getThumbOffsetFromScroll,
 	getThumbRatio,
 	isScrollingWithinScrollbarBounds,
+	toInt,
 	type Sizes,
 } from './helpers.js';
 import { createScrollbarX, createScrollbarY, getScrollbarActionByType } from './scrollbars.js';
@@ -73,6 +74,7 @@ export type ScrollAreaScrollbarState = {
 	handleThumbUp: (e: MouseEvent) => void;
 	onThumbPositionChange: () => void;
 	onDragScroll: (payload: number) => void;
+	handleSizeChange: () => void;
 };
 
 export type ScrollAreaState = {
@@ -162,13 +164,13 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 				/* Hide scrollbars cross-browser and enable momentum scroll for touch
 					devices */
 				[data-melt-scroll-area-viewport] {
-					scrollbar-width:none;
-					-ms-overflow-style:none;
-					-webkit-overflow-scrolling:touch;
+					scrollbar-width: none;
+					-ms-overflow-style: none;
+					-webkit-overflow-scrolling: touch;
 				}
 
 				[data-melt-scroll-area-viewport]::-webkit-scrollbar {
-					display:none;
+					display: none;
 				}
 			`;
 			node.parentElement?.insertBefore(styleNode, node);
@@ -302,6 +304,36 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			}
 		}
 
+		function handleSizeChange() {
+			const $scrollbarEl = scrollbarState.scrollbarEl.get();
+			if (!$scrollbarEl) return;
+
+			const $isHorizontal = scrollbarState.isHorizontal.get();
+			const $viewportEl = rootState.viewportEl.get();
+
+			if ($isHorizontal) {
+				scrollbarState.sizes.set({
+					content: $viewportEl?.scrollWidth ?? 0,
+					viewport: $viewportEl?.offsetWidth ?? 0,
+					scrollbar: {
+						size: $scrollbarEl.clientWidth ?? 0,
+						paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
+						paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
+					},
+				});
+			} else {
+				scrollbarState.sizes.set({
+					content: $viewportEl?.scrollHeight ?? 0,
+					viewport: $viewportEl?.offsetHeight ?? 0,
+					scrollbar: {
+						size: $scrollbarEl.clientHeight ?? 0,
+						paddingStart: toInt(getComputedStyle($scrollbarEl).paddingLeft),
+						paddingEnd: toInt(getComputedStyle($scrollbarEl).paddingRight),
+					},
+				});
+			}
+		}
+
 		const scrollbarState: ScrollAreaScrollbarState = {
 			isHorizontal,
 			domRect,
@@ -318,6 +350,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			hasThumb,
 			scrollbarEl,
 			isVisible,
+			handleSizeChange,
 		};
 
 		const scrollbarActionByType = getScrollbarActionByType(options.type.get());
