@@ -90,7 +90,7 @@ export function createTabs(props?: CreateTabsProps) {
 				const isActive = sourceOfTruth === tabValue;
 
 				return {
-					type: 'button',
+					type: 'button' as const,
 					role: 'tab',
 					'data-state': isActive ? 'active' : 'inactive',
 					tabindex: isActive ? 0 : -1,
