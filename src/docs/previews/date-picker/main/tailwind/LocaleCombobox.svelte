@@ -6,7 +6,7 @@
 	} from '$lib/index.js';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
-	import { localeOptions } from './locales';
+	import { localeOptions } from './locales.js';
 
 	// convert locale option object to array
 	const localeOptionsArr = Object.entries(localeOptions).map(

@@ -1,7 +1,7 @@
 import { ATTRS, KBD, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { pinInputIdParts } from '$lib';
+import { pinInputIdParts } from '$lib/index.js';
 import { pinInputEvents } from '$lib/builders/pin-input/events.js';
 import { isMac } from '$lib/internal/helpers/index.js';
 import type { BuilderData } from './index.js';

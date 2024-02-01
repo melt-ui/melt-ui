@@ -1,4 +1,4 @@
-import { isAnySegmentPart } from '$lib/builders/date-field/_internal/helpers';
+import { isAnySegmentPart } from '$lib/builders/date-field/_internal/helpers.js';
 import { isHTMLElement, kbd } from '$lib/internal/helpers/index.js';
 
 /**

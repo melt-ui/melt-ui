@@ -19,12 +19,12 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle';
-import { withGet, type WithGet } from '$lib/internal/helpers/withGet';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { writable, type Readable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
-import { omit } from '../../internal/helpers/object';
+import { generateIds } from '../../internal/helpers/id.js';
+import { omit } from '../../internal/helpers/object.js';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
 

@@ -1,8 +1,8 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import type { BuilderData } from '.';
-import { tableOfContentsEvents } from '$lib/builders/table-of-contents/events';
-import { elementSchema } from '$docs/utils';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants.js';
+import type { APISchema, KeyboardSchema } from '$docs/types.js';
+import type { BuilderData } from './index.js';
+import { tableOfContentsEvents } from '$lib/builders/table-of-contents/events.js';
+import { elementSchema } from '$docs/utils/index.js';
 
 const builder: APISchema = {
 	title: 'createTableOfContents',

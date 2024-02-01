@@ -21,7 +21,7 @@ import {
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
 

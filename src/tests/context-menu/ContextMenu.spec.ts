@@ -1,10 +1,10 @@
 import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe, vi } from 'vitest';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { testKbd as kbd } from '../utils.js';
 import ContextMenuTest from './ContextMenuTest.svelte';
-import type { CreateContextMenuProps } from '$lib';
+import type { CreateContextMenuProps } from '$lib/index.js';
 
 function setup(props: CreateContextMenuProps = {}) {
 	const user = userEvent.setup();

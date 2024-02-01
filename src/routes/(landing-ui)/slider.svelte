@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { createSlider, melt } from '$lib/index.js';
 
 	const {

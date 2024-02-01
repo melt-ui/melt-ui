@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { createAccordion, melt } from '$lib/index.js';
 	import { slide } from 'svelte/transition';
 

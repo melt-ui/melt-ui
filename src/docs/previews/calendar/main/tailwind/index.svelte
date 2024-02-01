@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCalendar, melt } from '$lib';
+	import { createCalendar, melt } from '$lib/index.js';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import LocaleCombobox from './LocaleCombobox.svelte';
 

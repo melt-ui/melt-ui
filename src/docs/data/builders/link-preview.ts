@@ -1,6 +1,6 @@
 import { ATTRS, PROPS } from '$docs/constants.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { linkPreviewIdParts } from '$lib';
+import { linkPreviewIdParts } from '$lib/index.js';
 import { linkPreviewEvents } from '$lib/builders/link-preview/events.js';
 import type { BuilderData } from './index.js';
 import { getMenuArrowSchema } from './menu.js';

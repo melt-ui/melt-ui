@@ -2,8 +2,8 @@ import { render, waitFor } from '@testing-library/svelte';
 import { get, writable } from 'svelte/store';
 import { describe, expect, test } from 'vitest';
 import Tooltip from './Tooltip.svelte';
-import userEvent from '@testing-library/user-event';
-import { sleep } from '$lib/internal/helpers';
+import { userEvent } from '@testing-library/user-event';
+import { sleep } from '$lib/internal/helpers/index.js';
 
 describe('Tooltip', () => {
 	test('It opens when hovered, and closes when left', async () => {

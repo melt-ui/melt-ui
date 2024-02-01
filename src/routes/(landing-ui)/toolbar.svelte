@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
-	import { createToolbar, melt } from '$lib';
+	import { cn } from '$docs/utils/index.js';
+	import { createToolbar, melt } from '$lib/index.js';
 
 	// Icons
 	import { Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight } from 'lucide-svelte';

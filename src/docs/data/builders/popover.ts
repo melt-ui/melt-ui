@@ -1,7 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { popoverIdParts } from '$lib';
+import { popoverIdParts } from '$lib/index.js';
 import { popoverEvents } from '$lib/builders/popover/events.js';
 import type { BuilderData } from './index.js';
 

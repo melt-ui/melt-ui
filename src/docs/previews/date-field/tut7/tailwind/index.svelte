@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDateField, melt, type Matcher } from '$lib';
+	import { createDateField, melt, type Matcher } from '$lib/index.js';
 	import { CalendarDate } from '@internationalized/date';
 
 	const isFirstOrFifteenth: Matcher = (date) => {
