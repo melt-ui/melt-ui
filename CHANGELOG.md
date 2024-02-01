@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.71.1
+
+### Patch Changes
+
+- fix: type of type in tabs builder ([#937](https://github.com/melt-ui/melt-ui/pull/937))
+
 ## 0.71.0
 
 ### Minor Changes
