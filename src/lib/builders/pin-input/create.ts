@@ -17,10 +17,10 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, get, readonly, writable } from 'svelte/store';
+import { derived, readonly, writable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id.js';
 import type { PinInputEvents } from './events.js';
 import type { CreatePinInputProps } from './types.js';
-import { generateIds } from '../../internal/helpers/id.js';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
@@ -75,7 +75,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 
 	const getTotalItems = () => {
 		if (!isBrowser) return Infinity;
-		const rootEl = document.getElementById(get(ids.root));
+		const rootEl = document.getElementById(ids.root.get());
 		if (!rootEl) return Infinity;
 
 		const inputs = Array.from(rootEl.querySelectorAll(selector('input')));
@@ -161,7 +161,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 					if (!inputs) return;
 
 					const getInputted = (el: HTMLInputElement) => {
-						const $value = get(value);
+						const $value = value.get();
 						const prevElValue = $value[elIndex];
 						const selectionStart = el.selectionStart ?? 1;
 						if (!prevElValue) return el.value;
@@ -219,7 +219,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 					});
 				}),
 				addMeltEventListener(node, 'blur', () => {
-					node.placeholder = get(placeholder);
+					node.placeholder = placeholder.get();
 				})
 			);
 

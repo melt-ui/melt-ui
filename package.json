@@ -1,13 +1,13 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.70.0",
+	"version": "0.71.1",
 	"license": "MIT",
 	"repository": "github:melt-ui/melt-ui",
 	"author": "Thomas G. Lopes",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
-		"deploy": "vite build && pnpm run pagefind",
+		"deploy": "vite build",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
@@ -24,8 +24,7 @@
 		"build-storybook": "storybook build -s static",
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
-		"changeset": "changeset",
-		"pagefind": "node ./scripts/pagefind.js"
+		"changeset": "changeset"
 	},
 	"exports": {
 		".": {
@@ -112,7 +111,6 @@
 		"jsdom": "^22.1.0",
 		"lucide-svelte": "^0.309.0",
 		"mode-watcher": "^0.1.2",
-		"pagefind": "^1.0.3",
 		"postcss": "^8.4.27",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "2.8.7",
@@ -140,6 +138,7 @@
 		"typescript": "^5.1.6",
 		"unist-util-visit": "^4.1.2",
 		"vite": "^4.4.7",
+		"vite-plugin-pagefind": "^0.0.21",
 		"vitest": "^0.33.0"
 	},
 	"svelte": "./dist/index.js",

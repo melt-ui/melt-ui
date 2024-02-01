@@ -20,8 +20,9 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import { omit } from '../../internal/helpers/object.js';
 import type { LinkPreviewEvents } from './events.js';
@@ -53,8 +54,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
-	const hasSelection = writable(false);
-	const isPointerDownOnContent = writable(false);
+	const hasSelection = withGet.writable(false);
+	const isPointerDownOnContent = withGet.writable(false);
 	const containSelection = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -79,7 +80,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
-	const handleOpen = derived(openDelay, ($openDelay) => {
+	const handleOpen = withGet.derived(openDelay, ($openDelay) => {
 		return () => {
 			if (timeout) {
 				window.clearTimeout(timeout);
@@ -90,9 +91,9 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				open.set(true);
 			}, $openDelay);
 		};
-	}) as Readable<() => void>;
+	}) as WithGet<Readable<() => void>>;
 
-	const handleClose = derived(
+	const handleClose = withGet.derived(
 		[closeDelay, isPointerDownOnContent, hasSelection],
 		([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
 			return () => {
@@ -107,7 +108,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}
 			};
 		}
-	) as Readable<() => void>;
+	) as WithGet<Readable<() => void>>;
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, ids.trigger, ids.content],
@@ -125,17 +126,17 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					get(handleOpen)();
+					handleOpen.get()();
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)();
+					handleClose.get()();
 				}),
 				addMeltEventListener(node, 'focus', (e) => {
 					if (!isElement(e.currentTarget) || !isFocusVisible(e.currentTarget)) return;
-					get(handleOpen)();
+					handleOpen.get()();
 				}),
-				addMeltEventListener(node, 'blur', () => get(handleClose)())
+				addMeltEventListener(node, 'blur', () => handleClose.get()())
 			);
 
 			return {
@@ -195,7 +196,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							clickOutside: $closeOnOutsideClick
 								? {
 										handler: (e) => {
-											get(onOutsideClick)?.(e);
+											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return;
 
 											if (
@@ -235,11 +236,11 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					get(handleOpen)();
+					handleOpen.get()();
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)();
+					handleClose.get()();
 				}),
 				addMeltEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
@@ -272,7 +273,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	effect([containSelection], ([$containSelection]) => {
 		if (!isBrowser || !$containSelection) return;
 		const body = document.body;
-		const contentElement = document.getElementById(get(ids.content));
+		const contentElement = document.getElementById(ids.content.get());
 		if (!contentElement) return;
 		// prefix for safari
 		originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
@@ -292,7 +293,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	});
 
 	safeOnMount(() => {
-		const triggerEl = document.getElementById(get(ids.trigger));
+		const triggerEl = document.getElementById(ids.trigger.get());
 		if (!triggerEl) return;
 		activeTrigger.set(triggerEl);
 	});
@@ -317,7 +318,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 		document.addEventListener('pointerup', handlePointerUp);
 
-		const contentElement = document.getElementById(get(ids.content));
+		const contentElement = document.getElementById(ids.content.get());
 		if (!contentElement) return;
 		const tabbables = getTabbableNodes(contentElement);
 		tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));

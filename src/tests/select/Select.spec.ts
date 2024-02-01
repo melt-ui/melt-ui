@@ -237,6 +237,12 @@ describe('Select', () => {
 		expect(label.id).toBe(ids.label);
 	});
 
+	test('Applies type="button" to the select trigger', async () => {
+		const { getByTestId } = render(SelectTest, { closeOnEscape: false });
+		const trigger = getByTestId('trigger');
+		expect(trigger).toHaveAttribute('type', 'button');
+	});
+
 	test.todo('Disabled select cannot be opened');
 	test.todo('Options loop when loop prop is set');
 });

@@ -1,6 +1,8 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -12,16 +14,15 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-	addMeltEventListener,
-	disabledAttr,
 } from '$lib/internal/helpers/index.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, readonly, writable } from 'svelte/store';
+import { tick } from 'svelte';
+import { derived, readonly, writable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id.js';
+import type { TagsInputEvents } from './events.js';
 import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
 import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
-import { tick } from 'svelte';
-import type { TagsInputEvents } from './events.js';
-import { generateIds } from '../../internal/helpers/id.js';
 
 const defaults = {
 	placeholder: '',
@@ -94,23 +95,23 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	const tags = overridable<Tag[]>(tagsWritable, withDefaults?.onTagsChange);
 
 	// Selected tag store. When `null`, no tag is selected
-	const selected = writable<Tag | null>(withDefaults.selected ?? null);
+	const selected = withGet.writable<Tag | null>(withDefaults.selected ?? null);
 
-	const editing = writable<Tag | null>(null);
+	const editing = withGet.writable<Tag | null>(null);
 
 	// Run validation checks and if a validation fails return false immediately
 	const isInputValid = (v: string) => {
-		const $tags = get(tags);
-		const $editing = get(editing);
-		const $allowed = get(allowed);
-		const $denied = get(denied);
-		const $maxTags = get(maxTags);
+		const $tags = tags.get();
+		const $editing = editing.get();
+		const $allowed = allowed.get();
+		const $denied = denied.get();
+		const $maxTags = maxTags.get();
 
 		// Trim the validation value before validations
-		if (get(trim)) v = v.trim();
+		if (trim.get()) v = v.trim();
 
 		// Tag uniqueness
-		if (get(unique) && $editing?.value !== v) {
+		if (unique.get() && $editing?.value !== v) {
 			const index = $tags.findIndex((tag) => tag.value === v);
 			if (index >= 0) return false;
 		}
@@ -128,7 +129,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 	// Add a tag to the $tags store. Calls `$options.add()` if set
 	const addTag = async (v: string) => {
-		const $add = get(add);
+		const $add = add.get();
 
 		let workingTag = { id: '', value: v };
 
@@ -148,7 +149,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		}
 
 		// Trim the value, only after the user defined add function
-		if (get(trim)) workingTag.value = workingTag.value.trim();
+		if (trim.get()) workingTag.value = workingTag.value.trim();
 
 		// if it's not valid we don't add it to the tags list
 		if (!isInputValid(workingTag.value)) return false;
@@ -162,7 +163,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 	// Update a tag in the $tags store. Calls `$options.update()` if set
 	async function updateTag(tag: Tag, select = false) {
-		const $update = get(update);
+		const $update = update.get();
 
 		// Store the id, incase it changes during the update
 		const oldId = tag.id;
@@ -182,7 +183,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		}
 
 		// Trim the value, only after the user defined update function
-		if (get(trim)) workingTag.value = workingTag.value.trim();
+		if (trim.get()) workingTag.value = workingTag.value.trim();
 
 		// if it's not valid we don't add it to the tags list
 		if (!isInputValid(workingTag.value)) return false;
@@ -205,7 +206,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 	// Remove a tag from the $tags store. Calls `$options.remove()` if set
 	async function removeTag(t: Tag) {
-		const $remove = get(remove);
+		const $remove = remove.get();
 
 		if ($remove) {
 			try {
@@ -215,7 +216,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			}
 		}
 
-		const $tags = get(tags);
+		const $tags = tags.get();
 		const index = $tags.findIndex((tag) => tag.id === t.id);
 		tags.update((t) => {
 			t.splice(index, 1);
@@ -310,7 +311,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if (!value) return;
 
 					// Handle clear or add (if set)
-					const $blur = get(blur);
+					const $blur = blur.get();
 
 					if ($blur === 'clear') {
 						node.value = '';
@@ -328,7 +329,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if (!pastedText) return;
 
 					// Do nothing when addOnPaste is false
-					if (!get(addOnPaste)) return;
+					if (!addOnPaste.get()) return;
 					e.preventDefault();
 
 					// Update value with the pasted text or set invalid
@@ -339,7 +340,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					}
 				}),
 				addMeltEventListener(node, 'keydown', async (e) => {
-					const $selected = get(selected);
+					const $selected = selected.get();
 
 					if ($selected) {
 						// Check if a character is entered into the input
@@ -511,7 +512,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'mousedown', (e) => {
 					// Do nothing when editing any tag
-					const $editing = get(editing);
+					const $editing = editing.get();
 					if ($editing && $editing.id !== getElProps().id) return;
 
 					// Focus on the input and set this as the selected tag
@@ -522,7 +523,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				}),
 				addMeltEventListener(node, 'click', (e) => {
 					// Do nothing when editing any tag
-					const $editing = get(editing);
+					const $editing = editing.get();
 					if ($editing && $editing.id === getElProps().id) return;
 
 					// Focus on the input and set this as the selected tag

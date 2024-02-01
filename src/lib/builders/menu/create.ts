@@ -10,7 +10,6 @@ import {
 	createElHelpers,
 	createTypeaheadSearch,
 	derivedVisible,
-	derivedWithUnsubscribe,
 	disabledAttr,
 	effect,
 	executeCallbacks,
@@ -35,9 +34,10 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MenuEvents } from './events.js';
 import type {
 	Selector,
@@ -116,31 +116,30 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	 * This is used to determine how we handle focus on open behavior differently
 	 * than when the user is using the mouse.
 	 */
-	const isUsingKeyboard = writable(false);
+	const isUsingKeyboard = withGet.writable(false);
 
 	/**
 	 * Stores used to manage the grace area for submenus. This prevents us
 	 * from closing a submenu when the user is moving their mouse from the
 	 * trigger to the submenu.
 	 */
-	const lastPointerX = writable(0);
-	const pointerGraceIntent = writable<GraceIntent | null>(null);
-	const pointerDir = writable<Side>('right');
+	const lastPointerX = withGet(writable(0));
+	const pointerGraceIntent = withGet(writable<GraceIntent | null>(null));
+	const pointerDir = withGet(writable<Side>('right'));
 
 	/**
 	 * Track currently focused item in the menu.
 	 */
-	const currentFocusedItem = writable<HTMLElement | null>(null);
+	const currentFocusedItem = withGet(writable<HTMLElement | null>(null));
 
-	const pointerMovingToSubmenu = derivedWithUnsubscribe(
-		[pointerDir, pointerGraceIntent],
-		([$pointerDir, $pointerGraceIntent]) => {
+	const pointerMovingToSubmenu = withGet(
+		derived([pointerDir, pointerGraceIntent], ([$pointerDir, $pointerGraceIntent]) => {
 			return (e: PointerEvent) => {
 				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
 
 				return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
 			};
-		}
+		})
 	);
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
@@ -194,7 +193,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								clickOutside: $closeOnOutsideClick
 									? {
 											handler: (e) => {
-												get(onOutsideClick)?.(e);
+												onOutsideClick.get()?.(e);
 												if (e.defaultPrevented) return;
 
 												if (
@@ -233,7 +232,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e, get(loop) ?? false);
+						handleMenuNavigation(e, loop.get() ?? false);
 					}
 
 					/**
@@ -252,7 +251,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
+					if (!isModifierKey && isCharacterKey && typeahead.get() === true) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
@@ -287,7 +286,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
-					const $rootOpen = get(rootOpen);
+					const $rootOpen = rootOpen.get();
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
 
@@ -366,7 +365,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						return;
 					}
 
-					if (get(closeOnItemClick)) {
+					if (closeOnItemClick.get()) {
 						// Allows forms to submit before the menu is removed from the DOM
 						sleep(1).then(() => {
 							rootOpen.set(false);
@@ -466,7 +465,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return !prev;
 						});
 
-						if (get(closeOnItemClick)) {
+						if (closeOnItemClick.get()) {
 							// We're waiting for a tick to let the checked store update
 							// before closing the menu. If we don't, and the user was to hit
 							// spacebar or enter twice really fast, the menu would close and
@@ -594,7 +593,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						value.set(itemValue);
 
-						if (get(closeOnItemClick)) {
+						if (closeOnItemClick.get()) {
 							// We're waiting for a tick to let the checked store update
 							// before closing the menu. If we don't, and the user was to hit
 							// spacebar or enter twice really fast, the menu would close and
@@ -686,9 +685,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const { positioning, arrowSize, disabled } = options;
 
-		const subActiveTrigger = writable<HTMLElement | null>(null);
-		const subOpenTimer = writable<number | null>(null);
-		const pointerGraceTimer = writable(0);
+		const subActiveTrigger = withGet(writable<HTMLElement | null>(null));
+		const subOpenTimer = withGet(writable<number | null>(null));
+		const pointerGraceTimer = withGet(writable(0));
 
 		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
@@ -697,7 +696,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			 * Set active trigger on mount to handle controlled/forceVisible
 			 * state.
 			 */
-			const subTrigger = document.getElementById(get(subIds.trigger));
+			const subTrigger = document.getElementById(subIds.trigger.get());
 			if (subTrigger) {
 				subActiveTrigger.set(subTrigger);
 			}
@@ -735,7 +734,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					([$subIsVisible, $positioning]) => {
 						unsubPopper();
 						if (!$subIsVisible) return;
-						const activeTrigger = get(subActiveTrigger);
+						const activeTrigger = subActiveTrigger.get();
 						if (!activeTrigger) return;
 						tick().then(() => {
 							const parentMenuEl = getParentMenu(activeTrigger);
@@ -777,7 +776,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							// prevent events from bubbling
 							e.stopImmediatePropagation();
-							handleMenuNavigation(e, get(loop) ?? false);
+							handleMenuNavigation(e, loop.get() ?? false);
 							return;
 						}
 
@@ -787,7 +786,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						// close the submenu if the user presses a close key
 						if (isCloseKey) {
-							const $subActiveTrigger = get(subActiveTrigger);
+							const $subActiveTrigger = subActiveTrigger.get();
 							e.preventDefault();
 							subOpen.update(() => {
 								if ($subActiveTrigger) {
@@ -809,7 +808,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return;
 						}
 
-						if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
+						if (!isModifierKey && isCharacterKey && typeahead.get() === true) {
 							// typeahead logic
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
@@ -818,10 +817,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						onMenuPointerMove(e);
 					}),
 					addMeltEventListener(node, 'focusout', (e) => {
-						const $subActiveTrigger = get(subActiveTrigger);
-						if (get(isUsingKeyboard)) {
+						const $subActiveTrigger = subActiveTrigger.get();
+						if (isUsingKeyboard.get()) {
 							const target = e.target;
-							const submenuEl = document.getElementById(get(subIds.menu));
+							const submenuEl = document.getElementById(subIds.menu.get());
 							if (!isHTMLElement(submenuEl) || !isHTMLElement(target)) return;
 
 							if (!submenuEl.contains(target) && target !== $subActiveTrigger) {
@@ -873,7 +872,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 				const unsubTimer = () => {
 					clearTimerStore(subOpenTimer);
-					window.clearTimeout(get(pointerGraceTimer));
+					window.clearTimeout(pointerGraceTimer.get());
 					pointerGraceIntent.set(null);
 				};
 
@@ -886,7 +885,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 						handleRovingFocus(triggerEl);
-						if (!get(subOpen)) {
+						if (!subOpen.get()) {
 							subOpen.update((prev) => {
 								const isAlreadyOpen = prev;
 								if (!isAlreadyOpen) {
@@ -898,14 +897,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						}
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
-						const $typed = get(typed);
+						const $typed = typed.get();
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl) || isElementDisabled(triggerEl)) return;
 						const isTypingAhead = $typed.length > 0;
 						if (isTypingAhead && e.key === kbd.SPACE) return;
 
 						if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
-							if (!get(subOpen)) {
+							if (!subOpen.get()) {
 								triggerEl.click();
 								e.preventDefault();
 								return;
@@ -929,12 +928,12 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
-						if (!isFocusWithinSubmenu(get(subIds.menu))) {
+						if (!isFocusWithinSubmenu(subIds.menu.get())) {
 							handleRovingFocus(triggerEl);
 						}
 
-						const openTimer = get(subOpenTimer);
-						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerEl)) {
+						const openTimer = subOpenTimer.get();
+						if (!subOpen.get() && !openTimer && !isElementDisabled(triggerEl)) {
 							subOpenTimer.set(
 								window.setTimeout(() => {
 									subOpen.update(() => {
@@ -950,7 +949,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (!isMouse(e)) return;
 						clearTimerStore(subOpenTimer);
 
-						const submenuEl = document.getElementById(get(subIds.menu));
+						const submenuEl = document.getElementById(subIds.menu.get());
 						const contentRect = submenuEl?.getBoundingClientRect();
 
 						if (contentRect) {
@@ -973,7 +972,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								side,
 							});
 
-							window.clearTimeout(get(pointerGraceTimer));
+							window.clearTimeout(pointerGraceTimer.get());
 							pointerGraceTimer.set(
 								window.setTimeout(() => {
 									pointerGraceIntent.set(null);
@@ -1044,17 +1043,17 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		effect([pointerGraceIntent], ([$pointerGraceIntent]) => {
 			if (!isBrowser || $pointerGraceIntent) return;
-			window.clearTimeout(get(pointerGraceTimer));
+			window.clearTimeout(pointerGraceTimer.get());
 		});
 
 		effect([subOpen], ([$subOpen]) => {
 			if (!isBrowser) return;
 
 			sleep(1).then(() => {
-				const menuEl = document.getElementById(get(subIds.menu));
+				const menuEl = document.getElementById(subIds.menu.get());
 				if (!menuEl) return;
 
-				if ($subOpen && get(isUsingKeyboard)) {
+				if ($subOpen && isUsingKeyboard.get()) {
 					// Selector to get menu items belonging to menu
 					const menuItems = getMenuItems(menuEl);
 					if (!menuItems.length) return;
@@ -1062,13 +1061,13 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				}
 
 				if (!$subOpen) {
-					const focusedItem = get(currentFocusedItem);
+					const focusedItem = currentFocusedItem.get();
 					if (focusedItem && menuEl.contains(focusedItem)) {
 						removeHighlight(focusedItem);
 					}
 				}
 				if (menuEl && !$subOpen) {
-					const subTriggerEl = document.getElementById(get(subIds.trigger));
+					const subTriggerEl = document.getElementById(subIds.trigger.get());
 					if (!subTriggerEl || document.activeElement === subTriggerEl) return;
 					removeHighlight(subTriggerEl);
 				}
@@ -1095,8 +1094,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		 * case where the user sets the `open` store to `true` without
 		 * clicking on the trigger.
 		 */
-		const triggerEl = document.getElementById(get(rootIds.trigger));
-		if (isHTMLElement(triggerEl) && get(rootOpen)) {
+		const triggerEl = document.getElementById(rootIds.trigger.get());
+		if (isHTMLElement(triggerEl) && rootOpen.get()) {
 			rootActiveTrigger.set(triggerEl);
 		}
 
@@ -1115,7 +1114,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		};
 
 		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE && get(closeOnEscape)) {
+			if (e.key === kbd.ESCAPE && closeOnEscape.get()) {
 				rootOpen.set(false);
 				return;
 			}
@@ -1141,9 +1140,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	effect([rootOpen], ([$rootOpen]) => {
 		if (!isBrowser) return;
 		if (!$rootOpen) {
-			const $rootActiveTrigger = get(rootActiveTrigger);
+			const $rootActiveTrigger = rootActiveTrigger.get();
 			if (!$rootActiveTrigger) return;
-			const $closeFocus = get(closeFocus);
+			const $closeFocus = closeFocus.get();
 
 			if (!$rootOpen && $rootActiveTrigger) {
 				handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
@@ -1163,9 +1162,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		// if the menu is open, we'll sleep for a sec so the menu can render
 		// before we focus on either the first item or the menu itself.
 		sleep(1).then(() => {
-			const menuEl = document.getElementById(get(rootIds.menu));
-			if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-				if (get(disableFocusFirstItem)) {
+			const menuEl = document.getElementById(rootIds.menu.get());
+			if (menuEl && $rootOpen && isUsingKeyboard.get()) {
+				if (disableFocusFirstItem.get()) {
 					handleRovingFocus(menuEl);
 					return;
 				}
@@ -1189,7 +1188,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = (e: KeyboardEvent) => {
 			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen && get(closeOnEscape)) {
+			if (e.key === kbd.ESCAPE && $rootOpen && closeOnEscape.get()) {
 				rootOpen.set(false);
 				return;
 			}
@@ -1222,7 +1221,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	function onItemFocusIn(e: FocusEvent) {
 		const itemEl = e.currentTarget;
 		if (!isHTMLElement(itemEl)) return;
-		const $currentFocusedItem = get(currentFocusedItem);
+		const $currentFocusedItem = currentFocusedItem.get();
 		if ($currentFocusedItem) {
 			removeHighlight($currentFocusedItem);
 		}
@@ -1278,7 +1277,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const currentTarget = e.currentTarget;
 		if (!isHTMLElement(currentTarget) || !isHTMLElement(target)) return;
 
-		const $lastPointerX = get(lastPointerX);
+		const $lastPointerX = lastPointerX.get();
 		const pointerXHasChanged = $lastPointerX !== e.clientX;
 
 		// We don't use `e.movementX` for this check because Safari will
@@ -1318,7 +1317,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	 * -----------------------------------------------------------------------------------------------*/
 
 	function onItemKeyDown(e: KeyboardEvent) {
-		const $typed = get(typed);
+		const $typed = typed.get();
 		const isTypingAhead = $typed.length > 0;
 		if (isTypingAhead && e.key === kbd.SPACE) {
 			e.preventDefault();
@@ -1348,7 +1347,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	}
 
 	function isPointerMovingToSubmenu(e: PointerEvent) {
-		return get(pointerMovingToSubmenu)(e);
+		return pointerMovingToSubmenu.get()(e);
 	}
 
 	/**
@@ -1381,18 +1380,18 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 export function handleTabNavigation(
 	e: KeyboardEvent,
-	nextFocusable: Writable<HTMLElement | null>,
-	prevFocusable: Writable<HTMLElement | null>
+	nextFocusable: WithGet<Writable<HTMLElement | null>>,
+	prevFocusable: WithGet<Writable<HTMLElement | null>>
 ) {
 	if (e.shiftKey) {
-		const $prevFocusable = get(prevFocusable);
+		const $prevFocusable = prevFocusable.get();
 		if ($prevFocusable) {
 			e.preventDefault();
 			sleep(1).then(() => $prevFocusable.focus());
 			prevFocusable.set(null);
 		}
 	} else {
-		const $nextFocusable = get(nextFocusable);
+		const $nextFocusable = nextFocusable.get();
 		if ($nextFocusable) {
 			e.preventDefault();
 			sleep(1).then(() => $nextFocusable.focus());
@@ -1424,9 +1423,9 @@ export function applyAttrsIfDisabled(element: HTMLElement | null) {
  * Given a timer store, clear the timeout and set the store to null
  * @param openTimer The timer store
  */
-export function clearTimerStore(timerStore: Writable<number | null>) {
+export function clearTimerStore(timerStore: WithGet<Writable<number | null>>) {
 	if (!isBrowser) return;
-	const timer = get(timerStore);
+	const timer = timerStore.get();
 	if (timer) {
 		window.clearTimeout(timer);
 		timerStore.set(null);

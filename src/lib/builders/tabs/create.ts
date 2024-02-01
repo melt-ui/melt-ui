@@ -17,7 +17,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { TabsEvents } from './events.js';
 import type { CreateTabsProps, TabsTriggerProps } from './types.js';
 
@@ -42,7 +42,7 @@ export function createTabs(props?: CreateTabsProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	let ssrValue = withDefaults.defaultValue ?? get(value);
+	let ssrValue = withDefaults.defaultValue ?? value.get();
 
 	// Root
 	const root = builder(name(), {
@@ -90,7 +90,7 @@ export function createTabs(props?: CreateTabsProps) {
 				const isActive = sourceOfTruth === tabValue;
 
 				return {
-					type: 'button',
+					type: 'button' as const,
 					role: 'tab',
 					'data-state': isActive ? 'active' : 'inactive',
 					tabindex: isActive ? 0 : -1,
@@ -107,7 +107,7 @@ export function createTabs(props?: CreateTabsProps) {
 					const disabled = node.dataset.disabled === 'true';
 					const tabValue = node.dataset.value;
 
-					if (get(activateOnFocus) && !disabled && tabValue !== undefined) {
+					if (activateOnFocus.get() && !disabled && tabValue !== undefined) {
 						value.set(tabValue);
 					}
 				}),
@@ -137,7 +137,7 @@ export function createTabs(props?: CreateTabsProps) {
 					const rootEl = el.closest(selector());
 					if (!isHTMLElement(rootEl)) return;
 
-					const $loop = get(loop);
+					const $loop = loop.get();
 
 					const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')).filter(
 						(trigger): trigger is HTMLElement => isHTMLElement(trigger)
@@ -146,7 +146,7 @@ export function createTabs(props?: CreateTabsProps) {
 					const triggerIdx = enabledTriggers.findIndex((el) => el === e.target);
 
 					const dir = getElemDirection(rootEl);
-					const { nextKey, prevKey } = getDirectionalKeys(dir, get(orientation));
+					const { nextKey, prevKey } = getDirectionalKeys(dir, orientation.get());
 
 					if (e.key === nextKey) {
 						e.preventDefault();

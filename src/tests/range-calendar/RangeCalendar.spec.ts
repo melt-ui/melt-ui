@@ -1,13 +1,13 @@
-import { testKbd as kbd } from '../utils.js';
+import type { CreateRangeCalendarProps, DateRange } from '$lib/index.js';
+import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
 import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { describe } from 'vitest';
-import RangeCalendarTest from './RangeCalendarTest.svelte';
-import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
-import { writable } from 'svelte/store';
 import { tick } from 'svelte';
-import type { CreateRangeCalendarProps, DateRange } from '$lib/index.js';
+import { writable } from 'svelte/store';
+import { describe } from 'vitest';
+import { testKbd as kbd } from '../utils.js';
+import RangeCalendarTest from './RangeCalendarTest.svelte';
 
 const calendarDateRange = {
 	start: new CalendarDate(1980, 1, 20),
@@ -292,6 +292,7 @@ describe('Range Calendar', () => {
 		valueStore.set(calendarDateRange);
 
 		await tick();
+
 		expect(startValue).toHaveTextContent('1980-01-20');
 		expect(endValue).toHaveTextContent('1980-01-25');
 		valueStore.set({

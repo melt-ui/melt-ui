@@ -5,7 +5,6 @@ import {
 	builder,
 	createElHelpers,
 	derivedVisible,
-	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
 	getNextFocusable,
@@ -19,11 +18,13 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	withGet,
+	type WithGet,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
-import { get, writable, type Readable } from 'svelte/store';
+import { derived, writable, type Readable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	clearTimerStore,
@@ -32,8 +33,8 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	setMeltMenuAttribute,
-	type _MenuParts,
 	type Point,
+	type _MenuParts,
 } from '../menu/index.js';
 import type { ContextMenuEvents } from './events.js';
 import type { CreateContextMenuProps } from './types.js';
@@ -70,8 +71,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
-	const nextFocusable = writable<HTMLElement | null>(null);
-	const prevFocusable = writable<HTMLElement | null>(null);
+	const nextFocusable = withGet.writable<HTMLElement | null>(null);
+	const prevFocusable = withGet.writable<HTMLElement | null>(null);
 
 	const {
 		item,
@@ -86,38 +87,40 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		groupLabel,
 	} = createMenuBuilder({
 		rootOpen,
-		rootActiveTrigger,
 		rootOptions,
-		nextFocusable,
-		prevFocusable,
+		rootActiveTrigger: withGet(rootActiveTrigger),
+		nextFocusable: withGet(nextFocusable),
+		prevFocusable: withGet(prevFocusable),
 		selector: 'context-menu',
 		removeScroll: true,
 		ids: withDefaults.ids,
 	});
 
 	const point = writable<Point | null>(null);
-	const virtual: Readable<VirtualElement | null> = derivedWithUnsubscribe([point], ([$point]) => {
-		if ($point === null) return null;
+	const virtual: WithGet<Readable<VirtualElement | null>> = withGet(
+		derived([point], ([$point]) => {
+			if ($point === null) return null;
 
-		return {
-			getBoundingClientRect: () =>
-				DOMRect.fromRect({
-					width: 0,
-					height: 0,
-					...$point,
-				}),
-		};
-	});
-	const longPressTimer = writable(0);
+			return {
+				getBoundingClientRect: () =>
+					DOMRect.fromRect({
+						width: 0,
+						height: 0,
+						...$point,
+					}),
+			};
+		})
+	);
+	const longPressTimer = withGet.writable(0);
 
 	function handleClickOutside(e: PointerEvent) {
-		get(rootOptions.onOutsideClick)?.(e);
+		rootOptions.onOutsideClick.get()?.(e);
 		if (e.defaultPrevented) return;
 
 		const target = e.target;
 		if (!(target instanceof Element)) return;
 
-		const isClickInsideTrigger = target.closest(`[data-id="${get(ids.trigger)}"]`) !== null;
+		const isClickInsideTrigger = target.closest(`[data-id="${ids.trigger.get()}"]`) !== null;
 
 		if (!isClickInsideTrigger || isLeftClick(e)) {
 			rootOpen.set(false);
@@ -165,7 +168,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
-						const $virtual = get(virtual);
+						const $virtual = virtual.get();
 						const popper = usePopper(node, {
 							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
 							open: rootOpen,
@@ -199,7 +202,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					const isKeyDownInside = target.closest("[role='menu']") === menuEl;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e, get(loop));
+						handleMenuNavigation(e, loop.get());
 					}
 
 					/**
