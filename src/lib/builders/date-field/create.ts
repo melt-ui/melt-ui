@@ -48,6 +48,7 @@ import {
 	setDescription,
 	syncSegmentValues,
 } from './_internal/helpers.js';
+import './_internal/structuredClone.js';
 import type {
 	AnyExceptLiteral,
 	DateAndTimeSegmentObj,
