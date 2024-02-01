@@ -109,7 +109,9 @@ export function createListbox<
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = withGet(writable<HTMLElement | null>(null));
 	// The currently highlighted menu item.
-	const highlightedItem = withGet(writable<HTMLElement | null>(null));
+	const highlightedItem = withGet(
+		overridable(writable<HTMLElement | null>(null), withDefaults?.onHighlightedItemChange)
+	);
 
 	const selectedWritable =
 		withDefaults.selected ?? writable<S | undefined>(withDefaults.defaultSelected);

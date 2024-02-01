@@ -56,6 +56,12 @@ const builder = builderSchema(BUILDER_NAME, {
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 		{
+			name: 'onHighlightedItemChange',
+			type: 'ChangeFn<HTMLElement | null>',
+			description: 'A callback that is called when the highlighted item changes.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+		{
 			name: 'multiple',
 			type: 'boolean',
 			default: 'false',

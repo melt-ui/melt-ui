@@ -96,6 +96,13 @@ export type CreateListboxProps<
 	onSelectedChange?: ChangeFn<S | undefined>;
 
 	/**
+	 * A change handler for the highlighted store called when the highlighted value would normally change.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 */
+	onHighlightedItemChange?: ChangeFn<HTMLElement | null>;
+
+	/**
 	 * Whether or not to close the listbox menu when the user clicks
 	 * outside of the listbox.
 	 *
