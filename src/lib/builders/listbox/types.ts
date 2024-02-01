@@ -96,7 +96,7 @@ export type CreateListboxProps<
 	onSelectedChange?: ChangeFn<S | undefined>;
 
 	/**
-	 * A change handler for the highlighted store called when the highlighted value would normally change.
+	 * A change handler for the highlightedItem store called when the highlightedItem value would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
