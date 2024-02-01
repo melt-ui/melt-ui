@@ -13,10 +13,11 @@ import {
 	omit,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { writable } from 'svelte/store';
+import { writable, type Readable } from 'svelte/store';
 import { createListbox } from '../listbox/create.js';
 import type { ComboboxEvents } from './events.js';
 import type { ComboboxSelected, CreateComboboxProps } from './types.js';
+import type { ListboxOptionProps } from '../listbox/types.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -107,6 +108,7 @@ export function createCombobox<
 		},
 		states: {
 			...listbox.states,
+			highlighted: listbox.states.highlighted as Readable<ListboxOptionProps<Value>>,
 			touchedInput,
 			inputValue,
 		},
