@@ -28,10 +28,10 @@ import {
 	toWritableStores,
 	withGet,
 } from '$lib/internal/helpers/index.js';
-import type { MeltActionReturn } from '$lib/internal/types';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { DateValue } from '@internationalized/date';
 import { derived, writable, type Updater } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import {
 	areAllSegmentsFilled,
 	createContent,

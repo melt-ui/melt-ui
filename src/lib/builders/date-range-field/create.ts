@@ -19,7 +19,7 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { withGet } from '$lib/internal/helpers/withGet';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { DateValue } from '@internationalized/date';
 import { derived, writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
