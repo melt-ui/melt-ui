@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCalendar, melt } from '$lib';
+	import { createCalendar, melt } from '$lib/index.js';
 	import { isWeekend } from '@internationalized/date';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 

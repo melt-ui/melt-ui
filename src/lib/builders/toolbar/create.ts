@@ -11,7 +11,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { ToolbarEvents } from './events.js';
 import type {
 	CreateToolbarGroupProps,
@@ -231,8 +231,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 	}
 
 	function handleKeyDown(e: KeyboardEvent) {
-		const $orientation = get(orientation);
-		const $loop = get(loop);
+		const $orientation = orientation.get();
+		const $loop = loop.get();
 
 		const dir = 'ltr' as 'ltr' | 'rtl';
 		const nextKey = {

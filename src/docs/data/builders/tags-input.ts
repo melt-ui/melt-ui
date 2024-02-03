@@ -69,7 +69,7 @@ const OPTION_PROPS = [
 		default: '[]',
 	},
 	{
-		name: 'disallowed',
+		name: 'denied',
 		type: 'string[]',
 		description: 'The disallowed tags.',
 		default: '[]',

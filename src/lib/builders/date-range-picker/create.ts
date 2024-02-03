@@ -1,22 +1,21 @@
-import {
-	effect,
-	toWritableStores,
-	omit,
-	builder,
-	addMeltEventListener,
-} from '$lib/internal/helpers/index.js';
-import { get } from 'svelte/store';
-import { createRangeCalendar, createPopover } from '$lib/builders/index.js';
-import type { CreateDateRangePickerProps } from './types.js';
+import { createPopover, createRangeCalendar } from '$lib/builders/index.js';
 import {
 	handleSegmentNavigation,
 	isSegmentNavigationKey,
 } from '$lib/internal/helpers/date/index.js';
+import {
+	addMeltEventListener,
+	builder,
+	effect,
+	omit,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import type { CreateDateRangePickerProps } from './types.js';
 
-import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
-import { createDateRangeField } from '../date-range-field/create.js';
 import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
+import { createFormatter, dateStore, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
+import { createDateRangeField } from '../date-range-field/create.js';
 import type { DateRangePickerEvents } from './events.js';
 
 const defaults = {
@@ -84,7 +83,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		granularity: withDefaults.granularity,
 	});
 
-	const formatter = createFormatter(get(locale));
+	const formatter = createFormatter(locale.get());
 
 	const placeholder = dateStore(rfPlaceholder, withDefaults.defaultPlaceholder ?? defaultDate);
 
@@ -144,7 +143,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 
 	effect([popover.states.open], ([$open]) => {
 		if (!$open) {
-			const $value = get(value);
+			const $value = value.get();
 			if ($value?.start) {
 				placeholder.set($value.start);
 			} else {
@@ -178,7 +177,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
-			handleSegmentNavigation(e, get(rangeField.ids.field.field));
+			handleSegmentNavigation(e, rangeField.ids.field.field.get());
 		}
 	}
 

@@ -1,4 +1,5 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -7,13 +8,13 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
-	addMeltEventListener,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable, readonly } from 'svelte/store';
+import { derived, readonly, writable } from 'svelte/store';
+import type { PaginationEvents } from './events.js';
 import { getPageItems } from './helpers.js';
 import type { CreatePaginationProps, Page } from './types.js';
-import type { PaginationEvents } from './events.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 
 const defaults = {
 	perPage: 1,
@@ -34,7 +35,7 @@ export function createPagination(props: CreatePaginationProps) {
 
 	const { perPage, siblingCount, count } = options;
 
-	const totalPages = derived([count, perPage], ([$count, $perPage]) => {
+	const totalPages = withGet.derived([count, perPage], ([$count, $perPage]) => {
 		return Math.ceil($count / $perPage);
 	});
 
@@ -150,7 +151,7 @@ export function createPagination(props: CreatePaginationProps) {
 		action: (node: HTMLElement): MeltActionReturn<PaginationEvents['nextButton']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const $totalPages = get(totalPages);
+					const $totalPages = totalPages.get();
 					page.update((p) => Math.min(p + 1, $totalPages));
 				}),
 				addMeltEventListener(node, 'keydown', keydown)

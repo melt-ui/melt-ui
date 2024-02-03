@@ -3,47 +3,48 @@ import {
 	builder,
 	createElHelpers,
 	effect,
+	executeCallbacks,
 	generateIds,
 	isBrowser,
 	isHTMLElement,
-	kbd,
-	toWritableStores,
-	omit,
-	executeCallbacks,
-	styleToString,
-	overridable,
 	isValidIndex,
+	kbd,
+	omit,
+	overridable,
+	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 
-import { derived, get, writable } from 'svelte/store';
-import type { CreateRangeCalendarProps } from './types.js';
-import { tick } from 'svelte';
 import {
-	getAnnouncer,
-	isBefore,
-	isBetweenInclusive,
-	toDate,
-	dateStore,
-	createFormatter,
-	getDefaultDate,
-	parseStringToDateValue,
 	areAllDaysBetweenValid,
-	isCalendarCell,
-	type Month,
+	createFormatter,
 	createMonths,
+	dateStore,
+	getAnnouncer,
+	getDefaultDate,
 	getSelectableCells,
 	isAfter,
+	isBefore,
+	isBetweenInclusive,
+	isCalendarCell,
+	parseStringToDateValue,
 	setPlaceholderToNodeValue,
+	toDate,
+	type Month,
 } from '$lib/internal/helpers/date/index.js';
-import {
-	type DateValue,
-	getLocalTimeZone,
-	isToday,
-	isSameMonth,
-	isSameDay,
-} from '@internationalized/date';
-import type { RangeCalendarEvents } from './events.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
+import {
+	getLocalTimeZone,
+	isSameDay,
+	isSameMonth,
+	isToday,
+	type DateValue,
+} from '@internationalized/date';
+import { tick } from 'svelte';
+import { derived, writable } from 'svelte/store';
+import type { RangeCalendarEvents } from './events.js';
+import type { CreateRangeCalendarProps } from './types.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -107,17 +108,20 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		defaultValue: withDefaults.defaultValue?.start,
 		defaultPlaceholder: withDefaults.defaultPlaceholder,
 	});
-	const formatter = createFormatter(get(locale));
+	const formatter = createFormatter(locale.get());
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const defaultStart = withDefaults.value ? get(withDefaults.value)?.start : undefined;
-	const startValue = writable<DateValue | undefined>(
-		defaultStart ?? withDefaults.defaultValue?.start
-	);
+	if (!value.get()) {
+		value.set(withDefaults.defaultValue);
+	}
 
-	const defaultEnd = withDefaults.value ? get(withDefaults.value)?.end : undefined;
-	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
+	const startValue = withGet(
+		writable<DateValue | undefined>(value.get().start ?? withDefaults.defaultValue?.start)
+	);
+	const endValue = withGet(
+		writable<DateValue | undefined>(value.get().end ?? withDefaults.defaultValue?.end)
+	);
 
 	const placeholderWritable =
 		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
@@ -126,18 +130,20 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		withDefaults.defaultPlaceholder ?? defaultDate
 	);
 
-	const focusedValue = writable<DateValue | null>(null);
+	const focusedValue = withGet(writable<DateValue | null>(null));
 
-	const lastPressedDateValue = writable<DateValue | null>(null);
+	const lastPressedDateValue = withGet(writable<DateValue | null>(null));
 
-	const months = writable<Month<DateValue>[]>(
-		createMonths({
-			dateObj: get(placeholder),
-			weekStartsOn: withDefaults.weekStartsOn,
-			locale: withDefaults.locale,
-			fixedWeeks: withDefaults.fixedWeeks,
-			numberOfMonths: withDefaults.numberOfMonths,
-		})
+	const months = withGet(
+		writable<Month<DateValue>[]>(
+			createMonths({
+				dateObj: placeholder.get(),
+				weekStartsOn: withDefaults.weekStartsOn,
+				locale: withDefaults.locale,
+				fixedWeeks: withDefaults.fixedWeeks,
+				numberOfMonths: withDefaults.numberOfMonths,
+			})
+		)
 	);
 
 	/**
@@ -145,36 +151,44 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * which we use to determine how keyboard navigation and if we should apply
 	 * `data-outside-month` to cells.
 	 */
-	const visibleMonths = derived([months], ([$months]) => {
-		return $months.map((month) => {
-			return month.value;
-		});
-	});
-
-	const isOutsideVisibleMonths = derived([visibleMonths], ([$visibleMonths]) => {
-		return (date: DateValue) => {
-			return !$visibleMonths.some((month) => isSameMonth(date, month));
-		};
-	});
-
-	const isDateDisabled = derived(
-		[options.isDateDisabled, minValue, maxValue],
-		([$isDateDisabled, $minValue, $maxValue]) => {
-			return (date: DateValue) => {
-				if ($isDateDisabled?.(date)) return true;
-				if ($minValue && isBefore(date, $minValue)) return true;
-				if ($maxValue && isAfter(date, $maxValue)) return true;
-				return false;
-			};
-		}
+	const visibleMonths = withGet(
+		derived([months], ([$months]) => {
+			return $months.map((month) => {
+				return month.value;
+			});
+		})
 	);
 
-	const isDateUnavailable = derived([options.isDateUnavailable], ([$isDateUnavailable]) => {
-		return (date: DateValue) => {
-			if ($isDateUnavailable?.(date)) return true;
-			return false;
-		};
-	});
+	const isOutsideVisibleMonths = withGet(
+		derived([visibleMonths], ([$visibleMonths]) => {
+			return (date: DateValue) => {
+				return !$visibleMonths.some((month) => isSameMonth(date, month));
+			};
+		})
+	);
+
+	const isDateDisabled = withGet(
+		derived(
+			[options.isDateDisabled, minValue, maxValue],
+			([$isDateDisabled, $minValue, $maxValue]) => {
+				return (date: DateValue) => {
+					if ($isDateDisabled?.(date)) return true;
+					if ($minValue && isBefore(date, $minValue)) return true;
+					if ($maxValue && isAfter(date, $maxValue)) return true;
+					return false;
+				};
+			}
+		)
+	);
+
+	const isDateUnavailable = withGet(
+		derived([options.isDateUnavailable], ([$isDateUnavailable]) => {
+			return (date: DateValue) => {
+				if ($isDateUnavailable?.(date)) return true;
+				return false;
+			};
+		})
+	);
 
 	const isStartInvalid = derived(
 		[startValue, isDateUnavailable, isDateDisabled],
@@ -204,7 +218,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		}
 	);
 
-	const isNextButtonDisabled = derived(
+	const isNextButtonDisabled = withGet.derived(
 		[months, maxValue, disabled],
 		([$months, $maxValue, $disabled]) => {
 			if (!$maxValue || !$months.length) return false;
@@ -215,7 +229,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		}
 	);
 
-	const isPrevButtonDisabled = derived(
+	const isPrevButtonDisabled = withGet.derived(
 		[months, minValue, disabled],
 		([$months, $minValue, $disabled]) => {
 			if (!$minValue || !$months.length) return false;
@@ -228,7 +242,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	let announcer = getAnnouncer();
 
-	const headingValue = derived([months, locale], ([$months, $locale]) => {
+	const headingValue = withGet.derived([months, locale], ([$months, $locale]) => {
 		if (!$months.length) return '';
 		if ($locale !== formatter.getLocale()) {
 			formatter.setLocale($locale);
@@ -254,7 +268,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		return content;
 	});
 
-	const fullCalendarLabel = derived(
+	const fullCalendarLabel = withGet.derived(
 		[headingValue, calendarLabel],
 		([$headingValue, $calendarLabel]) => {
 			return `${$calendarLabel}, ${$headingValue}`;
@@ -279,7 +293,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			 * when the grid is mounted. The label is updated
 			 * via an effect when the active date or label changes.
 			 */
-			createAccessibleHeading(node, get(fullCalendarLabel));
+			createAccessibleHeading(node, fullCalendarLabel.get());
 			announcer = getAnnouncer();
 
 			const unsubKb = addMeltEventListener(node, 'keydown', handleCalendarKeydown);
@@ -387,7 +401,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		};
 	});
 
-	const highlightedRange = derived(
+	const highlightedRange = withGet.derived(
 		[startValue, endValue, focusedValue, isDateDisabled, isDateUnavailable],
 		([$startValue, $endValue, $focusedValue, $isDateDisabled, $isDateUnavailable]) => {
 			if ($startValue && $endValue) return null;
@@ -498,19 +512,19 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					handleCellClick(e, parseStringToDateValue(args.value, get(placeholder)));
+					handleCellClick(e, parseStringToDateValue(args.value, placeholder.get()));
 				}),
 				addMeltEventListener(node, 'mouseenter', () => {
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					focusedValue.set(parseStringToDateValue(args.value, get(placeholder)));
+					focusedValue.set(parseStringToDateValue(args.value, placeholder.get()));
 				}),
 				addMeltEventListener(node, 'focusin', () => {
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					focusedValue.set(parseStringToDateValue(args.value, get(placeholder)));
+					focusedValue.set(parseStringToDateValue(args.value, placeholder.get()));
 				})
 			);
 
@@ -534,7 +548,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		([$placeholder, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
 			if (!isBrowser || !$placeholder) return;
 
-			const $visibleMonths = get(visibleMonths);
+			const $visibleMonths = visibleMonths.get();
 
 			/**
 			 * If the placeholder's month is already in the visible months,
@@ -566,13 +580,13 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 */
 	effect([fullCalendarLabel], ([$fullCalendarLabel]) => {
 		if (!isBrowser) return;
-		const node = document.getElementById(get(ids.accessibleHeading));
+		const node = document.getElementById(ids.accessibleHeading.get());
 		if (!isHTMLElement(node)) return;
 		node.textContent = $fullCalendarLabel;
 	});
 
 	effect([startValue], ([$startValue]) => {
-		if ($startValue && get(placeholder) !== $startValue) {
+		if ($startValue && placeholder.get() !== $startValue) {
 			placeholder.set($startValue);
 		}
 	});
@@ -617,7 +631,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		});
 		const h2 = document.createElement('div');
 		h2.textContent = label;
-		h2.id = get(ids.accessibleHeading);
+		h2.id = ids.accessibleHeading.get();
 		h2.role = 'heading';
 		h2.ariaLevel = '2';
 		node.insertBefore(div, node.firstChild);
@@ -645,18 +659,18 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * ```
 	 */
 	function nextPage() {
-		const $months = get(months);
-		const $numberOfMonths = get(numberOfMonths);
-		if (get(pagedNavigation)) {
+		const $months = months.get();
+		const $numberOfMonths = numberOfMonths.get();
+		if (pagedNavigation.get()) {
 			const firstMonth = $months[0].value;
 			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 		} else {
 			const firstMonth = $months[0].value;
 			const newMonths = createMonths({
 				dateObj: firstMonth.add({ months: 1 }),
-				weekStartsOn: get(weekStartsOn),
-				locale: get(locale),
-				fixedWeeks: get(fixedWeeks),
+				weekStartsOn: weekStartsOn.get(),
+				locale: locale.get(),
+				fixedWeeks: fixedWeeks.get(),
 				numberOfMonths: $numberOfMonths,
 			});
 
@@ -686,18 +700,18 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * ```
 	 */
 	function prevPage() {
-		const $months = get(months);
-		const $numberOfMonths = get(numberOfMonths);
-		if (get(pagedNavigation)) {
+		const $months = months.get();
+		const $numberOfMonths = numberOfMonths.get();
+		if (pagedNavigation.get()) {
 			const firstMonth = $months[0].value;
 			placeholder.set(firstMonth.subtract({ months: $numberOfMonths }));
 		} else {
 			const firstMonth = $months[0].value;
 			const newMonths = createMonths({
 				dateObj: firstMonth.subtract({ months: 1 }),
-				weekStartsOn: get(weekStartsOn),
-				locale: get(locale),
-				fixedWeeks: get(fixedWeeks),
+				weekStartsOn: weekStartsOn.get(),
+				locale: locale.get(),
+				fixedWeeks: fixedWeeks.get(),
 				numberOfMonths: $numberOfMonths,
 			});
 
@@ -742,18 +756,18 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	}
 
 	function handleCellClick(e: Event, date: DateValue) {
-		const $isDateDisabled = get(isDateDisabled);
-		const $isDateUnavailable = get(isDateUnavailable);
+		const $isDateDisabled = isDateDisabled.get();
+		const $isDateUnavailable = isDateUnavailable.get();
 		if ($isDateDisabled(date) || $isDateUnavailable(date)) return;
-		const $lastPressedDate = get(lastPressedDateValue);
+		const $lastPressedDate = lastPressedDateValue.get();
 		lastPressedDateValue.set(date);
 
-		const $startValue = get(startValue);
-		const $endValue = get(endValue);
-		const $highlightedRange = get(highlightedRange);
+		const $startValue = startValue.get();
+		const $endValue = endValue.get();
+		const $highlightedRange = highlightedRange.get();
 
 		if ($startValue && $highlightedRange === null) {
-			if (isSameDay($startValue, date) && !get(preventDeselect) && !$endValue) {
+			if (isSameDay($startValue, date) && !preventDeselect.get() && !$endValue) {
 				startValue.set(undefined);
 				placeholder.set(date);
 				announcer.announce('Selected date is now empty.', 'polite');
@@ -768,7 +782,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			}
 		}
 
-		if ($startValue && isSameDay($startValue, date) && !get(preventDeselect) && !$endValue) {
+		if ($startValue && isSameDay($startValue, date) && !preventDeselect.get() && !$endValue) {
 			startValue.set(undefined);
 			placeholder.set(date);
 			announcer.announce('Selected date is now empty.', 'polite');
@@ -827,12 +841,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const cellValue = currentCell.getAttribute('data-value');
 			if (!cellValue) return;
 
-			handleCellClick(e, parseStringToDateValue(cellValue, get(placeholder)));
+			handleCellClick(e, parseStringToDateValue(cellValue, placeholder.get()));
 		}
 	}
 
 	function shiftFocus(node: HTMLElement, add: number) {
-		const $calendarId = get(ids.calendar);
+		const $calendarId = ids.calendar.get();
 		const candidateCells = getSelectableCells($calendarId);
 		if (!candidateCells.length) {
 			return;
@@ -867,11 +881,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			 */
 
 			// shift the calendar back a month unless previous month is disabled
-			if (get(isPrevButtonDisabled)) return;
+			if (isPrevButtonDisabled.get()) return;
 
-			const $months = get(months);
+			const $months = months.get();
 			const firstMonth = $months[0].value;
-			const $numberOfMonths = get(numberOfMonths);
+			const $numberOfMonths = numberOfMonths.get();
 			placeholder.set(firstMonth.subtract({ months: $numberOfMonths }));
 
 			// Without a tick here, it seems to be too fast for
@@ -903,11 +917,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			 */
 
 			// shift the calendar forward a month unless next month is disabled
-			if (get(isNextButtonDisabled)) return;
+			if (isNextButtonDisabled.get()) return;
 
-			const $months = get(months);
+			const $months = months.get();
 			const firstMonth = $months[0].value;
-			const $numberOfMonths = get(numberOfMonths);
+			const $numberOfMonths = numberOfMonths.get();
 			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 
 			tick().then(() => {
@@ -978,8 +992,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 */
 
 	effect([value], ([$value]) => {
-		const $startValue = get(startValue);
-		const $endValue = get(endValue);
+		const $startValue = startValue.get();
+		const $endValue = endValue.get();
 
 		if ($value?.start && $value?.end) {
 			if ($value.start !== $startValue) {
@@ -993,7 +1007,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
-		const $value = get(value);
+		const $value = value.get();
 
 		if ($value && $value?.start === $startValue && $value?.end === $endValue) return;
 

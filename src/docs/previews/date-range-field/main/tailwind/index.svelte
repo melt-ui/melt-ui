@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDateRangeField, melt } from '$lib';
+	import { createDateRangeField, melt } from '$lib/index.js';
 	import LocaleCombobox from './LocaleCombobox.svelte';
 
 	const {

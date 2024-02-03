@@ -2,11 +2,11 @@
 	import { page } from '$app/stores';
 	import { Discord, GitHub, MobileNav } from '$docs/components/index.js';
 	import { navConfig, siteConfig } from '$docs/config.js';
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import Search from '$routes/(landing-ui)/search.svelte';
 	import { mode } from 'mode-watcher';
 	import Logo from './logo.svelte';
-	import ThemeSwitch from './nav/theme-switch';
+	import ThemeSwitch from './nav/theme-switch/index.js';
 
 	$: isRoot = $page.url.pathname === '/';
 </script>

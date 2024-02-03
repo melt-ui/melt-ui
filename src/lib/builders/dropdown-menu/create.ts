@@ -1,8 +1,9 @@
 import { overridable, toWritableStores } from '$lib/internal/helpers/index.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import { writable } from 'svelte/store';
+import { omit } from '../../internal/helpers/object.js';
 import { createMenuBuilder } from '../menu/index.js';
 import type { CreateDropdownMenuProps } from './types.js';
-import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	arrowSize: 8,
@@ -32,9 +33,9 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const rootActiveTrigger = writable<HTMLElement | null>(null);
-	const nextFocusable = writable<HTMLElement | null>(null);
-	const prevFocusable = writable<HTMLElement | null>(null);
+	const rootActiveTrigger = withGet(writable<HTMLElement | null>(null));
+	const nextFocusable = withGet(writable<HTMLElement | null>(null));
+	const prevFocusable = withGet(writable<HTMLElement | null>(null));
 
 	const {
 		trigger,
@@ -51,9 +52,9 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	} = createMenuBuilder({
 		rootOptions,
 		rootOpen,
-		rootActiveTrigger,
-		nextFocusable,
-		prevFocusable,
+		rootActiveTrigger: withGet(rootActiveTrigger),
+		nextFocusable: withGet(nextFocusable),
+		prevFocusable: withGet(prevFocusable),
 		selector: 'dropdown-menu',
 		removeScroll: true,
 		ids: withDefaults.ids,

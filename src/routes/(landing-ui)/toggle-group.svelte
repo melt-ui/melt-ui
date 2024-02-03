@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
-	import { createToggleGroup, melt } from '$lib';
+	import { cn } from '$docs/utils/index.js';
+	import { createToggleGroup, melt } from '$lib/index.js';
 	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
 
 	const {
