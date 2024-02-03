@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { getContext, setContext } from 'svelte';
-	import type { Theme } from './types';
+	import type { Theme } from './types.js';
 
 	export const getThemeCtx = () => {
 		return getContext<Select<Theme>>('theme');
@@ -19,8 +19,8 @@
 
 <script lang="ts">
 	import Tooltip from '$docs/components/tooltip.svelte';
-	import { flyAndScale } from '$docs/utils';
-	import { type Select, createSelect, melt, type SelectOption } from '$lib';
+	import { flyAndScale } from '$docs/utils/index.js';
+	import { type Select, createSelect, melt, type SelectOption } from '$lib/index.js';
 	import { mode, userPrefersMode } from 'mode-watcher';
 	import Options from './options.svelte';
 	import ThemeIcon from './theme-icon.svelte';

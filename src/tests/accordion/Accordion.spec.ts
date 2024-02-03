@@ -1,6 +1,6 @@
 import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import AccordionTest from './AccordionTest.svelte';

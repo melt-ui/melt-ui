@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createRangeCalendar, melt } from '$lib';
+	import { createRangeCalendar, melt } from '$lib/index.js';
 	import { CalendarDate } from '@internationalized/date';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 

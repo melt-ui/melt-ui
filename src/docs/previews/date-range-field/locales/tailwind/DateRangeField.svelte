@@ -3,7 +3,7 @@
 		createDateRangeField,
 		melt,
 		type CreateDateRangeFieldProps,
-	} from '$lib';
+	} from '$lib/index.js';
 	import { CalendarDateTime } from '@internationalized/date';
 
 	export let locale: CreateDateRangeFieldProps['locale'] = 'en-US';

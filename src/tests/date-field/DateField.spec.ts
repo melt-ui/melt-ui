@@ -1,6 +1,6 @@
 import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DateFieldTest from './DateFieldTest.svelte';
@@ -11,7 +11,7 @@ import {
 	parseAbsoluteToLocal,
 	toZoned,
 } from '@internationalized/date';
-import type { CreateDateFieldProps } from '$lib';
+import type { CreateDateFieldProps } from '$lib/index.js';
 
 const calendarDateOther = new CalendarDate(1980, 1, 20);
 const calendarDateTimeOther = new CalendarDateTime(1980, 1, 20, 12, 30, 30, 0);

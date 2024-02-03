@@ -17,7 +17,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { RadioGroupEvents } from './events.js';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types.js';
 
@@ -133,8 +133,8 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(root);
-					const { nextKey, prevKey } = getDirectionalKeys(dir, get(orientation));
-					const $loop = get(loop);
+					const { nextKey, prevKey } = getDirectionalKeys(dir, orientation.get());
+					const $loop = loop.get();
 
 					let itemToFocus: HTMLElement | null = null;
 					if (e.key === nextKey) {

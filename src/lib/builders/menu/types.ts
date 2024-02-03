@@ -3,6 +3,7 @@ import type { TextDirection } from '$lib/internal/types.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { _MenuIdParts, createMenuBuilder } from './create.js';
+import type { WithGet } from '$lib/internal/helpers/withGet.js';
 
 export type _CreateMenuProps = {
 	/**
@@ -173,27 +174,27 @@ export type _Menu = {
 };
 
 export type _MenuBuilderOptions = {
-	rootOpen: Writable<boolean>;
-	rootActiveTrigger: Writable<HTMLElement | null>;
+	rootOpen: WithGet<Writable<boolean>>;
+	rootActiveTrigger: WithGet<Writable<HTMLElement | null>>;
 	rootOptions: {
-		positioning: Writable<FloatingConfig>;
-		arrowSize: Writable<number | undefined>;
-		preventScroll: Writable<boolean | undefined>;
-		loop: Writable<boolean | undefined>;
-		dir: Writable<TextDirection>;
-		closeOnEscape: Writable<boolean>;
-		closeOnOutsideClick: Writable<boolean>;
-		portal: Writable<string | HTMLElement | undefined | null>;
-		forceVisible: Writable<boolean>;
-		typeahead: Writable<boolean>;
-		closeFocus: Writable<FocusProp | undefined>;
-		disableFocusFirstItem: Writable<boolean>;
-		closeOnItemClick: Writable<boolean>;
-		onOutsideClick: Writable<((event: PointerEvent) => void) | undefined>;
+		positioning: WithGet<Writable<FloatingConfig>>;
+		arrowSize: WithGet<Writable<number | undefined>>;
+		preventScroll: WithGet<Writable<boolean | undefined>>;
+		loop: WithGet<Writable<boolean | undefined>>;
+		dir: WithGet<Writable<TextDirection>>;
+		closeOnEscape: WithGet<Writable<boolean>>;
+		closeOnOutsideClick: WithGet<Writable<boolean>>;
+		portal: WithGet<Writable<string | HTMLElement | undefined | null>>;
+		forceVisible: WithGet<Writable<boolean>>;
+		typeahead: WithGet<Writable<boolean>>;
+		closeFocus: WithGet<Writable<FocusProp | undefined>>;
+		disableFocusFirstItem: WithGet<Writable<boolean>>;
+		closeOnItemClick: WithGet<Writable<boolean>>;
+		onOutsideClick: WithGet<Writable<((event: PointerEvent) => void) | undefined>>;
 	};
 
-	nextFocusable: Writable<HTMLElement | null>;
-	prevFocusable: Writable<HTMLElement | null>;
+	nextFocusable: WithGet<Writable<HTMLElement | null>>;
+	prevFocusable: WithGet<Writable<HTMLElement | null>>;
 	selector: string;
 	/**
 	 * When you want to handle the scroll removal in the specific menu builder,

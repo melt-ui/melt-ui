@@ -1,11 +1,11 @@
 import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DateRangeFieldTest from './DateRangeFieldTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned } from '@internationalized/date';
-import type { CreateDateRangeFieldProps } from '$lib';
+import type { CreateDateRangeFieldProps } from '$lib/index.js';
 
 const exampleDate = {
 	start: new CalendarDate(2022, 1, 1),

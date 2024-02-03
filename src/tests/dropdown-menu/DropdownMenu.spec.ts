@@ -1,7 +1,7 @@
-import type { CreateDropdownMenuProps } from '$lib';
+import type { CreateDropdownMenuProps } from '$lib/index.js';
 import { sleep } from '$lib/internal/helpers/sleep.js';
 import { act, render, waitFor } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe, vi } from 'vitest';
 import { testKbd as kbd } from '../utils.js';

@@ -1,6 +1,6 @@
 import { kbd } from '$lib/internal/helpers/index.js';
 import { act, render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import RangeSlider from './RangeSlider.svelte';
 import Slider from './Slider.svelte';

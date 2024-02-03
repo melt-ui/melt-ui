@@ -1,9 +1,9 @@
 import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import LinkPreviewTest from './LinkPreviewTest.svelte';
-import userEvent from '@testing-library/user-event';
-import type { CreateLinkPreviewProps } from '$lib';
-import { testKbd as kbd } from '../utils';
+import { userEvent } from '@testing-library/user-event';
+import type { CreateLinkPreviewProps } from '$lib/index.js';
+import { testKbd as kbd } from '../utils.js';
 
 function setup(props: CreateLinkPreviewProps = {}) {
 	const user = userEvent.setup();

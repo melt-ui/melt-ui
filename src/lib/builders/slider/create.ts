@@ -20,9 +20,10 @@ import {
 	type StyleObject,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn, NonEmptyArray } from '$lib/internal/types.js';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { SliderEvents } from './events.js';
 
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { CreateSliderProps } from './types.js';
 
 const defaults = {
@@ -46,9 +47,9 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const isActive = writable(false);
-	const currentThumbIndex = writable<number>(0);
-	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
+	const isActive = withGet(writable(false));
+	const currentThumbIndex = withGet(writable<number>(0));
+	const activeThumb = withGet(writable<{ thumb: HTMLElement; index: number } | null>(null));
 
 	const meltIds = generateIds(['root'] as const);
 
@@ -76,9 +77,9 @@ export const createSlider = (props?: CreateSliderProps) => {
 				swap();
 				return newValue;
 			}
-			const $min = get(min);
-			const $max = get(max);
-			const $step = get(step);
+			const $min = min.get();
+			const $max = max.get();
+			const $step = step.get();
 			newValue[index] = snapValueToStep(val, $min, $max, $step);
 
 			return newValue;
@@ -102,7 +103,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		};
 	});
 
-	const direction = derived([orientation, dir], ([$orientation, $dir]) => {
+	const direction = withGet.derived([orientation, dir], ([$orientation, $dir]) => {
 		if ($orientation === 'horizontal') {
 			return $dir === 'rtl' ? 'rl' : 'lr';
 		} else {
@@ -171,7 +172,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		stores: [value, position, min, max, disabled, orientation, direction],
 		returned: ([$value, $position, $min, $max, $disabled, $orientation, $direction]) => {
 			const result = Array.from({ length: $value.length || 1 }, (_, i) => {
-				const currentThumb = get(currentThumbIndex);
+				const currentThumb = currentThumbIndex.get();
 
 				if (currentThumb < $value.length) {
 					currentThumbIndex.update((prev) => prev + 1);
@@ -226,7 +227,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
-				if (get(disabled)) return;
+				if (disabled.get()) return;
 
 				const target = event.currentTarget;
 				if (!isHTMLElement(target)) return;
@@ -251,12 +252,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				event.preventDefault();
 
-				const $min = get(min);
-				const $max = get(max);
-				const $step = get(step);
-				const $value = get(value);
-				const $orientation = get(orientation);
-				const $direction = get(direction);
+				const $min = min.get();
+				const $max = max.get();
+				const $step = step.get();
+				const $value = value.get();
+				const $orientation = orientation.get();
+				const $direction = direction.get();
 				const thumbValue = $value[index];
 
 				switch (event.key) {
@@ -457,12 +458,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 			};
 
 			const pointerMove = (e: PointerEvent) => {
-				if (!get(isActive)) return;
+				if (!isActive.get()) return;
 				e.preventDefault();
 				e.stopPropagation();
 
 				const sliderEl = getElementByMeltId($root['data-melt-id']);
-				const closestThumb = get(activeThumb);
+				const closestThumb = activeThumb.get();
 				if (!sliderEl || !closestThumb) return;
 
 				closestThumb.thumb.focus();

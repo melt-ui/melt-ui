@@ -1,5 +1,27 @@
 # @melt-ui/svelte
 
+## 0.71.1
+
+### Patch Changes
+
+- fix: type of type in tabs builder ([#937](https://github.com/melt-ui/melt-ui/pull/937))
+
+## 0.71.0
+
+### Minor Changes
+
+- Internal: withGet helper, increasing performance ([`51ce34d5`](https://github.com/melt-ui/melt-ui/commit/51ce34d53943888dbcfeaf694bf02ce3ac08b944))
+
+### Patch Changes
+
+- Table of Contents: fix smooth scroll and scroll offset (fixes [#920](https://github.com/melt-ui/melt-ui/issues/920)) ([#860](https://github.com/melt-ui/melt-ui/pull/860))
+
+- Select: add `type="button"` to listbox trigger (closes: #710) ([#900](https://github.com/melt-ui/melt-ui/pull/900))
+
+- Slider: Fix `thumbs` Array Type ([#911](https://github.com/melt-ui/melt-ui/pull/911))
+
+- Date/Range Field: fix: bug preventing `00` as value for minute and second segments (closes: #854) ([#893](https://github.com/melt-ui/melt-ui/pull/893))
+
 ## 0.70.0
 
 ### Minor Changes
