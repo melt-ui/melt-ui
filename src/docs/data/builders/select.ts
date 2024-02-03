@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import { listboxIdParts } from '$lib/builders/listbox/create.js';
@@ -57,12 +57,6 @@ const builder = builderSchema(BUILDER_NAME, {
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 		...OPTION_PROPS,
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
-		},
 		{
 			name: 'multiple',
 			type: 'boolean',
