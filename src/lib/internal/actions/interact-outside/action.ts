@@ -1,4 +1,9 @@
-import { addEventListener, isElement, executeCallbacks, noop } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	isElement,
+	executeCallbacks,
+	noop,
+} from '$lib/internal/helpers/index.js';
 import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 
 export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {

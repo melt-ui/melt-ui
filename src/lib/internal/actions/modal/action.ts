@@ -1,6 +1,6 @@
 import { isElement, last, noop, sleep } from '$lib/internal/helpers/index.js';
 import type { InteractOutsideEvent } from '../interact-outside/types.js';
-import { useInteractOutside } from '..';
+import { useInteractOutside } from '../index.js';
 import type { ModalConfig } from './types.js';
 
 const visibleModals: Element[] = [];
@@ -41,14 +41,14 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 			if (target && isLastModal()) {
 				e.preventDefault();
 				e.stopPropagation();
-				e.stopImmediatePropagation()
+				e.stopImmediatePropagation();
 			}
 		}
 		function onInteractOutside(e: InteractOutsideEvent) {
 			if (shouldCloseOnInteractOutside?.(e) && isLastModal()) {
 				e.preventDefault();
 				e.stopPropagation();
-				e.stopImmediatePropagation()
+				e.stopImmediatePropagation();
 				closeModal();
 			}
 		}
