@@ -1049,29 +1049,31 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		effect([subOpen], ([$subOpen]) => {
 			if (!isBrowser) return;
 
-			sleep(1).then(() => {
-				const menuEl = document.getElementById(subIds.menu.get());
-				if (!menuEl) return;
-
-				if ($subOpen && isUsingKeyboard.get()) {
-					// Selector to get menu items belonging to menu
+			if ($subOpen && isUsingKeyboard.get()) {
+				sleep(1).then(() => {
+					const menuEl = document.getElementById(subIds.menu.get());
+					if (!menuEl) return;
 					const menuItems = getMenuItems(menuEl);
 					if (!menuItems.length) return;
 					handleRovingFocus(menuItems[0]);
-				}
+				});
+			}
 
-				if (!$subOpen) {
-					const focusedItem = currentFocusedItem.get();
-					if (focusedItem && menuEl.contains(focusedItem)) {
-						removeHighlight(focusedItem);
-					}
+			if (!$subOpen) {
+				const focusedItem = currentFocusedItem.get();
+				const subTriggerEl = document.getElementById(subIds.trigger.get());
+				if (focusedItem) {
+					sleep(1).then(() => {
+						const menuEl = document.getElementById(subIds.menu.get());
+						if (!menuEl) return;
+						if (menuEl.contains(focusedItem)) {
+							removeHighlight(focusedItem);
+						}
+					});
 				}
-				if (menuEl && !$subOpen) {
-					const subTriggerEl = document.getElementById(subIds.trigger.get());
-					if (!subTriggerEl || document.activeElement === subTriggerEl) return;
-					removeHighlight(subTriggerEl);
-				}
-			});
+				if (!subTriggerEl || document.activeElement === subTriggerEl) return;
+				removeHighlight(subTriggerEl);
+			}
 		});
 
 		return {
