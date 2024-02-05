@@ -43,12 +43,8 @@ const highlightedCodeCache = new Map<string, string>();
 
 export async function highlightCode({ code, lang, classes = {} }: HighlightCodeArgs) {
 	let cached = highlightedCodeCache.get(code);
-	if (cached) {
-		console.log('cached');
-	}
 
 	if (!cached) {
-		console.log('not cached');
 		const highlighter = await getStoredHighlighter();
 		cached = highlighter.codeToHtml(tabsToSpaces(code), {
 			lang,
