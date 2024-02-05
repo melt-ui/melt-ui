@@ -142,9 +142,6 @@ devDependencies:
   eslint-plugin-svelte:
     specifier: ^2.33.0
     version: 2.33.0(eslint@8.45.0)(svelte@4.0.0)
-  happy-dom:
-    specifier: ^10.5.2
-    version: 10.5.2
   hast-util-to-html:
     specifier: ^9.0.0
     version: 9.0.0
@@ -240,7 +237,7 @@ devDependencies:
     version: 0.0.21
   vitest:
     specifier: ^0.33.0
-    version: 0.33.0(@vitest/ui@0.34.6)(happy-dom@10.5.2)(jsdom@22.1.0)(less@4.2.0)
+    version: 0.33.0(@vitest/ui@0.34.6)(jsdom@22.1.0)(less@4.2.0)
 
 packages:
 
@@ -4879,7 +4876,7 @@ packages:
       std-env: 3.3.3
       test-exclude: 6.0.0
       v8-to-istanbul: 9.1.0
-      vitest: 0.33.0(@vitest/ui@0.34.6)(happy-dom@10.5.2)(jsdom@22.1.0)(less@4.2.0)
+      vitest: 0.33.0(@vitest/ui@0.34.6)(jsdom@22.1.0)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4926,7 +4923,7 @@ packages:
       pathe: 1.1.1
       picocolors: 1.0.0
       sirv: 2.0.3
-      vitest: 0.33.0(@vitest/ui@0.34.6)(happy-dom@10.5.2)(jsdom@22.1.0)(less@4.2.0)
+      vitest: 0.33.0(@vitest/ui@0.34.6)(jsdom@22.1.0)(less@4.2.0)
     dev: true
 
   /@vitest/utils@0.33.0:
@@ -7527,17 +7524,6 @@ packages:
       wordwrap: 1.0.0
     optionalDependencies:
       uglify-js: 3.17.4
-    dev: true
-
-  /happy-dom@10.5.2:
-    resolution: {integrity: sha512-dTA1cDcLOPIkAdykLd9Wo1k8Ly36Hh2OdKGkWEHWuAHb89KcVVRLSj1OFev7ir90xhRLSGCGrEdDvS6u9l13kg==}
-    dependencies:
-      css.escape: 1.5.1
-      entities: 4.5.0
-      iconv-lite: 0.6.3
-      webidl-conversions: 7.0.0
-      whatwg-encoding: 2.0.0
-      whatwg-mimetype: 3.0.0
     dev: true
 
   /hard-rejection@2.1.0:
@@ -12536,7 +12522,7 @@ packages:
       vite: 4.4.7(@types/node@20.3.1)(less@4.2.0)
     dev: true
 
-  /vitest@0.33.0(@vitest/ui@0.34.6)(happy-dom@10.5.2)(jsdom@22.1.0)(less@4.2.0):
+  /vitest@0.33.0(@vitest/ui@0.34.6)(jsdom@22.1.0)(less@4.2.0):
     resolution: {integrity: sha512-1CxaugJ50xskkQ0e969R/hW47za4YXDUfWJDxip1hwbnhUjYolpfUn2AMOulqG/Dtd9WYAtkHmM/m3yKVrEejQ==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -12581,7 +12567,6 @@ packages:
       cac: 6.7.14
       chai: 4.3.7
       debug: 4.3.4
-      happy-dom: 10.5.2
       jsdom: 22.1.0
       local-pkg: 0.4.3
       magic-string: 0.30.1

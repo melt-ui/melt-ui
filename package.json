@@ -108,7 +108,6 @@
 		"eslint-config-prettier": "^8.9.0",
 		"eslint-plugin-storybook": "^0.6.15",
 		"eslint-plugin-svelte": "^2.33.0",
-		"happy-dom": "^10.5.2",
 		"hast-util-to-html": "^9.0.0",
 		"jest-axe": "^8.0.0",
 		"jsdom": "^22.1.0",
