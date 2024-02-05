@@ -9,13 +9,13 @@ export const entries = (() => {
 	});
 }) satisfies EntryGenerator;
 
-export const load = async ({ params, fetch }) => {
+export const load = async ({ params }) => {
 	if (!isBuilderName(params.name)) {
 		error(404);
 	}
 
 	return {
-		snippets: await getAllPreviewSnippets({ slug: params.name, fetcher: fetch }),
-		builderData: await getBuilderData({ slug: params.name, fetcher: fetch }),
+		snippets: await getAllPreviewSnippets(params.name),
+		builderData: await getBuilderData(params.name),
 	};
 };

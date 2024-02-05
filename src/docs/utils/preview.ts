@@ -52,42 +52,40 @@ async function createPreviewsObject({
 }: CreatePreviewsObjectArgs): Promise<PreviewObj> {
 	const returnedObj: PreviewObj = {};
 
+	// initialize regex early to avoid re-creating it in the loop
+	const regex = new RegExp(`${component}/(.+?)/(.+?)/(.*?\\.svelte)$`);
+
 	// Create an array of promises, iterating through the objects in the array
 	const promises = objArr.map(async (obj) => {
 		// Extract the parts from the path
-		const regex = new RegExp(`${component}/(.+?)/(.+?)/(.*?\\.svelte)$`);
 		const match = regex.exec(obj.path);
+		if (!match) return;
 
-		if (match) {
-			const [, groupKey, styleKey, fileKey] = match; // Destructure the matched parts
-			const { content: clutteredContent } = obj;
+		const [, groupKey, styleKey, fileKey] = match; // Destructure the matched parts
 
-			if (!isSvelteFile(fileKey)) return;
+		if (!isSvelteFile(fileKey)) return;
 
-			const content = clutteredContent
-				.replaceAll(`\n\t\t\tclass="force-dark"`, '')
-				.replaceAll(`class="force-dark `, `class="`)
-				.replaceAll(' force-dark', '')
-				.replaceAll('force-dark', '');
+		const content = obj.content
+			.replace(/\n\t\t\tclass="force-dark"|\bforce-dark\b/g, '')
+			.replace(/class="force-dark /g, 'class="');
 
-			// Create the structure in the returnedObj
-			if (!returnedObj[groupKey]) {
-				returnedObj[groupKey] = {};
-			}
-			if (!returnedObj[groupKey][styleKey]) {
-				returnedObj[groupKey][styleKey] = {};
-			}
-
-			const [highlightedCode, processedCode] = await Promise.all([
-				highlightCode({ code: content, lang: 'svelte', fetcher }),
-				highlightCode({ code: processMeltAttributes(content), lang: 'svelte', fetcher }),
-			]);
-
-			returnedObj[groupKey][styleKey][fileKey] = {
-				pp: highlightedCode ?? content,
-				base: processedCode ?? content,
-			};
+		// Create the structure in the returnedObj
+		if (!returnedObj[groupKey]) {
+			returnedObj[groupKey] = {};
 		}
+		if (!returnedObj[groupKey][styleKey]) {
+			returnedObj[groupKey][styleKey] = {};
+		}
+
+		const [highlightedCode, processedCode] = await Promise.all([
+			highlightCode({ code: content, lang: 'svelte' }),
+			highlightCode({ code: processMeltAttributes(content), lang: 'svelte' }),
+		]);
+
+		returnedObj[groupKey][styleKey][fileKey] = {
+			pp: highlightedCode ?? content,
+			base: processedCode ?? content,
+		};
 	});
 
 	// Wait for all the promises to resolve
@@ -95,18 +93,17 @@ async function createPreviewsObject({
 
 	// Manually add values for 'tailwind.config.ts' and 'globals.css'
 	for (const groupKey in returnedObj) {
-		if (Object.prototype.hasOwnProperty.call(returnedObj, groupKey)) {
-			const styleKeys = Object.keys(returnedObj[groupKey]);
-			for (const styleKey of styleKeys) {
-				if (!Object.prototype.hasOwnProperty.call(returnedObj[groupKey], styleKey)) {
-					returnedObj[groupKey][styleKey] = {};
-				}
+		if (!Object.prototype.hasOwnProperty.call(returnedObj, groupKey)) continue;
 
-				if (styleKey === 'tailwind') {
-					returnedObj[groupKey][styleKey]['tailwind.config.ts'] = rawTailwindConfig;
-				} else if (styleKey === 'css') {
-					returnedObj[groupKey][styleKey]['globals.css'] = rawGlobalCSS;
-				}
+		const group = returnedObj[groupKey];
+
+		for (const styleKey in group) {
+			if (!Object.prototype.hasOwnProperty.call(group, styleKey)) continue;
+
+			if (styleKey === 'tailwind') {
+				group[styleKey]['tailwind.config.ts'] = rawTailwindConfig;
+			} else if (styleKey === 'css') {
+				group[styleKey]['globals.css'] = rawGlobalCSS;
 			}
 		}
 	}
@@ -114,10 +111,15 @@ async function createPreviewsObject({
 	return returnedObj;
 }
 
+const regexMap = new Map<string, RegExp>();
+
 function isMainPreviewComponent(builder: string, path: string): boolean {
-	const regexPattern = `${builder}/main/tailwind/index\\.svelte$`;
-	const regex = new RegExp(regexPattern);
-	return regex.test(path);
+	if (!regexMap.has(builder)) {
+		const regexPattern = `${builder}/main/tailwind/index\\.svelte$`;
+		regexMap.set(builder, new RegExp(regexPattern));
+	}
+
+	return regexMap.get(builder)!.test(path);
 }
 
 export async function getDocData(slug: string) {
@@ -141,18 +143,13 @@ export async function getDocData(slug: string) {
 	return doc;
 }
 
-type GetAllPreviewSnippetsArgs = {
-	slug: string;
-	fetcher?: typeof fetch;
-};
-
 function replaceLibEntries(code: string) {
 	// avoid executing the regex if it doesn't have $lib in the code for performance
 	if (!code.includes('$lib/index.js')) return code;
 	return code.replace(/\$lib\/index\.js/g, '@melt-ui/svelte');
 }
 
-export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnippetsArgs) {
+export async function getAllPreviewSnippets(slug: string) {
 	const previewsCode = import.meta.glob(`/src/docs/previews/**/*.svelte`, {
 		as: 'raw',
 		eager: true,
@@ -170,7 +167,6 @@ export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnip
 	const previews = await createPreviewsObject({
 		component: slug,
 		objArr: previewCodeMatches,
-		fetcher,
 	});
 
 	return previews;
@@ -221,7 +217,7 @@ export async function getMainPreviewComponent(slug: string) {
 	return mainPreview.default;
 }
 
-export async function getBuilderData({ slug, fetcher }: GetBuilderDataArgs) {
+export async function getBuilderData(slug: Builder) {
 	const builderData = builderMap[slug];
 	const schemas = builderData['schemas'];
 	if (!schemas) return builderData;
@@ -230,19 +226,23 @@ export async function getBuilderData({ slug, fetcher }: GetBuilderDataArgs) {
 		if (Object.prototype.hasOwnProperty.call(key, 'props')) {
 			const props = key['props'];
 			if (!props) return;
-			for (const prop of props) {
-				if (!prop['longType']) continue;
+			const highlightPromises = props.map((prop) => {
+				if (!prop['longType']) return;
 				const longType = prop['longType'];
-				const highlightedCode = await highlightCode({
+				return highlightCode({
 					code: longType.rawCode,
 					lang: 'typescript',
 					classes: {
 						pre: '!mt-0 !mb-0',
 					},
-					fetcher,
+				}).then((highlightedCode) => {
+					if (prop.longType) {
+						prop.longType.highlightedCode = highlightedCode;
+					}
 				});
-				prop['longType']['highlightedCode'] = highlightedCode;
-			}
+			});
+
+			return highlightPromises;
 		}
 	});
 	await Promise.all(promises);
@@ -312,8 +312,3 @@ export function createCopyCodeButton() {
 		setCodeString: setCodeString,
 	};
 }
-
-type GetBuilderDataArgs = {
-	slug: Builder;
-	fetcher?: typeof fetch;
-};

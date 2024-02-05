@@ -1,4 +1,3 @@
-import { highlighterStore } from './stores.js';
 import { getHighlighter, type BundledLanguage, type Highlighter, addClassToHast } from 'shikiji';
 
 type ShikiOptions = NonNullable<Parameters<typeof getHighlighter>[0]>;
@@ -18,17 +17,12 @@ const shikiOptions: ShikiOptions = {
 
 const globalHighlighterCache = new WeakMap<ShikiOptions, Highlighter>();
 
-async function getShikiHighlighter() {
-	const shikiHighlighter = await getHighlighter(shikiOptions);
-	return shikiHighlighter;
-}
-
 export async function getStoredHighlighter() {
 	const currHighlighter = globalHighlighterCache.get(shikiOptions);
 	if (currHighlighter) {
 		return currHighlighter;
 	}
-	const shikiHighlighter = await getShikiHighlighter();
+	const shikiHighlighter = await getHighlighter(shikiOptions);
 	globalHighlighterCache.set(shikiOptions, shikiHighlighter);
 	return shikiHighlighter;
 }
@@ -43,15 +37,18 @@ type HighlightCodeArgs = {
 	code: string;
 	lang: BundledLanguage;
 	classes?: HighlightClasses;
-	fetcher?: typeof fetch;
 };
 
 const highlightedCodeCache = new Map<string, string>();
 
-export async function highlightCode({ code, lang, classes = {}, fetcher }: HighlightCodeArgs) {
+export async function highlightCode({ code, lang, classes = {} }: HighlightCodeArgs) {
 	let cached = highlightedCodeCache.get(code);
+	if (cached) {
+		console.log('cached');
+	}
 
 	if (!cached) {
+		console.log('not cached');
 		const highlighter = await getStoredHighlighter();
 		cached = highlighter.codeToHtml(tabsToSpaces(code), {
 			lang,
