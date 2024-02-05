@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createDateField, type CreateDateFieldProps } from '$lib/builders';
-	import { melt } from '$lib';
-	import { removeUndefined } from '../utils';
+	import { createDateField, type CreateDateFieldProps } from '$lib/builders/index.js';
+	import { melt } from '$lib/index.js';
+	import { removeUndefined } from '../utils.js';
 
 	export let value: CreateDateFieldProps['value'] = undefined;
 	export let defaultValue: CreateDateFieldProps['defaultValue'] = undefined;

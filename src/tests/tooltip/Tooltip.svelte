@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createTooltip, melt, type CreateTooltipProps } from '$lib';
+	import { createTooltip, melt, type CreateTooltipProps } from '$lib/index.js';
 	import type { Writable } from 'svelte/store';
-	import { removeUndefined } from '../utils';
+	import { removeUndefined } from '../utils.js';
 
 	export let open: Writable<boolean> | undefined = undefined;
 	export let group: CreateTooltipProps['group'] = undefined;

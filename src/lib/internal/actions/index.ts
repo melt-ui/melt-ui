@@ -5,3 +5,4 @@ export * from './focus-trap/index.js';
 export * from './melt/index.js';
 export * from './popper/index.js';
 export * from './portal.js';
+export * from './interact-outside/index.js';

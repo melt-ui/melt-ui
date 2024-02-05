@@ -10,7 +10,7 @@ import type {
 	Disambiguation,
 	TimeFields,
 } from '@internationalized/date';
-import { withGet } from '../withGet';
+import { withGet } from '../withGet.js';
 
 type AnyDateTime = ZonedDateTime | CalendarDateTime;
 

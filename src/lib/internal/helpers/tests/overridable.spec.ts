@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { overridable } from '..';
+import { overridable } from '../index.js';
 
 describe('overridable', () => {
 	it('works as expected without setting onChange fn', () => {

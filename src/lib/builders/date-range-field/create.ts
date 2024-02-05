@@ -19,12 +19,12 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { DateValue } from '@internationalized/date';
 import { derived, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import { removeDescriptionElement } from './_internal/helpers.js';
 import type { CreateDateRangeFieldProps } from './types.js';
-import { withGet } from '$lib/internal/helpers/withGet';
 
 const defaults = {
 	isDateUnavailable: undefined,

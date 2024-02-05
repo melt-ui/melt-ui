@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Bird } from 'lucide-svelte';
 	import Tree from './tree.svelte';
-	import { createTableOfContents } from '$lib';
+	import { createTableOfContents } from '$lib/index.js';
 
 	const {
 		elements: { item },

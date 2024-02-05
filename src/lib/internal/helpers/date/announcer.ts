@@ -1,4 +1,4 @@
-import { isBrowser, isHTMLElement, styleToString } from '..';
+import { isBrowser, isHTMLElement, styleToString } from '../index.js';
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.

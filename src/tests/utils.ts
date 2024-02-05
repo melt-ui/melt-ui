@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers';
+import { kbd } from '$lib/internal/helpers/index.js';
 
 type KbdKeys = keyof typeof kbd;
 /**

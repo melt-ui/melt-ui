@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { createTabs, melt } from '$lib/index.js';
 	import { cubicInOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';

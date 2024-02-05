@@ -18,7 +18,7 @@ import {
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, readonly, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import type { PinInputEvents } from './events.js';
 import type { CreatePinInputProps } from './types.js';
 

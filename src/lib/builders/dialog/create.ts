@@ -1,9 +1,4 @@
-import {
-	createFocusTrap,
-	useClickOutside,
-	useEscapeKeydown,
-	usePortal,
-} from '$lib/internal/actions/index.js';
+import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	builder,
@@ -16,12 +11,10 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
-	last,
 	noop,
 	omit,
 	overridable,
 	removeScroll,
-	sleep,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
@@ -31,6 +24,7 @@ import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
+import { useModal } from '$lib/internal/actions/modal/action.js';
 
 type DialogParts =
 	| 'trigger'
@@ -54,8 +48,6 @@ const defaults = {
 	closeFocus: undefined,
 	onOutsideClick: undefined,
 } satisfies Defaults<CreateDialogProps>;
-
-const openDialogIds = withGet.writable<string[]>([]);
 
 export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
@@ -107,20 +99,6 @@ export function createDialog(props?: CreateDialogProps) {
 			defaultEl: activeTrigger.get(),
 		});
 	}
-
-	effect([open], ([$open]) => {
-		// Prevent double clicks from closing multiple dialogs
-		sleep(100).then(() => {
-			if ($open) {
-				openDialogIds.update((prev) => {
-					prev.push(ids.content.get());
-					return prev;
-				});
-			} else {
-				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content.get()));
-			}
-		});
-	});
 
 	const trigger = builder(name('trigger'), {
 		stores: [open],
@@ -227,23 +205,20 @@ export function createDialog(props?: CreateDialogProps) {
 						return focusTrap.deactivate;
 					}
 				}),
-
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
-					return useClickOutside(node, {
-						enabled: $open,
-						handler: (e: PointerEvent) => {
+					return useModal(node, {
+						open: $open,
+						closeOnInteractOutside: $closeOnOutsideClick,
+						onClose() {
+							handleClose();
+						},
+						shouldCloseOnInteractOutside(e) {
 							onOutsideClick.get()?.(e);
-							if (e.defaultPrevented) return;
-
-							const $openDialogIds = openDialogIds.get();
-							const isLast = last($openDialogIds) === ids.content.get();
-							if ($closeOnOutsideClick && isLast) {
-								handleClose();
-							}
+							if (e.defaultPrevented) return false;
+							return true;
 						},
 					}).destroy;
 				}),
-
 				effect([closeOnEscape], ([$closeOnEscape]) => {
 					if (!$closeOnEscape) return noop;
 
@@ -257,6 +232,7 @@ export function createDialog(props?: CreateDialogProps) {
 					}
 					return noop;
 				}),
+
 				effect([isVisible], ([$isVisible]) => {
 					tick().then(() => {
 						if (!$isVisible) {

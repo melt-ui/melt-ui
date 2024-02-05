@@ -32,7 +32,7 @@ export type CreateDialogProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: PointerEvent) => void;
+	onOutsideClick?: (event: PointerEvent | MouseEvent | TouchEvent) => void;
 
 	/**
 	 * The `role` attribute to apply to the dialog.

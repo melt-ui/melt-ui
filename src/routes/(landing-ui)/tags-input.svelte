@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { createTagsInput, melt } from '$lib/index.js';
 	import { X } from 'lucide-svelte';
 

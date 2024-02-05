@@ -1,5 +1,21 @@
 # @melt-ui/svelte
 
+## 0.71.2
+
+### Patch Changes
+
+- fix: improve dialog outside clicks/interactions ([#883](https://github.com/melt-ui/melt-ui/pull/883))
+
+- Menus: fix performance issues when many menus are used on the same page (closes: #919) ([#923](https://github.com/melt-ui/melt-ui/pull/923))
+
+- Update internal import references to be compatible with ESM ([#910](https://github.com/melt-ui/melt-ui/pull/910))
+
+## 0.71.1
+
+### Patch Changes
+
+- fix: type of type in tabs builder ([#937](https://github.com/melt-ui/melt-ui/pull/937))
+
 ## 0.71.0
 
 ### Minor Changes

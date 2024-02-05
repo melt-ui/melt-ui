@@ -1,4 +1,4 @@
-import type { CalendarIdParts, createCalendar } from './create';
+import type { CalendarIdParts, createCalendar } from './create.js';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { DateValue } from '@internationalized/date';
