@@ -12,14 +12,14 @@ export const entries = (() => {
 
 export const load = async ({ params, fetch }) => {
 	if (!isBuilderName(params.name)) {
-		throw error(404);
+		error(404);
 	}
 
 	// Init the highlighter
 	await getStoredHighlighter(fetch);
 
 	return {
-		snippets: getAllPreviewSnippets({ slug: params.name, fetcher: fetch }),
-		builderData: getBuilderData({ slug: params.name, fetcher: fetch }),
+		snippets: await getAllPreviewSnippets({ slug: params.name, fetcher: fetch }),
+		builderData: await getBuilderData({ slug: params.name, fetcher: fetch }),
 	};
 };

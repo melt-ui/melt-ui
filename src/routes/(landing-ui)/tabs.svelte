@@ -70,10 +70,10 @@
 			Change your password here. Click save when you're done.
 		</p>
 		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="new">
+			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="changePass">
 				New password
 			</label>
-			<input id="new" type="password" />
+			<input id="changePass" type="password" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
 			<button class="save">Save changes</button>
@@ -85,10 +85,10 @@
 		</p>
 
 		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="new">
+			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="changeEmail">
 				New email
 			</label>
-			<input id="new" type="password" />
+			<input id="changeEmail" type="password" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
 			<button class="save">Save changes</button>
