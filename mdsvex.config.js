@@ -141,6 +141,9 @@ function remarkEscapeSvelte() {
 	return async (tree) => {
 		visit(tree, 'inlineCode', escape);
 
+		/**
+		 * @param {import('mdast').InlineCode} node
+		 */
 		function escape(node) {
 			for (let i = 0; i < entities.length; i += 1) {
 				node.value = node.value.replace(entities[i][0], entities[i][1]);
