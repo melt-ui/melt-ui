@@ -56,7 +56,7 @@
 			</div>
 
 			<button use:melt={$close} aria-label="close" class="close">
-				<X class="square-4" />
+				<X class="size-4" />
 			</button>
 		</div>
 	{/if}

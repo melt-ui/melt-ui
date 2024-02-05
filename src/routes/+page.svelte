@@ -53,11 +53,11 @@
 			<span>npx @melt-ui/cli@latest init</span>
 			{#if copied}
 				<div in:fly={{ y: -4 }}>
-					<Check class="inline-block text-magnum-500 transition square-4" />
+					<Check class="inline-block text-magnum-500 transition size-4" />
 				</div>
 			{:else}
 				<div in:fly={{ y: 4 }}>
-					<Copy class="inline-block transition square-4" />
+					<Copy class="inline-block transition size-4" />
 				</div>
 			{/if}
 		</button>

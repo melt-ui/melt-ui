@@ -67,9 +67,9 @@
 				class="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-magnum-900"
 			>
 				{#if $open}
-					<ChevronUp class="square-4" />
+					<ChevronUp class="size-4" />
 				{:else}
-					<ChevronDown class="square-4" />
+					<ChevronDown class="size-4" />
 				{/if}
 			</div>
 		</div>
@@ -99,7 +99,7 @@
 					>
 						{#if $isSelected(locale.value)}
 							<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
-								<Check class="square-4" />
+								<Check class="size-4" />
 							</div>
 						{/if}
 						<div class="pl-4">

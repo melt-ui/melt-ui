@@ -14,14 +14,14 @@
 	<div class="flex items-center justify-center">
 		<button
 			use:melt={$root}
-			class="flex appearance-none items-center justify-center rounded-lg
-            bg-white text-magnum-600 shadow square-7 hover:opacity-75"
+			class="flex size-7 appearance-none items-center justify-center
+            rounded-lg bg-white text-magnum-600 shadow hover:opacity-75"
 			id="checkbox"
 		>
 			{#if $isIndeterminate}
-				<Minus class="square-5" />
+				<Minus class="size-5" />
 			{:else if $isChecked}
-				<Check class="square-5" />
+				<Check class="size-5" />
 			{/if}
 			<input use:melt={$input} />
 		</button>

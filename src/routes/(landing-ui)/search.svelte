@@ -118,11 +118,11 @@
 						}
 					}}
 				/>
-				<SearchIcon class="absolute left-2 top-1/2 -translate-y-1/2 square-4" />
+				<SearchIcon class="absolute left-2 top-1/2 -translate-y-1/2 size-4" />
 				{#if search}
 					{#await search}
 						<div class="absolute right-2 top-1/2 -translate-y-1/2">
-							<LoaderIcon class="animate-spin square-4" />
+							<LoaderIcon class="animate-spin size-4" />
 						</div>
 					{/await}
 				{/if}
@@ -163,7 +163,7 @@
 									use:melt={$option({ value: subresult, label: subresult.title })}
 								>
 									<div class="flex items-center gap-1">
-										<CornerDownRight class="opacity-75 square-4" />
+										<CornerDownRight class="opacity-75 size-4" />
 										<a
 											class="font-semibold underline hover:opacity-75"
 											href={sanitizeLink(subresult.url)}

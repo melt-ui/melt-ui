@@ -32,11 +32,11 @@
 >
 	{#if $copied}
 		<div in:fly={{ y: -4 }}>
-			<Check class="text-magnum-500 square-4" />
+			<Check class="text-magnum-500 size-4" />
 		</div>
 	{:else}
 		<div in:fly={{ y: 4 }}>
-			<Copy class="square-4 hover:text-magnum-500" />
+			<Copy class="size-4 hover:text-magnum-500" />
 		</div>
 	{/if}
 </button>

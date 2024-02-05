@@ -54,7 +54,7 @@
 	<div class="item" use:melt={$checkboxItem}>
 		<div class="check">
 			{#if $settingsSync}
-				<Check class="square-4" />
+				<Check class="size-4" />
 			{/if}
 		</div>
 		Settings Sync is On
@@ -62,7 +62,7 @@
 	<div class="item" use:melt={$subTriggerA}>
 		Profiles
 		<div class="rightSlot">
-			<ChevronRight class="square-4" />
+			<ChevronRight class="size-4" />
 		</div>
 	</div>
 	<div class="menu subMenu" use:melt={$subMenuA}>
@@ -85,7 +85,7 @@
 	<div class="item" use:melt={$checkboxItemA}>
 		<div class="check">
 			{#if $hideMeltUI}
-				<Check class="square-4" />
+				<Check class="size-4" />
 			{/if}
 		</div>
 		Hide Melt UI

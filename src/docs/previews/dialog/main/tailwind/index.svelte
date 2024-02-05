@@ -97,7 +97,7 @@
                 items-center justify-center rounded-full p-1 text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400"
 			>
-				<X class="square-4" />
+				<X class="size-4" />
 			</button>
 		</div>
 	{/if}

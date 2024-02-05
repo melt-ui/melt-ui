@@ -40,7 +40,7 @@
 	use:melt={$trigger}
 	aria-label="Add"
 >
-	<Plus class="square-4" aria-label="plus" />
+	<Plus class="size-4" aria-label="plus" />
 </button>
 
 {#if $open}

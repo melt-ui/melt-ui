@@ -22,7 +22,7 @@
 	use:melt={$trigger}
 	class="text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
-	<Menu class="square-6" />
+	<Menu class="size-6" />
 	<span class="sr-only">Toggle Menu</span>
 </button>
 <div use:melt={$portalled} class="md:hidden">
@@ -43,7 +43,7 @@
 					<Logo class="h-9" withText textColor="white" />
 				</MobileNavLink>
 				<Button class="px-2" size="sm" variant="faded" {...$close} action={$close.action}>
-					<X class="square-4" />
+					<X class="size-4" />
 				</Button>
 			</div>
 

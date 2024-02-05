@@ -8,7 +8,7 @@
 	lg:flex-row lg:items-center"
 >
 	<p>
-		<Construction class="shrink-0 text-magnum-400 square-8 lg:inline-block lg:square-6" />
+		<Construction class="size-8 shrink-0 text-magnum-400 lg:inline-block lg:size-6" />
 		<span class="font-bold">In Construction:</span>
 		<slot>
 			This page is still a WIP. Please check back later, or help us by contributing to

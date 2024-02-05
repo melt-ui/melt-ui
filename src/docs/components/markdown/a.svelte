@@ -18,6 +18,6 @@
 >
 	<slot />
 	{#if !internal}
-		<ExternalLink class="square-4" />
+		<ExternalLink class="size-4" />
 	{/if}
 </a>

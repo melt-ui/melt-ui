@@ -49,7 +49,7 @@
 		aria-label="Food"
 	>
 		{$selectedLabel || 'Select a month'}
-		<ChevronDown class="square-5" />
+		<ChevronDown class="size-5" />
 	</button>
 
 	{#if $open}
@@ -70,7 +70,7 @@
 					use:melt={$option({ value, label })}
 				>
 					<div class="check {$isSelected(value) ? 'block' : 'hidden'}">
-						<Check class="square-4" />
+						<Check class="size-4" />
 					</div>
 					{label}
 				</div>

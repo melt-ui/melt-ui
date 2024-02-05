@@ -15,9 +15,9 @@
 		<button use:melt={$trigger}>
 			<div class="abs-center">
 				{#if $open}
-					<X class="square-4" />
+					<X class="size-4" />
 				{:else}
-					<ChevronsUpDown class="square-4" />
+					<ChevronsUpDown class="size-4" />
 				{/if}
 			</div>
 		</button>
