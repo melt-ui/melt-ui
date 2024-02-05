@@ -1,6 +1,7 @@
-import { derived } from 'svelte/store';
+import { derived, type Readable } from 'svelte/store';
 import { createListbox } from '../listbox/create.js';
 import type { CreateSelectProps, SelectSelected } from './types.js';
+import type { ListboxOptionProps } from '../listbox/types.js';
 
 export function createSelect<
 	Value = unknown,
@@ -25,6 +26,7 @@ export function createSelect<
 		},
 		states: {
 			...listbox.states,
+			highlighted: listbox.states.highlighted as Readable<ListboxOptionProps<Value>>,
 			selectedLabel,
 		},
 	};
