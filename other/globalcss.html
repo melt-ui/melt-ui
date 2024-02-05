@@ -1,449 +1,289 @@
-<div data-rehype-pretty-code-fragment="">
-	<pre
-		data-language="typescript"
-		data-theme="default"
-	><code data-language="css" data-theme="default"><span data-line=""><span style="color: #B392F0">:root</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-inherit</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-current</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">currentColor</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-transparent</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">transparent</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-black</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-white</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">255</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">255</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">255</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-50</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">250</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">250</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">250</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-100</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">245</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">245</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">245</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-200</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">229</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">229</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">229</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-300</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">212</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">212</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">212</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-400</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">163</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">163</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">163</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-500</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">115</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">115</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">115</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-600</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">82</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">82</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">82</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-700</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">64</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">64</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">64</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-800</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">38</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">38</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">38</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-neutral-900</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">23</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">23</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">23</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-50</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">255</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">249</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">237</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-100</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">254</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">242</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">214</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-200</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">252</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">224</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">172</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-300</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">249</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">201</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">120</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-400</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">247</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">177</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">85</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-500</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">243</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">141</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">28</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-600</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">228</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">115</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">18</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-700</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">189</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">87</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">17</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-800</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">150</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">69</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">22</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-900</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">121</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">58</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">21</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-magnum-950</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">65</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">28</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">9</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-50</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">250</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">250</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">250</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-100</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">244</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">244</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">245</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-200</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">228</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">228</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">231</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-300</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">212</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">212</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">216</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-400</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">161</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">161</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">170</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-500</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">113</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">113</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">122</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-600</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">82</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">82</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">91</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-700</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">63</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">63</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">70</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-800</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">39</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">38</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">42</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-zinc-900</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">24</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">24</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">27</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-50</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">249</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">250</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">251</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-100</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">243</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">244</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">246</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-200</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">228</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">231</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">235</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-300</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">209</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">213</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">219</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-400</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">156</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">163</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">175</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-500</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">107</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">114</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">128</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-600</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">75</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">85</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">99</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-700</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">55</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">65</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">81</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-800</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">31</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">41</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">55</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--color-gray-900</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">17</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">24</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">39</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--font-family-sans</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">ui-sans-serif</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">system-ui</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">-apple-system</span><span style="color: #E1E4E8">, BlinkMacSystemFont, </span><span style="color: #9ECBFF">'Segoe UI'</span><span style="color: #E1E4E8">, Roboto,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #9ECBFF">'Helvetica Neue'</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">Arial</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'Noto Sans'</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">sans-serif</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'Apple Color Emoji'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'Segoe UI Emoji'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'Segoe UI Symbol'</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #9ECBFF">'Noto Color Emoji'</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #FFAB70">--font-family-mono</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">ui-monospace</span><span style="color: #E1E4E8">, SFMono-Regular, Menlo, Monaco, Consolas, </span><span style="color: #9ECBFF">'Liberation Mono'</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #9ECBFF">'Courier New'</span><span style="color: #E1E4E8">, </span><span style="color: #79B8FF">monospace</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">}</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #F97583">@layer</span><span style="color: #E1E4E8"> tailwind-reset {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  ! tailwindcss v3.1.8 | MIT License | https://tailwindcss.com</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span><span style="color: #E1E4E8"> </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">*</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::before</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::after</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">box-sizing</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">border-box</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">border-width</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">border-style</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">solid</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">border-color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">rgb</span><span style="color: #E1E4E8">(</span><span style="color: #79B8FF">var</span><span style="color: #E1E4E8">(</span><span style="color: #FFAB70">--color-gray-200</span><span style="color: #E1E4E8">) / </span><span style="color: #79B8FF">1</span><span style="color: #E1E4E8">); </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::before</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::after</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">content</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">''</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Use a consistent sensible line-height in all browsers.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Prevent adjustments of font size after orientation changes in iOS.</span></span>
-  <span data-line=""><span style="color: #6A737D">  3. Use a more readable tab size.</span></span>
-  <span data-line=""><span style="color: #6A737D">  4. Use the user's configured `sans` font-family by default.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">html</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">line-height</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">1.5</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-webkit-text-size-adjust</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">100</span><span style="color: #F97583">%</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-moz-tab-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">4</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 3 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-o-tab-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">4</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">tab-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">4</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 3 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-family</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">var</span><span style="color: #E1E4E8">(</span><span style="color: #FFAB70">--font-family-sans</span><span style="color: #E1E4E8">); </span><span style="color: #6A737D">/* 4 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Remove the margin in all browsers.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">body</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">margin</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">line-height</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Add the correct height in Firefox.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)</span></span>
-  <span data-line=""><span style="color: #6A737D">  3. Ensure horizontal rules are visible by default.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">hr</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">height</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">border-top-width</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">1</span><span style="color: #F97583">px</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 3 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Add the correct text decoration in Chrome, Edge, and Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">abbr</span><span style="color: #B392F0">:where</span><span style="color: #E1E4E8">([</span><span style="color: #B392F0">title</span><span style="color: #E1E4E8">]) {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-webkit-text-decoration</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">underline</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">dotted</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">text-decoration</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">underline</span><span style="color: #E1E4E8"> </span><span style="color: #79B8FF">dotted</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Remove the default font size and weight for headings.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h1</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h2</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h3</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h4</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h5</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h6</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-weight</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Reset links to optimize for opt-in styling instead of opt-out.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">a</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">text-decoration</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Add the correct font weight in Edge and Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">b</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">strong</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-weight</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">bolder</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Use the user's configured `mono` font family by default.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Correct the odd `em` font sizing in all browsers.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">code</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">kbd</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">samp</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">pre</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-family</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">var</span><span style="color: #E1E4E8">(</span><span style="color: #FFAB70">--font-family-mono</span><span style="color: #E1E4E8">); </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">1</span><span style="color: #F97583">em</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Add the correct font size in all browsers.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">small</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">80</span><span style="color: #F97583">%</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Prevent `sub` and `sup` elements from affecting the line height in all browsers.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">sub</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">sup</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">75</span><span style="color: #F97583">%</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">line-height</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">position</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">relative</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">vertical-align</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">baseline</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">sub</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">bottom</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">-0.25</span><span style="color: #F97583">em</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">sup</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">top</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">-0.5</span><span style="color: #F97583">em</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)</span></span>
-  <span data-line=""><span style="color: #6A737D">  3. Remove gaps between table borders by default.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">table</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">text-indent</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">border-color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">border-collapse</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">collapse</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 3 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Change the font styles in all browsers.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Remove the margin in Firefox and Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  3. Remove default padding in all browsers.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">button</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">input</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">optgroup</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">select</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">textarea</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-family</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-size</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">100</span><span style="color: #F97583">%</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font-weight</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">line-height</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">margin</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">padding</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 3 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Remove the inheritance of text transform in Edge and Firefox.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">button</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">select</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">text-transform</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">none</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Correct the inability to style clickable types in iOS and Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Remove default button styles.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">button</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  [</span><span style="color: #B392F0">type</span><span style="color: #F97583">=</span><span style="color: #9ECBFF">'button'</span><span style="color: #E1E4E8">],</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  [</span><span style="color: #B392F0">type</span><span style="color: #F97583">=</span><span style="color: #9ECBFF">'reset'</span><span style="color: #E1E4E8">],</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  [</span><span style="color: #B392F0">type</span><span style="color: #F97583">=</span><span style="color: #9ECBFF">'submit'</span><span style="color: #E1E4E8">] {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-webkit-appearance</span><span style="color: #E1E4E8">: button; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">background-color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">transparent</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">background-image</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">none</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Use the modern Firefox focus style for all focusable elements.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">:-moz-focusring</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">outline</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">auto</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">:-moz-ui-invalid</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">box-shadow</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">none</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Add the correct vertical alignment in Chrome and Firefox.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">progress</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">vertical-align</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">baseline</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Correct the cursor style of increment and decrement buttons in Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::-webkit-inner-spin-button</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::-webkit-outer-spin-button</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">height</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">auto</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Correct the odd appearance in Chrome and Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Correct the outline style in Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  [</span><span style="color: #B392F0">type</span><span style="color: #F97583">=</span><span style="color: #9ECBFF">'search'</span><span style="color: #E1E4E8">] {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-webkit-appearance</span><span style="color: #E1E4E8">: textfield; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">outline-offset</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">-2</span><span style="color: #F97583">px</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Remove the inner padding in Chrome and Safari on macOS.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::-webkit-search-decoration</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-webkit-appearance</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">none</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Correct the inability to style clickable types in iOS and Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Change font properties to `inherit` in Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">::-webkit-file-upload-button</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">-webkit-appearance</span><span style="color: #E1E4E8">: button; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">font</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">inherit</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Add the correct display in Chrome and Safari.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">summary</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">display</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">list-item</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Removes the default spacing and border for appropriate elements.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">blockquote</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">dl</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">dd</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h1</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h2</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h3</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h4</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h5</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">h6</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">hr</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">figure</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">p</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">pre</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">margin</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">fieldset</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">margin</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">padding</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">legend</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">padding</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">ol</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">ul</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">menu</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">list-style</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">none</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">margin</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">padding</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">0</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Prevent resizing textareas horizontally by default.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">textarea</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">resize</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">vertical</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Set the default placeholder color to the user's configured gray 400 color.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">input</span><span style="color: #B392F0">::-moz-placeholder</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">textarea</span><span style="color: #B392F0">::-moz-placeholder</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">opacity</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">1</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">rgb</span><span style="color: #E1E4E8">(</span><span style="color: #79B8FF">var</span><span style="color: #E1E4E8">(</span><span style="color: #FFAB70">--color-gray-400</span><span style="color: #E1E4E8">) / </span><span style="color: #79B8FF">1</span><span style="color: #E1E4E8">); </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">input</span><span style="color: #B392F0">::placeholder</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">textarea</span><span style="color: #B392F0">::placeholder</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">opacity</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">1</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">color</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">rgb</span><span style="color: #E1E4E8">(</span><span style="color: #79B8FF">var</span><span style="color: #E1E4E8">(</span><span style="color: #FFAB70">--color-gray-400</span><span style="color: #E1E4E8">) / </span><span style="color: #79B8FF">1</span><span style="color: #E1E4E8">); </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Set the default cursor for buttons.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">button</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  [</span><span style="color: #B392F0">role</span><span style="color: #F97583">=</span><span style="color: #9ECBFF">'button'</span><span style="color: #E1E4E8">] {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">cursor</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">pointer</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Make sure disabled buttons don't get the pointer cursor.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #B392F0">:disabled</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">cursor</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">default</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)</span></span>
-  <span data-line=""><span style="color: #6A737D">  2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)</span></span>
-  <span data-line=""><span style="color: #6A737D">   This can trigger a poorly considered lint error in some tools but is included by design.</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">img</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">svg</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">video</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">canvas</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">audio</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">iframe</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">embed</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">object</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">display</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">block</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 1 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">vertical-align</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">middle</span><span style="color: #E1E4E8">; </span><span style="color: #6A737D">/* 2 */</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #6A737D">/*</span></span>
-  <span data-line=""><span style="color: #6A737D">  Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)</span></span>
-  <span data-line=""><span style="color: #6A737D">  */</span></span>
-  <span data-line=""> </span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">img</span><span style="color: #E1E4E8">,</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #85E89D">video</span><span style="color: #E1E4E8"> {</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">max-width</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">100</span><span style="color: #F97583">%</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  </span><span style="color: #79B8FF">height</span><span style="color: #E1E4E8">: </span><span style="color: #79B8FF">auto</span><span style="color: #E1E4E8">;</span></span>
-  <span data-line=""><span style="color: #E1E4E8">  }</span></span>
-  <span data-line=""><span style="color: #E1E4E8">}</span></span></code>
-    </pre>
-	<button class="s-k9tA7pZhqxSB absolute right-3 top-3 z-10" aria-label="copy" data-code-copy="">
-		<div class="s-k9tA7pZhqxSB">
-			<svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="hover:text-magnum-500">
-				<g
-					fill="none"
-					stroke="currentColor"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-				>
-					<rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-					<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-				</g></svg
-			><!--<Copy>-->
-		</div></button
-	><!--<Pre>-->
-</div>
+<figure data-rehype-pretty-code-figure=""><pre class="force-dark mb-4 mt-6 max-h-[650px] overflow-x-auto !rounded-xl border !border-neutral-700/50 !bg-neutral-800 py-4 dark:!bg-neutral-800/50 s-k9tA7pZhqxSB" tabindex="0" data-language="css" data-theme="github-dark">    <code data-language="css" data-theme="github-dark" style="display: grid;"><span data-line=""><span style="color:#B392F0">:root</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-inherit</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-current</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">currentColor</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-transparent</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">transparent</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-black</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#79B8FF"> 0</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-white</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">255</span><span style="color:#79B8FF"> 255</span><span style="color:#79B8FF"> 255</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-50</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">250</span><span style="color:#79B8FF"> 250</span><span style="color:#79B8FF"> 250</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-100</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">245</span><span style="color:#79B8FF"> 245</span><span style="color:#79B8FF"> 245</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-200</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">229</span><span style="color:#79B8FF"> 229</span><span style="color:#79B8FF"> 229</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-300</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">212</span><span style="color:#79B8FF"> 212</span><span style="color:#79B8FF"> 212</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-400</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">163</span><span style="color:#79B8FF"> 163</span><span style="color:#79B8FF"> 163</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-500</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">115</span><span style="color:#79B8FF"> 115</span><span style="color:#79B8FF"> 115</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-600</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">82</span><span style="color:#79B8FF"> 82</span><span style="color:#79B8FF"> 82</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-700</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">64</span><span style="color:#79B8FF"> 64</span><span style="color:#79B8FF"> 64</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-800</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">38</span><span style="color:#79B8FF"> 38</span><span style="color:#79B8FF"> 38</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-neutral-900</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">23</span><span style="color:#79B8FF"> 23</span><span style="color:#79B8FF"> 23</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-50</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">255</span><span style="color:#79B8FF"> 249</span><span style="color:#79B8FF"> 237</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-100</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">254</span><span style="color:#79B8FF"> 242</span><span style="color:#79B8FF"> 214</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-200</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">252</span><span style="color:#79B8FF"> 224</span><span style="color:#79B8FF"> 172</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-300</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">249</span><span style="color:#79B8FF"> 201</span><span style="color:#79B8FF"> 120</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-400</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">247</span><span style="color:#79B8FF"> 177</span><span style="color:#79B8FF"> 85</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-500</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">243</span><span style="color:#79B8FF"> 141</span><span style="color:#79B8FF"> 28</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-600</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">228</span><span style="color:#79B8FF"> 115</span><span style="color:#79B8FF"> 18</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-700</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">189</span><span style="color:#79B8FF"> 87</span><span style="color:#79B8FF"> 17</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-800</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">150</span><span style="color:#79B8FF"> 69</span><span style="color:#79B8FF"> 22</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-900</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">121</span><span style="color:#79B8FF"> 58</span><span style="color:#79B8FF"> 21</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-magnum-950</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">65</span><span style="color:#79B8FF"> 28</span><span style="color:#79B8FF"> 9</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-50</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">250</span><span style="color:#79B8FF"> 250</span><span style="color:#79B8FF"> 250</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-100</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">244</span><span style="color:#79B8FF"> 244</span><span style="color:#79B8FF"> 245</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-200</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">228</span><span style="color:#79B8FF"> 228</span><span style="color:#79B8FF"> 231</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-300</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">212</span><span style="color:#79B8FF"> 212</span><span style="color:#79B8FF"> 216</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-400</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">161</span><span style="color:#79B8FF"> 161</span><span style="color:#79B8FF"> 170</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-500</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">113</span><span style="color:#79B8FF"> 113</span><span style="color:#79B8FF"> 122</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-600</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">82</span><span style="color:#79B8FF"> 82</span><span style="color:#79B8FF"> 91</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-700</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">63</span><span style="color:#79B8FF"> 63</span><span style="color:#79B8FF"> 70</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-800</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">39</span><span style="color:#79B8FF"> 38</span><span style="color:#79B8FF"> 42</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-zinc-900</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">24</span><span style="color:#79B8FF"> 24</span><span style="color:#79B8FF"> 27</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-50</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">249</span><span style="color:#79B8FF"> 250</span><span style="color:#79B8FF"> 251</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-100</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">243</span><span style="color:#79B8FF"> 244</span><span style="color:#79B8FF"> 246</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-200</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">228</span><span style="color:#79B8FF"> 231</span><span style="color:#79B8FF"> 235</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-300</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">209</span><span style="color:#79B8FF"> 213</span><span style="color:#79B8FF"> 219</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-400</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">156</span><span style="color:#79B8FF"> 163</span><span style="color:#79B8FF"> 175</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-500</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">107</span><span style="color:#79B8FF"> 114</span><span style="color:#79B8FF"> 128</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-600</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">75</span><span style="color:#79B8FF"> 85</span><span style="color:#79B8FF"> 99</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-700</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">55</span><span style="color:#79B8FF"> 65</span><span style="color:#79B8FF"> 81</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-800</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">31</span><span style="color:#79B8FF"> 41</span><span style="color:#79B8FF"> 55</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --color-gray-900</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">17</span><span style="color:#79B8FF"> 24</span><span style="color:#79B8FF"> 39</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#FFAB70">  --font-family-sans</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ui-sans-serif</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">system-ui</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">-apple-system</span><span style="color:#E1E4E8">, BlinkMacSystemFont, </span><span style="color:#9ECBFF">'Segoe UI'</span><span style="color:#E1E4E8">, Roboto,</span></span>
+	<span data-line=""><span style="color:#9ECBFF">    'Helvetica Neue'</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">Arial</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'Noto Sans'</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">sans-serif</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'Apple Color Emoji'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'Segoe UI Emoji'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'Segoe UI Symbol'</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#9ECBFF">    'Noto Color Emoji'</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#FFAB70">  --font-family-mono</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ui-monospace</span><span style="color:#E1E4E8">, SFMono-Regular, Menlo, Monaco, Consolas, </span><span style="color:#9ECBFF">'Liberation Mono'</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#9ECBFF">    'Courier New'</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">monospace</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">}</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#F97583">@layer</span><span style="color:#E1E4E8"> tailwind-reset {</span></span>
+	<span data-line=""><span style="color:#85E89D">  *</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#B392F0">  ::before</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#B392F0">  ::after</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    box-sizing</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">border-box</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    border-width</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    border-style</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">solid</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    border-color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgb</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--color-gray-200</span><span style="color:#E1E4E8">) / </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#B392F0">  ::before</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#B392F0">  ::after</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    content</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">''</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  html</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    line-height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1.5</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -webkit-text-size-adjust</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -moz-tab-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -o-tab-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    tab-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-family</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--font-family-sans</span><span style="color:#E1E4E8">);</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  body</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    line-height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  hr</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    border-top-width</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  abbr</span><span style="color:#B392F0">:where</span><span style="color:#E1E4E8">([</span><span style="color:#B392F0">title</span><span style="color:#E1E4E8">]) {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -webkit-text-decoration</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">underline</span><span style="color:#79B8FF"> dotted</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    text-decoration</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">underline</span><span style="color:#79B8FF"> dotted</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  h1</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h2</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h3</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h4</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h5</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h6</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-weight</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  a</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    text-decoration</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  b</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  strong</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-weight</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">bolder</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  code</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  kbd</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  samp</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  pre</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-family</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--font-family-mono</span><span style="color:#E1E4E8">);</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#F97583">em</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  small</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">80</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  sub</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  sup</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">75</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    line-height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    position</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">relative</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    vertical-align</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">baseline</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  sub</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    bottom</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">-0.25</span><span style="color:#F97583">em</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  sup</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    top</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">-0.5</span><span style="color:#F97583">em</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  table</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    text-indent</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    border-color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    border-collapse</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">collapse</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  button</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  input</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  optgroup</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  select</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  textarea</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-family</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font-weight</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    line-height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  button</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  select</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    text-transform</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">none</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  button</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  [</span><span style="color:#B392F0">type</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'button'</span><span style="color:#E1E4E8">],</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  [</span><span style="color:#B392F0">type</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'reset'</span><span style="color:#E1E4E8">],</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  [</span><span style="color:#B392F0">type</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'submit'</span><span style="color:#E1E4E8">] {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -webkit-appearance</span><span style="color:#E1E4E8">: button;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    background-color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">transparent</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    background-image</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">none</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#B392F0">  :-moz-focusring</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    outline</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">auto</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#B392F0">  :-moz-ui-invalid</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    box-shadow</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">none</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  progress</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    vertical-align</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">baseline</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#B392F0">  ::-webkit-inner-spin-button</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#B392F0">  ::-webkit-outer-spin-button</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">auto</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#E1E4E8">  [</span><span style="color:#B392F0">type</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'search'</span><span style="color:#E1E4E8">] {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -webkit-appearance</span><span style="color:#E1E4E8">: textfield;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    outline-offset</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">-2</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#B392F0">  ::-webkit-search-decoration</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -webkit-appearance</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">none</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#B392F0">  ::-webkit-file-upload-button</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    -webkit-appearance</span><span style="color:#E1E4E8">: button;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    font</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">inherit</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  summary</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">list-item</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  blockquote</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  dl</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  dd</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h1</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h2</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h3</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h4</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h5</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  h6</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  hr</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  figure</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  p</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  pre</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  fieldset</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  legend</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  ol</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  ul</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  menu</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    list-style</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">none</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  textarea</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    resize</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">vertical</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  input</span><span style="color:#B392F0">::-moz-placeholder</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  textarea</span><span style="color:#B392F0">::-moz-placeholder</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    opacity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgb</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--color-gray-400</span><span style="color:#E1E4E8">) / </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  input</span><span style="color:#B392F0">::placeholder</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  textarea</span><span style="color:#B392F0">::placeholder</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    opacity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    color</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">rgb</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--color-gray-400</span><span style="color:#E1E4E8">) / </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  button</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  [</span><span style="color:#B392F0">role</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'button'</span><span style="color:#E1E4E8">] {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    cursor</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">pointer</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#B392F0">  :disabled</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    cursor</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">default</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  img</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  svg</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  video</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  canvas</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  audio</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  iframe</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  embed</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  object</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">block</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    vertical-align</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">middle</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""> </span>
+	<span data-line=""><span style="color:#85E89D">  img</span><span style="color:#E1E4E8">,</span></span>
+	<span data-line=""><span style="color:#85E89D">  video</span><span style="color:#E1E4E8"> {</span></span>
+	<span data-line=""><span style="color:#79B8FF">    max-width</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#79B8FF">    height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">auto</span><span style="color:#E1E4E8">;</span></span>
+	<span data-line=""><span style="color:#E1E4E8">  }</span></span>
+	<span data-line=""><span style="color:#E1E4E8">}</span></span></code>
+		</pre> <button class="absolute right-4 top-4 z-10 s-k9tA7pZhqxSB" aria-label="copy" data-code-copy=""><div class="s-k9tA7pZhqxSB"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-copy square-4 hover:text-magnum-500"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></div></button><!--<Pre>--></figure>

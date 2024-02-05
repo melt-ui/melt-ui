@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import { highlighterStore } from './stores.js';
-import { getHighlighter, renderToHtml, type IThemedToken } from 'shiki-es';
+import { getHighlighter, type BundledLanguage, addClassToHast } from 'shikiji';
 
 async function getShikiHighlighter(fetcher?: typeof fetch) {
 	if (fetcher && typeof window !== 'undefined') {
@@ -8,8 +8,16 @@ async function getShikiHighlighter(fetcher?: typeof fetch) {
 	}
 
 	const shikiHighlighter = await getHighlighter({
-		theme: 'github-dark',
-		langs: ['svelte', 'typescript', 'css', 'javascript', 'json', 'bash'],
+		themes: [import('shikiji/themes/github-dark.mjs')],
+		langs: [
+			import('shikiji/langs/svelte.mjs'),
+			import('shikiji/langs/typescript.mjs'),
+			import('shikiji/langs/css.mjs'),
+			import('shikiji/langs/javascript.mjs'),
+			import('shikiji/langs/json.mjs'),
+			import('shikiji/langs/shellscript.mjs'),
+			'plaintext',
+		],
 	});
 	return shikiHighlighter;
 }
@@ -32,47 +40,43 @@ type HighlightClasses = {
 
 type HighlightCodeArgs = {
 	code: string;
-	lang: string;
+	lang: BundledLanguage;
 	classes?: HighlightClasses;
 	fetcher?: typeof fetch;
 };
 
-const themedTokensCache = new Map<string, IThemedToken[][]>();
+const highlightedCodeCache = new Map<string, string>();
 
 export async function highlightCode({ code, lang, classes = {}, fetcher }: HighlightCodeArgs) {
-	let tokens = themedTokensCache.get(code);
+	let cached = highlightedCodeCache.get(code);
 
-	if (!tokens) {
+	if (!cached) {
 		const highlighter = await getStoredHighlighter(fetcher);
-		tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
-		themedTokensCache.set(code, tokens);
+		cached = highlighter.codeToHtml(tabsToSpaces(code), {
+			lang,
+			theme: 'github-dark',
+			transformers: [
+				{
+					pre(node) {
+						addClassToHast(node, classes.pre ? classes.pre : '!mt-0');
+					},
+					code(node) {
+						if (classes.code) {
+							addClassToHast(node, classes.code);
+						}
+					},
+					line(node) {
+						if (!node.children && classes.line) {
+							addClassToHast(node, classes.line);
+						}
+					},
+				},
+			],
+		});
+		highlightedCodeCache.set(code, cached);
 	}
 
-	const html = renderToHtml(tokens, {
-		elements: {
-			pre({ children }) {
-				return `<pre data-language="${lang}" data-theme="default" class="${
-					classes.pre ? classes.pre : '!mt-0'
-				}">${children}</pre>`;
-			},
-			code({ children }) {
-				return `<code data-language="${lang}" data-theme="default" class="${
-					classes.code && classes.code
-				}">${children}</code>`;
-			},
-			line({ children }) {
-				if (!children) {
-					return `<span data-line class="${classes.line && classes.line}">${' '}</span>`;
-				}
-				return `<span data-line>${children}</span>`;
-			},
-			token({ style, children }) {
-				return `<span style="${style}">${children}</span>`;
-			},
-		},
-	});
-
-	return html;
+	return cached;
 }
 
 function tabsToSpaces(code: string) {

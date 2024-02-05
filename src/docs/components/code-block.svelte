@@ -15,15 +15,15 @@
 	};
 </script>
 
-<div
+<figure
 	use:setCodeString
 	class={cn($$restProps.class, 'force-dark')}
 	{...$$restProps}
-	data-rehype-pretty-code-fragment
+	data-rehype-pretty-code-figure
 	use:preTabIndex
 >
 	<slot />
-</div>
+</figure>
 <button
 	class={cn('force-dark absolute right-4 top-12 z-10 text-white', copyBtnClasses)}
 	aria-label="copy"
@@ -42,14 +42,14 @@
 </button>
 
 <style lang="postcss">
-	[data-rehype-pretty-code-fragment] :global(pre) {
+	[data-rehype-pretty-code-figure] :global(pre) {
 		font-weight: initial !important;
-		@apply border-neutral-700 bg-neutral-800;
+		@apply border-neutral-700 bg-neutral-800 pl-2 !important;
 	}
 
 	:global(:root.dark) {
-		[data-rehype-pretty-code-fragment] :global(pre) {
-			@apply border-neutral-700/50 bg-neutral-800/50;
+		[data-rehype-pretty-code-figure] :global(pre) {
+			@apply border-neutral-700/50 bg-neutral-800/50 pl-2 !important;
 		}
 	}
 </style>
