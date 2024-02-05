@@ -14,7 +14,7 @@
 </script>
 
 <button use:melt={$trigger} aria-label="More info">
-	<Info class={cn('text-white size-4', iconClasses)} />
+	<Info class={cn('size-4 text-white', iconClasses)} />
 	<span class="sr-only">Open popover</span>
 </button>
 {#if $open}

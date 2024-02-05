@@ -45,7 +45,7 @@
 		>
 			{#if $copied}
 				<div in:fly={{ y: -4 }}>
-					<Check class="text-magnum-500 size-4" />
+					<Check class="size-4 text-magnum-500" />
 				</div>
 			{:else}
 				<div in:fly={{ y: 4 }}>
