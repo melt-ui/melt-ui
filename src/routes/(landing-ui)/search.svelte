@@ -9,13 +9,9 @@
 	let pagefind: Pagefind | null = null;
 
 	onMount(async () => {
-		let pagefind: Pagefind | undefined = undefined;
-		try {
-			// @ts-expect-error - Pagefind will be present at runtime
-			pagefind = (await import('/pagefind/pagefind.js')) as Pagefind;
-		} catch (e) {
-			return;
-		}
+		// @ts-expect-error - Pagefind will be present at runtime
+		pagefind = (await import('/pagefind/pagefind.js')) as Pagefind;
+		if (!pagefind) return;
 		await pagefind.init();
 	});
 

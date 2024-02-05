@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PreviewWrapper } from '$docs/components/index.js';
+	import PreviewWrapper from '$docs/components/preview-wrapper.svelte';
 	import { createCollapsible, melt, type CreateCollapsibleProps } from '$lib/index.js';
 	import { ChevronsUpDown, X } from '$icons/index.js';
 
