@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCheckbox, melt } from '$lib/index.js';
-	import { Check, Minus } from 'lucide-svelte';
+	import { Check, Minus } from '$icons/index.js';
 
 	const {
 		elements: { root, input },

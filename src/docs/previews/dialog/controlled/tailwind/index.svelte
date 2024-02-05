@@ -2,7 +2,7 @@
 	import { createDialog, melt } from '$lib/index.js';
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils/index.js';
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 	import { writable } from 'svelte/store';
 
 	const customOpen = writable(false);

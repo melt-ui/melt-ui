@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createTooltip, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
-	import { Plus } from 'lucide-svelte';
+	import { Plus } from '$icons/index.js';
 
 	const {
 		elements: { trigger, content, arrow },

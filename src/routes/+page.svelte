@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Logo from '$docs/components/logo.svelte';
-	import { Check, Copy } from 'lucide-svelte';
+	import { Check, Copy } from '$icons/index.js';
 	import { fly } from 'svelte/transition';
 	import Accordion from './(landing-ui)/accordion.svelte';
 	import Switch from './(landing-ui)/switch.svelte';

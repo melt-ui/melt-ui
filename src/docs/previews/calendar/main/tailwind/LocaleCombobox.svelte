@@ -4,7 +4,7 @@
 		melt,
 		type CreateComboboxProps,
 	} from '$lib/index.js';
-	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { Check, ChevronDown, ChevronUp } from '$icons/index.js';
 	import { fly } from 'svelte/transition';
 	import { localeOptions } from './locales.js';
 

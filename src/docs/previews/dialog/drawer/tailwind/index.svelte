@@ -2,7 +2,7 @@
 	import { createDialog, melt } from '$lib/index.js';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 
 	const {
 		elements: {

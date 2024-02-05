@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createSelect, melt, type SelectOptionProps } from '$lib/index.js';
-	import { Check, ChevronDown } from 'lucide-svelte';
+	import { Check, ChevronDown } from '$icons/index.js';
 	import type { Writable } from 'svelte/store';
 
 	export let options: SelectOptionProps<'tailwind' | 'css'>[] = [];

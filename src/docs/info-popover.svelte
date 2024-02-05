@@ -2,7 +2,7 @@
 	import { cn } from '$docs/utils/index.js';
 	import { createPopover, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
-	import { Info } from 'lucide-svelte';
+	import { Info } from '$icons/index.js';
 
 	const {
 		elements: { trigger, content, arrow },

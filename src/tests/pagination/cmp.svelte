@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createPagination, melt } from '$lib/index.js';
-	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight } from '$icons/index.js';
 
 	const {
 		elements: { prevButton, nextButton, pageTrigger, root },

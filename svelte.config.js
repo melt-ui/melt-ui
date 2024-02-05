@@ -29,6 +29,8 @@ const config = {
 			'$docs/*': 'src/docs/*',
 			$components: 'src/docs/components',
 			'$components/*': 'src/docs/components/*',
+			$icons: 'src/docs/components/icons',
+			'$icons/*': 'src/docs/components/icons/*',
 		},
 		typescript: {
 			config: (config) => {

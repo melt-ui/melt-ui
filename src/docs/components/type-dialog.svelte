@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDialog, melt } from '$lib/index.js';
 	import { flyAndScale } from '$docs/utils/index.js';
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 	import { CodeBlock } from '$docs/components/index.js';
 
 	const {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ExternalLink } from 'lucide-svelte';
+	import { ExternalLink } from '$icons/index.js';
 
 	export let href: string;
 	export let rel: string | undefined = undefined;

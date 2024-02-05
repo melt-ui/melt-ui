@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDropdownMenu, melt, type CreateDropdownMenuProps } from '$lib/index.js';
 	import { writable } from 'svelte/store';
-	import { AlignJustify, ChevronRight } from 'lucide-svelte';
+	import { AlignJustify, ChevronRight } from '$icons/index.js';
 	import { slide } from 'svelte/transition';
 
 	const settingsSync = writable(true);

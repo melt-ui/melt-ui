@@ -109,7 +109,7 @@
 		"hast-util-to-html": "^8.0.4",
 		"jest-axe": "^8.0.0",
 		"jsdom": "^22.1.0",
-		"lucide-svelte": "^0.309.0",
+		"lucide-svelte": "^0.321.0",
 		"mode-watcher": "^0.1.2",
 		"postcss": "^8.4.27",
 		"postcss-load-config": "^4.0.1",

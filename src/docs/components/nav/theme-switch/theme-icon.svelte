@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Monitor, Moon, Sun } from 'lucide-svelte';
+	import { Monitor, Moon, Sun } from '$icons/index.js';
 	import type { Theme } from './types.js';
 
 	export let theme: Theme = 'light';

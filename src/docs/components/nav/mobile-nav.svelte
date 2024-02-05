@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDialog, melt } from '$lib/index.js';
 	import { fade, fly } from 'svelte/transition';
-	import { Menu, X } from 'lucide-svelte';
+	import { Menu, X } from '$icons/index.js';
 	import { Button, Logo, MobileNavLink } from '$docs/components/index.js';
 	import { navConfig } from '$docs/config.js';
 	import Switch from '../switch.svelte';

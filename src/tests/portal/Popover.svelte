@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createPopover, melt } from '$lib/index.js';
-	import { Settings2 } from 'lucide-svelte';
+	import { Settings2 } from '$icons/index.js';
 	import { initLevel } from './level.js';
 
 	const {

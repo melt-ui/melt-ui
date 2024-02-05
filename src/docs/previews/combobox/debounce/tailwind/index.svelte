@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCombobox, melt } from '$lib/index.js';
-	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { Check, ChevronDown, ChevronUp } from '$icons/index.js';
 	import { fly } from 'svelte/transition';
 
 	type Manga = {

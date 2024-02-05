@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createPopover, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
-	import { Settings2, X } from 'lucide-svelte';
+	import { Settings2, X } from '$icons/index.js';
 
 	const {
 		elements: { trigger, content, arrow, close },

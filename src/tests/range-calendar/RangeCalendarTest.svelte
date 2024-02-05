@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createRangeCalendar, type CreateRangeCalendarProps } from '$lib/builders/index.js';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
 	import { melt } from '$lib/index.js';
 	import { removeUndefined } from '../utils.js';
 

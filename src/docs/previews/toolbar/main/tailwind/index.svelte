@@ -9,7 +9,7 @@
 		AlignLeft,
 		AlignCenter,
 		AlignRight,
-	} from 'lucide-svelte';
+	} from '$icons/index.js';
 
 	const {
 		elements: { root, button, link, separator },

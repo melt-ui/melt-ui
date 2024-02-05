@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cn } from '$docs/utils/index.js';
 	import { createToggleGroup, melt } from '$lib/index.js';
-	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
+	import { AlignCenter, AlignLeft, AlignRight } from '$icons/index.js';
 
 	const {
 		elements: { root, item },

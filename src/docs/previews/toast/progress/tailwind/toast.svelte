@@ -7,7 +7,7 @@
 	} from '$lib/index.js';
 	import { fly } from 'svelte/transition';
 	import type { ToastData } from './index.svelte';
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 

@@ -3,7 +3,7 @@
 	import { createToolbar, melt } from '$lib/index.js';
 
 	// Icons
-	import { Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight } from 'lucide-svelte';
+	import { Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight } from '$icons/index.js';
 
 	const {
 		elements: { root, button, link, separator },
