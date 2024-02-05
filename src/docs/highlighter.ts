@@ -1,33 +1,35 @@
 import { highlighterStore } from './stores.js';
-import { getHighlighter, type BundledLanguage, addClassToHast } from 'shikiji';
+import { getHighlighter, type BundledLanguage, type Highlighter, addClassToHast } from 'shikiji';
 
-async function getShikiHighlighter(fetcher?: typeof fetch) {
-	if (fetcher && typeof window !== 'undefined') {
-		window.fetch = fetcher;
-	}
+type ShikiOptions = NonNullable<Parameters<typeof getHighlighter>[0]>;
 
-	const shikiHighlighter = await getHighlighter({
-		themes: [import('shikiji/themes/github-dark.mjs')],
-		langs: [
-			import('shikiji/langs/svelte.mjs'),
-			import('shikiji/langs/typescript.mjs'),
-			import('shikiji/langs/css.mjs'),
-			import('shikiji/langs/javascript.mjs'),
-			import('shikiji/langs/json.mjs'),
-			import('shikiji/langs/shellscript.mjs'),
-			'plaintext',
-		],
-	});
+const shikiOptions: ShikiOptions = {
+	themes: [import('shikiji/themes/github-dark.mjs')],
+	langs: [
+		import('shikiji/langs/svelte.mjs'),
+		import('shikiji/langs/typescript.mjs'),
+		import('shikiji/langs/css.mjs'),
+		import('shikiji/langs/javascript.mjs'),
+		import('shikiji/langs/json.mjs'),
+		import('shikiji/langs/shellscript.mjs'),
+		'plaintext',
+	],
+};
+
+const globalHighlighterCache = new WeakMap<ShikiOptions, Highlighter>();
+
+async function getShikiHighlighter() {
+	const shikiHighlighter = await getHighlighter(shikiOptions);
 	return shikiHighlighter;
 }
 
-export async function getStoredHighlighter(fetcher?: typeof fetch) {
-	const currHighlighter = highlighterStore.get();
+export async function getStoredHighlighter() {
+	const currHighlighter = globalHighlighterCache.get(shikiOptions);
 	if (currHighlighter) {
 		return currHighlighter;
 	}
-	const shikiHighlighter = await getShikiHighlighter(fetcher);
-	highlighterStore.set(shikiHighlighter);
+	const shikiHighlighter = await getShikiHighlighter();
+	globalHighlighterCache.set(shikiOptions, shikiHighlighter);
 	return shikiHighlighter;
 }
 
@@ -50,7 +52,7 @@ export async function highlightCode({ code, lang, classes = {}, fetcher }: Highl
 	let cached = highlightedCodeCache.get(code);
 
 	if (!cached) {
-		const highlighter = await getStoredHighlighter(fetcher);
+		const highlighter = await getStoredHighlighter();
 		cached = highlighter.codeToHtml(tabsToSpaces(code), {
 			lang,
 			theme: 'github-dark',
