@@ -1,41 +1,29 @@
-import { get, type Writable } from 'svelte/store';
+import type { Readable, StoresValues } from 'svelte/store';
+import { effect } from './store/effect.js';
 
-type WritableValue<T> = T extends Writable<infer V> ? V : never;
-
-export type WithGet<T extends Writable<unknown>> = T & {
-	get: () => WritableValue<T>;
+export type WithGet<T extends Readable<unknown>> = T & {
+	get: () => StoresValues<T>;
 };
 
-export function withGet<T extends Writable<unknown>>(store: T): WithGet<T> {
-	let value = get(store);
+export function withGet<T extends Readable<unknown>>(store: T): WithGet<T> {
+	let value: StoresValues<T>;
 
-	const update: (typeof store)['update'] = (cb) => {
-		store.update((v) => {
-			const nv = cb(v);
-			value = nv;
-			return nv;
-		});
-	};
-
-	const set: (typeof store)['set'] = (v) => {
-		update(() => v);
-	};
+	effect(store, (v) => {
+		value = v;
+	});
 
 	return {
 		...store,
-		get: () => value as WritableValue<T>,
-		update,
-		set,
+		get: () => value,
 	};
 }
 
-export function addGetToStores<T extends Record<string, Writable<unknown>>>(stores: T) {
+export function addGetToStores<T extends Record<string, Readable<unknown>>>(stores: T) {
 	return Object.keys(stores).reduce(
 		(acc, key) => {
-			return {
-				...acc,
-				[key]: withGet(stores[key]),
-			};
+			const store = stores[key] as T[keyof T];
+			acc[key as keyof T] = withGet(store);
+			return acc;
 		},
 		{} as {
 			[K in keyof T]: WithGet<T[K]>;

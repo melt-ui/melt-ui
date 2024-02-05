@@ -8,6 +8,8 @@ description:
     import { KbdTable, APIReference, Preview } from '$docs/components'
     export let schemas;
     export let keyboard;
+    export let previews;
+    export let snippets;
 </script>
 
 ## Anatomy
@@ -16,6 +18,14 @@ description:
 - **Label**: The element that describes the tree.
 - **Item**: The individual tree item element.
 - **Group**: An element where a subtree is nested.
+
+## Usage
+
+To enable multi select, pass `multiple: true` to the tree builder.
+
+<Preview code={snippets.multiple}>
+    <svelte:component this={previews.multiple} />
+</Preview>
 
 ## API Reference
 

@@ -9,7 +9,15 @@ const BUILDER_NAME = 'tree-view';
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTreeViewBuilder',
 	description: DESCRIPTIONS.BUILDER('tree-view'),
-	props: [PROPS.FORCE_VISIBLE],
+	props: [
+		PROPS.FORCE_VISIBLE,
+		{
+			name: 'multiple',
+			description: 'Pass `true` to enable multi select.',
+			type: 'boolean',
+			default: 'false',
+		},
+	],
 	elements: [
 		{
 			name: 'tree',
@@ -28,30 +36,30 @@ const builder = builderSchema(BUILDER_NAME, {
 	],
 	states: [
 		{
-			name: 'collapsedGroups',
-			description: 'The list of IDs of items, who have a group that is not expanded.',
+			name: 'expanded',
+			description: 'The list of IDs of items, who have a group that is expanded.',
 		},
 		{
-			name: 'focusedItem',
-			description: 'The list item that is currently focused.',
+			name: 'selected',
+			description: 'The list of IDs of selected items.',
 		},
 		{
-			name: 'selectedItem',
-			description: 'The list item that is currently selected.',
+			name: 'firstSelected',
+			description: 'The ID of the first selected item, or `null` if none are selected.',
 		},
 	],
 	helpers: [
 		{
-			name: 'isCollapsedGroup',
+			name: 'isExpanded',
 			description:
-				'A derived store that returns a function that returns whether or not the item is collapsed.',
-			type: 'Readable<(itemId: string) => boolean>',
+				'A derived store that returns a function that returns whether or not the item is expanded.',
+			type: 'WithGet<Readable<(itemId: string) => boolean>>',
 		},
 		{
 			name: 'isSelected',
 			description:
 				'A derived store that returns a function that returns whether or not the item is selected.',
-			type: 'Readable<(itemId: string) => boolean>',
+			type: 'WithGet<Readable<(itemId: string) => boolean>>',
 		},
 	],
 });
@@ -59,12 +67,6 @@ const builder = builderSchema(BUILDER_NAME, {
 const tree = elementSchema('tree', {
 	title: 'tree',
 	description: 'The tree <ul> element.',
-	dataAttributes: [
-		{
-			name: 'data-melt-id',
-			value: 'A unique ID.',
-		},
-	],
 });
 
 const item = elementSchema('item', {
@@ -75,16 +77,12 @@ const item = elementSchema('item', {
 			name: 'id',
 			description: 'The unique ID of the item.',
 			type: 'string',
-		},
-	],
-	dataAttributes: [
-		{
-			name: 'data-id',
-			value: 'A unique ID.',
+			required: true,
 		},
 		{
-			name: 'data-value',
-			value: 'The value of the tree item.',
+			name: 'hasChildren',
+			description: 'Pass `true` if the item contains other items as children.',
+			type: 'boolean',
 		},
 	],
 	events: treeEvents['item'],
@@ -98,12 +96,7 @@ const group = elementSchema('group', {
 			name: 'id',
 			description: 'The unique ID of the group. Must match the ID of the item it belongs to.',
 			type: 'string',
-		},
-	],
-	dataAttributes: [
-		{
-			name: 'data-group-id',
-			value: 'The unique ID of the list item the group belongs to.',
+			required: true,
 		},
 	],
 });
@@ -111,11 +104,11 @@ const group = elementSchema('group', {
 const keyboard: KeyboardSchema = [
 	{
 		key: KBD.ENTER,
-		behavior: 'Selects the node.',
+		behavior: 'Selects the node, or toggles selection in multi-select mode.',
 	},
 	{
 		key: KBD.SPACE,
-		behavior: 'Selects the node.',
+		behavior: 'Selects the node, or toggles selection in multi-select mode.',
 	},
 	{
 		key: KBD.ARROW_DOWN,

@@ -4,19 +4,18 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	generateIds,
-	getElementByMeltId,
 	isHTMLElement,
 	isHidden,
 	isLetter,
 	kbd,
-	last,
 	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
+	withGet,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
@@ -24,14 +23,8 @@ import type { CreateTreeViewProps, TreeParts } from './types';
 const defaults = {
 	forceVisible: false,
 	defaultExpanded: [] as string[],
+	multiple: false,
 } satisfies Defaults<CreateTreeViewProps>;
-
-const ATTRS = {
-	TABINDEX: 'tabindex',
-	EXPANDED: 'aria-expanded',
-	LABELLEDBY: 'aria-labelledby',
-	DATAID: 'data-id',
-};
 
 const { name } = createElHelpers<TreeParts>('tree-view');
 
@@ -41,75 +34,91 @@ export type TreeIdParts = typeof treeIdParts;
 export function createTreeView(args?: CreateTreeViewProps) {
 	const withDefaults = { ...defaults, ...args } satisfies CreateTreeViewProps;
 
-	const options = toWritableStores(
-		omit(withDefaults, 'defaultExpanded', 'expanded', 'onExpandedChange', 'ids')
-	);
-	const { forceVisible } = options;
-
-	/**
-	 * Track currently focused item in the tree.
-	 */
-	const lastFocusedId: Writable<string | null> = writable(null);
-	const selectedItem: Writable<HTMLElement | null> = writable(null);
+	const options = toWritableStores(omit(withDefaults, 'expanded', 'ids'));
+	const { forceVisible, multiple } = options;
 
 	const expandedWritable = withDefaults.expanded ?? writable(withDefaults.defaultExpanded);
-	const expanded = overridable(expandedWritable, withDefaults?.onExpandedChange);
+	const expanded = withGet(overridable(expandedWritable, withDefaults?.onExpandedChange));
 
-	const selectedId = derived(selectedItem, ($selectedItem) => {
-		return $selectedItem?.getAttribute('data-id');
-	});
+	const ids = toWritableStores({ ...generateIds(treeIdParts), ...withDefaults.ids });
+
+	/**
+	 * The ids of the selected items.
+	 */
+	const selected = withGet(writable([] as string[]));
+
+	/**
+	 * The id of the first selected item, or `null` if none are selected.
+	 */
+	const firstSelected = withGet(
+		derived(selected, ($selected) => {
+			if ($selected.length === 0) return null;
+			return $selected[0];
+		})
+	);
 
 	/**
 	 * Determines if the tree view item is selected.
 	 * This is useful for displaying additional markup.
 	 */
-	const isSelected = derived(selectedItem, ($value) => {
-		return (itemId: string) => $value?.getAttribute('data-id') === itemId;
-	});
+	const isSelected = withGet(
+		derived(selected, ($selected) => {
+			return (itemId: string) => $selected.includes(itemId);
+		})
+	);
 
 	/**
 	 * Determines if a tree view item is collapsed or not.
 	 * This is useful for displaying additional markup or using Svelte transitions
 	 * on the group item.
 	 */
-	const isExpanded = derived(expanded, ($expanded) => {
-		return (itemId: string) => $expanded.includes(itemId);
-	});
-
-	const ids = toWritableStores({ ...generateIds(treeIdParts), ...withDefaults.ids });
+	const isExpanded = withGet(
+		derived(expanded, ($expanded) => {
+			return (itemId: string) => $expanded.includes(itemId);
+		})
+	);
 
 	const rootTree = builder(name(), {
 		stores: ids.tree,
 		returned: (id) => {
 			return {
 				role: 'tree',
-				'data-melt-id': id,
+				id,
 			} as const;
 		},
 	});
 
-	let isKeydown = false;
 	const item = builder(name('item'), {
-		stores: [expanded, selectedId, lastFocusedId],
-		returned: ([$expanded, $selectedId, $lastFocusedId]) => {
+		stores: [expanded, selected],
+		returned: ([$expanded, $selected]) => {
+			let firstItem = true;
 			return (opts: { id: string; hasChildren?: boolean }) => {
 				// Have some default options that can be passed to the create()
 				const { id, hasChildren } = opts;
 
-				let tabindex = 0;
-				if ($lastFocusedId !== null) {
-					tabindex = $lastFocusedId === id ? 0 : -1;
+				let tabindex: 0 | -1;
+				if ($selected.length > 0) {
+					// Focus the first selected item
+					tabindex = id === $selected[0] ? 0 : -1;
+				} else {
+					// Focus the first item
+					tabindex = firstItem ? 0 : -1;
 				}
+
+				firstItem = false;
+
 				return {
 					role: 'treeitem',
-					'aria-selected': $selectedId === id,
-					'data-id': id,
+					id,
 					tabindex,
+					'aria-selected': $selected.includes(id),
 					'aria-expanded': hasChildren ? $expanded.includes(id) : undefined,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TreeEvents['item']> => {
+			let isSpaceOrEnter = false;
+
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', (e) => {
 					const { key } = e;
@@ -125,15 +134,14 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						kbd.SPACE,
 						kbd.END,
 						kbd.HOME,
-						kbd.ASTERISK,
 					] as const;
 
 					if (!keys.includes(key) && !keyIsLetter) {
 						return;
 					}
 
-					const rootEl = getElementByMeltId(ids.tree.get());
-					if (!rootEl || !isHTMLElement(node) || node.getAttribute('role') !== 'treeitem') {
+					const rootEl = document.getElementById(ids.tree.get());
+					if (!rootEl || !isTreeItem(node)) {
 						return;
 					}
 
@@ -146,28 +154,20 @@ export function createTreeView(args?: CreateTreeViewProps) {
 
 					if (key === kbd.ENTER || key === kbd.SPACE) {
 						// Select el
-						updateSelectedElement(node);
-						isKeydown = true;
+						handleSelection(node);
+						isSpaceOrEnter = true;
 					} else if (key === kbd.ARROW_DOWN && nodeIdx !== items.length - 1) {
 						// Focus next el
-						const nextItem = items[nodeIdx + 1];
-						if (!nextItem) return;
-						setFocusedItem(nextItem);
+						items[nodeIdx + 1]?.focus();
 					} else if (key === kbd.ARROW_UP && nodeIdx !== 0) {
 						// Focus previous el
-						const prevItem = items[nodeIdx - 1];
-						if (!prevItem) return;
-						setFocusedItem(prevItem);
+						items[nodeIdx - 1]?.focus();
 					} else if (key === kbd.HOME && nodeIdx !== 0) {
 						// Focus first el
-						const item = items[0];
-						if (!item) return;
-						setFocusedItem(item);
+						items[0]?.focus();
 					} else if (key === kbd.END && nodeIdx != items.length - 1) {
 						// Focus last el
-						const item = last(items);
-						if (!item) return;
-						setFocusedItem(item);
+						items.at(-1)?.focus();
 					} else if (key === kbd.ARROW_LEFT) {
 						if (elementIsExpanded(node)) {
 							// Collapse group
@@ -175,79 +175,32 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						} else {
 							// Focus parent group
 							const parentGroup = node?.closest('[role="group"]');
-							const groupId = parentGroup?.getAttribute('data-group-id');
-							const item = items.find((item) => item.getAttribute('data-id') === groupId);
-							if (!item) return;
-							setFocusedItem(item as HTMLElement);
+							const groupId = parentGroup?.id;
+							const item = items.find((item) => item.id === groupId);
+							item?.focus();
 						}
 					} else if (key === kbd.ARROW_RIGHT) {
 						if (elementIsExpanded(node)) {
 							// Focus first child
-							const nextItem = items[nodeIdx + 1];
-							if (!nextItem) return;
-							setFocusedItem(nextItem);
+							items[nodeIdx + 1]?.focus();
 						} else if (elementHasChildren(node)) {
 							// Expand group
 							toggleChildrenElements(node);
 						}
 					} else if (keyIsLetter) {
-						/**
-						 * Check whether a value with the letter exists
-						 * after the current focused element and focus it,
-						 * if it does exist. If it does not exist, we check
-						 * previous values.
-						 */
-						const values = items.map((item) => {
-							return {
-								value: item.textContent?.toLowerCase().trim(),
-								id: item.getAttribute('data-id'),
-							};
-						});
-
-						let nextFocusIdx = -1;
-
-						// Check elements after currently focused one.
-						let foundNextFocusable = values.slice(nodeIdx + 1).some((item, i) => {
-							if (item.value?.toLowerCase()[0] === key) {
-								nextFocusIdx = nodeIdx + 1 + i;
-								return true;
-							}
-
-							return false;
-						});
-
-						if (!foundNextFocusable) {
-							/**
-							 * Check elements before currently focused one,
-							 * if no index has been found yet.
-							 * */
-							foundNextFocusable = values.slice(0, nodeIdx).some((item, i) => {
-								if (item.value?.toLowerCase().at(0) === key) {
-									nextFocusIdx = i;
-									return true;
-								}
-
-								return false;
-							});
-						}
-
-						if (foundNextFocusable && values[nextFocusIdx].id) {
-							const nextFocusEl = items[nextFocusIdx];
-							if (!nextFocusEl) return;
-							setFocusedItem(nextFocusEl);
-						}
+						focusItemStartingWith(key, items, nodeIdx);
 					}
 				}),
-				addMeltEventListener(node, 'click', async () => {
-					updateSelectedElement(node);
-					setFocusedItem(node);
-					if (!isKeydown) {
+				addMeltEventListener(node, 'click', () => {
+					node.focus();
+					if (!isSpaceOrEnter) {
+						// The keydown event already selected the element.
+						// Don't select it again to prevent toggling back
+						// to the same state in multi select mode.
+						handleSelection(node);
 						toggleChildrenElements(node);
 					}
-					isKeydown = false;
-				}),
-				addMeltEventListener(node, 'focus', () => {
-					lastFocusedId.update((p) => node.getAttribute('data-id') ?? p);
+					isSpaceOrEnter = false;
 				})
 			);
 
@@ -262,31 +215,41 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	const group = builder(name('group'), {
 		stores: [expanded, forceVisible],
 		returned: ([$expanded, $forceVisible]) => {
-			return ({ id }: { id: string }) => ({
-				role: 'group',
-				'data-group-id': id,
-				hidden: !$forceVisible && !$expanded.includes(id) ? true : undefined,
-				style: styleToString({
-					display: !$forceVisible && !$expanded.includes(id) ? 'none' : undefined,
-				}),
-			});
+			return (opts: { id: string }) => {
+				const { id } = opts;
+				const hidden = !$forceVisible && !$expanded.includes(id);
+				return {
+					role: 'group',
+					id,
+					hidden: hidden ? true : undefined,
+					style: styleToString({
+						display: hidden ? 'none' : undefined,
+					}),
+				} as const;
+			};
 		},
 	});
 
-	function setFocusedItem(el: HTMLElement) {
-		lastFocusedId.update((p) => el.getAttribute('data-id') ?? p);
-		el.focus();
+	function handleSelection(el: HTMLElement) {
+		if (!el.id) return;
+
+		if (multiple.get()) {
+			toggleSelection(el);
+		} else if (firstSelected.get() !== el.id) {
+			selected.set([el.id]);
+		}
 	}
 
-	function updateSelectedElement(el: HTMLElement) {
-		const id = el.getAttribute(ATTRS.DATAID);
-		if (!id) return;
-
-		selectedItem.set(el);
+	function toggleSelection(el: HTMLElement) {
+		if (elementIsSelected(el)) {
+			selected.update((prev) => prev.filter((id) => id !== el.id));
+		} else {
+			selected.update((prev) => [...prev, el.id]);
+		}
 	}
 
 	function getItems(): HTMLElement[] {
-		const rootEl = getElementByMeltId(ids.tree.get());
+		const rootEl = document.getElementById(ids.tree.get());
 		if (!rootEl) return [];
 
 		// Select all 'treeitem' li elements within our root element.
@@ -295,35 +258,74 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		);
 	}
 
-	function getElementAttributes(el: HTMLElement) {
-		const hasChildren = el.hasAttribute(ATTRS.EXPANDED);
-		const expanded = el.getAttribute(ATTRS.EXPANDED);
-		const dataId = el.getAttribute(ATTRS.DATAID);
+	function focusItemStartingWith(letter: string, items: HTMLElement[], nodeIdx: number) {
+		// Check whether a value with the letter exists
+		// after the current focused element and focus it,
+		// if it does exist. If it does not exist, we check
+		// previous values.
+		let nextFocusIdx: number | null = null;
 
-		return {
-			hasChildren,
-			expanded,
-			dataId,
-		};
-	}
+		// Check elements after currently focused one.
+		for (let i = nodeIdx + 1; i < items.length; ++i) {
+			if (localeStartsWith(items[i], letter)) {
+				nextFocusIdx = i;
+				break;
+			}
+		}
 
-	function toggleChildrenElements(el: HTMLElement) {
-		const { hasChildren, expanded: expandedAttr, dataId } = getElementAttributes(el);
-		if (!hasChildren || expandedAttr === null || dataId === null) return;
+		if (nextFocusIdx === null) {
+			// Check elements before currently focused one,
+			// if no index has been found yet.
+			for (let i = 0; i < nodeIdx; ++i) {
+				if (localeStartsWith(items[i], letter)) {
+					nextFocusIdx = i;
+					break;
+				}
+			}
+		}
 
-		if (expandedAttr === 'false') {
-			expanded.update((prev) => [...prev, dataId]);
-		} else {
-			expanded.update((prev) => prev.filter((item) => item !== dataId));
+		if (nextFocusIdx !== null) {
+			const item = items[nextFocusIdx];
+			if (!item.id) return;
+			item.focus();
 		}
 	}
 
+	const collator = Intl.Collator(undefined, {
+		usage: 'search',
+		sensitivity: 'base',
+	});
+
+	function localeStartsWith(item: HTMLElement, letter: string) {
+		const itemLetter = item.textContent?.trimStart()?.[0];
+		if (!itemLetter) return false;
+		return collator.compare(itemLetter, letter) === 0;
+	}
+
+	function toggleChildrenElements(el: HTMLElement) {
+		if (!elementHasChildren(el) || !el.id) return;
+
+		if (elementIsExpanded(el)) {
+			expanded.update((prev) => prev.filter((id) => id !== el.id));
+		} else {
+			expanded.update((prev) => [...prev, el.id]);
+		}
+	}
+
+	function isTreeItem(el: HTMLElement) {
+		return el.role === 'treeitem';
+	}
+
 	function elementHasChildren(el: HTMLElement) {
-		return el.hasAttribute(ATTRS.EXPANDED);
+		return el.hasAttribute('aria-expanded');
 	}
 
 	function elementIsExpanded(el: HTMLElement) {
-		return el.getAttribute(ATTRS.EXPANDED) === 'true';
+		return el.ariaExpanded === 'true';
+	}
+
+	function elementIsSelected(el: HTMLElement) {
+		return el.ariaSelected === 'true';
 	}
 
 	return {
@@ -335,7 +337,8 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		},
 		states: {
 			expanded,
-			selectedItem,
+			selected,
+			firstSelected,
 		},
 		options,
 		helpers: {

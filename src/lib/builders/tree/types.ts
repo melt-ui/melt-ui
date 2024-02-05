@@ -28,17 +28,19 @@ export type CreateTreeViewProps = {
 	onExpandedChange?: ChangeFn<string[]>;
 
 	/**
+	 * Pass `true` to enable multi select.
+	 *
+	 * @default false
+	 */
+	multiple?: boolean;
+
+	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
 	ids?: Partial<IdObj<TreeIdParts>>;
 };
 
 export type TreeParts = 'label' | 'item' | 'group';
-
-export type ItemDescription = {
-	hasChildren: boolean;
-	childrenIdxs: number[];
-};
 
 export type TreeView = ReturnType<typeof createTreeView>;
 export type TreeViewElements = TreeView['elements'];
