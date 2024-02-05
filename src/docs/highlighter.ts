@@ -1,4 +1,3 @@
-import { get } from 'svelte/store';
 import { highlighterStore } from './stores.js';
 import { getHighlighter, type BundledLanguage, addClassToHast } from 'shikiji';
 
@@ -23,7 +22,7 @@ async function getShikiHighlighter(fetcher?: typeof fetch) {
 }
 
 export async function getStoredHighlighter(fetcher?: typeof fetch) {
-	const currHighlighter = get(highlighterStore);
+	const currHighlighter = highlighterStore.get();
 	if (currHighlighter) {
 		return currHighlighter;
 	}
