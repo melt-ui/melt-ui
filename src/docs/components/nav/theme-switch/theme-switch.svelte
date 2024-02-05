@@ -33,7 +33,7 @@
 		return option.value;
 	}
 
-	const select = createSelect({
+	const select = createSelect<Theme>({
 		positioning: { placement: 'bottom', gutter: 10 },
 		forceVisible: true,
 		defaultSelected: modeToOption($userPrefersMode),
