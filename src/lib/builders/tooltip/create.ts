@@ -7,6 +7,8 @@ import {
 	executeCallbacks,
 	getPortalDestination,
 	isBrowser,
+	isDocument,
+	isElement,
 	isTouch,
 	kbd,
 	makeHullFromElements,
@@ -233,9 +235,24 @@ export function createTooltip(props?: CreateTooltipProps) {
 				}
 			);
 
+			/**
+			 * We don't want the tooltip to remain open if the user starts scrolling
+			 * while their pointer is over the tooltip, so we close it.
+			 */
+			function handleScroll(e: Event) {
+				if (!open.get()) return;
+				const target = e.target;
+				if (!isElement(target) && !isDocument(target)) return;
+				const triggerEl = getEl('trigger');
+				if (triggerEl && target.contains(triggerEl)) {
+					closeTooltip();
+				}
+			}
+
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', () => openTooltip('pointer')),
-				addMeltEventListener(node, 'pointerdown', () => openTooltip('pointer'))
+				addMeltEventListener(node, 'pointerdown', () => openTooltip('pointer')),
+				addEventListener(window, 'scroll', handleScroll, { capture: true })
 			);
 
 			return {
