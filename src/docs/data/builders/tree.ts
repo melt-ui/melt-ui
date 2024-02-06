@@ -38,14 +38,17 @@ const builder = builderSchema(BUILDER_NAME, {
 		{
 			name: 'expanded',
 			description: 'The list of IDs of items, who have a group that is expanded.',
+			type: 'Writable<string[]>',
 		},
 		{
 			name: 'selected',
 			description: 'The list of IDs of selected items.',
+			type: 'Writable<string[]>',
 		},
 		{
 			name: 'firstSelected',
 			description: 'The ID of the first selected item, or `null` if none are selected.',
+			type: 'Readable<string | null>',
 		},
 	],
 	helpers: [
@@ -53,13 +56,13 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'isExpanded',
 			description:
 				'A derived store that returns a function that returns whether or not the item is expanded.',
-			type: 'WithGet<Readable<(itemId: string) => boolean>>',
+			type: 'Readable<(itemId: string) => boolean>',
 		},
 		{
 			name: 'isSelected',
 			description:
 				'A derived store that returns a function that returns whether or not the item is selected.',
-			type: 'WithGet<Readable<(itemId: string) => boolean>>',
+			type: 'Readable<(itemId: string) => boolean>',
 		},
 	],
 });
