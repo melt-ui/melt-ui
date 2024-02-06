@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Logo from '$docs/components/logo.svelte';
-	import { Check, Copy } from 'lucide-svelte';
+	import { Check, Copy } from '$icons/index.js';
 	import { fly } from 'svelte/transition';
 	import Accordion from './(landing-ui)/accordion.svelte';
 	import Switch from './(landing-ui)/switch.svelte';
@@ -53,11 +53,11 @@
 			<span>npx @melt-ui/cli@latest init</span>
 			{#if copied}
 				<div in:fly={{ y: -4 }}>
-					<Check class="inline-block text-magnum-500 transition square-4" />
+					<Check class="inline-block size-4 text-magnum-500 transition" />
 				</div>
 			{:else}
 				<div in:fly={{ y: 4 }}>
-					<Copy class="inline-block transition square-4" />
+					<Copy class="inline-block size-4 transition" />
 				</div>
 			{/if}
 		</button>

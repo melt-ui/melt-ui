@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createPagination, melt } from '$lib/index.js';
-	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight } from '$icons/index.js';
 
 	const {
 		elements: { root, pageTrigger, prevButton, nextButton },
@@ -26,7 +26,7 @@
 			class="grid h-8 items-center rounded-md bg-white px-3 text-sm text-magnum-900 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 			data-[selected]:text-white"
-			use:melt={$prevButton}><ChevronLeft class="square-4" /></button
+			use:melt={$prevButton}><ChevronLeft class="size-4" /></button
 		>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
@@ -44,7 +44,7 @@
 			class="grid h-8 items-center rounded-md bg-white px-3 text-sm text-magnum-900 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 		data-[selected]:text-white"
-			use:melt={$nextButton}><ChevronRight class="square-4" /></button
+			use:melt={$nextButton}><ChevronRight class="size-4" /></button
 		>
 	</div>
 </nav>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDialog, melt } from '$lib/index.js';
 	import { flyAndScale } from '$docs/utils/index.js';
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 	import { CodeBlock } from '$docs/components/index.js';
 
 	const {
@@ -48,7 +48,7 @@
                 appearance-none items-center justify-center rounded-full text-magnum-300
                 hover:bg-magnum-800/50 focus:shadow-magnum-400"
 		>
-			<X class="square-4" />
+			<X class="size-4" />
 		</button>
 	</div>
 {/if}

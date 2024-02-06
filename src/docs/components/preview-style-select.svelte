@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createSelect, melt, type SelectOptionProps } from '$lib/index.js';
-	import { Check, ChevronDown } from 'lucide-svelte';
+	import { Check, ChevronDown } from '$icons/index.js';
 	import type { Writable } from 'svelte/store';
 
 	export let options: SelectOptionProps<'tailwind' | 'css'>[] = [];
@@ -29,7 +29,7 @@
 	aria-label="Select"
 >
 	{$selectedLabel === 'tailwind' ? 'Tailwind' : 'CSS'}
-	<ChevronDown class="square-4" />
+	<ChevronDown class="size-4" />
 </button>
 
 <ul
@@ -45,7 +45,7 @@
 		>
 			{#if $isSelected(o.value)}
 				<div class="check">
-					<Check class="square-4" />
+					<Check class="size-4" />
 				</div>
 			{/if}
 

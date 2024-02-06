@@ -2,7 +2,7 @@
 	import { createDialog, melt } from '$lib/index.js';
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils/index.js';
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 	import { writable } from 'svelte/store';
 
 	const customOpen = writable(false);
@@ -98,7 +98,7 @@
                 appearance-none items-center justify-center rounded-full text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400"
 			>
-				<X class="square-4" />
+				<X class="size-4" />
 			</button>
 		</div>
 	{/if}
