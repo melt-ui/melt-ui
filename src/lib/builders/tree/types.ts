@@ -28,7 +28,7 @@ export type CreateTreeViewProps = {
 	onExpandedChange?: ChangeFn<string[]>;
 
 	/**
-	 * Pass `true` to enable multi select.
+	 * If `true`, multiple items can be selected
 	 *
 	 * @default false
 	 */
