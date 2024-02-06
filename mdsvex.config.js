@@ -26,7 +26,6 @@ const prettyCodeOptions = {
 	keepBackground: false,
 	onVisitLine(node) {
 		if (node.children.length === 0) {
-			console.log('empty line');
 			// @ts-expect-error we're modifying the node type
 			node.children = { type: 'text', value: ' ' };
 		}
