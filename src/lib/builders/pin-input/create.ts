@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -61,7 +61,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 
 	const ids = toWritableStores({ ...generateIds(pinInputIdParts), ...withDefaults.ids });
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [value, ids.root],
 		returned: ([$value, $rootId]) => {
 			return {
@@ -82,7 +82,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 		return inputs.length;
 	};
 
-	const input = builder(name('input'), {
+	const input = makeElement(name('input'), {
 		stores: [value, placeholder, disabled, type],
 		returned: ([$value, $placeholder, $disabled, $type]) => {
 			return () => {
@@ -231,7 +231,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 		},
 	});
 
-	const hiddenInput = builder(name('hidden-input'), {
+	const hiddenInput = makeElement(name('hidden-input'), {
 		stores: [valueStr, nameStore],
 		returned: ([$valueStr, $nameStore]) => ({
 			...hiddenInputAttrs,

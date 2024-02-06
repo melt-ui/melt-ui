@@ -1,7 +1,7 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	effect,
@@ -78,7 +78,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 	};
 
 	/** Elements */
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [required, orientation],
 		returned: ([$required, $orientation]) => {
 			return {
@@ -89,7 +89,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		},
 	});
 
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		stores: [value, orientation, disabled],
 		returned: ([$value, $orientation, $disabled]) => {
 			return (props: RadioGroupItemProps) => {
@@ -174,7 +174,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		},
 	});
 
-	const hiddenInput = builder(name('hidden-input'), {
+	const hiddenInput = makeElement(name('hidden-input'), {
 		stores: [disabled, value, required],
 		returned: ([$disabled, $value, $required]) => {
 			return {

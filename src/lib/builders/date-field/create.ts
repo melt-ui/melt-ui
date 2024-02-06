@@ -13,7 +13,7 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -265,7 +265,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		($allSegmentContent) => $allSegmentContent.obj
 	);
 
-	const label = builder(name('label'), {
+	const label = makeElement(name('label'), {
 		stores: [isInvalid, disabled, ids.label],
 		returned: ([$isInvalid, $disabled, $labelId]) => {
 			return {
@@ -294,7 +294,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
-	const validation = builder(name('validation'), {
+	const validation = makeElement(name('validation'), {
 		stores: [isInvalid, ids.validation],
 		returned: ([$isInvalid, $validationId]) => {
 			const validStyle = styleToString({
@@ -309,7 +309,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
-	const hiddenInput = builder(name('hidden-input'), {
+	const hiddenInput = makeElement(name('hidden-input'), {
 		stores: [value, nameStore, disabled, required],
 		returned: ([$value, $nameStore, $disabled, $required]) => {
 			return {
@@ -346,7 +346,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	/**
 	 * The date field element which contains all the segments.
 	 */
-	const field = builder(name('field'), {
+	const field = makeElement(name('field'), {
 		stores: [value, isInvalid, disabled, readonly, fieldIdDeps],
 		returned: ([$value, $isInvalid, $disabled, $readonly, $ids]) => {
 			const describedBy = $value
@@ -420,7 +420,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	};
 
-	const segment = builder(name('segment'), {
+	const segment = makeElement(name('segment'), {
 		stores: [
 			segmentValues,
 			hourCycle,

@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -276,7 +276,7 @@ export function createCalendar<
 	 * The root element of the calendar, capable of housing multiple grids/months
 	 * when using paged navigation.
 	 */
-	const calendar = builder(name(), {
+	const calendar = makeElement(name(), {
 		stores: [fullCalendarLabel, isInvalid, disabled, readonly, ids.calendar],
 		returned: ([$fullCalendarLabel, $isInvalid, $disabled, $readonly, $calendarId]) => {
 			return {
@@ -317,7 +317,7 @@ export function createCalendar<
 	 * the `calendarLabel` prop to 'Booking Date', the accessible heading will be 'Booking Date,
 	 * January 2021' for the same month and year.
 	 */
-	const heading = builder(name('heading'), {
+	const heading = makeElement(name('heading'), {
 		stores: [disabled],
 		returned: ([$disabled]) => {
 			return {
@@ -334,7 +334,7 @@ export function createCalendar<
 	 *
 	 * For more details about the structure of the month object, refer to {@link Month}.
 	 */
-	const grid = builder(name('grid'), {
+	const grid = makeElement(name('grid'), {
 		stores: [readonly, disabled],
 		returned: ([$readonly, $disabled]) => {
 			return {
@@ -354,7 +354,7 @@ export function createCalendar<
 	 * back by the number of months specified in the `numberOfMonths` prop.
 	 * In non-paged mode, it shifts the calendar back by one month.
 	 */
-	const prevButton = builder(name('prevButton'), {
+	const prevButton = makeElement(name('prevButton'), {
 		stores: [isPrevButtonDisabled],
 		returned: ([$isPrevButtonDisabled]) => {
 			const disabled = $isPrevButtonDisabled;
@@ -385,7 +385,7 @@ export function createCalendar<
 	 * specified in the `numberOfMonths` prop. If not using paged navigation, it
 	 * moves the calendar forward by one month.
 	 */
-	const nextButton = builder(name('nextButton'), {
+	const nextButton = makeElement(name('nextButton'), {
 		stores: [isNextButtonDisabled],
 		returned: ([$isNextButtonDisabled]) => {
 			const disabled = $isNextButtonDisabled;
@@ -416,7 +416,7 @@ export function createCalendar<
 	 * essential attributes and event handlers for accessibility
 	 * and interactivity.
 	 */
-	const cell = builder(name('cell'), {
+	const cell = makeElement(name('cell'), {
 		stores: [
 			isDateSelected,
 			isDateDisabled,

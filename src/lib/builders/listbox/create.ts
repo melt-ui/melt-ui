@@ -4,7 +4,7 @@ import {
 	addHighlight,
 	addMeltEventListener,
 	back,
-	builder,
+	makeElement,
 	createClickOutsideIgnore,
 	createElHelpers,
 	createTypeaheadSearch,
@@ -273,7 +273,7 @@ export function createListbox<
 	/* -------- */
 
 	/** Action and attributes for the text input. */
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [open, highlightedItem, disabled, ids.menu, ids.trigger, ids.label],
 		returned: ([$open, $highlightedItem, $disabled, $menuId, $triggerId, $labelId]) => {
 			return {
@@ -458,7 +458,7 @@ export function createListbox<
 	/**
 	 * Action and attributes for the menu element.
 	 */
-	const menu = builder(name('menu'), {
+	const menu = makeElement(name('menu'), {
 		stores: [isVisible, ids.menu],
 		returned: ([$isVisible, $menuId]) => {
 			return {
@@ -528,7 +528,7 @@ export function createListbox<
 	} = createLabel();
 	const { action: labelAction } = get(labelBuilder);
 
-	const label = builder(name('label'), {
+	const label = makeElement(name('label'), {
 		stores: [ids.label, ids.trigger],
 		returned: ([$labelId, $triggerId]) => {
 			return {
@@ -539,7 +539,7 @@ export function createListbox<
 		action: labelAction,
 	});
 
-	const option = builder(name('option'), {
+	const option = makeElement(name('option'), {
 		stores: [isSelected],
 		returned:
 			([$isSelected]) =>
@@ -590,7 +590,7 @@ export function createListbox<
 		},
 	});
 
-	const group = builder(name('group'), {
+	const group = makeElement(name('group'), {
 		returned: () => {
 			return (groupId: string) => ({
 				role: 'group',
@@ -599,7 +599,7 @@ export function createListbox<
 		},
 	});
 
-	const groupLabel = builder(name('group-label'), {
+	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
 			return (groupId: string) => ({
 				id: groupId,
@@ -607,7 +607,7 @@ export function createListbox<
 		},
 	});
 
-	const hiddenInput = builder(name('hidden-input'), {
+	const hiddenInput = makeElement(name('hidden-input'), {
 		stores: [selected, required, nameProp],
 		returned: ([$selected, $required, $name]) => {
 			const value = Array.isArray($selected) ? $selected.map((o) => o.value) : $selected?.value;
@@ -620,7 +620,7 @@ export function createListbox<
 		},
 	});
 
-	const arrow = builder(name('arrow'), {
+	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
 			'data-arrow': true,

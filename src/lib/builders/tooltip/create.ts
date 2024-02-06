@@ -1,7 +1,7 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -132,7 +132,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		return $open || $forceVisible;
 	});
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [ids.content, ids.trigger, open],
 		returned: ([$contentId, $triggerId, $open]) => {
 			return {
@@ -190,7 +190,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [isVisible, open, portal, ids.content],
 		returned: ([$isVisible, $open, $portal, $contentId]) => {
 			return {
@@ -266,7 +266,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
-	const arrow = builder(name('arrow'), {
+	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
 			'data-arrow': true,

@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -47,7 +47,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 	const valueWritable = withDefaults.value ?? writable(defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: orientation,
 		returned: ($orientation) => {
 			return {
@@ -57,7 +57,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 		},
 	});
 
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		stores: [value, disabled, orientation, type],
 		returned: ([$value, $disabled, $orientation, $type]) => {
 			return (props: ToggleGroupItemProps) => {

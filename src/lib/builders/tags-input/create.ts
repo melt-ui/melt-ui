@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	effect,
@@ -226,7 +226,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		return true;
 	}
 
-	const root = builder(name(''), {
+	const root = makeElement(name(''), {
 		stores: [disabled],
 		returned: ([$disabled]) => {
 			return {
@@ -254,7 +254,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 	});
 
-	const input = builder(name('input'), {
+	const input = makeElement(name('input'), {
 		stores: [disabled, placeholder],
 		returned: ([$disabled, $placeholder]) => {
 			return {
@@ -468,7 +468,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 	});
 
-	const tag = builder(name('tag'), {
+	const tag = makeElement(name('tag'), {
 		stores: [selected, editing, disabled, editable],
 		returned: ([$selected, $editing, $disabled, $editable]) => {
 			return (tag: TagProps) => {
@@ -565,7 +565,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 	});
 
-	const deleteTrigger = builder(name('delete-trigger'), {
+	const deleteTrigger = makeElement(name('delete-trigger'), {
 		stores: [selected, editing, disabled, editable],
 		returned: ([$selected, $editing, $disabled, $editable]) => {
 			return (tag: TagProps) => {
@@ -616,7 +616,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 	});
 
-	const edit = builder(name('edit'), {
+	const edit = makeElement(name('edit'), {
 		stores: [editing, editable],
 		returned: ([$editing, $editable]) => {
 			return (tag: Tag) => {

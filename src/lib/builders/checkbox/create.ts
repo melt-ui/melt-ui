@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	disabledAttr,
 	executeCallbacks,
 	kbd,
@@ -32,7 +32,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 	const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked);
 	const checked = overridable(checkedWritable, withDefaults?.onCheckedChange);
 
-	const root = builder('checkbox', {
+	const root = makeElement('checkbox', {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
 			return {
@@ -68,7 +68,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 		},
 	});
 
-	const input = builder('checkbox-input', {
+	const input = makeElement('checkbox-input', {
 		stores: [checked, name, value, required, disabled],
 		returned: ([$checked, $name, $value, $required, $disabled]) => {
 			return {

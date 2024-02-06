@@ -2,7 +2,7 @@ import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	derivedVisible,
 	effect,
@@ -134,7 +134,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		activeTrigger: rootActiveTrigger,
 	});
 
-	const menu = builder(name(), {
+	const menu = makeElement(name(), {
 		stores: [isVisible, portal, ids.menu, ids.trigger],
 		returned: ([$isVisible, $portal, $menuId, $triggerId]) => {
 			// We only want to render the menu when it's open and has an active trigger.
@@ -236,7 +236,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 	});
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [rootOpen, ids.trigger],
 		returned: ([$rootOpen, $triggerId]) => {
 			return {

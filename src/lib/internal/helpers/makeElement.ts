@@ -20,7 +20,7 @@ export const hiddenAction = <T extends Record<string, unknown>>(obj: T) => {
 	});
 };
 
-type BuilderCallback<S extends Stores | undefined> = S extends Stores
+type ElementCallback<S extends Stores | undefined> = S extends Stores
 	? // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	  (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
 	: // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,22 +32,22 @@ const isFunctionWithParams = (
 	return typeof fn === 'function';
 };
 
-type BuilderArgs<
+type MakeElementArgs<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends BuilderCallback<S>
+	R extends ElementCallback<S>
 > = {
 	stores?: S;
 	action?: A;
 	returned?: R;
 };
 
-type BuilderStore<
+type ElementStore<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends BuilderCallback<S>,
+	R extends ElementCallback<S>,
 	Name extends string
 > = Readable<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,13 +58,13 @@ type BuilderStore<
 		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;
 
-export function builder<
+export function makeElement<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends BuilderCallback<S>,
+	R extends ElementCallback<S>,
 	Name extends string
->(name: Name, args?: BuilderArgs<S, A, R>): ExplicitBuilderReturn<S, A, R, Name> {
+>(name: Name, args?: MakeElementArgs<S, A, R>): ExplicitMakeElementReturn<S, A, R, Name> {
 	const { stores, action, returned } = args ?? {};
 
 	const derivedStore = (() => {
@@ -116,7 +116,7 @@ export function builder<
 				})
 			);
 		}
-	})() as BuilderStore<S, A, R, Name>;
+	})() as ElementStore<S, A, R, Name>;
 
 	const actionFn = (action ??
 		(() => {
@@ -127,13 +127,13 @@ export function builder<
 	return actionFn;
 }
 
-export type ExplicitBuilderReturn<
+export type ExplicitMakeElementReturn<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends BuilderCallback<S>,
+	R extends ElementCallback<S>,
 	Name extends string
-> = BuilderStore<S, A, R, Name> & A;
+> = ElementStore<S, A, R, Name> & A;
 
 type BuilderArrayArgs<
 	S extends Stores,
@@ -146,13 +146,13 @@ type BuilderArrayArgs<
 	action?: A;
 };
 
-export function builderArray<
+export function makeElementArray<
 	S extends Stores,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
 	R extends object[],
 	Name extends string
->(name: Name, args: BuilderArrayArgs<S, A, R>): ExplicitBuilderArrayReturn<A, R, Name> {
+>(name: Name, args: BuilderArrayArgs<S, A, R>): ExplicitMakeElementArrayReturn<A, R, Name> {
 	const { stores, returned, action } = args;
 
 	const { subscribe } = derived(stores, (values) =>
@@ -163,7 +163,7 @@ export function builderArray<
 				action: action ?? noop,
 			})
 		)
-	) as BuilderArrayStore<A, R, Name>;
+	) as ElementArrayStore<A, R, Name>;
 
 	const actionFn = (action ??
 		(() => {
@@ -174,7 +174,7 @@ export function builderArray<
 	return actionFn;
 }
 
-type BuilderArrayStore<
+type ElementArrayStore<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
 	R extends object[],
@@ -183,12 +183,12 @@ type BuilderArrayStore<
 	[K in keyof R]: R[K] & { [K in `data-melt-${Name}`]: '' } & { action: A };
 }>;
 
-export type ExplicitBuilderArrayReturn<
+export type ExplicitMakeElementArrayReturn<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
 	R extends object[],
 	Name extends string
-> = BuilderArrayStore<A, R, Name> & A;
+> = ElementArrayStore<A, R, Name> & A;
 
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
