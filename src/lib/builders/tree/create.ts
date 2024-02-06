@@ -248,60 +248,6 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		}
 	}
 
-	function getItems(): HTMLElement[] {
-		const rootEl = document.getElementById(ids.tree.get());
-		if (!rootEl) return [];
-
-		// Select all 'treeitem' li elements within our root element.
-		return Array.from(rootEl.querySelectorAll('[role="treeitem"]')).filter(
-			(el): el is HTMLElement => isHTMLElement(el) && !isHidden(el)
-		);
-	}
-
-	function focusItemStartingWith(letter: string, items: HTMLElement[], nodeIdx: number) {
-		// Check whether a value with the letter exists
-		// after the current focused element and focus it,
-		// if it does exist. If it does not exist, we check
-		// previous values.
-		let nextFocusIdx: number | null = null;
-
-		// Check elements after currently focused one.
-		for (let i = nodeIdx + 1; i < items.length; ++i) {
-			if (localeStartsWith(items[i], letter)) {
-				nextFocusIdx = i;
-				break;
-			}
-		}
-
-		if (nextFocusIdx === null) {
-			// Check elements before currently focused one,
-			// if no index has been found yet.
-			for (let i = 0; i < nodeIdx; ++i) {
-				if (localeStartsWith(items[i], letter)) {
-					nextFocusIdx = i;
-					break;
-				}
-			}
-		}
-
-		if (nextFocusIdx !== null) {
-			const item = items[nextFocusIdx];
-			if (!item.id) return;
-			item.focus();
-		}
-	}
-
-	const collator = Intl.Collator(undefined, {
-		usage: 'search',
-		sensitivity: 'base',
-	});
-
-	function localeStartsWith(item: HTMLElement, letter: string) {
-		const itemLetter = item.textContent?.trimStart()?.[0];
-		if (!itemLetter) return false;
-		return collator.compare(itemLetter, letter) === 0;
-	}
-
 	function toggleChildrenElements(el: HTMLElement) {
 		if (!elementHasChildren(el) || !el.id) return;
 
@@ -312,20 +258,14 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		}
 	}
 
-	function isTreeItem(el: HTMLElement) {
-		return el.role === 'treeitem';
-	}
+	function getItems(): HTMLElement[] {
+		const rootEl = document.getElementById(ids.tree.get());
+		if (!rootEl) return [];
 
-	function elementHasChildren(el: HTMLElement) {
-		return el.hasAttribute('aria-expanded');
-	}
-
-	function elementIsExpanded(el: HTMLElement) {
-		return el.ariaExpanded === 'true';
-	}
-
-	function elementIsSelected(el: HTMLElement) {
-		return el.ariaSelected === 'true';
+		// Select all 'treeitem' li elements within our root element.
+		return Array.from(rootEl.querySelectorAll('[role="treeitem"]')).filter(
+			(el): el is HTMLElement => isHTMLElement(el) && !isHidden(el)
+		);
 	}
 
 	return {
@@ -346,4 +286,64 @@ export function createTreeView(args?: CreateTreeViewProps) {
 			isSelected,
 		},
 	};
+}
+
+function focusItemStartingWith(letter: string, items: HTMLElement[], nodeIdx: number) {
+	// Check whether a value with the letter exists
+	// after the current focused element and focus it,
+	// if it does exist. If it does not exist, we check
+	// previous values.
+	let nextFocusIdx: number | null = null;
+
+	// Check elements after currently focused one.
+	for (let i = nodeIdx + 1; i < items.length; ++i) {
+		if (localeStartsWith(items[i], letter)) {
+			nextFocusIdx = i;
+			break;
+		}
+	}
+
+	if (nextFocusIdx === null) {
+		// Check elements before currently focused one,
+		// if no index has been found yet.
+		for (let i = 0; i < nodeIdx; ++i) {
+			if (localeStartsWith(items[i], letter)) {
+				nextFocusIdx = i;
+				break;
+			}
+		}
+	}
+
+	if (nextFocusIdx !== null) {
+		const item = items[nextFocusIdx];
+		if (!item.id) return;
+		item.focus();
+	}
+}
+
+const collator = Intl.Collator(undefined, {
+	usage: 'search',
+	sensitivity: 'base',
+});
+
+function localeStartsWith(item: HTMLElement, letter: string) {
+	const itemLetter = item.textContent?.trimStart()?.[0];
+	if (!itemLetter) return false;
+	return collator.compare(itemLetter, letter) === 0;
+}
+
+function isTreeItem(el: HTMLElement) {
+	return el.role === 'treeitem';
+}
+
+function elementHasChildren(el: HTMLElement) {
+	return el.hasAttribute('aria-expanded');
+}
+
+function elementIsExpanded(el: HTMLElement) {
+	return el.ariaExpanded === 'true';
+}
+
+function elementIsSelected(el: HTMLElement) {
+	return el.ariaSelected === 'true';
 }
