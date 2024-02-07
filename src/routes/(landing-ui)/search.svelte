@@ -57,20 +57,12 @@
 	});
 
 	let search: Promise<PagefindSearchFragment[]> | null = null;
-	let searchDebounce: ReturnType<typeof setTimeout>;
 
 	async function getResultsFromSearch(query: string) {
-		if (searchDebounce) {
-			clearTimeout(searchDebounce);
-		}
 		if (!pagefind || !query) {
 			return [];
 		}
-		await new Promise((resolve) => {
-			search = null;
-			searchDebounce = setTimeout(resolve, 450);
-		});
-		const s = await pagefind.search(query);
+		const s = await pagefind.debouncedSearch(query, undefined, 450);
 		return await Promise.all(
 			s.results.map(async (result) => {
 				return await result.data();
@@ -118,7 +110,7 @@
 						}
 					}}
 				/>
-				<SearchIcon class="absolute left-2 top-1/2 size-4 -translate-y-1/2" />
+				<SearchIcon class="size-4 absolute left-2 top-1/2 -translate-y-1/2" />
 				{#if search}
 					{#await search}
 						<div class="absolute right-2 top-1/2 -translate-y-1/2">

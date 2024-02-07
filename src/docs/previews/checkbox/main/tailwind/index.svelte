@@ -14,7 +14,7 @@
 	<div class="flex items-center justify-center">
 		<button
 			use:melt={$root}
-			class="flex size-7 appearance-none items-center justify-center
+			class="size-7 flex appearance-none items-center justify-center
             rounded-lg bg-white text-magnum-600 shadow hover:opacity-75"
 			id="checkbox"
 		>
