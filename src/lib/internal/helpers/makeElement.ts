@@ -20,6 +20,7 @@ export const hiddenAction = <T extends Record<string, unknown>>(obj: T) => {
 	});
 };
 
+/* MakeElement */
 type ElementCallback<S extends Stores | undefined> = S extends Stores
 	? // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	  (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
@@ -32,18 +33,7 @@ const isFunctionWithParams = (
 	return typeof fn === 'function';
 };
 
-type MakeElementArgs<
-	S extends Stores | undefined,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	A extends Action<any, any>,
-	R extends ElementCallback<S>
-> = {
-	stores?: S;
-	action?: A;
-	returned?: R;
-};
-
-type ElementStore<
+type MeltElementStore<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
@@ -58,13 +48,36 @@ type ElementStore<
 		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;
 
+type MakeElementArgs<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends ElementCallback<S>
+> = {
+	stores?: S;
+	action?: A;
+	returned?: R;
+};
+
+export type MeltElement<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends ElementCallback<S>,
+	Name extends string
+> = MeltElementStore<S, A, R, Name> & A;
+
+export type AnyMeltElement = MeltElement<Stores, Action, ElementCallback<Stores>, string>;
+
+export const emptyMeltElement = makeElement('empty');
+
 export function makeElement<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
 	R extends ElementCallback<S>,
 	Name extends string
->(name: Name, args?: MakeElementArgs<S, A, R>): ExplicitMakeElementReturn<S, A, R, Name> {
+>(name: Name, args?: MakeElementArgs<S, A, R>): MeltElement<S, A, R, Name> {
 	const { stores, action, returned } = args ?? {};
 
 	const derivedStore = (() => {
@@ -116,7 +129,7 @@ export function makeElement<
 				})
 			);
 		}
-	})() as ElementStore<S, A, R, Name>;
+	})() as MeltElementStore<S, A, R, Name>;
 
 	const actionFn = (action ??
 		(() => {
@@ -127,13 +140,15 @@ export function makeElement<
 	return actionFn;
 }
 
-export type ExplicitMakeElementReturn<
-	S extends Stores | undefined,
+/* MakeElementArray */
+type ElementArrayStore<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends ElementCallback<S>,
+	R extends object[],
 	Name extends string
-> = ElementStore<S, A, R, Name> & A;
+> = Readable<{
+	[K in keyof R]: R[K] & { [K in `data-melt-${Name}`]: '' } & { action: A };
+}>;
 
 type BuilderArrayArgs<
 	S extends Stores,
@@ -145,6 +160,13 @@ type BuilderArrayArgs<
 	returned: (values: StoresValues<S>) => R;
 	action?: A;
 };
+
+export type ExplicitMakeElementArrayReturn<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends object[],
+	Name extends string
+> = ElementArrayStore<A, R, Name> & A;
 
 export function makeElementArray<
 	S extends Stores,
@@ -173,22 +195,6 @@ export function makeElementArray<
 
 	return actionFn;
 }
-
-type ElementArrayStore<
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	A extends Action<any, any>,
-	R extends object[],
-	Name extends string
-> = Readable<{
-	[K in keyof R]: R[K] & { [K in `data-melt-${Name}`]: '' } & { action: A };
-}>;
-
-export type ExplicitMakeElementArrayReturn<
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	A extends Action<any, any>,
-	R extends object[],
-	Name extends string
-> = ElementArrayStore<A, R, Name> & A;
 
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
