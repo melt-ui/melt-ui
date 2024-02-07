@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.73.0
+
+### Minor Changes
+
+- Add element type & emptyMeltElement (closes #855) ([#966](https://github.com/melt-ui/melt-ui/pull/966))
+
 ## 0.72.0
 
 ### Minor Changes
