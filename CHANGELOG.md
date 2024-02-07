@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.72.0
+
+### Minor Changes
+
+- Hidden Input: Dispatch change events (closes #690) ([#962](https://github.com/melt-ui/melt-ui/pull/962))
+
+### Patch Changes
+
+- Standardize hidden inputs (closes #249) ([#962](https://github.com/melt-ui/melt-ui/pull/962))
+
 ## 0.71.3
 
 ### Patch Changes
