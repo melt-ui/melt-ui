@@ -62,6 +62,7 @@ import type {
 } from './_internal/types.js';
 import type { DateFieldEvents } from './events.js';
 import type { CreateDateFieldProps } from './types.js';
+import { createHiddenInput } from '../hidden-input/create.js';
 
 const defaults = {
 	isDateUnavailable: undefined,
@@ -81,7 +82,8 @@ const defaults = {
 
 type DateFieldParts = 'segment' | 'label' | 'hidden-input' | 'field' | 'validation';
 
-const { name } = createElHelpers<DateFieldParts>('dateField');
+const prefix = 'dateField';
+const { name } = createElHelpers<DateFieldParts>(prefix);
 
 const dateFieldIdParts = [
 	'field',
@@ -309,26 +311,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
-	const hiddenInput = makeElement(name('hidden-input'), {
-		stores: [value, nameStore, disabled, required],
-		returned: ([$value, $nameStore, $disabled, $required]) => {
-			return {
-				name: $nameStore,
-				value: $value?.toString(),
-				'aria-hidden': 'true' as const,
-				hidden: true,
-				disabled: $disabled,
-				required: $required,
-				tabIndex: -1,
-				style: styleToString({
-					position: 'absolute',
-					opacity: 0,
-					'pointer-events': 'none',
-					margin: 0,
-					transform: 'translateX(-100%)',
-				}),
-			};
-		},
+	const hiddenInput = createHiddenInput({
+		prefix,
+		value: derived(value, ($value) => $value?.toString() ?? ''),
+		name: nameStore,
+		disabled,
+		required,
 	});
 
 	const fieldIdDeps = derived(

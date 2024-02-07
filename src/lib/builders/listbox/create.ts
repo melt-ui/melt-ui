@@ -4,7 +4,6 @@ import {
 	addHighlight,
 	addMeltEventListener,
 	back,
-	makeElement,
 	createClickOutsideIgnore,
 	createElHelpers,
 	createTypeaheadSearch,
@@ -16,7 +15,6 @@ import {
 	generateId,
 	getOptions,
 	getPortalDestination,
-	hiddenInputAttrs,
 	isBrowser,
 	isElement,
 	isElementDisabled,
@@ -26,6 +24,7 @@ import {
 	isObject,
 	kbd,
 	last,
+	makeElement,
 	next,
 	noop,
 	omit,
@@ -43,8 +42,9 @@ import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, get, readonly, writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
+import { createHiddenInput } from '../hidden-input/create.js';
 import { createLabel } from '../label/create.js';
 import type { ListboxEvents } from './events.js';
 import type {
@@ -607,17 +607,14 @@ export function createListbox<
 		},
 	});
 
-	const hiddenInput = makeElement(name('hidden-input'), {
-		stores: [selected, required, nameProp],
-		returned: ([$selected, $required, $name]) => {
+	const hiddenInput = createHiddenInput({
+		value: derived([selected], ([$selected]) => {
 			const value = Array.isArray($selected) ? $selected.map((o) => o.value) : $selected?.value;
-			return {
-				...hiddenInputAttrs,
-				required: $required ? true : undefined,
-				value,
-				name: $name,
-			};
-		},
+			return typeof value === 'string' ? value : JSON.stringify(value);
+		}),
+		name: readonly(nameProp),
+		required,
+		prefix: withDefaults.builder,
 	});
 
 	const arrow = makeElement(name('arrow'), {

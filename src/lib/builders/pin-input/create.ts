@@ -1,14 +1,13 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
-	hiddenInputAttrs,
 	isBrowser,
 	isHTMLElement,
 	isHTMLInputElement,
 	last,
+	makeElement,
 	next,
 	omit,
 	overridable,
@@ -19,10 +18,12 @@ import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, readonly, writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
+import { createHiddenInput } from '../hidden-input/create.js';
 import type { PinInputEvents } from './events.js';
 import type { CreatePinInputProps } from './types.js';
 
-const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
+const prefix = 'pin-input';
+const { name, selector } = createElHelpers<'input' | 'hidden-input'>(prefix);
 
 const getInputs = (node: HTMLInputElement) => {
 	const rootEl = node.closest(selector());
@@ -231,13 +232,11 @@ export function createPinInput(props?: CreatePinInputProps) {
 		},
 	});
 
-	const hiddenInput = makeElement(name('hidden-input'), {
-		stores: [valueStr, nameStore],
-		returned: ([$valueStr, $nameStore]) => ({
-			...hiddenInputAttrs,
-			value: $valueStr,
-			name: $nameStore,
-		}),
+	const hiddenInput = createHiddenInput({
+		value: valueStr,
+		disabled,
+		name: nameStore,
+		prefix,
 	});
 
 	const clear = () => {
