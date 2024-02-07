@@ -48,7 +48,6 @@ type CreatePreviewsObjectArgs = {
 async function createPreviewsObject({
 	component,
 	objArr,
-	fetcher,
 }: CreatePreviewsObjectArgs): Promise<PreviewObj> {
 	const returnedObj: PreviewObj = {};
 
@@ -119,7 +118,7 @@ function isMainPreviewComponent(builder: string, path: string): boolean {
 		regexMap.set(builder, new RegExp(regexPattern));
 	}
 
-	return regexMap.get(builder)!.test(path);
+	return !!regexMap.get(builder)?.test(path);
 }
 
 export async function getDocData(slug: string) {

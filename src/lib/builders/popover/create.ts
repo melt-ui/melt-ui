@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	derivedVisible,
 	effect,
@@ -89,7 +89,7 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [isVisible, portal, ids.content],
 		returned: ([$isVisible, $portal, $contentId]) => {
 			return {
@@ -192,7 +192,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		handleClose();
 	}
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [open, ids.content, ids.trigger],
 		returned: ([$open, $contentId, $triggerId]) => {
 			return {
@@ -222,7 +222,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
-	const arrow = builder(name('arrow'), {
+	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
 			'data-arrow': true,
@@ -234,7 +234,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		}),
 	});
 
-	const close = builder(name('close'), {
+	const close = makeElement(name('close'), {
 		returned: () =>
 			({
 				type: 'button',

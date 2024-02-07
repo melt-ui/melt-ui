@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createSelect, melt } from '$lib/index.js';
 	import { Check, ChevronDown } from '$icons/index.js';
+	import { createSelect, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
 
 	const options = {

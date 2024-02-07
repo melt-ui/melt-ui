@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -45,7 +45,7 @@ export function createTabs(props?: CreateTabsProps) {
 	let ssrValue = withDefaults.defaultValue ?? value.get();
 
 	// Root
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: orientation,
 		returned: ($orientation) => {
 			return {
@@ -55,7 +55,7 @@ export function createTabs(props?: CreateTabsProps) {
 	});
 
 	// List
-	const list = builder(name('list'), {
+	const list = makeElement(name('list'), {
 		stores: orientation,
 		returned: ($orientation) => {
 			return {
@@ -74,7 +74,7 @@ export function createTabs(props?: CreateTabsProps) {
 		}
 	};
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [value, orientation],
 		returned: ([$value, $orientation]) => {
 			return (props: TabsTriggerProps) => {
@@ -178,7 +178,7 @@ export function createTabs(props?: CreateTabsProps) {
 	});
 
 	// Content
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: value,
 		returned: ($value) => {
 			return (tabValue: string) => {

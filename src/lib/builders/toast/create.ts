@@ -1,7 +1,7 @@
 import { usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	executeCallbacks,
 	generateId,
@@ -98,7 +98,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		});
 	};
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: toastsMap,
 		returned: ($toasts) => {
 			return (id: string) => {
@@ -162,7 +162,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		},
 	});
 
-	const title = builder(name('title'), {
+	const title = makeElement(name('title'), {
 		stores: toastsMap,
 		returned: ($toasts) => {
 			return (id: string) => {
@@ -175,7 +175,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		},
 	});
 
-	const description = builder(name('description'), {
+	const description = makeElement(name('description'), {
 		stores: toastsMap,
 		returned: ($toasts) => {
 			return (id: string) => {
@@ -189,7 +189,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		},
 	});
 
-	const close = builder(name('close'), {
+	const close = makeElement(name('close'), {
 		returned: () => {
 			return (id: string) => ({
 				type: 'button',

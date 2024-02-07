@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	executeCallbacks,
 } from '$lib/internal/helpers/index.js';
@@ -345,7 +345,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	});
 
 	// Elements
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		stores: activeHeadingIdxs,
 		returned: ($activeHeadingIdxs) => {
 			return (id: string) => {
