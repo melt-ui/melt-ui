@@ -110,7 +110,7 @@
 						}
 					}}
 				/>
-				<SearchIcon class="size-4 absolute left-2 top-1/2 -translate-y-1/2" />
+				<SearchIcon class="absolute left-2 top-1/2 size-4 -translate-y-1/2" />
 				{#if search}
 					{#await search}
 						<div class="absolute right-2 top-1/2 -translate-y-1/2">

@@ -19,6 +19,6 @@
 	</span>
 	<span
 		use:melt={$thumbs[0]}
-		class="size-6 block rounded-full bg-white shadow focus:ring-4 focus:ring-magnum-600 dark:bg-white dark:shadow-none"
+		class="block size-6 rounded-full bg-white shadow focus:ring-4 focus:ring-magnum-600 dark:bg-white dark:shadow-none"
 	/>
 </span>

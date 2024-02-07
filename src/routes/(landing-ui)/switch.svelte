@@ -22,7 +22,7 @@
 			aria-label="Switch"
 		>
 			<span
-				class="size-8 block rounded-full transition will-change-transform
+				class="block size-8 rounded-full transition will-change-transform
 				{$checked ? 'translate-x-[2.75rem] bg-white' : 'translate-x-1 bg-white/50'}"
 			/>
 		</button>
