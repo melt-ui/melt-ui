@@ -1,5 +1,5 @@
 import { derived, readable, writable } from 'svelte/store';
-import { withGet } from '..';
+import { withGet } from '../withGet.js';
 
 describe('withGet', () => {
 	it('properly gets the value of a readable store', () => {

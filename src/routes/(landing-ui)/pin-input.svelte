@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { createPinInput, melt } from '$lib/index.js';
 
 	const {
@@ -16,7 +16,7 @@
 <div use:melt={$root} class={cn('flex items-center gap-2', className)}>
 	{#each Array.from({ length: 5 }) as _}
 		<input
-			class="rounded-xl bg-white text-center text-lg text-magnum-900 shadow-sm square-12"
+			class="size-12 rounded-xl bg-white text-center text-lg text-magnum-900 shadow-sm"
 			use:melt={$input()}
 		/>
 	{/each}

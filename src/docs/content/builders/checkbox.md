@@ -39,7 +39,7 @@ To create an indeterminate checkbox, set the `checked` argument as `indeterminat
 
 To disable the checkbox, set the `disabled` argument as `true`.
 
-```svelte /disabled: true/#hi /options.update((prev) => ({ ...prev, disabled: true }))/#hi
+```svelte {5,8}
 <script lang="ts">
 	import { createCheckbox } from '@melt-ui/svelte'
 

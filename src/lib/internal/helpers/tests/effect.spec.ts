@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { effect } from '..';
+import { effect } from '../index.js';
 
 describe('effect', () => {
 	it('Gets called initially', () => {

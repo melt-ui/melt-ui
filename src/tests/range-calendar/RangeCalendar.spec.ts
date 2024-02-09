@@ -1,7 +1,7 @@
-import type { CreateRangeCalendarProps, DateRange } from '$lib';
+import type { CreateRangeCalendarProps, DateRange } from '$lib/index.js';
 import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
 import { render } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { tick } from 'svelte';
 import { writable } from 'svelte/store';

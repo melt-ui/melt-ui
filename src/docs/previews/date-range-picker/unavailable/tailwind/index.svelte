@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createDateRangePicker, melt } from '$lib';
+	import { createDateRangePicker, melt } from '$lib/index.js';
 	import { isWeekend } from '@internationalized/date';
-	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft, Calendar } from '$icons/index.js';
 	import { fade } from 'svelte/transition';
 
 	const {

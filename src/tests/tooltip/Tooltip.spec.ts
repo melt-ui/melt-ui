@@ -1,31 +1,43 @@
-import { render, waitFor } from '@testing-library/svelte';
+import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { get, writable } from 'svelte/store';
 import { describe, expect, test } from 'vitest';
 import Tooltip from './Tooltip.svelte';
-import userEvent from '@testing-library/user-event';
-import { sleep } from '$lib/internal/helpers';
+import { userEvent } from '@testing-library/user-event';
+import { sleep } from '$lib/internal/helpers/index.js';
+import type { CreateTooltipProps } from '$lib/index.js';
+
+/**
+ * Simple setup function to render the tooltip component and
+ * return the user event object, trigger, content, and other
+ * methods returned from the render function.
+ */
+function setup(props: CreateTooltipProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(Tooltip, { props });
+	const trigger = returned.getByTestId('trigger');
+	const content = returned.getByTestId('content');
+	return {
+		...returned,
+		user,
+		trigger,
+		content,
+	};
+}
 
 describe('Tooltip', () => {
 	test('It opens when hovered, and closes when left', async () => {
-		const { getByTestId } = render(Tooltip);
-		const user = userEvent.setup();
-
-		const trigger = getByTestId('trigger');
-		const content = getByTestId('content');
+		const { user, trigger, content } = setup();
 		expect(content).not.toBeVisible();
 
-		user.hover(trigger);
-		await waitFor(() => expect(content).toBeVisible());
+		await user.hover(trigger);
+		expect(content).toBeVisible();
 
-		user.unhover(trigger);
-		await waitFor(() => expect(content).not.toBeVisible());
+		await user.unhover(trigger);
+		expect(content).not.toBeVisible();
 	});
 
 	test('It opens when focused, and closes when blurred', async () => {
-		const { getByTestId } = render(Tooltip);
-
-		const trigger = getByTestId('trigger');
-		const content = getByTestId('content');
+		const { trigger, content } = setup();
 		expect(content).not.toBeVisible();
 
 		trigger.focus();
@@ -40,72 +52,80 @@ describe('Tooltip', () => {
 			trigger: 'id-trigger',
 			content: 'id-content',
 		};
-		const { getByTestId } = render(Tooltip, {
-			ids,
-		});
+		const { trigger, content } = setup({ ids });
 
-		const trigger = getByTestId('trigger');
-		const content = getByTestId('content');
 		expect(trigger.id).toBe(ids.trigger);
 		expect(content.id).toBe(ids.content);
 	});
 
-	test.skip('When the tooltip was opened by focusing, leaving the trigger does not close it', async () => {
-		const { getByTestId } = render(Tooltip);
-		const user = userEvent.setup();
-
-		const trigger = getByTestId('trigger');
-		const content = getByTestId('content');
+	test('When the tooltip was opened by focusing, leaving the trigger does not close it', async () => {
+		const { user, trigger, content } = setup();
 		expect(content).not.toBeVisible();
 
 		trigger.focus();
 		await waitFor(() => expect(content).toBeVisible());
 
-		user.hover(trigger);
-		await waitFor(() => expect(content).toBeVisible());
+		await user.hover(trigger);
+		expect(content).toBeVisible();
 
-		user.unhover(trigger);
-		await waitFor(() => expect(content).toBeVisible());
+		await user.unhover(trigger);
+		expect(content).toBeVisible();
 
 		trigger.blur();
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
-	test.skip('When the tooltip was opened by pointer, blurring the trigger does not close it', async () => {
-		const { getByTestId } = render(Tooltip);
-		const user = userEvent.setup();
-
-		const trigger = getByTestId('trigger');
-		const content = getByTestId('content');
+	test('When the tooltip was opened by pointer, blurring the trigger does not close it', async () => {
+		const { user, trigger, content } = setup();
 		expect(content).not.toBeVisible();
 
-		user.hover(trigger);
-		await waitFor(() => expect(content).toBeVisible());
+		await user.hover(trigger);
+		expect(content).toBeVisible();
 
 		trigger.focus();
 		await waitFor(() => expect(content).toBeVisible());
 
 		trigger.blur();
-		await sleep(100);
 		await waitFor(() => expect(content).toBeVisible());
 
-		user.unhover(trigger);
+		await user.unhover(trigger);
+		expect(content).not.toBeVisible();
+	});
+
+	test('When focusing the trigger, you should be able to click the content', async () => {
+		const { user, trigger, content } = setup();
+		expect(content).not.toBeVisible();
+
+		await fireEvent(trigger, new FocusEvent('focus'));
+		await waitFor(() => expect(content).toBeVisible());
+
+		await user.click(content);
+		await sleep(100);
+		expect(content).toBeVisible();
+	});
+
+	test('When tooltip is open and the user scrolls outside the content, it closes', async () => {
+		const { user, trigger, content } = setup();
+
+		await user.hover(trigger);
+		expect(content).toBeVisible();
+
+		await fireEvent.scroll(document);
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
-	test.skip('When focusing the trigger, you should be able to click the content', async () => {
-		const { getByTestId } = render(Tooltip);
+	test('When the tooltip is open and the user scrolls inside the content, it stays open', async () => {
+		const { user, trigger, content } = setup();
 
-		const trigger = getByTestId('trigger');
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
+		await user.hover(trigger);
+		expect(content).toBeVisible();
 
-		trigger.focus();
-		await waitFor(() => expect(content).toBeVisible());
-
-		userEvent.click(content);
-		await sleep(100);
-		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		expect(content).toBeVisible();
+		await fireEvent.scroll(content);
+		// sleep to account for any delays in the scroll event and close
+		await sleep(50);
+		expect(content).toBeVisible();
 	});
 });
 

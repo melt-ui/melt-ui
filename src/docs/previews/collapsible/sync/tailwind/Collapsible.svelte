@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createCollapsible, melt } from '$lib/index.js';
-	import { createSync } from '$lib/sync';
-	import { ChevronsUpDown, X } from 'lucide-svelte';
+	import { createSync } from '$lib/sync.js';
+	import { ChevronsUpDown, X } from '$icons/index.js';
 	import { slide } from 'svelte/transition';
 
 	export let open = false;
@@ -35,9 +35,9 @@
 		>
 			<div class="abs-center">
 				{#if open}
-					<X class="square-4" />
+					<X class="size-4" />
 				{:else}
-					<ChevronsUpDown class="square-4" />
+					<ChevronsUpDown class="size-4" />
 				{/if}
 			</div>
 		</button>

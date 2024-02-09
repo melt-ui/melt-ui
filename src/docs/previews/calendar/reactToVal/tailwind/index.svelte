@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createCalendar, melt } from '$lib';
+	import { createCalendar, melt } from '$lib/index.js';
 	import { CalendarDate, isSameDay } from '@internationalized/date';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
 
 	const halloween = new CalendarDate(2023, 10, 31);
 

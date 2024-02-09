@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { initSegmentIds, initSegmentStates, initializeSegmentValues } from '../helpers';
+import { initSegmentIds, initSegmentStates, initializeSegmentValues } from '../helpers.js';
 
 describe('initializeSegmentValues', () => {
 	it('should return the correct values for each granularity', () => {

@@ -18,7 +18,7 @@ body:
     id: reproduction
     attributes:
       label: Reproduction
-      description: Please provide a link to a repo or SvelteLab (https://www.sveltelab.dev/?t=melt_ui) that can reproduce the problem you ran into. If a report is vague (e.g. just a generic error message) and has no reproduction, it will receive a "need reproduction" label. If no reproduction is provided within a reasonable time-frame, the issue will be closed.
+      description: Please provide a link to a repo or Stackblitz (https://melt-ui.com/repro) that can reproduce the problem you ran into. If a report is vague (e.g. just a generic error message) and has no reproduction, it will receive a "need reproduction" label. If no reproduction is provided within a reasonable time-frame, the issue will be closed.
       placeholder: Reproduction
     validations:
       required: true

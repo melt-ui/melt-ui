@@ -5,7 +5,7 @@ import {
 	addEventListener,
 	addHighlight,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	derivedVisible,
 	effect,
@@ -70,7 +70,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 	const ids = toWritableStores({ ...generateIds(menubarIdParts), ...withDefaults.ids });
 
-	const menubar = builder(name(), {
+	const menubar = makeElement(name(), {
 		stores: [ids.menubar],
 		returned([$menubarId]) {
 			return {
@@ -135,7 +135,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			activeTrigger: rootActiveTrigger,
 		});
 
-		const menu = builder(name('menu'), {
+		const menu = makeElement(name('menu'), {
 			stores: [isVisible, portal, m.ids.menu, m.ids.trigger, ids.menubar],
 			returned: ([$isVisible, $portal, $menuId, $triggerId, $menubarId]) => {
 				return {
@@ -246,7 +246,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			},
 		});
 
-		const trigger = builder(name('trigger'), {
+		const trigger = makeElement(name('trigger'), {
 			stores: [rootOpen, m.ids.menu, m.ids.trigger],
 			returned: ([$rootOpen, $menuId, $triggerId]) => {
 				return {

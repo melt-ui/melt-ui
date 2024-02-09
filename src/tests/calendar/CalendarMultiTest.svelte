@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createCalendar, type CreateCalendarProps } from '$lib/builders';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
-	import { melt } from '$lib';
-	import { removeUndefined } from '../utils';
+	import { createCalendar, type CreateCalendarProps } from '$lib/builders/index.js';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
+	import { melt } from '$lib/index.js';
+	import { removeUndefined } from '../utils.js';
 
 	type CalendarProps = CreateCalendarProps<true>;
 

@@ -1,10 +1,10 @@
 import { sleep } from '$lib/internal/helpers/index.js';
 import { render, waitFor } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import DialogNestedTest from './DialogNestedTest.svelte';
 import { axe } from 'jest-axe';
 import { vi, it, beforeEach, afterEach, describe } from 'vitest';
-import { testKbd as kbd } from '../utils';
+import { testKbd as kbd } from '../utils.js';
 
 describe('Nested Dialogs', () => {
 	beforeEach(() => {

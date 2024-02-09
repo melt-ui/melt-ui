@@ -13,7 +13,7 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -28,10 +28,10 @@ import {
 	toWritableStores,
 	withGet,
 } from '$lib/internal/helpers/index.js';
-import type { MeltActionReturn } from '$lib/internal/types';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { DateValue } from '@internationalized/date';
 import { derived, writable, type Updater } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import {
 	areAllSegmentsFilled,
 	createContent,
@@ -60,8 +60,9 @@ import type {
 	TimeSegmentObj,
 	TimeSegmentPart,
 } from './_internal/types.js';
-import type { DateFieldEvents } from './events';
-import type { CreateDateFieldProps } from './types';
+import type { DateFieldEvents } from './events.js';
+import type { CreateDateFieldProps } from './types.js';
+import { createHiddenInput } from '../hidden-input/create.js';
 
 const defaults = {
 	isDateUnavailable: undefined,
@@ -81,7 +82,8 @@ const defaults = {
 
 type DateFieldParts = 'segment' | 'label' | 'hidden-input' | 'field' | 'validation';
 
-const { name } = createElHelpers<DateFieldParts>('dateField');
+const prefix = 'dateField';
+const { name } = createElHelpers<DateFieldParts>(prefix);
 
 const dateFieldIdParts = [
 	'field',
@@ -265,7 +267,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		($allSegmentContent) => $allSegmentContent.obj
 	);
 
-	const label = builder(name('label'), {
+	const label = makeElement(name('label'), {
 		stores: [isInvalid, disabled, ids.label],
 		returned: ([$isInvalid, $disabled, $labelId]) => {
 			return {
@@ -294,7 +296,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
-	const validation = builder(name('validation'), {
+	const validation = makeElement(name('validation'), {
 		stores: [isInvalid, ids.validation],
 		returned: ([$isInvalid, $validationId]) => {
 			const validStyle = styleToString({
@@ -309,26 +311,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
-	const hiddenInput = builder(name('hidden-input'), {
-		stores: [value, nameStore, disabled, required],
-		returned: ([$value, $nameStore, $disabled, $required]) => {
-			return {
-				name: $nameStore,
-				value: $value?.toString(),
-				'aria-hidden': 'true' as const,
-				hidden: true,
-				disabled: $disabled,
-				required: $required,
-				tabIndex: -1,
-				style: styleToString({
-					position: 'absolute',
-					opacity: 0,
-					'pointer-events': 'none',
-					margin: 0,
-					transform: 'translateX(-100%)',
-				}),
-			};
-		},
+	const hiddenInput = createHiddenInput({
+		prefix,
+		value: derived(value, ($value) => $value?.toString() ?? ''),
+		name: nameStore,
+		disabled,
+		required,
 	});
 
 	const fieldIdDeps = derived(
@@ -346,7 +334,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	/**
 	 * The date field element which contains all the segments.
 	 */
-	const field = builder(name('field'), {
+	const field = makeElement(name('field'), {
 		stores: [value, isInvalid, disabled, readonly, fieldIdDeps],
 		returned: ([$value, $isInvalid, $disabled, $readonly, $ids]) => {
 			const describedBy = $value
@@ -420,7 +408,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	};
 
-	const segment = builder(name('segment'), {
+	const segment = makeElement(name('segment'), {
 		stores: [
 			segmentValues,
 			hourCycle,

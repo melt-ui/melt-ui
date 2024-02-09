@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createRangeCalendar, type CreateRangeCalendarProps } from '$lib/builders';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
-	import { melt } from '$lib';
-	import { removeUndefined } from '../utils';
+	import { createRangeCalendar, type CreateRangeCalendarProps } from '$lib/builders/index.js';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
+	import { melt } from '$lib/index.js';
+	import { removeUndefined } from '../utils.js';
 
 	export let value: CreateRangeCalendarProps['value'] = undefined;
 	export let defaultValue: CreateRangeCalendarProps['defaultValue'] = undefined;

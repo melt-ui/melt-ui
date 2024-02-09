@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
-	import { melt } from '$lib';
-	import { createRangeCalendar } from '$lib/builders/range-calendar';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
+	import { melt } from '$lib/index.js';
+	import { createRangeCalendar } from '$lib/builders/range-calendar/index.js';
 	import LocaleCombobox from './LocaleCombobox.svelte';
 
 	const {

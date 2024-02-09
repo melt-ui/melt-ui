@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { jsAvailable } from './utils';
+import { jsAvailable } from './utils.js';
 
 const locators = {
 	trigger: '[data-melt-dropdown-menu-trigger]',

@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { effect } from '$lib/internal/helpers';
+import { effect } from '$lib/internal/helpers/index.js';
 import { dequal } from 'dequal';
 import type { Writable } from 'svelte/store';
 

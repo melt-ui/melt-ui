@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createCalendar, melt } from '$lib';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { createCalendar, melt } from '$lib/index.js';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
 	import { CalendarDate } from '@internationalized/date';
 
 	const {

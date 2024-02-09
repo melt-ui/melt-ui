@@ -1,5 +1,5 @@
 import type { Updater, Writable } from 'svelte/store';
-import { withGet } from './withGet';
+import { withGet } from './withGet.js';
 
 export type ChangeFn<T> = (args: { curr: T; next: T }) => T;
 

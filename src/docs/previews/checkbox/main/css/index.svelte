@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCheckbox, melt } from '$lib/index.js';
-	import { Check, Minus } from 'lucide-svelte';
+	import { Check, Minus } from '$icons/index.js';
 
 	const {
 		elements: { root, input },
@@ -14,9 +14,9 @@
 	<div>
 		<button use:melt={$root} id="checkbox">
 			{#if $isIndeterminate}
-				<Minus class="square-4" />
+				<Minus class="size-4" />
 			{:else if $isChecked}
-				<Check class="square-4" />
+				<Check class="size-4" />
 			{/if}
 			<input use:melt={$input} />
 		</button>

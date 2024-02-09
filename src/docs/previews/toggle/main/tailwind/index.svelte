@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createToggle, melt } from '$lib/index.js';
-	import { Italic } from 'lucide-svelte';
+	import { Italic } from '$icons/index.js';
 
 	const {
 		elements: { root },
@@ -15,5 +15,5 @@
     data-[disabled]:cursor-not-allowed data-[state=on]:bg-magnum-200
     data-[state=on]:text-magnum-900"
 >
-	<Italic class="square-4" />
+	<Italic class="size-4" />
 </button>

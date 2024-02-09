@@ -1,9 +1,9 @@
 import { overridable, toWritableStores } from '$lib/internal/helpers/index.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import { writable } from 'svelte/store';
+import { omit } from '../../internal/helpers/object.js';
 import { createMenuBuilder } from '../menu/index.js';
 import type { CreateDropdownMenuProps } from './types.js';
-import { omit } from '../../internal/helpers/object';
-import { withGet } from '$lib/internal/helpers/withGet.js';
 
 const defaults = {
 	arrowSize: 8,

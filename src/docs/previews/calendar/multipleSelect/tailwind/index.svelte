@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createCalendar, melt } from '$lib';
+	import { createCalendar, melt } from '$lib/index.js';
 	import { CalendarDate } from '@internationalized/date';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },

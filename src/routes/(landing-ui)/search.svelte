@@ -1,50 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Tooltip } from '$docs/components/index.js';
-	import { createCombobox, createDialog, melt } from '$lib';
-	import { CornerDownRight, Search as SearchIcon } from 'lucide-svelte';
+	import { createCombobox, createDialog, melt } from '$lib/index.js';
+	import { CornerDownRight, LoaderIcon, Search as SearchIcon } from '$icons/index.js';
 	import { onMount } from 'svelte';
-	import type {
-		Pagefind,
-		PagefindSearchFragment,
-		PagefindSearchResult,
-		PagefindSubResult,
-	} from '../../pagefind';
-
-	type Promised<T> = T extends Promise<infer U> ? U : T;
-
-	type AwaitedResult = Omit<PagefindSearchResult, 'data'> & {
-		data: Promised<ReturnType<PagefindSearchResult['data']>>;
-	};
+	import type { Pagefind, PagefindSearchFragment, PagefindSubResult } from '../../pagefind.js';
 
 	let pagefind: Pagefind | null = null;
-	let results: AwaitedResult[] = [];
-
-	async function getPagefind() {
-		const res = await fetch('/pagefind/pagefind.js');
-		if (!res.ok) {
-			return null;
-		}
-		const text = await res.text();
-		const blob = new Blob([text], { type: 'application/javascript' });
-		const url = URL.createObjectURL(blob);
-
-		return (await import(/* @vite-ignore */ url)) as Pagefind;
-	}
 
 	onMount(async () => {
-		pagefind = await getPagefind();
+		// @ts-expect-error - Pagefind will be present at runtime
+		pagefind = (await import('/pagefind/pagefind.js')) as Pagefind;
 		if (!pagefind) return;
-
 		await pagefind.init();
-		const promisedResults = (await pagefind.search('')).results;
-
-		results = await Promise.all(
-			promisedResults.map(async (result) => ({
-				...result,
-				data: await result.data(),
-			}))
-		);
 	});
 
 	const sanitizeLink = (url: string) => {
@@ -81,34 +49,36 @@
 		onOpenChange({ next }) {
 			if (!next) {
 				inputValue.set('');
-				results = [];
+				search = new Promise((resolve) => resolve([]));
 			}
 			return next;
 		},
 		openFocus: comboboxInput,
 	});
 
-	let debounceTimer: ReturnType<typeof setTimeout>;
+	let search: Promise<PagefindSearchFragment[]> | null = null;
+	let searchDebounce: ReturnType<typeof setTimeout>;
 
-	const debounce = (callback: () => void) => {
-		clearTimeout(debounceTimer);
-		debounceTimer = setTimeout(callback, 450);
-	};
-
-	$: {
-		if (pagefind) {
-			debounce(() => {
-				pagefind?.search($inputValue).then(async (r) => {
-					results = await Promise.all(
-						r.results.map(async (result) => ({
-							...result,
-							data: await result.data(),
-						}))
-					);
-				});
-			});
+	async function getResultsFromSearch(query: string) {
+		if (searchDebounce) {
+			clearTimeout(searchDebounce);
 		}
+		if (!pagefind || !query) {
+			return [];
+		}
+		await new Promise((resolve) => {
+			search = null;
+			searchDebounce = setTimeout(resolve, 450);
+		});
+		const s = await pagefind.search(query);
+		return await Promise.all(
+			s.results.map(async (result) => {
+				return await result.data();
+			})
+		);
 	}
+
+	$: search = getResultsFromSearch($inputValue);
 </script>
 
 <svelte:window
@@ -148,8 +118,14 @@
 						}
 					}}
 				/>
-
-				<SearchIcon class="absolute top-1/2 ml-2 -translate-y-1/2 square-4" />
+				<SearchIcon class="absolute left-2 top-1/2 size-4 -translate-y-1/2" />
+				{#if search}
+					{#await search}
+						<div class="absolute right-2 top-1/2 -translate-y-1/2">
+							<LoaderIcon class="size-4 animate-spin" />
+						</div>
+					{/await}
+				{/if}
 			</div>
 		</div>
 
@@ -158,52 +134,55 @@
 			use:melt={$menu}
 			class:hidden={!$inputValue}
 		>
-			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-			<div
-				class="flex max-h-full flex-col gap-0 overflow-y-auto rounded-lg bg-neutral-800 px-2 py-2 text-white"
-			>
-				<p aria-live="polite" class="px-4 py-1 font-light opacity-50">
-					{results.length === 0 ? 'No results' : `Found ${results.length} results`}
-				</p>
-				{#each results as { data }, index (index)}
-					{@const isLast = index === results.length - 1}
-
+			{#if search}
+				{#await search then results}
 					<div
-						use:melt={$option({ value: data, label: data.meta.title })}
-						class="relative scroll-my-2 rounded-md px-4 py-2 data-[disabled]:opacity-50"
+						class="flex max-h-full flex-col gap-0 overflow-y-auto rounded-lg bg-neutral-800 px-2 py-2 text-white"
 					>
-						<a
-							class="title text-lg font-semibold underline hover:opacity-75"
-							href={sanitizeLink(data.url)}>{data.meta.title}</a
-						>
-						<p class="mt-1 font-light">
-							{@html data.excerpt}
+						<p aria-live="polite" class="px-4 py-1 font-light opacity-50">
+							{results.length === 0 ? 'No results' : `Found ${results.length} results`}
 						</p>
-					</div>
-					{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
-						<div
-							class="subresult ml-3 scroll-my-2 rounded-md py-2 pl-3"
-							use:melt={$option({ value: subresult, label: subresult.title })}
-						>
-							<div class="flex items-center gap-1">
-								<CornerDownRight class="opacity-75 square-4" />
+						{#each results as data, index (index)}
+							{@const isLast = index === results.length - 1}
+
+							<div
+								use:melt={$option({ value: data, label: data.meta.title })}
+								class="relative scroll-my-2 rounded-md px-4 py-2 data-[disabled]:opacity-50"
+							>
 								<a
-									class="font-semibold underline hover:opacity-75"
-									href={sanitizeLink(subresult.url)}
+									class="title text-lg font-semibold underline hover:opacity-75"
+									href={sanitizeLink(data.url)}>{data.meta.title}</a
 								>
-									{subresult.title}
-								</a>
+								<p class="mt-1 font-light">
+									{@html data.excerpt}
+								</p>
 							</div>
-							<p class="mt-2 text-sm font-light opacity-75">
-								{@html subresult.excerpt}
-							</p>
-						</div>
-					{/each}
-					{#if !isLast}
-						<hr class="mx-4 my-2 border-neutral-700" />
-					{/if}
-				{/each}
-			</div>
+							{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
+								<div
+									class="subresult ml-3 scroll-my-2 rounded-md py-2 pl-3"
+									use:melt={$option({ value: subresult, label: subresult.title })}
+								>
+									<div class="flex items-center gap-1">
+										<CornerDownRight class="size-4 opacity-75" />
+										<a
+											class="font-semibold underline hover:opacity-75"
+											href={sanitizeLink(subresult.url)}
+										>
+											{subresult.title}
+										</a>
+									</div>
+									<p class="mt-2 text-sm font-light opacity-75">
+										{@html subresult.excerpt}
+									</p>
+								</div>
+							{/each}
+							{#if !isLast}
+								<hr class="mx-4 my-2 border-neutral-700" />
+							{/if}
+						{/each}
+					</div>
+				{/await}
+			{/if}
 		</div>
 	</div>
 </div>

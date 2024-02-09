@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDropdownMenu, melt } from '$lib/index.js';
 	import { writable } from 'svelte/store';
-	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
+	import { AlignJustify, ChevronRight, Check } from '$icons/index.js';
 	import { fly } from 'svelte/transition';
 
 	const settingsSync = writable(true);
@@ -54,7 +54,7 @@
 	use:melt={$trigger}
 	aria-label="Update dimensions"
 >
-	<AlignJustify class="square-4" />
+	<AlignJustify class="size-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
@@ -70,7 +70,7 @@
 		<div class="item" use:melt={$checkboxItem}>
 			<div class="check">
 				{#if $settingsSync}
-					<Check class="square-4" />
+					<Check class="size-4" />
 				{/if}
 			</div>
 			Settings Sync is On
@@ -78,7 +78,7 @@
 		<div class="item !hidden md:!flex" use:melt={$subTrigger}>
 			Profiles
 			<div class="rightSlot">
-				<ChevronRight class="square-4" />
+				<ChevronRight class="size-4" />
 			</div>
 		</div>
 		{#if $subOpen}
@@ -107,7 +107,7 @@
 		<div class="item" use:melt={$checkboxItemA}>
 			<div class="check">
 				{#if $hideMeltUI}
-					<Check class="square-4" />
+					<Check class="size-4" />
 				{/if}
 			</div>
 			Hide Melt UI
