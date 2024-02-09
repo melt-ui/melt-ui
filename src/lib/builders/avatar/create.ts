@@ -1,5 +1,5 @@
 import {
-	builder,
+	makeElement,
 	effect,
 	isBrowser,
 	omit,
@@ -45,7 +45,7 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 		}
 	});
 
-	const image = builder('avatar-image', {
+	const image = makeElement('avatar-image', {
 		stores: [src, loadingStatus],
 		returned: ([$src, $loadingStatus]) => {
 			const imageStyles = styleToString({
@@ -58,7 +58,7 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 		},
 	});
 
-	const fallback = builder('avatar-fallback', {
+	const fallback = makeElement('avatar-fallback', {
 		stores: [loadingStatus],
 		returned: ([$loadingStatus]) => {
 			return {

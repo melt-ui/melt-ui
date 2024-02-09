@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	omit,
@@ -30,7 +30,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [open, disabled],
 		returned: ([$open, $disabled]) => ({
 			'data-state': $open ? 'open' : 'closed',
@@ -38,7 +38,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		}),
 	});
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [open, disabled],
 		returned: ([$open, $disabled]) =>
 			({
@@ -64,7 +64,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		([$open, $forceVisible]) => $open || $forceVisible
 	);
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [isVisible, disabled],
 		returned: ([$isVisible, $disabled]) => ({
 			'data-state': $isVisible ? 'open' : 'closed',

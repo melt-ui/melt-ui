@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	executeCallbacks,
 	getElementByMeltId,
@@ -69,7 +69,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 
 	const metaIds = generateIds(['tree']);
 
-	const rootTree = builder(name(), {
+	const rootTree = makeElement(name(), {
 		returned: () => {
 			return {
 				role: 'tree',
@@ -79,7 +79,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	});
 
 	let isKeydown = false;
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		stores: [expanded, selectedId, lastFocusedId],
 		returned: ([$expanded, $selectedId, $lastFocusedId]) => {
 			return (opts: { id: string; hasChildren?: boolean }) => {
@@ -249,7 +249,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		},
 	});
 
-	const group = builder(name('group'), {
+	const group = makeElement(name('group'), {
 		stores: [expanded],
 		returned: ([$expanded]) => {
 			return (opts: { id: string }) => ({

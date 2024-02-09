@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCollapsible, melt } from '$lib/index.js';
-	import { ChevronsUpDown, X } from 'lucide-svelte';
+	import { ChevronsUpDown, X } from '$icons/index.js';
 	import { slide } from 'svelte/transition';
 
 	const {
@@ -28,9 +28,9 @@
 		>
 			<div class="abs-center">
 				{#if $open}
-					<X class="square-4" />
+					<X class="size-4" />
 				{:else}
-					<ChevronsUpDown class="square-4" />
+					<ChevronsUpDown class="size-4" />
 				{/if}
 			</div>
 		</button>

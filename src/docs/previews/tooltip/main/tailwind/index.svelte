@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createTooltip, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
-	import { Plus } from 'lucide-svelte';
+	import { Plus } from '$icons/index.js';
 
 	const {
 		elements: { trigger, content, arrow },
@@ -18,7 +18,7 @@
 </script>
 
 <button type="button" class="trigger" use:melt={$trigger} aria-label="Add">
-	<Plus class="square-4" aria-label="plus" />
+	<Plus class="size-4" aria-label="plus" />
 </button>
 
 {#if $open}

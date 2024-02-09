@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -275,7 +275,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		}
 	);
 
-	const calendar = builder(name(), {
+	const calendar = makeElement(name(), {
 		stores: [fullCalendarLabel, isInvalid, ids.calendar, disabled, readonly],
 		returned: ([$fullCalendarLabel, $isInvalid, $calendarId, $disabled, $readonly]) => {
 			return {
@@ -306,7 +306,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		},
 	});
 
-	const heading = builder(name('heading'), {
+	const heading = makeElement(name('heading'), {
 		stores: [disabled],
 		returned: ([$disabled]) => {
 			return {
@@ -316,7 +316,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		},
 	});
 
-	const grid = builder(name('grid'), {
+	const grid = makeElement(name('grid'), {
 		stores: [readonly, disabled],
 		returned: ([$readonly, $disabled]) => ({
 			tabindex: -1,
@@ -328,7 +328,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		}),
 	});
 
-	const prevButton = builder(name('prevButton'), {
+	const prevButton = makeElement(name('prevButton'), {
 		stores: [isPrevButtonDisabled],
 		returned: ([$isPrevButtonDisabled]) => {
 			const disabled = $isPrevButtonDisabled;
@@ -352,7 +352,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		},
 	});
 
-	const nextButton = builder(name('nextButton'), {
+	const nextButton = makeElement(name('nextButton'), {
 		stores: [isNextButtonDisabled],
 		returned: ([$isNextButtonDisabled]) => {
 			const disabled = $isNextButtonDisabled;
@@ -432,7 +432,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * An individual date cell in the calendar grid, which represents a
 	 * single day in the month.
 	 */
-	const cell = builder(name('cell'), {
+	const cell = makeElement(name('cell'), {
 		stores: [
 			isSelected,
 			isSelectionEnd,

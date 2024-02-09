@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createPopover, melt, type CreatePopoverProps } from '$lib/index.js';
-	import { Settings2, X } from 'lucide-svelte';
+	import { Settings2, X } from '$icons/index.js';
 
 	export let openFocus: CreatePopoverProps['openFocus'] = undefined;
 	export let closeFocus: CreatePopoverProps['closeFocus'] = undefined;

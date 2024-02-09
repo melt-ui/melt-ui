@@ -1,7 +1,7 @@
 import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	derivedVisible,
 	effect,
@@ -110,7 +110,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		}
 	) as WithGet<Readable<() => void>>;
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [open, ids.trigger, ids.content],
 		returned: ([$open, $triggerId, $contentId]) => {
 			return {
@@ -147,7 +147,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [isVisible, portal, ids.content],
 		returned: ([$isVisible, $portal, $contentId]) => {
 			return {
@@ -258,7 +258,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		},
 	});
 
-	const arrow = builder(name('arrow'), {
+	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
 			'data-arrow': true,
