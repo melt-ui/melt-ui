@@ -3,18 +3,23 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { readonly } from 'svelte/store';
 import type { LabelEvents } from './events.js';
 import type { CreateLabelProps } from './types.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
+
+const defaults = {
+	id: undefined,
+	for: undefined,
+} satisfies CreateLabelProps;
 
 export function createLabel(props?: CreateLabelProps) {
-	const forId = withGet.writable(props?.for);
-	const id = withGet.writable(props?.id);
+	const { id, for: htmlFor } = parseProps(props, defaults);
 	const mounted = withGet.writable(false);
 
 	const root = makeElement('label', {
-		stores: [id, forId],
-		returned([$id, $forId]) {
+		stores: [id, htmlFor],
+		returned([$id, $htmlFor]) {
 			return {
 				id: $id,
-				for: $forId,
+				for: $htmlFor,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<LabelEvents['root']> => {
@@ -42,7 +47,7 @@ export function createLabel(props?: CreateLabelProps) {
 		states: { mounted: readonly(mounted) },
 		options: {
 			id,
-			for: forId,
+			for: htmlFor,
 		},
 	};
 }

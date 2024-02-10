@@ -1,10 +1,11 @@
+import type { WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { createLabel } from './create.js';
 export type { LabelComponentEvents } from './events.js';
 
 export type CreateLabelProps = {
-	for?: string;
-	id?: string;
+	for?: WritableProp<string>;
+	id?: WritableProp<string>;
 };
 
 export type Label = BuilderReturn<typeof createLabel>;
