@@ -4,7 +4,6 @@ import fs from 'fs';
 
 import { env } from '$env/dynamic/private';
 import { building } from '$app/environment';
-import type { F } from 'vitest/dist/reporters-1evA5lom.js';
 
 export const entries = (() => {
 	return navConfig.sidebarNav[0].items.map((item) => {
@@ -38,14 +37,14 @@ export type FullContributor = Contributor & { name: string; bio: string };
 
 async function getContributors(page: number) {
 	return await fetch(
-		`https://api.github.com/repos/melt-ui/melt-ui/contributors?page=${page}&per_page=100`, {
-		headers: {
-			Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-		},
-	}
+		`https://api.github.com/repos/melt-ui/melt-ui/contributors?page=${page}&per_page=100`,
+		{
+			headers: {
+				Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+			},
+		}
 	).then((r) => r.json());
 }
-
 
 async function getAllContributors(): Promise<FullContributor[]> {
 	if (building || !fs.existsSync('src/json/contributors.json')) {
@@ -83,12 +82,12 @@ async function getAllContributors(): Promise<FullContributor[]> {
 			fs.writeFileSync('src/json/contributors.json', JSON.stringify(contributorsWithName, null, 2));
 			return contributorsWithName;
 		} catch {
-			return []
+			return [];
 		}
 	}
 
 	return JSON.parse(fs.readFileSync('src/json/contributors.json', 'utf-8'));
-};
+}
 
 export const load: PageLoad = async () => {
 	return {
