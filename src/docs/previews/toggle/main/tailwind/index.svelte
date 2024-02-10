@@ -1,10 +1,18 @@
 <script lang="ts">
-	import { createToggle, melt } from '$lib/index.js';
+	import { createToggle, melt, overridable } from '$lib/index.js';
 	import { Italic } from '$icons/index.js';
+	import { writable } from 'svelte/store';
 
 	const {
 		elements: { root },
-	} = createToggle();
+	} = createToggle({
+		pressed: overridable(false, ({ curr, next }) => {
+			console.log('pressed', curr, next);
+			return next;
+		}),
+		// or pressed: writable(false),
+		// or pressed: false,
+	});
 </script>
 
 <button
