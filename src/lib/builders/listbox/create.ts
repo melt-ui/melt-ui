@@ -523,20 +523,13 @@ export function createListbox<
 	});
 
 	// Use our existing label builder to create a label for the listbox input.
-	const {
-		elements: { root: labelBuilder },
-	} = createLabel();
-	const { action: labelAction } = get(labelBuilder);
-
+	const _label = createLabel();
 	const label = makeElement(name('label'), {
-		stores: [ids.label, ids.trigger],
-		returned: ([$labelId, $triggerId]) => {
-			return {
-				id: $labelId,
-				for: $triggerId,
-			};
+		stores: [_label.elements.root],
+		returned: ([$label]) => {
+			return { ...$label };
 		},
-		action: labelAction,
+		action: _label.elements.root,
 	});
 
 	const option = makeElement(name('option'), {
