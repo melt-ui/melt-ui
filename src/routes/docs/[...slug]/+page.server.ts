@@ -1,7 +1,10 @@
 import { navConfig } from '$docs/config.js';
 import type { EntryGenerator, PageLoad } from './$types.js';
+import fs from 'fs';
 
 import { env } from '$env/dynamic/private';
+import { building } from '$app/environment';
+import type { F } from 'vitest/dist/reporters-1evA5lom.js';
 
 export const entries = (() => {
 	return navConfig.sidebarNav[0].items.map((item) => {
@@ -33,22 +36,33 @@ export type Contributor = {
 
 export type FullContributor = Contributor & { name: string; bio: string };
 
-let storedContributors: FullContributor[] | undefined;
+async function getContributors(page: number) {
+	return await fetch(
+		`https://api.github.com/repos/melt-ui/melt-ui/contributors?page=${page}&per_page=100`, {
+		headers: {
+			Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+		},
+	}
+	).then((r) => r.json());
+}
 
-const getContributors = async () => {
-	if (!storedContributors) {
+
+async function getAllContributors(): Promise<FullContributor[]> {
+	if (building || !fs.existsSync('src/json/contributors.json')) {
 		try {
-			if (env.GITHUB_TOKEN === undefined) return [];
-
 			// eslint-disable-next-line no-console
 			console.log('Fetching contributors...');
-			const res = await fetch(`https://api.github.com/repos/melt-ui/melt-ui/contributors`, {
-				headers: {
-					Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-				},
-			});
 
-			const contributors = (await res.json()) as Contributor[];
+			let page = 1;
+			let contributors: Contributor[] = [];
+			let data = await getContributors(page);
+			while (data.length > 0) {
+				contributors = contributors.concat(data);
+				page++;
+				data = await getContributors(page);
+			}
+
+			console.log('Contributors:', contributors.length);
 
 			const contributorsWithName = (await Promise.all(
 				contributors.map(async (contributor) => {
@@ -66,19 +80,18 @@ const getContributors = async () => {
 				})
 			)) as FullContributor[];
 
-			storedContributors = contributorsWithName.filter(({ login }) => !login.includes('[bot]'));
-			// eslint-disable-next-line no-console
-			console.log(`Fetched ${storedContributors.length} contributors`);
+			fs.writeFileSync('src/json/contributors.json', JSON.stringify(contributorsWithName, null, 2));
+			return contributorsWithName;
 		} catch {
-			return [];
+			return []
 		}
 	}
 
-	return storedContributors;
+	return JSON.parse(fs.readFileSync('src/json/contributors.json', 'utf-8'));
 };
 
 export const load: PageLoad = async () => {
 	return {
-		contributors: await getContributors(),
+		contributors: await getAllContributors(),
 	};
 };
