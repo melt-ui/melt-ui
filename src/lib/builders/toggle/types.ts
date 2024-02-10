@@ -1,10 +1,10 @@
-import type { ReadableProp, WritableProp } from '$lib/internal/helpers/props.js';
+import type { WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { createToggle } from './create.js';
 export type { ToggleComponentEvents } from './events.js';
 
 export type CreateToggleProps = {
-	disabled?: ReadableProp<boolean>;
+	disabled?: WritableProp<boolean>;
 	pressed?: WritableProp<boolean>;
 };
 

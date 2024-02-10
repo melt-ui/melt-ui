@@ -1,49 +1,39 @@
+import type { WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { createPagination } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { PaginationComponentEvents } from './events.js';
+
 export type CreatePaginationProps = {
 	/**
 	 * The total number of items to be paginated.
 	 */
-	count: number;
+	count: WritableProp<number>;
 
 	/**
 	 * Number of items per page
 	 *
 	 * @default 1
 	 */
-	perPage?: number;
+	perPage?: WritableProp<number>;
 
 	/**
 	 * Number of visible items before and after the current page
 	 *
 	 * @default 1
 	 */
-	siblingCount?: number;
+	siblingCount?: WritableProp<number>;
 
 	/**
 	 * The uncontrolled default page of the pagination.
 	 *
 	 * @default 1
 	 */
-	defaultPage?: number;
+	defaultPage?: WritableProp<number>;
 
 	/**
-	 * The controlled page store for the pagination.
-	 * If provided, this will override the value passed to `defaultPage`.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
+	 * The current page.
 	 */
-	page?: Writable<number>;
-
-	/**
-	 * The callback invoked when the value of the page store changes.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onPageChange?: ChangeFn<number>;
+	page?: WritableProp<number>;
 };
 
 export type Page = {

@@ -1,6 +1,6 @@
-import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { DialogIdParts, createDialog } from './create.js';
 export type { DialogComponentEvents } from './events.js';
 export type CreateDialogProps = {
@@ -10,21 +10,21 @@ export type CreateDialogProps = {
 	 *
 	 * @default true
 	 */
-	preventScroll?: boolean;
+	preventScroll?: WritableProp<boolean>;
 
 	/**
 	 * If true, the dialog will close when the user presses the escape key.
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: WritableProp<boolean>;
 
 	/**
 	 * If true, the dialog will close when the user clicks outside of it.
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: WritableProp<boolean>;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -32,40 +32,28 @@ export type CreateDialogProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: PointerEvent | MouseEvent | TouchEvent) => void;
+	onOutsideClick?: WritableProp<(event: PointerEvent | MouseEvent | TouchEvent) => void>;
 
 	/**
 	 * The `role` attribute to apply to the dialog.
 	 *
 	 * @default 'dialog'
 	 */
-	role?: 'dialog' | 'alertdialog';
+	role?: WritableProp<'dialog' | 'alertdialog'>;
 
 	/**
-	 * If true, the dialog will be open by default.
+	 * If true, the dialog will be open.
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
-
-	/**
-	 * A writable store that controls the open state of the dialog.
-	 * @see [Controlled Usage](https://melt-ui.com/docs/controlled#bring-your-own-store)
-	 */
-	open?: Writable<boolean>;
-
-	/**
-	 * A function that will be called when the open state of the dialog changes.
-	 * @see [Controlled Usage](https://melt-ui.com/docs/controlled#change-functions)
-	 */
-	onOpenChange?: ChangeFn<boolean>;
+	open?: WritableProp<boolean>;
 
 	/**
 	 * If not undefined, the dialog content will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: WritableProp<HTMLElement | string | null>;
 
 	/**
 	 * If true, the dialog will be visible regardless of the open state.
@@ -74,19 +62,19 @@ export type CreateDialogProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: WritableProp<boolean>;
 
 	/**
 	 * Override the default autofocus behavior of the dialog
 	 * on open.
 	 */
-	openFocus?: FocusProp;
+	openFocus?: WritableProp<FocusProp>;
 
 	/**
 	 * Override the default autofocus behavior of the dialog
 	 * on close.
 	 */
-	closeFocus?: FocusProp;
+	closeFocus?: WritableProp<FocusProp>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

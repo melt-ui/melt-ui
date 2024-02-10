@@ -1,6 +1,8 @@
 import { type Readable, type Writable } from 'svelte/store';
-import { isReadable } from './is.js';
+import { isReadable, isWritable } from './is.js';
 import { withGet, type WithGet } from './withGet.js';
+import { overridable } from './overridable.js';
+import { removeUndefined } from '$lib/internal/helpers/object.js';
 
 export type WithDefaults<Props extends Record<string, unknown>, Defaults extends Partial<Props>> = {
 	[K in keyof (Props & Defaults)]: K extends keyof Props
@@ -20,15 +22,13 @@ export function withDefaults<
 }
 
 export type WritableProp<T> = Writable<T> | T;
-export type ReadableProp<T> = Readable<T> | T;
+type ReadableProp<T> = Readable<T> | T;
 
-export function parseProp<T>(prop: WritableProp<T>): WithGet<Writable<T>>;
-export function parseProp<T>(prop: ReadableProp<T>): WithGet<Readable<T>>;
-export function parseProp<T>(
-	prop: WritableProp<T> | ReadableProp<T>
-): WithGet<Writable<T> | Readable<T>> {
-	if (isReadable(prop)) {
+export function parseProp<T>(prop: WritableProp<T> | ReadableProp<T>): WithGet<Writable<T>> {
+	if (isWritable(prop)) {
 		return withGet(prop);
+	} else if (isReadable(prop)) {
+		return overridable(prop);
 	}
 	return withGet.writable(prop);
 }
@@ -47,7 +47,10 @@ export function parseProps<Props extends Record<string, unknown>, Defaults exten
 	props?: Props,
 	defaults?: Defaults
 ) {
-	const withDefaults = { ...defaults, ...props } as WithDefaults<Props, Defaults>;
+	const withDefaults = { ...defaults, ...removeUndefined(props ?? {}) } as WithDefaults<
+		Props,
+		Defaults
+	>;
 	return Object.fromEntries(
 		Object.entries(withDefaults).map(([key, value]) => {
 			return [key, parseProp(value)] as const;

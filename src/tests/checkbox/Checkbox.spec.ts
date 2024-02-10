@@ -25,12 +25,12 @@ describe('Checkbox', () => {
 	});
 
 	test('Should be checked when checked prop is true', async () => {
-		const { getByTestId } = render(CheckboxTest, { defaultChecked: true });
+		const { getByTestId } = render(CheckboxTest, { checked: true });
 		expect(getByTestId('checkbox').getAttribute('data-state')).toBe('checked');
 	});
 
 	test('Should be unchecked when checked prop is false', async () => {
-		const { getByTestId } = render(CheckboxTest, { defaultChecked: false });
+		const { getByTestId } = render(CheckboxTest, { checked: false });
 		expect(getByTestId('checkbox').getAttribute('data-state')).toBe('unchecked');
 	});
 

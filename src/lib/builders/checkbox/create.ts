@@ -1,16 +1,14 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	disabledAttr,
 	executeCallbacks,
 	kbd,
-	omit,
-	overridable,
+	makeElement,
 	styleToString,
-	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 import type { CheckboxEvents } from './events.js';
 import type { CreateCheckboxProps } from './types.js';
 
@@ -19,18 +17,12 @@ const defaults = {
 	required: false,
 	name: undefined,
 	value: 'on',
-	defaultChecked: false,
+	checked: false,
 } satisfies Defaults<CreateCheckboxProps>;
 
 export function createCheckbox(props?: CreateCheckboxProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateCheckboxProps;
-
-	const options = toWritableStores(omit(withDefaults, 'checked', 'defaultChecked'));
+	const { checked, ...options } = parseProps(props, defaults);
 	const { disabled, name, required, value } = options;
-
-	// States
-	const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked);
-	const checked = overridable(checkedWritable, withDefaults?.onCheckedChange);
 
 	const root = makeElement('checkbox', {
 		stores: [checked, disabled, required],

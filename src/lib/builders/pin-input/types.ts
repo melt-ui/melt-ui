@@ -1,6 +1,6 @@
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { PinInputIdParts, createPinInput } from './create.js';
 export type { PinInputComponentEvents } from './events.js';
 
@@ -10,7 +10,7 @@ export type CreatePinInputProps = {
 	 *
 	 * @default '○'
 	 */
-	placeholder?: string;
+	placeholder?: WritableProp<string>;
 
 	/**
 	 * The name of the input. Submitted with its owning form as part
@@ -18,43 +18,26 @@ export type CreatePinInputProps = {
 	 *
 	 * @default undefined
 	 */
-	name?: string;
+	name?: WritableProp<string>;
 
 	/**
 	 * If `true`, prevents the user from interacting with the input.
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: WritableProp<boolean>;
 
 	/**
 	 * The type of the input. Use `password` to mask the input.
 	 *
 	 * @default 'text'
 	 */
-	type?: 'text' | 'password';
+	type?: WritableProp<'text' | 'password'>;
 
 	/**
-	 * The uncontrolled default value of the pin input.
-	 *
-	 * @default []
+	 * The PinInput's value.
 	 */
-	defaultValue?: string[];
-
-	/**
-	 * The controlled value store for the pin input.
-	 * If provided, this will override the value passed to `defaultValue`.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
-	 */
-	value?: Writable<string[]>;
-
-	/**
-	 * The callback invoked when the value store of the pin input changes.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onValueChange?: ChangeFn<string[]>;
+	value?: WritableProp<string[]>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

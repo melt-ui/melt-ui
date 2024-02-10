@@ -58,12 +58,10 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	const popover = createPopover({
 		positioning: withDefaults.positioning,
 		arrowSize: withDefaults.arrowSize,
-		defaultOpen: withDefaults.defaultOpen,
 		open: withDefaults.open,
 		disableFocusTrap: withDefaults.disableFocusTrap,
 		closeOnEscape: withDefaults.closeOnEscape,
 		preventScroll: withDefaults.preventScroll,
-		onOpenChange: withDefaults.onOpenChange,
 		closeOnOutsideClick: withDefaults.closeOnOutsideClick,
 		portal: withDefaults.portal,
 		forceVisible: withDefaults.forceVisible,
@@ -152,9 +150,9 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		}
 	});
 
-	effect([options.onOutsideClick], ([$onOutsideClick]) => {
-		popover.options.onOutsideClick.set($onOutsideClick);
-	});
+	// effect([options.onOutsideClick], ([$onOutsideClick]) => {
+	// 	popover.options.onOutsideClick.set($onOutsideClick);
+	// });
 
 	const rangeFieldOptions = omit(
 		rangeField.options,

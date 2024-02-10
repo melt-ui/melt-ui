@@ -5,6 +5,7 @@ describe('overridable', () => {
 	it('works as expected without setting onChange fn', () => {
 		const store = writable(1);
 		const o = overridable(store);
+
 		expect(o.get()).toBe(1);
 
 		o.set(2);

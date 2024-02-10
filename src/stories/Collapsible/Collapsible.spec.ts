@@ -1,4 +1,4 @@
-import { sleep, type ChangeFn } from '$lib/internal/helpers/index.js';
+import { sleep, type ChangeFn, overridable } from '$lib/internal/helpers/index.js';
 import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -37,12 +37,12 @@ describe('Collapsible', () => {
 	});
 
 	test('Should be open when open prop is true', async () => {
-		const { getByTestId } = setup({ defaultOpen: true });
+		const { getByTestId } = setup({ open: true });
 		expect(getByTestId('content')).toBeVisible();
 	});
 
 	test('Should be closed when open prop is false', async () => {
-		const { getByTestId } = setup({ defaultOpen: false });
+		const { getByTestId } = setup({ open: false });
 		expect(getByTestId('content')).not.toBeVisible();
 	});
 
@@ -67,11 +67,11 @@ describe('Collapsible', () => {
 		expect(getByTestId('content')).not.toBeVisible();
 	});
 
-	test('Respects `onOpenChange` callback when the open state changes', async () => {
+	test('Respects `overridable` callback when the open state changes', async () => {
 		const onOpenChange: ChangeFn<boolean> = () => {
 			return false;
 		};
-		const { getByTestId, user } = setup({ onOpenChange });
+		const { getByTestId, user } = setup({ open: overridable(false, onOpenChange) });
 		expect(getByTestId('content')).not.toBeVisible();
 		await user.click(getByTestId('trigger'));
 		expect(getByTestId('content')).not.toBeVisible();

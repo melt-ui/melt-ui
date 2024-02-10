@@ -6,6 +6,7 @@
 	const {
 		elements: { trigger, content, arrow, close },
 		states: { open },
+		options: { onOutsideClick },
 	} = createPopover({
 		forceVisible: true,
 	});

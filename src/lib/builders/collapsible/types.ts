@@ -1,14 +1,13 @@
-import type { createCollapsible } from './create.js';
+import type { WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { createCollapsible } from './create.js';
 export type { CollapsibleComponentEvents } from './events.js';
 
 export type CreateCollapsibleProps = {
 	/**
 	 * Whether the collapsible is disabled which prevents it from being opened.
 	 */
-	disabled?: boolean;
+	disabled?: WritableProp<boolean>;
 
 	/**
 	 * Whether the collapsible content should be displayed even if it is not open.
@@ -18,29 +17,14 @@ export type CreateCollapsibleProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: WritableProp<boolean>;
 
 	/**
 	 * Whether the collapsible is open by default.
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
-
-	/**
-	 * Optionally pass a writable store to control the open state of the collapsible.
-	 * If provided, this will override the value of the `defaultOpen` prop.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
-	 */
-	open?: Writable<boolean>;
-
-	/**
-	 * A callback called when the value of the `open` store should be changed.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onOpenChange?: ChangeFn<boolean>;
+	open?: WritableProp<boolean>;
 };
 
 export type Collapsible = BuilderReturn<typeof createCollapsible>;

@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
-import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { PopoverIdParts, createPopover } from './create.js';
 export type { PopoverComponentEvents } from './events.js';
 
@@ -9,56 +9,40 @@ export type CreatePopoverProps = {
 	/**
 	 * The positioning configuration for the floating element.
 	 */
-	positioning?: FloatingConfig;
+	positioning?: WritableProp<FloatingConfig>;
 
 	/**
 	 * The size of the optional arrow in pixels.
 	 */
-	arrowSize?: number;
+	arrowSize?: WritableProp<number>;
 
 	/**
-	 * The initial state of the `open` store.
-	 * Should only be used if the popover is uncontrolled.
-	 */
-	defaultOpen?: boolean;
-
-	/**
-	 * A store that controls the open state.
-	 * Use when you want to directly control the popover.
+	 * If the popover is open or not.
 	 *
-	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
+	 * @default false
 	 */
-	open?: Writable<boolean>;
-
-	/**
-	 * Optional function that runs whenever open should change.
-	 * When present, will control state changes instead of the
-	 * default behaviour.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onOpenChange?: ChangeFn<boolean>;
+	open?: WritableProp<boolean>;
 
 	/**
 	 * Whether or not to disable the focus trap when the popover is open.
 	 *
 	 * @default false
 	 */
-	disableFocusTrap?: boolean;
+	disableFocusTrap?: WritableProp<boolean>;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: WritableProp<boolean>;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: WritableProp<boolean>;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -66,21 +50,21 @@ export type CreatePopoverProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: PointerEvent) => void;
+	onOutsideClick?: WritableProp<(event: PointerEvent) => void>;
 
 	/**
 	 * Whether or not to prevent scrolling when the popover is open.
 	 *
 	 * @default false
 	 */
-	preventScroll?: boolean;
+	preventScroll?: WritableProp<boolean>;
 
 	/**
 	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: WritableProp<HTMLElement | string | null>;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -90,19 +74,19 @@ export type CreatePopoverProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: WritableProp<boolean>;
 
 	/**
 	 * Override the default autofocus behavior of the popover
 	 * on open.
 	 */
-	openFocus?: FocusProp;
+	openFocus?: WritableProp<FocusProp>;
 
 	/**
 	 * Override the default autofocus behavior of the popover
 	 * on close.
 	 */
-	closeFocus?: FocusProp;
+	closeFocus?: WritableProp<FocusProp>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

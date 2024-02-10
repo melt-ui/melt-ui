@@ -1,6 +1,6 @@
-import { writable, type Updater, type Writable } from 'svelte/store';
-import { withGet } from './withGet.js';
-import { isWritable } from './is.js';
+import { writable, type Readable, type Updater, type Writable } from 'svelte/store';
+import { isReadable, isWritable } from './is.js';
+import { withGet, type WithGet } from './withGet.js';
 
 export type ChangeFn<T> = (args: { curr: T; next: T }) => T;
 
@@ -10,11 +10,12 @@ export type ChangeFn<T> = (args: { curr: T; next: T }) => T;
  * - The second argument is an optional callback that is called before the value is updated.
  * It receives an object with the current and next values, and should return the modified next value.
  */
-export const overridable = <T>(value: Writable<T> | T, onChange?: ChangeFn<T>) => {
-	const _store = isWritable(value) ? value : writable(value);
-	const store = withGet(_store);
+export const overridable = <T>(value: Readable<T> | T, onChange?: ChangeFn<T>) => {
+	const _store = isReadable(value) ? value : (writable(value) as Readable<T> | Writable<T>);
+	const store = withGet(_store) as unknown as WithGet<Readable<T>> & WithGet<Writable<T>>;
 
 	const update = (updater: Updater<T>, sideEffect?: (newValue: T) => void) => {
+		if (!isWritable(store)) return;
 		store.update((curr) => {
 			const next = updater(curr);
 			let res: T = next;
