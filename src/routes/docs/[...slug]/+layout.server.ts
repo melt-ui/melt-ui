@@ -2,7 +2,6 @@ import fs from 'fs';
 import type { PageLoad } from './$types.js';
 
 import { building } from '$app/environment';
-import { GITHUB_TOKEN } from '$env/static/private';
 
 export type Contributor = {
 	login: string;
@@ -30,12 +29,7 @@ export type FullContributor = Contributor & { name: string; bio: string };
 
 async function getContributors(page: number) {
 	return await fetch(
-		`https://api.github.com/repos/melt-ui/melt-ui/contributors?page=${page}&per_page=100`,
-		{
-			headers: {
-				Authorization: `Bearer ${GITHUB_TOKEN}`,
-			},
-		}
+		`https://api.github.com/repos/melt-ui/melt-ui/contributors?page=${page}&per_page=100`
 	).then((r) => r.json());
 }
 async function getAllContributors(): Promise<FullContributor[]> {
@@ -58,12 +52,13 @@ async function getAllContributors(): Promise<FullContributor[]> {
 
 			const contributorsWithName = (await Promise.all(
 				contributors.map(async (contributor) => {
-					const res = await fetch(`https://api.github.com/users/${contributor.login}`, {
-						headers: {
-							Authorization: `Bearer ${GITHUB_TOKEN}`,
-						},
-					});
-					const { name, bio } = await res.json();
+					const { name, bio } = await fetch(`https://api.github.com/users/${contributor.login}`)
+						.then((r) => r.json())
+						.catch(() => ({
+							name: contributor.login,
+							bio: '',
+						}));
+
 					return {
 						...contributor,
 						name,
