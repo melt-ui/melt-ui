@@ -96,6 +96,7 @@
 		"@types/hast": "^3.0.4",
 		"@types/jest-axe": "^3.5.5",
 		"@types/mdast": "^4.0.3",
+		"@types/node": "^20.11.17",
 		"@types/testing-library__jest-dom": "^5.14.9",
 		"@typescript-eslint/eslint-plugin": "^5.62.0",
 		"@typescript-eslint/parser": "^5.62.0",

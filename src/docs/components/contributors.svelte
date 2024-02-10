@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { FullContributor } from '$routes/docs/[...slug]/+page.server.js';
+	import type { FullContributor } from '$routes/docs/[...slug]/+layout.server.js';
 
 	import Contributor from './contributor.svelte';
 
