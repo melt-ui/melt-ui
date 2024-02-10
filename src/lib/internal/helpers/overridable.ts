@@ -1,9 +1,17 @@
-import type { Updater, Writable } from 'svelte/store';
+import { writable, type Updater, type Writable } from 'svelte/store';
 import { withGet } from './withGet.js';
+import { isWritable } from './is.js';
 
 export type ChangeFn<T> = (args: { curr: T; next: T }) => T;
 
-export const overridable = <T>(_store: Writable<T>, onChange?: ChangeFn<T>) => {
+/**
+ * A wrapper over Svelte's Writable store that allows for overriding the update method.
+ * - The first argument is the initial value or a writable store.
+ * - The second argument is an optional callback that is called before the value is updated.
+ * It receives an object with the current and next values, and should return the modified next value.
+ */
+export const overridable = <T>(value: Writable<T> | T, onChange?: ChangeFn<T>) => {
+	const _store = isWritable(value) ? value : writable(value);
 	const store = withGet(_store);
 
 	const update = (updater: Updater<T>, sideEffect?: (newValue: T) => void) => {
