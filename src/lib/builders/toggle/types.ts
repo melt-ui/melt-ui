@@ -1,14 +1,10 @@
+import type { ReadableProp, WritableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { createToggle } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
-import type { WritableProp } from '$lib/internal/helpers/props.js';
 export type { ToggleComponentEvents } from './events.js';
 
-
-
 export type CreateToggleProps = {
-	disabled?: boolean;
+	disabled?: ReadableProp<boolean>;
 	pressed?: WritableProp<boolean>;
 };
 

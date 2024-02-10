@@ -57,8 +57,27 @@ export function removeUndefined<T extends object>(
 	for (const key in obj) {
 		const value = obj[key];
 		if (value !== undefined) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			result[key] = value as any;
 		}
 	}
 	return result;
+}
+
+/**
+ * Strict typed `Object.keys`
+ *
+ * @category Object
+ */
+export function objectKeys<T extends object>(obj: T) {
+	return Object.keys(obj) as Array<`${keyof T & (string | number | boolean | null | undefined)}`>;
+}
+
+/**
+ * Strict typed `Object.entries`
+ *
+ * @category Object
+ */
+export function objectEntries<T extends object>(obj: T) {
+	return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
 }
