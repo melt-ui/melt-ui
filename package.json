@@ -139,7 +139,6 @@
 		"typescript": "^5.1.6",
 		"unified": "^11.0.4",
 		"unist-util-visit": "^5.0.0",
-		"user-agent-data-types": "^0.4.2",
 		"vite": "^5.0.0",
 		"vite-plugin-pagefind": "^0.0.21",
 		"vitest": "^1.0.0"
