@@ -96,10 +96,6 @@ const content = elementSchema('content', {
 			name: 'data-melt-scroll-area-content',
 			value: ATTRS.MELT('scroll area content'),
 		},
-		{
-			name: 'data-state',
-			value: '`"visible" | "hidden"`',
-		},
 	],
 });
 
@@ -107,37 +103,44 @@ const scrollbarX = elementSchema('scrollbarX', {
 	description: 'The track of the horizontal scrollbar.',
 	dataAttributes: [
 		{
-			name: 'data-melt-scroll-area-scrollbar',
-			value: ATTRS.MELT('scroll area scrollbar'),
-		},
-		{
 			name: 'data-state',
 			value: '`"visible" | "hidden"`',
 		},
+		{
+			name: 'data-melt-scroll-area-scrollbar',
+			value: ATTRS.MELT('scroll area scrollbar'),
+		},
 	],
+	events: ['pointerdown', 'pointerup', 'pointermove'],
 });
 const thumbX = elementSchema('thumbX', {
 	description: 'The thumb of the horizontal scrollbar.',
 	dataAttributes: [
 		{
-			name: 'data-melt-scroll-area-thumb',
-			value: ATTRS.MELT('scroll area thumb'),
-		},
-		{
 			name: 'data-state',
 			value: '`"visible" | "hidden"`',
 		},
+		{
+			name: 'data-melt-scroll-area-thumb',
+			value: ATTRS.MELT('scroll area thumb'),
+		},
 	],
+	events: ['pointerdown', 'pointerup'],
 });
 
 const scrollbarY = elementSchema('scrollbarY', {
 	description: 'The track of the vertical scrollbar.',
 	dataAttributes: [
 		{
+			name: 'data-state',
+			value: '`"visible" | "hidden"`',
+		},
+		{
 			name: 'data-melt-scroll-area-scrollbar',
 			value: ATTRS.MELT('scroll area scrollbar'),
 		},
 	],
+	events: ['pointerdown', 'pointerup', 'pointermove'],
 });
 
 const thumbY = elementSchema('thumbY', {
@@ -152,6 +155,7 @@ const thumbY = elementSchema('thumbY', {
 			value: ATTRS.MELT('scroll area thumb'),
 		},
 	],
+	events: ['pointerdown', 'pointerup'],
 });
 
 const schemas: BuilderData['schemas'] = [

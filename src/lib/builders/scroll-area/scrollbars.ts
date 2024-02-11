@@ -15,6 +15,8 @@ import type { Action } from 'svelte/action';
 import { name, type ScrollAreaState } from './create.js';
 import { debounceCallback, getThumbSize, resizeObserver } from './helpers.js';
 import type { ScrollAreaType } from './types.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { ScrollAreaEvents } from './events.js';
 
 export type CreateScrollbarAction = (state: ScrollAreaState) => Action<HTMLElement>;
 
@@ -324,7 +326,7 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ScrollAreaEvents['scrollbar']> => {
 			const unsubAction = action(node)?.destroy;
 			rootState.scrollbarXEl.set(node);
 			rootState.scrollbarXEnabled.set(true);
@@ -361,7 +363,7 @@ export function createScrollbarY(state: ScrollAreaState, createAction: CreateScr
 				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ScrollAreaEvents['scrollbar']> => {
 			const unsubAction = action(node)?.destroy;
 			rootState.scrollbarYEl.set(node);
 			rootState.scrollbarYEnabled.set(true);

@@ -18,7 +18,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { derived, writable, type Readable, type Writable } from 'svelte/store';
 import type { CreateScrollAreaProps } from './types.js';
-import type { Orientation, TextDirection } from '$lib/internal/types.js';
+import type { MeltActionReturn, Orientation, TextDirection } from '$lib/internal/types.js';
 import {
 	addUnlinkedScrollListener,
 	getScrollPositionFromPointer,
@@ -29,6 +29,7 @@ import {
 	type Sizes,
 } from './helpers.js';
 import { createScrollbarX, createScrollbarY, getScrollbarActionByType } from './scrollbars.js';
+import type { ScrollAreaEvents } from './events.js';
 
 type ScrollAreaParts = 'root' | 'viewport' | 'content' | 'scrollbar' | 'thumb' | 'corner';
 export const { name } = createElHelpers<ScrollAreaParts>('scroll-area');
@@ -419,7 +420,7 @@ function createScrollbarThumb(state: ScrollAreaState) {
 				'data-state': $hasThumb ? 'visible' : 'hidden',
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ScrollAreaEvents['thumb']> => {
 			scrollbarState.thumbEl.set(node);
 
 			let effectHasRan = 0;
