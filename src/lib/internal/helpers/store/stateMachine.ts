@@ -1,4 +1,3 @@
-import type { Key } from 'readline';
 import { get, writable } from 'svelte/store';
 
 interface Machine<S> {

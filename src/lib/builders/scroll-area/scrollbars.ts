@@ -240,7 +240,7 @@ export function createScrollScrollbarAction(state: ScrollAreaState) {
 	const baseAction = createBaseScrollbarAction(state);
 	const { rootState, scrollbarState } = state;
 
-	const { state: status, dispatch } = createStateMachine('hidden', {
+	const machine = createStateMachine('hidden', {
 		hidden: {
 			SCROLL: 'scrolling',
 		},
@@ -259,10 +259,10 @@ export function createScrollScrollbarAction(state: ScrollAreaState) {
 		},
 	});
 
-	effect([status], ([$status]) => {
+	effect([machine.state], ([$status]) => {
 		if ($status === 'idle') {
 			window.setTimeout(() => {
-				dispatch('HIDE');
+				machine.dispatch('HIDE');
 			}, rootState.options.hideDelay.get());
 		}
 		if ($status === 'hidden') {
@@ -272,7 +272,7 @@ export function createScrollScrollbarAction(state: ScrollAreaState) {
 		}
 	});
 
-	const debounceScrollEnd = debounceCallback(() => dispatch('SCROLL_END'), 100);
+	const debounceScrollEnd = debounceCallback(() => machine.dispatch('SCROLL_END'), 100);
 
 	effect([rootState.viewportEl, scrollbarState.isHorizontal], ([$viewportEl, $isHorizontal]) => {
 		const scrollDirection = $isHorizontal ? 'scrollLeft' : 'scrollTop';
@@ -285,7 +285,7 @@ export function createScrollScrollbarAction(state: ScrollAreaState) {
 				const scrollPos = $viewportEl[scrollDirection];
 				const hasScrollInDirectionChanged = prevScrollPos !== scrollPos;
 				if (hasScrollInDirectionChanged) {
-					dispatch('SCROLL');
+					machine.dispatch('SCROLL');
 					debounceScrollEnd();
 				}
 				prevScrollPos = scrollPos;

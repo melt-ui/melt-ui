@@ -1,6 +1,6 @@
-import type { IdObj } from '$lib/internal/helpers';
-import type { TextDirection } from '$lib/internal/types';
-import type { ScrollAreaIdParts } from '.';
+import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { TextDirection } from '$lib/internal/types.js';
+import type { ScrollAreaIdParts } from './index.js';
 
 export type ScrollAreaType = 'auto' | 'always' | 'scroll' | 'hover';
 
