@@ -64,6 +64,7 @@ export type ScrollAreaScrollbarState = {
 	prevWebkitUserSelect: WithGet<Writable<string>>;
 	pointerOffset: WithGet<Writable<number>>;
 	thumbEl: WithGet<Writable<HTMLElement | null>>;
+	thumbOffset: WithGet<Writable<number>>;
 	scrollbarEl: WithGet<Writable<HTMLElement | null>>;
 	sizes: WithGet<Writable<Sizes>>;
 	orientation: WithGet<Writable<Orientation>>;
@@ -214,6 +215,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		const prevWebkitUserSelect = withGet.writable('');
 		const pointerOffset = withGet.writable(0);
 		const thumbEl = withGet.writable<HTMLElement | null>(null);
+		const thumbOffset = withGet.writable(0);
 		const scrollbarEl = withGet.writable<HTMLElement | null>(null);
 
 		const sizes = withGet.writable<Sizes>({
@@ -275,23 +277,10 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			const $viewportEl = viewportEl.get();
 			const $thumbEl = thumbEl.get();
 			if (!$viewportEl || !$thumbEl) return;
-			if (isHorizontal.get()) {
-				const scrollPos = $viewportEl.scrollLeft;
-				const offset = getThumbOffsetFromScroll(
-					scrollPos,
-					sizes.get(),
-					rootState.options.dir.get()
-				);
-				$thumbEl.style.transform = `translate3d(${offset}px, 0, 0)`;
-			} else {
-				const scrollPos = $viewportEl.scrollTop;
-				const offset = getThumbOffsetFromScroll(
-					scrollPos,
-					sizes.get(),
-					rootState.options.dir.get()
-				);
-				$thumbEl.style.transform = `translate3d(0, ${offset}px, 0)`;
-			}
+
+			const scrollPos = isHorizontal.get() ? $viewportEl.scrollLeft : $viewportEl.scrollTop;
+			const offset = getThumbOffsetFromScroll(scrollPos, sizes.get(), rootState.options.dir.get());
+			thumbOffset.set(offset);
 		}
 
 		function onDragScroll(payload: number) {
@@ -340,6 +329,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			prevWebkitUserSelect,
 			pointerOffset,
 			thumbEl,
+			thumbOffset,
 			sizes,
 			orientation,
 			handleThumbDown,
@@ -416,12 +406,15 @@ function createScrollbarThumb(state: ScrollAreaState) {
 	}
 
 	const thumb = makeElement(name('thumb'), {
-		stores: [scrollbarState.hasThumb],
-		returned: ([$hasThumb]) => {
+		stores: [scrollbarState.hasThumb, scrollbarState.isHorizontal, scrollbarState.thumbOffset],
+		returned: ([$hasThumb, $isHorizontal, $offset]) => {
 			return {
 				style: styleToString({
 					width: 'var(--melt-scroll-area-thumb-width)',
 					height: 'var(--melt-scroll-area-thumb-height)',
+					transform: $isHorizontal
+						? `translate3d(${Math.round($offset)}px, 0, 0)`
+						: `translate3d(0, ${Math.round($offset)}px, 0)`,
 				}),
 				'data-state': $hasThumb ? 'visible' : 'hidden',
 			};
