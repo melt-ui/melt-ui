@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions/index.js';
+import { usePopper, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addMeltEventListener,
@@ -11,7 +11,6 @@ import {
 	getPortalDestination,
 	getPreviousFocusable,
 	isHTMLElement,
-	isLeftClick,
 	kbd,
 	noop,
 	omit,
@@ -113,19 +112,20 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	);
 	const longPressTimer = withGet.writable(0);
 
-	function handleClickOutside(e: PointerEvent) {
+	function handleClickOutside(e: InteractOutsideEvent) {
 		rootOptions.onOutsideClick.get()?.(e);
-		if (e.defaultPrevented) return;
+		if (e.defaultPrevented) return false;
 
 		const target = e.target;
-		if (!(target instanceof Element)) return;
+		if (!(target instanceof Element)) return false;
 
 		const isClickInsideTrigger = target.closest(`[data-id="${ids.trigger.get()}"]`) !== null;
 
 		if (!isClickInsideTrigger || isLeftClick(e)) {
-			rootOpen.set(false);
-			return;
+			return true;
 		}
+
+		return false;
 	}
 
 	const isVisible = derivedVisible({
@@ -174,11 +174,14 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 							open: rootOpen,
 							options: {
 								floating: $positioning,
-								clickOutside: $closeOnOutsideClick
-									? {
-											handler: handleClickOutside,
-									  }
-									: null,
+								modal: {
+									closeOnInteractOutside: $closeOnOutsideClick,
+									onClose: () => {
+										rootOpen.set(false);
+									},
+									shouldCloseOnInteractOutside: handleClickOutside,
+									open: $isVisible,
+								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
@@ -339,4 +342,11 @@ export function createContextMenu(props?: CreateContextMenuProps) {
  */
 function isTouchOrPen(e: PointerEvent) {
 	return e.pointerType !== 'mouse';
+}
+
+export function isLeftClick(event: InteractOutsideEvent): boolean {
+	if ('button' in event) {
+		return event.button === 0 && event.ctrlKey === false && event.metaKey === false;
+	}
+	return true;
 }
