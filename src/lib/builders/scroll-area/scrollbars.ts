@@ -6,7 +6,7 @@ import {
 	noop,
 	addEventListener,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	effect,
 	sleep,
 	styleToString,
@@ -301,7 +301,7 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 	const action = createAction(state);
 	const { rootState, scrollbarState } = state;
 
-	return builder(name('scrollbar'), {
+	return makeElement(name('scrollbar'), {
 		stores: [scrollbarState.sizes, rootState.options.dir, scrollbarState.isVisible],
 		returned: ([$sizes, $dir, $isVisible]) => {
 			return {
@@ -337,7 +337,7 @@ export function createScrollbarY(state: ScrollAreaState, createAction: CreateScr
 	const action = createAction(state);
 	const { rootState, scrollbarState } = state;
 
-	return builder(name('scrollbar'), {
+	return makeElement(name('scrollbar'), {
 		stores: [scrollbarState.sizes, rootState.options.dir, scrollbarState.isVisible],
 		returned: ([$sizes, $dir, $isVisible]) => {
 			return {

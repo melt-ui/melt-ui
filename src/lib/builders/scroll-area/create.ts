@@ -1,7 +1,7 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -120,7 +120,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		ids,
 	};
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [cornerWidth, cornerHeight, ids.root],
 		returned: ([$cornerWidth, $cornderHeight, $rootId]) => {
 			return {
@@ -142,7 +142,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		},
 	});
 
-	const viewport = builder(name('viewport'), {
+	const viewport = makeElement(name('viewport'), {
 		stores: [scrollbarXEnabled, scrollbarYEnabled, ids.viewport],
 		returned: ([$scrollbarXEnabled, $scrollbarYEnabled, $viewportId]) => {
 			return {
@@ -186,7 +186,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 		},
 	});
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [ids.content],
 		returned: ([$contentId]) => {
 			return {
@@ -311,6 +311,8 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 			const $isHorizontal = scrollbarState.isHorizontal.get();
 			const $viewportEl = rootState.viewportEl.get();
 
+			if ($scrollbarEl.clientHeight < 1) return;
+
 			if ($isHorizontal) {
 				scrollbarState.sizes.set({
 					content: $viewportEl?.scrollWidth ?? 0,
@@ -415,7 +417,7 @@ function createScrollbarThumb(state: ScrollAreaState) {
 		scrollbarState.onThumbPositionChange();
 	}
 
-	const thumb = builder(name('thumb'), {
+	const thumb = makeElement(name('thumb'), {
 		stores: [scrollbarState.hasThumb],
 		returned: ([$hasThumb]) => {
 			return {
@@ -509,7 +511,7 @@ function createScrollAreaCorner(rootState: ScrollAreaRootState) {
 		([$hasCorner, $hasSize]) => $hasCorner && $hasSize
 	);
 
-	const corner = builder(name('corner'), {
+	const corner = makeElement(name('corner'), {
 		stores: [width, height, rootState.options.dir, shouldDisplay],
 		returned: ([$width, $height, $dir, $shouldDisplay]) => {
 			return {
