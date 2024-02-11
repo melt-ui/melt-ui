@@ -356,7 +356,7 @@ export function createScrollbarY(state: ScrollAreaState, createAction: CreateScr
 					left: $dir === 'rtl' ? 0 : undefined,
 					bottom: 'var(--melt-scroll-area-corner-height)',
 					'--melt-scroll-area-thumb-height': `${getThumbSize($sizes)}px`,
-					display: !$isVisible ? 'none' : undefined,
+					visibility: !$isVisible ? 'hidden' : undefined,
 				}),
 				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
