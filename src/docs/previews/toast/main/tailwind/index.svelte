@@ -2,7 +2,7 @@
 	import { createToaster, melt } from '$lib/index.js';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 
 	type ToastData = {
 		title: string;
@@ -71,7 +71,7 @@
 						class="flex items-center gap-2 font-semibold"
 					>
 						{data.title}
-						<span class="rounded-full square-1.5 {data.color}" />
+						<span class="size-1.5 rounded-full {data.color}" />
 					</h3>
 					<div use:melt={$description(id)}>
 						{data.description}
@@ -79,10 +79,10 @@
 				</div>
 				<button
 					use:melt={$close(id)}
-					class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
+					class="absolute right-4 top-4 grid size-6 place-items-center rounded-full text-magnum-500
 					hover:bg-magnum-900/50"
 				>
-					<X class="square-4" />
+					<X class="size-4" />
 				</button>
 			</div>
 		</div>

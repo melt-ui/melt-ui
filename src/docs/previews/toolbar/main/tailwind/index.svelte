@@ -9,7 +9,7 @@
 		AlignLeft,
 		AlignCenter,
 		AlignRight,
-	} from 'lucide-svelte';
+	} from '$icons/index.js';
 
 	const {
 		elements: { root, button, link, separator },
@@ -31,37 +31,37 @@
 >
 	<div class="flex items-center gap-1" use:melt={$fontGroup}>
 		<button class="item" aria-label="bold" use:melt={$fontItem('bold')}>
-			<Bold class="square-5" />
+			<Bold class="size-5" />
 		</button>
 		<button class="item" aria-label="italic" use:melt={$fontItem('italic')}>
-			<Italic class="square-5" />
+			<Italic class="size-5" />
 		</button>
 		<button
 			class="item"
 			aria-label="strikethrough"
 			use:melt={$fontItem('strikethrough')}
 		>
-			<Strikethrough class="square-5" />
+			<Strikethrough class="size-5" />
 		</button>
 	</div>
 	<div class="separator" use:melt={$separator} />
 	<div class="flex items-center gap-1" use:melt={$alignGroup}>
 		<button class="item" aria-label="align left" use:melt={$alignItem('left')}>
-			<AlignLeft class="square-5" />
+			<AlignLeft class="size-5" />
 		</button>
 		<button
 			class="item"
 			aria-label="align center"
 			use:melt={$alignItem('center')}
 		>
-			<AlignCenter class="square-5" />
+			<AlignCenter class="size-5" />
 		</button>
 		<button
 			class="item"
 			aria-label="align-right"
 			use:melt={$alignItem('right')}
 		>
-			<AlignRight class="square-5" />
+			<AlignRight class="size-5" />
 		</button>
 	</div>
 	<div class="separator" use:melt={$separator} />

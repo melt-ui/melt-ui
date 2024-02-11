@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createCalendar, melt, type CreateSelectProps } from '$lib';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { createCalendar, melt, type CreateSelectProps } from '$lib/index.js';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
 	import MonthSelect from './MonthSelect.svelte';
 	import { writable } from 'svelte/store';
 	import { DateFormatter, getLocalTimeZone } from '@internationalized/date';

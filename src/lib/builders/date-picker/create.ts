@@ -5,7 +5,7 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	effect,
 	omit,
 	toWritableStores,
@@ -75,7 +75,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		onOutsideClick: withDefaults.onOutsideClick,
 	});
 
-	const trigger = builder('popover-trigger', {
+	const trigger = makeElement('popover-trigger', {
 		stores: [popover.elements.trigger],
 		returned: ([$trigger]) => {
 			return {

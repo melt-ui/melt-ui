@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { createPopover, melt } from '$lib/index.js';
-	import { Plus } from 'lucide-svelte';
+	import { Plus } from '$icons/index.js';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
@@ -40,7 +40,7 @@
 	use:melt={$trigger}
 	aria-label="Add"
 >
-	<Plus class="square-4" aria-label="plus" />
+	<Plus class="size-4" aria-label="plus" />
 </button>
 
 {#if $open}

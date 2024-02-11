@@ -1,7 +1,7 @@
 import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	derivedVisible,
 	effect,
@@ -19,12 +19,12 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle';
-import { withGet, type WithGet } from '$lib/internal/helpers/withGet';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { writable, type Readable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
-import { omit } from '../../internal/helpers/object';
+import { generateIds } from '../../internal/helpers/id.js';
+import { omit } from '../../internal/helpers/object.js';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
 
@@ -110,7 +110,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		}
 	) as WithGet<Readable<() => void>>;
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [open, ids.trigger, ids.content],
 		returned: ([$open, $triggerId, $contentId]) => {
 			return {
@@ -147,7 +147,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [isVisible, portal, ids.content],
 		returned: ([$isVisible, $portal, $contentId]) => {
 			return {
@@ -258,7 +258,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		},
 	});
 
-	const arrow = builder(name('arrow'), {
+	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
 			'data-arrow': true,

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { createSlider, melt } from '$lib/index.js';
 
 	const {
@@ -19,6 +19,6 @@
 	</span>
 	<span
 		use:melt={$thumbs[0]}
-		class="block rounded-full bg-white shadow square-6 focus:ring-4 focus:ring-magnum-600 dark:bg-white dark:shadow-none"
+		class="block size-6 rounded-full bg-white shadow focus:ring-4 focus:ring-magnum-600 dark:bg-white dark:shadow-none"
 	/>
 </span>

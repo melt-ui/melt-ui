@@ -1,12 +1,7 @@
-import {
-	createFocusTrap,
-	useClickOutside,
-	useEscapeKeydown,
-	usePortal,
-} from '$lib/internal/actions/index.js';
+import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -16,12 +11,10 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
-	last,
 	noop,
 	omit,
 	overridable,
 	removeScroll,
-	sleep,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
@@ -31,6 +24,7 @@ import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
+import { useModal } from '$lib/internal/actions/modal/action.js';
 
 type DialogParts =
 	| 'trigger'
@@ -54,8 +48,6 @@ const defaults = {
 	closeFocus: undefined,
 	onOutsideClick: undefined,
 } satisfies Defaults<CreateDialogProps>;
-
-const openDialogIds = withGet.writable<string[]>([]);
 
 export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
@@ -108,21 +100,7 @@ export function createDialog(props?: CreateDialogProps) {
 		});
 	}
 
-	effect([open], ([$open]) => {
-		// Prevent double clicks from closing multiple dialogs
-		sleep(100).then(() => {
-			if ($open) {
-				openDialogIds.update((prev) => {
-					prev.push(ids.content.get());
-					return prev;
-				});
-			} else {
-				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content.get()));
-			}
-		});
-	});
-
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [open],
 		returned: ([$open]) => {
 			return {
@@ -149,7 +127,7 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const overlay = builder(name('overlay'), {
+	const overlay = makeElement(name('overlay'), {
 		stores: [isVisible],
 		returned: ([$isVisible]) => {
 			return {
@@ -184,7 +162,7 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [isVisible, ids.content, ids.description, ids.title],
 		returned: ([$isVisible, $contentId, $descriptionId, $titleId]) => {
 			return {
@@ -227,23 +205,20 @@ export function createDialog(props?: CreateDialogProps) {
 						return focusTrap.deactivate;
 					}
 				}),
-
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
-					return useClickOutside(node, {
-						enabled: $open,
-						handler: (e: PointerEvent) => {
+					return useModal(node, {
+						open: $open,
+						closeOnInteractOutside: $closeOnOutsideClick,
+						onClose() {
+							handleClose();
+						},
+						shouldCloseOnInteractOutside(e) {
 							onOutsideClick.get()?.(e);
-							if (e.defaultPrevented) return;
-
-							const $openDialogIds = openDialogIds.get();
-							const isLast = last($openDialogIds) === ids.content.get();
-							if ($closeOnOutsideClick && isLast) {
-								handleClose();
-							}
+							if (e.defaultPrevented) return false;
+							return true;
 						},
 					}).destroy;
 				}),
-
 				effect([closeOnEscape], ([$closeOnEscape]) => {
 					if (!$closeOnEscape) return noop;
 
@@ -257,6 +232,7 @@ export function createDialog(props?: CreateDialogProps) {
 					}
 					return noop;
 				}),
+
 				effect([isVisible], ([$isVisible]) => {
 					tick().then(() => {
 						if (!$isVisible) {
@@ -277,7 +253,7 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const portalled = builder(name('portalled'), {
+	const portalled = makeElement(name('portalled'), {
 		stores: portal,
 		returned: ($portal) => ({
 			'data-portal': $portal ? '' : undefined,
@@ -303,21 +279,21 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const title = builder(name('title'), {
+	const title = makeElement(name('title'), {
 		stores: [ids.title],
 		returned: ([$titleId]) => ({
 			id: $titleId,
 		}),
 	});
 
-	const description = builder(name('description'), {
+	const description = makeElement(name('description'), {
 		stores: [ids.description],
 		returned: ([$descriptionId]) => ({
 			id: $descriptionId,
 		}),
 	});
 
-	const close = builder(name('close'), {
+	const close = makeElement(name('close'), {
 		returned: () =>
 			({
 				type: 'button',

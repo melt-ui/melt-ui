@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createAvatar, createLinkPreview, melt } from '$lib';
-	import type { FullContributor } from '$routes/docs/[...slug]/+page.server';
+	import { createAvatar, createLinkPreview, melt } from '$lib/index.js';
+	import type { FullContributor } from '$routes/docs/[...slug]/+layout.server.js';
 	import { fly } from 'svelte/transition';
 
 	export let contributor: FullContributor;

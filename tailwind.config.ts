@@ -104,18 +104,8 @@ export default {
 
 	plugins: [
 		typography,
-		plugin(function ({ addVariant, matchUtilities, theme }) {
+		plugin(function ({ addVariant }) {
 			addVariant('hocus', ['&:hover', '&:focus']);
-			// Square utility
-			matchUtilities(
-				{
-					square: (value) => ({
-						width: value,
-						height: value,
-					}),
-				},
-				{ values: theme('spacing') }
-			);
 		}),
 	],
 } satisfies Config;

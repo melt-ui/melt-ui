@@ -11,7 +11,7 @@
 <div use:melt={$root} class="flex items-center gap-2">
 	{#each Array.from({ length: 5 }) as _}
 		<input
-			class="rounded-md bg-white text-center text-lg text-magnum-900 shadow-sm square-12"
+			class="size-12 rounded-md bg-white text-center text-lg text-magnum-900 shadow-sm"
 			use:melt={$input()}
 		/>
 	{/each}

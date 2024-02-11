@@ -1,23 +1,23 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	executeCallbacks,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults } from '$lib/internal/types.js';
 
 import { dequal } from 'dequal';
 import { derived, writable } from 'svelte/store';
 
-import { safeOnMount } from '$lib/internal/helpers/lifecycle';
-import { withGet } from '$lib/internal/helpers/withGet';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type {
 	CreateTableOfContentsArgs,
 	ElementHeadingLU,
 	Heading,
 	HeadingParentsLU,
 	TableOfContentsItem,
-} from './types';
+} from './types.js';
 
 const defaults = {
 	exclude: ['h1'],
@@ -345,7 +345,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	});
 
 	// Elements
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		stores: activeHeadingIdxs,
 		returned: ($activeHeadingIdxs) => {
 			return (id: string) => {

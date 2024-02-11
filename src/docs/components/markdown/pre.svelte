@@ -2,7 +2,7 @@
 	import { cn, createCopyCodeButton } from '$docs/utils/index.js';
 	import { getUsingPreprocessor } from '$routes/store.js';
 	import { fly } from 'svelte/transition';
-	import { Check, Copy } from 'lucide-svelte';
+	import { Check, Copy } from '$icons/index.js';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
@@ -45,11 +45,11 @@
 		>
 			{#if $copied}
 				<div in:fly={{ y: -4 }}>
-					<Check class="text-magnum-500 square-4" />
+					<Check class="size-4 text-magnum-500" />
 				</div>
 			{:else}
 				<div in:fly={{ y: 4 }}>
-					<Copy class="square-4 hover:text-magnum-500" />
+					<Copy class="size-4 hover:text-magnum-500" />
 				</div>
 			{/if}
 		</button>

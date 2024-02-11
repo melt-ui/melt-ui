@@ -1,4 +1,4 @@
-import { getElementByMeltId, isElement, isHTMLLabelElement } from '$lib/internal/helpers';
+import { getElementByMeltId, isElement, isHTMLLabelElement } from '$lib/internal/helpers/index.js';
 
 export function createClickOutsideIgnore(meltId: string) {
 	return (e: PointerEvent) => {

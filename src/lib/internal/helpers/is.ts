@@ -6,6 +6,10 @@ export const isFunction = (v: unknown): v is Function => typeof v === 'function'
 
 export const isLetter = (key: string) => /^[a-z]$/i.test(key);
 
+export function isDocument(element: unknown): element is Document {
+	return element instanceof Document;
+}
+
 export function isElement(element: unknown): element is Element {
 	return element instanceof Element;
 }

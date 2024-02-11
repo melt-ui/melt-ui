@@ -4,9 +4,9 @@
 		melt,
 		type CreateComboboxProps,
 	} from '$lib/index.js';
-	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { Check, ChevronDown, ChevronUp } from '$icons/index.js';
 	import { fly } from 'svelte/transition';
-	import { localeOptions } from './locales';
+	import { localeOptions } from './locales.js';
 
 	// convert locale option object to array
 	const localeOptionsArr = Object.entries(localeOptions).map(
@@ -46,8 +46,6 @@
 	});
 
 	$: filteredLocales = $touchedInput ? _filteredLocales : localeOptionsArr;
-
-	$: isCustom = _filteredLocales.length === 0;
 </script>
 
 <div class="absolute left-4 top-4">
@@ -69,9 +67,9 @@
 				class="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-magnum-900"
 			>
 				{#if $open}
-					<ChevronUp class="square-4" />
+					<ChevronUp class="size-4" />
 				{:else}
-					<ChevronDown class="square-4" />
+					<ChevronDown class="size-4" />
 				{/if}
 			</div>
 		</div>
@@ -91,25 +89,6 @@
 				class="flex max-h-full flex-col gap-0 overflow-y-auto bg-white px-2 py-2 text-black"
 				tabindex="0"
 			>
-				{#if isCustom}
-					<li
-						use:melt={$option({ value: $inputValue, label: $inputValue })}
-						class="relative cursor-pointer scroll-my-2 rounded-md py-2 pl-4 pr-4
-			text-sm
-			hover:bg-magnum-100 data-[highlighted]:bg-magnum-200
-				data-[highlighted]:text-magnum-900 data-[disabled]:opacity-50"
-					>
-						{#if $isSelected($inputValue)}
-							<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
-								<Check class="square-4" />
-							</div>
-						{/if}
-						<div class="pl-4">
-							<span class="font-medium">Custom</span>
-							<span class="block text-sm opacity-75">{$inputValue}</span>
-						</div>
-					</li>
-				{/if}
 				{#each filteredLocales as locale, index (index)}
 					<li
 						use:melt={$option(locale)}
@@ -120,7 +99,7 @@
 					>
 						{#if $isSelected(locale.value)}
 							<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
-								<Check class="square-4" />
+								<Check class="size-4" />
 							</div>
 						{/if}
 						<div class="pl-4">
@@ -128,6 +107,8 @@
 							<span class="block text-sm opacity-75">{locale.value}</span>
 						</div>
 					</li>
+				{:else}
+					<li class="text-sm pl-4 opacity-50">No results found</li>
 				{/each}
 			</div>
 		</ul>

@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -33,7 +33,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 	const options = toWritableStores(withDefaults);
 	const { loop, orientation } = options;
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: orientation,
 		returned: ($orientation) => {
 			return {
@@ -43,7 +43,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		},
 	});
 
-	const button = builder(name('button'), {
+	const button = makeElement(name('button'), {
 		returned: () =>
 			({
 				role: 'button',
@@ -59,7 +59,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		},
 	});
 
-	const link = builder(name('link'), {
+	const link = makeElement(name('link'), {
 		returned: () =>
 			({
 				role: 'link',
@@ -75,7 +75,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		},
 	});
 
-	const separator = builder(name('separator'), {
+	const separator = makeElement(name('separator'), {
 		stores: orientation,
 		returned: ($orientation) => {
 			return {
@@ -111,7 +111,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		const { name } = createElHelpers('toolbar-group');
 
-		const group = builder(name(), {
+		const group = makeElement(name(), {
 			stores: orientation,
 			returned: ($orientation) => {
 				return {
@@ -121,7 +121,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 			},
 		});
 
-		const item = builder(name('item'), {
+		const item = makeElement(name('item'), {
 			stores: [disabled, type, value, orientation],
 			returned: ([$disabled, $type, $value, $orientation]) => {
 				return (props: ToolbarGroupItemProps) => {

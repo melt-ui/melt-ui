@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { createContextMenu, melt, type CreateContextMenuProps } from '$lib/index.js';
 	import { writable } from 'svelte/store';
-	import { ChevronRight } from 'lucide-svelte';
+	import { ChevronRight } from '$icons/index.js';
 	import { fade } from 'svelte/transition';
-	import { removeUndefined } from '../utils';
+	import { removeUndefined } from '../utils.js';
 
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);

@@ -1,6 +1,6 @@
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createTreeView } from './create';
+import type { createTreeView } from './create.js';
 
 export type CreateTreeViewProps = {
 	forceVisible?: boolean;

@@ -1,6 +1,7 @@
-import { derived, type Stores, type StoresValues } from 'svelte/store';
-import { safeOnDestroy } from '../lifecycle';
-import { noop } from '..';
+import type { Stores, StoresValues } from 'svelte/store';
+import { derived } from 'svelte/store';
+import { noop } from '../index.js';
+import { safeOnDestroy } from '../lifecycle.js';
 
 /**
  * A utility function that creates an effect from a set of stores and a function.

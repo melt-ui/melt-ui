@@ -18,8 +18,5 @@ storybook-static
 /playwright/.cache/
 /.pnpm-store/
 
-# All files inside src/pagefind except src/pagefind/pagefind.js
-src/pagefind/**/*
-!src/pagefind/pagefind.js
-
-static/pagefind/**/*
+# Pagefind
+static/pagefind

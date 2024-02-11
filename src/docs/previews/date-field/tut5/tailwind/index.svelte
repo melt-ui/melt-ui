@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDateField, melt } from '$lib';
+	import { createDateField, melt } from '$lib/index.js';
 	import { CalendarDate, CalendarDateTime } from '@internationalized/date';
 
 	const {

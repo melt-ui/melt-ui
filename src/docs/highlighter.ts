@@ -1,26 +1,29 @@
-import { get } from 'svelte/store';
-import { highlighterStore } from './stores.js';
-import { getHighlighter, renderToHtml, type IThemedToken } from 'shiki-es';
+import { getHighlighter, type BundledLanguage, type Highlighter } from 'shiki';
 
-async function getShikiHighlighter(fetcher?: typeof fetch) {
-	if (fetcher && typeof window !== 'undefined') {
-		window.fetch = fetcher;
-	}
+type ShikiOptions = NonNullable<Parameters<typeof getHighlighter>[0]>;
 
-	const shikiHighlighter = await getHighlighter({
-		theme: 'github-dark',
-		langs: ['svelte', 'typescript', 'css', 'javascript', 'json', 'bash'],
-	});
-	return shikiHighlighter;
-}
+const shikiOptions: ShikiOptions = {
+	themes: [import('shiki/themes/github-dark.mjs')],
+	langs: [
+		import('shiki/langs/svelte.mjs'),
+		import('shiki/langs/typescript.mjs'),
+		import('shiki/langs/css.mjs'),
+		import('shiki/langs/javascript.mjs'),
+		import('shiki/langs/json.mjs'),
+		import('shiki/langs/shellscript.mjs'),
+		'plaintext',
+	],
+};
 
-export async function getStoredHighlighter(fetcher?: typeof fetch) {
-	const currHighlighter = get(highlighterStore);
+const globalHighlighterCache = new WeakMap<ShikiOptions, Highlighter>();
+
+export async function getStoredHighlighter() {
+	const currHighlighter = globalHighlighterCache.get(shikiOptions);
 	if (currHighlighter) {
 		return currHighlighter;
 	}
-	const shikiHighlighter = await getShikiHighlighter(fetcher);
-	highlighterStore.set(shikiHighlighter);
+	const shikiHighlighter = await getHighlighter(shikiOptions);
+	globalHighlighterCache.set(shikiOptions, shikiHighlighter);
 	return shikiHighlighter;
 }
 
@@ -32,47 +35,42 @@ type HighlightClasses = {
 
 type HighlightCodeArgs = {
 	code: string;
-	lang: string;
+	lang: BundledLanguage;
 	classes?: HighlightClasses;
-	fetcher?: typeof fetch;
 };
 
-const themedTokensCache = new Map<string, IThemedToken[][]>();
+const highlightedCodeCache = new Map<string, string>();
 
-export async function highlightCode({ code, lang, classes = {}, fetcher }: HighlightCodeArgs) {
-	let tokens = themedTokensCache.get(code);
+export async function highlightCode({ code, lang, classes = {} }: HighlightCodeArgs) {
+	let cached = highlightedCodeCache.get(code);
 
-	if (!tokens) {
-		const highlighter = await getStoredHighlighter(fetcher);
-		tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
-		themedTokensCache.set(code, tokens);
+	if (!cached) {
+		const highlighter = await getStoredHighlighter();
+		cached = highlighter.codeToHtml(tabsToSpaces(code), {
+			lang,
+			theme: 'github-dark',
+			transformers: [
+				{
+					pre(node) {
+						this.addClassToHast(node, classes.pre ? classes.pre : '!mt-0');
+					},
+					code(node) {
+						if (classes.code) {
+							this.addClassToHast(node, classes.code);
+						}
+					},
+					line(node) {
+						if (!node.children && classes.line) {
+							this.addClassToHast(node, classes.line);
+						}
+					},
+				},
+			],
+		});
+		highlightedCodeCache.set(code, cached);
 	}
 
-	const html = renderToHtml(tokens, {
-		elements: {
-			pre({ children }) {
-				return `<pre data-language="${lang}" data-theme="default" class="${
-					classes.pre ? classes.pre : '!mt-0'
-				}">${children}</pre>`;
-			},
-			code({ children }) {
-				return `<code data-language="${lang}" data-theme="default" class="${
-					classes.code && classes.code
-				}">${children}</code>`;
-			},
-			line({ children }) {
-				if (!children) {
-					return `<span data-line class="${classes.line && classes.line}">${' '}</span>`;
-				}
-				return `<span data-line>${children}</span>`;
-			},
-			token({ style, children }) {
-				return `<span style="${style}">${children}</span>`;
-			},
-		},
-	});
-
-	return html;
+	return cached;
 }
 
 function tabsToSpaces(code: string) {

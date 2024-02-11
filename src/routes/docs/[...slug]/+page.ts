@@ -15,6 +15,5 @@ export const load: PageLoad = async (event) => {
 		component: doc.default,
 		metadata: doc.metadata,
 		title: doc.metadata.title,
-		...event.data,
 	};
 };

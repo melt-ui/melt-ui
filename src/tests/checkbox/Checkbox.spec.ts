@@ -2,8 +2,8 @@ import { render } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import CheckboxTest from './CheckboxTest.svelte';
-import userEvent from '@testing-library/user-event';
-import { testKbd as kbd } from '../utils';
+import { userEvent } from '@testing-library/user-event';
+import { testKbd as kbd } from '../utils.js';
 
 describe('Checkbox', () => {
 	test('No accessibility violations', async () => {

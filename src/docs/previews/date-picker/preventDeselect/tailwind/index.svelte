@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createDatePicker, melt } from '$lib';
+	import { createDatePicker, melt } from '$lib/index.js';
 	import { today } from '@internationalized/date';
-	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft, Calendar } from '$icons/index.js';
 	import { fade } from 'svelte/transition';
 
 	const {

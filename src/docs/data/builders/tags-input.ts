@@ -69,7 +69,7 @@ const OPTION_PROPS = [
 		default: '[]',
 	},
 	{
-		name: 'disallowed',
+		name: 'denied',
 		type: 'string[]',
 		description: 'The disallowed tags.',
 		default: '[]',
@@ -377,8 +377,9 @@ const edit = elementSchema('edit', {
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'tab',
-		behavior: 'Moves focus between tags and the input.',
+		key: 'Enter',
+		behavior:
+			'When focused on the input, adds the tag. When focused on a tag, the tag becomes editable. Pressing enter again saves the tag.',
 	},
 	{
 		key: 'Delete',
@@ -387,12 +388,11 @@ const keyboard: KeyboardSchema = [
 	{
 		key: 'Backspace',
 		behavior:
-			'When focused on a tag, deletes it and moves focus to the left. If there are no tags to the left, either the next tags gets focus, or the input.',
+			'When focused on an empty input, focuses on the last tag. When focused on a tag, deletes it and moves focus to the left-side tag. If there are no tags to the left, either the next tags gets focus, or the input.',
 	},
-
 	{
 		key: 'ArrowRight',
-		behavior: 'Moves focus to the next tag or input.',
+		behavior: 'Moves focus to the next element, be it a tag or input.',
 	},
 	{
 		key: 'ArrowLeft',

@@ -1,4 +1,4 @@
-import type { NonEmptyArray } from '../types';
+import type { NonEmptyArray } from '../types.js';
 
 /**
  * A callback function that takes an array of arguments of type `T` and returns `void`.

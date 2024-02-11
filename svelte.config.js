@@ -1,7 +1,7 @@
 import { mdsvex } from '@huntabyte/mdsvex';
 import { preprocessMeltUI } from '@melt-ui/pp';
 import adapterStatic from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import sequence from 'svelte-sequential-preprocessor';
 import { mdsvexOptions } from './mdsvex.config.js';
 
@@ -29,6 +29,8 @@ const config = {
 			'$docs/*': 'src/docs/*',
 			$components: 'src/docs/components',
 			'$components/*': 'src/docs/components/*',
+			$icons: 'src/docs/components/icons',
+			'$icons/*': 'src/docs/components/icons/*',
 		},
 		typescript: {
 			config: (config) => {

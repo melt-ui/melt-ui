@@ -24,7 +24,7 @@
 	import { dev } from '$app/environment';
 	import { page } from '$app/stores';
 	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 
 	import { ModeWatcher } from 'mode-watcher';
 

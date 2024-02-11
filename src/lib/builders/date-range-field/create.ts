@@ -9,7 +9,7 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -19,12 +19,12 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { DateValue } from '@internationalized/date';
 import { derived, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id.js';
 import { removeDescriptionElement } from './_internal/helpers.js';
 import type { CreateDateRangeFieldProps } from './types.js';
-import { withGet } from '$lib/internal/helpers/withGet';
 
 const defaults = {
 	isDateUnavailable: undefined,
@@ -174,7 +174,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		}
 	);
 
-	const label = builder(name('label'), {
+	const label = makeElement(name('label'), {
 		stores: [isInvalid, options.disabled, ids.label],
 		returned: ([$isInvalid, $disabled, $labelId]) => {
 			return {
@@ -215,7 +215,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		}
 	);
 
-	const field = builder(name('field'), {
+	const field = makeElement(name('field'), {
 		stores: [isCompleted, isInvalid, fieldIdDeps],
 		returned: ([$isCompleted, $isInvalid, $ids]) => {
 			const describedBy = $isCompleted
@@ -240,7 +240,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		},
 	});
 
-	const validation = builder(name('validation'), {
+	const validation = makeElement(name('validation'), {
 		stores: [isInvalid, ids.validation],
 		returned: ([$isInvalid, $validationId]) => {
 			const validStyle = styleToString({
