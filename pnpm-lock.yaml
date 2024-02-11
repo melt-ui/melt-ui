@@ -185,8 +185,8 @@ devDependencies:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
   rehype-pretty-code:
-    specifier: ^0.12.6
-    version: 0.12.6(shikiji@0.10.2)
+    specifier: ^0.13.0
+    version: 0.13.0(shiki@1.1.1)
   rehype-rewrite:
     specifier: ^3.0.6
     version: 3.0.6
@@ -199,9 +199,9 @@ devDependencies:
   resize-observer-polyfill:
     specifier: ^1.5.1
     version: 1.5.1
-  shikiji:
-    specifier: ^0.10.2
-    version: 0.10.2
+  shiki:
+    specifier: ^1.1.1
+    version: 1.1.1
   storybook:
     specifier: ^7.6.6
     version: 7.6.6
@@ -3320,6 +3320,10 @@ packages:
     dev: true
     optional: true
 
+  /@shikijs/core@1.1.1:
+    resolution: {integrity: sha512-WSHuW0i4W04+UZgim378oxHBAp4S5X3hVI2zXh+t5v2fx2u/7QXz9VNisoOD/CA4O9Lc6Zs97TrKiDbWyZua6Q==}
+    dev: true
+
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
@@ -4881,12 +4885,6 @@ packages:
 
   /@types/node@18.18.8:
     resolution: {integrity: sha512-OLGBaaK5V3VRBS1bAkMVP2/W9B+H8meUfl866OrMNQqt7wDgdpWPp5o6gmIc9pB+lIQHSq4ZL8ypeH1vPxcPaQ==}
-    dependencies:
-      undici-types: 5.26.5
-    dev: true
-
-  /@types/node@20.10.6:
-    resolution: {integrity: sha512-Vac8H+NlRNNlAmDfGUP7b5h/KA+AtWIzuXy0E6OyP8f1tCLYAtPvKRRDJjAPqhpCb0t6U2j7/xqAuLEebW2kiw==}
     dependencies:
       undici-types: 5.26.5
     dev: true
@@ -8711,7 +8709,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 20.10.6
+      '@types/node': 20.11.17
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: true
@@ -11122,17 +11120,17 @@ packages:
       unified: 11.0.4
     dev: true
 
-  /rehype-pretty-code@0.12.6(shikiji@0.10.2):
-    resolution: {integrity: sha512-AW18s4eXwnb4PGwL0Y8BoUzBJr23epWNXndCKaZ52S4kl/4tsgM+406oCp5NdtPZsB0ItpaY+hCMv3kw58DLrA==}
+  /rehype-pretty-code@0.13.0(shiki@1.1.1):
+    resolution: {integrity: sha512-+22dz1StXlF7dlMyOySNaVxgcGhMI4BCxq0JxJJPWYGiKsI6cu5jyuIKGHXHvH18D8sv1rdKtvsY9UEfN3++SQ==}
     engines: {node: '>=18'}
     peerDependencies:
-      shikiji: ^0.7.0 || ^0.8.0 || ^0.9.0 || ^0.10.0
+      shiki: ^1.0.0
     dependencies:
       '@types/hast': 3.0.4
       hast-util-to-string: 3.0.0
       parse-numeric-range: 1.3.0
       rehype-parse: 9.0.0
-      shikiji: 0.10.2
+      shiki: 1.1.1
       unified: 11.0.4
       unist-util-visit: 5.0.0
     dev: true
@@ -11499,14 +11497,10 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /shikiji-core@0.10.2:
-    resolution: {integrity: sha512-9Of8HMlF96usXJHmCL3Gd0Fcf0EcyJUF9m8EoAKKd98mHXi0La2AZl1h6PegSFGtiYcBDK/fLuKbDa1l16r1fA==}
-    dev: true
-
-  /shikiji@0.10.2:
-    resolution: {integrity: sha512-wtZg3T0vtYV2PnqusWQs3mDaJBdCPWxFDrBM/SE5LfrX92gjUvfEMlc+vJnoKY6Z/S44OWaCRzNIsdBRWcTAiw==}
+  /shiki@1.1.1:
+    resolution: {integrity: sha512-7ksyiu01NltBvEcLq9GcguF+7RGa5lDwozjgdbiXnlkro1FtMCcrVtHUWbKuYBSOZW74gC4KlnBcgRCwK2ERAw==}
     dependencies:
-      shikiji-core: 0.10.2
+      '@shikijs/core': 1.1.1
     dev: true
 
   /side-channel@1.0.4:

@@ -9,7 +9,7 @@ import { toHtml } from 'hast-util-to-html';
 import { escapeSvelte } from '@huntabyte/mdsvex';
 import rehypeRewrite from 'rehype-rewrite';
 import { processMeltAttributes } from './src/docs/pp.js';
-import { getHighlighter } from 'shikiji';
+import { getHighlighter } from 'shiki';
 
 /**
  * @typedef {import('mdast').Root} MdastRoot
@@ -36,21 +36,20 @@ const prettyCodeOptions = {
 	onVisitHighlightedChars(node) {
 		node.properties.className = ['chars--highlighted'];
 	},
-	getHighlighter: (options) => {
-		return getHighlighter({
+	getHighlighter: (options) =>
+		getHighlighter({
 			...options,
 			langs: [
 				'plaintext',
-				import('shikiji/langs/svelte.mjs'),
-				import('shikiji/langs/typescript.mjs'),
-				import('shikiji/langs/css.mjs'),
-				import('shikiji/langs/javascript.mjs'),
-				import('shikiji/langs/json.mjs'),
-				import('shikiji/langs/shellscript.mjs'),
+				import('shiki/langs/svelte.mjs'),
+				import('shiki/langs/typescript.mjs'),
+				import('shiki/langs/css.mjs'),
+				import('shiki/langs/javascript.mjs'),
+				import('shiki/langs/json.mjs'),
+				import('shiki/langs/shellscript.mjs'),
 			],
-			themes: [import('shikiji/themes/github-dark.mjs')],
-		});
-	},
+			themes: [import('shiki/themes/github-dark.mjs')],
+		}),
 };
 
 const removePPFromText = (node) => {

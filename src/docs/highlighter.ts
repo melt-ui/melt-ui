@@ -1,16 +1,16 @@
-import { getHighlighter, type BundledLanguage, type Highlighter, addClassToHast } from 'shikiji';
+import { getHighlighter, type BundledLanguage, type Highlighter } from 'shiki';
 
 type ShikiOptions = NonNullable<Parameters<typeof getHighlighter>[0]>;
 
 const shikiOptions: ShikiOptions = {
-	themes: [import('shikiji/themes/github-dark.mjs')],
+	themes: [import('shiki/themes/github-dark.mjs')],
 	langs: [
-		import('shikiji/langs/svelte.mjs'),
-		import('shikiji/langs/typescript.mjs'),
-		import('shikiji/langs/css.mjs'),
-		import('shikiji/langs/javascript.mjs'),
-		import('shikiji/langs/json.mjs'),
-		import('shikiji/langs/shellscript.mjs'),
+		import('shiki/langs/svelte.mjs'),
+		import('shiki/langs/typescript.mjs'),
+		import('shiki/langs/css.mjs'),
+		import('shiki/langs/javascript.mjs'),
+		import('shiki/langs/json.mjs'),
+		import('shiki/langs/shellscript.mjs'),
 		'plaintext',
 	],
 };
@@ -52,16 +52,16 @@ export async function highlightCode({ code, lang, classes = {} }: HighlightCodeA
 			transformers: [
 				{
 					pre(node) {
-						addClassToHast(node, classes.pre ? classes.pre : '!mt-0');
+						this.addClassToHast(node, classes.pre ? classes.pre : '!mt-0');
 					},
 					code(node) {
 						if (classes.code) {
-							addClassToHast(node, classes.code);
+							this.addClassToHast(node, classes.code);
 						}
 					},
 					line(node) {
 						if (!node.children && classes.line) {
-							addClassToHast(node, classes.line);
+							this.addClassToHast(node, classes.line);
 						}
 					},
 				},
