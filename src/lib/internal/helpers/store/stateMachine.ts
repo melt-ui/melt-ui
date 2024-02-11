@@ -1,10 +1,10 @@
-import { get, writable } from 'svelte/store';
+import { withGet } from '../withGet.js';
 
-interface Machine<S> {
+export interface Machine<S> {
 	[k: string]: { [k: string]: S };
 }
-type MachineState<T> = keyof T;
-type MachineEvent<T> = {
+export type MachineState<T> = keyof T;
+export type MachineEvent<T> = {
 	[K in keyof T]: keyof T[K];
 }[keyof T];
 
@@ -19,10 +19,10 @@ export function createStateMachine<M>(
 	machine: M & Machine<MachineState<M>>
 ) {
 	// init a store with the initial state
-	const state = writable(initialState);
+	const state = withGet.writable(initialState);
 
 	function reducer(event: MachineEvent<M>) {
-		const $state = get(state);
+		const $state = state.get();
 
 		// Get next state based on the current state & event,
 		// or keep current state if no transition is defined.

@@ -1,20 +1,20 @@
-import { name, type ScrollAreaState } from './create.js';
-import type { Action } from 'svelte/action';
-import { debounceCallback, getThumbSize, resizeObserver } from './helpers.js';
 import {
-	executeCallbacks,
-	noop,
 	addEventListener,
 	addMeltEventListener,
-	makeElement,
 	effect,
-	styleToString,
+	executeCallbacks,
 	isHTMLElement,
 	isTouchDevice,
+	makeElement,
+	noop,
 	sleep,
+	styleToString,
 } from '$lib/internal/helpers/index.js';
-import type { ScrollAreaType } from './types.js';
 import { createStateMachine } from '$lib/internal/helpers/store/stateMachine.js';
+import type { Action } from 'svelte/action';
+import { name, type ScrollAreaState } from './create.js';
+import { debounceCallback, getThumbSize, resizeObserver } from './helpers.js';
+import type { ScrollAreaType } from './types.js';
 
 export type CreateScrollbarAction = (state: ScrollAreaState) => Action<HTMLElement>;
 
@@ -245,17 +245,17 @@ export function createScrollScrollbarAction(state: ScrollAreaState) {
 			SCROLL: 'scrolling',
 		},
 		scrolling: {
-			SCROLL_END: 'idle',
 			POINTER_ENTER: 'interacting',
+			SCROLL_END: 'idle',
 		},
 		interacting: {
-			SCROLL: 'interacting',
 			POINTER_LEAVE: 'scrolling',
+			SCROLL: 'interacting',
 		},
 		idle: {
 			HIDE: 'hidden',
-			SCROLL: 'scrolling',
 			POINTER_ENTER: 'interacting',
+			SCROLL: 'scrolling',
 		},
 	});
 
