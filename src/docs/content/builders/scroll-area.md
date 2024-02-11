@@ -17,8 +17,10 @@ description: Provides consistent scrollbars across platforms.
 - **Viewport**: A container that wraps the scrollable content
 - **Content**: The scrollable content
 - **Corner**: The corner element displayed when both scrollbars are visible
-- **Scrollbar**: The track of the scrollbar
-  - **Thumb**: The thumb of the scrollbar
+- **ScrollbarX**: The track of the X scrollbar
+- **ThumbX**: The thumb of the X scrollbar
+- **ScrollbarY**: The track of the Y scrollbar
+- **ThumbY**: The thumb of the Y scrollbar
 
 ## Examples
 
@@ -54,3 +56,7 @@ When the `type` is set to `scroll`, the scrollbars will only be visible when the
 <Preview code={snippets.scroll} variant="dark" size="auto">
 	<svelte:component this={previews.scroll} />
 </Preview>
+
+## API Reference
+
+<APIReference {schemas} />

@@ -26,7 +26,7 @@
 	let height = 288;
 </script>
 
-<div class="flex items-center gap-4">
+<div class="flex flex-col sm:flex-row items-center gap-4">
 	<div
 		use:melt={$rootA}
 		class="relative h-72 w-56 overflow-hidden rounded-md border border-neutral-700 bg-neutral-800/90 p-3 text-white shadow-lg"

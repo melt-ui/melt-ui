@@ -34,6 +34,7 @@ import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
 import { datePickerData } from './date-picker.js';
+import { scrollAreaData } from './scroll-area.js';
 
 export type BuilderData = {
 	schemas?: APISchema[];
@@ -65,8 +66,7 @@ export const builderMap = {
 	progress: progressData,
 	'radio-group': radioGroupData,
 	'range-calendar': rangeCalendarData,
-	// TODO: replace this with actual scroll area data
-	'scroll-area': labelData,
+	'scroll-area': scrollAreaData,
 	select: selectData,
 	separator: separatorData,
 	slider: sliderData,

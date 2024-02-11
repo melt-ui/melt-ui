@@ -33,7 +33,7 @@ import { createScrollbarX, createScrollbarY, getScrollbarActionByType } from './
 type ScrollAreaParts = 'root' | 'viewport' | 'content' | 'scrollbar' | 'thumb' | 'corner';
 export const { name } = createElHelpers<ScrollAreaParts>('scroll-area');
 
-const scrollAreaIdParts = [
+export const scrollAreaIdParts = [
 	'root',
 	'viewport',
 	'content',
