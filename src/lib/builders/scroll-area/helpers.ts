@@ -1,5 +1,5 @@
 import { noop, safeOnDestroy } from '$lib/internal/helpers/index.js';
-import type { TextDirection } from '$lib/internal/types';
+import type { TextDirection } from '$lib/internal/types.js';
 
 export type Sizes = {
 	content: number;
@@ -40,21 +40,20 @@ export function resizeObserver(node: HTMLElement, handleResize: () => void) {
 	};
 }
 
+// Custom scroll handler to avoid scroll-linked effects
+// https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Scroll-linked_effects
 export function addUnlinkedScrollListener(node: HTMLElement, handler = noop) {
 	let prevPosition = { left: node.scrollLeft, top: node.scrollTop };
-	let animationFrame = 0;
+	let rAF = 0;
 	(function loop() {
 		const position = { left: node.scrollLeft, top: node.scrollTop };
 		const isHorizontalScroll = prevPosition.left !== position.left;
 		const isVerticalScroll = prevPosition.top !== position.top;
-		if (isHorizontalScroll || isVerticalScroll) {
-			handler();
-		}
+		if (isHorizontalScroll || isVerticalScroll) handler();
 		prevPosition = position;
-		animationFrame = requestAnimationFrame(loop);
+		rAF = window.requestAnimationFrame(loop);
 	})();
-
-	return () => window.cancelAnimationFrame(animationFrame);
+	return () => window.cancelAnimationFrame(rAF);
 }
 
 export function isScrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: number) {

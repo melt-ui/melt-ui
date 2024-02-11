@@ -235,6 +235,9 @@ devDependencies:
   unist-util-visit:
     specifier: ^5.0.0
     version: 5.0.0
+  user-agent-data-types:
+    specifier: ^0.4.2
+    version: 0.4.2
   vite:
     specifier: ^5.0.0
     version: 5.0.12(@types/node@20.11.17)(less@4.2.0)
@@ -12713,6 +12716,10 @@ packages:
       detect-node-es: 1.1.0
       react: 18.2.0
       tslib: 2.6.2
+    dev: true
+
+  /user-agent-data-types@0.4.2:
+    resolution: {integrity: sha512-jXep3kO/dGNmDOkbDa8ccp4QArgxR4I76m3QVcJ1aOF0B9toc+YtSXtX5gLdDTZXyWlpQYQrABr6L1L2GZOghw==}
     dev: true
 
   /util-deprecate@1.0.2:

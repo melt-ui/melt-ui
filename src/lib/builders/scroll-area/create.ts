@@ -14,6 +14,7 @@ import {
 	type ToWritableStores,
 	omit,
 	withGet,
+	type WithGet,
 } from '$lib/internal/helpers/index.js';
 import { derived, writable, type Readable, type Writable } from 'svelte/store';
 import type { CreateScrollAreaProps } from './types.js';
@@ -28,7 +29,6 @@ import {
 	type Sizes,
 } from './helpers.js';
 import { createScrollbarX, createScrollbarY, getScrollbarActionByType } from './scrollbars.js';
-import type { WithGet } from '../../internal/helpers/withGet.js';
 
 type ScrollAreaParts = 'root' | 'viewport' | 'content' | 'scrollbar' | 'thumb' | 'corner';
 export const { name } = createElHelpers<ScrollAreaParts>('scroll-area');
@@ -310,8 +310,6 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 
 			const $isHorizontal = scrollbarState.isHorizontal.get();
 			const $viewportEl = rootState.viewportEl.get();
-
-			if ($scrollbarEl.clientHeight < 1) return;
 
 			if ($isHorizontal) {
 				scrollbarState.sizes.set({

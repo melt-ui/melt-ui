@@ -8,9 +8,10 @@ import {
 	addMeltEventListener,
 	makeElement,
 	effect,
-	sleep,
 	styleToString,
 	isHTMLElement,
+	isTouchDevice,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 import type { ScrollAreaType } from './types.js';
 import { createStateMachine } from '$lib/internal/helpers/store/stateMachine.js';
@@ -205,10 +206,17 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 		const scrollAreaEl = node.closest('[data-melt-scroll-area]');
 		let unsubScrollAreaListeners = noop;
 		if (scrollAreaEl) {
-			unsubScrollAreaListeners = executeCallbacks(
-				addEventListener(scrollAreaEl, 'pointerenter', handlePointerEnter),
-				addEventListener(scrollAreaEl, 'pointerleave', handlePointerLeave)
-			);
+			if (isTouchDevice()) {
+				unsubScrollAreaListeners = executeCallbacks(
+					addEventListener(scrollAreaEl, 'touchstart', handlePointerEnter),
+					addEventListener(scrollAreaEl, 'touchend', handlePointerLeave)
+				);
+			} else {
+				unsubScrollAreaListeners = executeCallbacks(
+					addEventListener(scrollAreaEl, 'pointerenter', handlePointerEnter),
+					addEventListener(scrollAreaEl, 'pointerleave', handlePointerLeave)
+				);
+			}
 		}
 
 		return {
