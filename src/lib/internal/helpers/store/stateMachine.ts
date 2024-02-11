@@ -1,19 +1,13 @@
+import type { Key } from 'readline';
 import { get, writable } from 'svelte/store';
 
 interface Machine<S> {
 	[k: string]: { [k: string]: S };
 }
 type MachineState<T> = keyof T;
-type MachineEvent<T> = keyof UnionToIntersection<T[keyof T]>;
-
-// 🤯 https://fettblog.eu/typescript-union-to-intersection/
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (
-	x: infer R
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-) => any
-	? R
-	: never;
+type MachineEvent<T> = {
+	[K in keyof T]: keyof T[K];
+}[keyof T];
 
 /**
  * Creates a state machine with the given initial state and machine definition.
@@ -33,7 +27,6 @@ export function createStateMachine<M>(
 
 		// Get next state based on the current state & event,
 		// or keep current state if no transition is defined.
-		// @ts-expect-error $state is keyof M
 		const nextState = machine[$state][event];
 		return nextState ?? $state;
 	}
