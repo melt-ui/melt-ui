@@ -1,8 +1,23 @@
+import { removeUndefined } from '$lib/internal/helpers/object.js';
 import { type Readable, type Writable } from 'svelte/store';
 import { isReadable, isWritable } from './is.js';
 import { withGet, type WithGet } from './withGet.js';
-import { overridable } from './overridable.js';
-import { removeUndefined } from '$lib/internal/helpers/object.js';
+import { noop } from './callbacks.js';
+
+export type MaybeWritable<T> = Readable<T> & {
+	/**
+	 * Same as Writable set, but if you passed in a Readonly store to this option, nothing will happen.
+	 *
+	 * @type {Writable<T>['set']}
+	 */
+	set: (v: T) => void;
+	/**
+	 * Same as Writable update, but if you passed in a Readonly store to this option, nothing will happen.
+	 *
+	 * @type {Writable<T>['update']}
+	 */
+	update: Writable<T>['update'];
+};
 
 export type WithDefaults<Props extends Record<string, unknown>, Defaults extends Partial<Props>> = {
 	[K in keyof (Props & Defaults)]: K extends keyof Props
@@ -22,13 +37,19 @@ export function withDefaults<
 }
 
 export type WritableProp<T> = Writable<T> | T;
-type ReadableProp<T> = Readable<T> | T;
+export type ReadableProp<T> = Readable<T> | T;
 
-export function parseProp<T>(prop: WritableProp<T> | ReadableProp<T>): WithGet<Writable<T>> {
+export function parseProp<T>(prop: WritableProp<T>): WithGet<Writable<T>>;
+export function parseProp<T>(prop: ReadableProp<T>): WithGet<MaybeWritable<T>>;
+export function parseProp<T>(prop: WritableProp<T> | ReadableProp<T>) {
 	if (isWritable(prop)) {
 		return withGet(prop);
 	} else if (isReadable(prop)) {
-		return overridable(prop);
+		return {
+			...withGet(prop),
+			set: noop,
+			update: noop,
+		};
 	}
 	return withGet.writable(prop);
 }
@@ -39,7 +60,7 @@ export type ParsedProps<Props extends Record<string, unknown>, Defaults extends 
 	>
 		? WithGet<Writable<T>>
 		: WithDefaults<Props, Defaults>[K] extends ReadableProp<infer T>
-		? WithGet<Readable<T>>
+		? WithGet<MaybeWritable<T>>
 		: undefined;
 };
 

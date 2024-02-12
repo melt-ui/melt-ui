@@ -1,6 +1,5 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	executeCallbacks,
 	getElementByMeltId,
@@ -9,19 +8,21 @@ import {
 	isLetter,
 	kbd,
 	last,
-	overridable,
+	makeElement,
 	styleToString,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 
+import { parseProps } from '$lib/internal/helpers/props.js';
 import { generateIds } from '../../internal/helpers/id.js';
 import type { TreeEvents } from './events.js';
 import type { CreateTreeViewProps, TreeParts } from './types.js';
 
 const defaults = {
 	forceVisible: false,
-	defaultExpanded: [] as string[],
+	expanded: [] as string[],
 } satisfies Defaults<CreateTreeViewProps>;
 
 const ATTRS = {
@@ -33,18 +34,15 @@ const ATTRS = {
 
 const { name } = createElHelpers<TreeParts>('tree-view');
 
-export function createTreeView(args?: CreateTreeViewProps) {
-	const withDefaults = { ...defaults, ...args };
-	const { forceVisible } = withDefaults;
+export function createTreeView(props?: CreateTreeViewProps) {
+	const { expanded, ...options } = parseProps(props, defaults);
+	const { forceVisible } = options;
 
 	/**
 	 * Track currently focused item in the tree.
 	 */
-	const lastFocusedId: Writable<string | null> = writable(null);
-	const selectedItem: Writable<HTMLElement | null> = writable(null);
-
-	const expandedWritable = withDefaults.expanded ?? writable(withDefaults.defaultExpanded);
-	const expanded = overridable(expandedWritable, withDefaults?.onExpandedChange);
+	const lastFocusedId = withGet.writable<string | null>(null);
+	const selectedItem = withGet.writable<HTMLElement | null>(null);
 
 	const selectedId = derived([selectedItem], ([$selectedItem]) => {
 		return $selectedItem?.getAttribute('data-id');
@@ -334,5 +332,6 @@ export function createTreeView(args?: CreateTreeViewProps) {
 			isExpanded,
 			isSelected,
 		},
+		options,
 	};
 }
