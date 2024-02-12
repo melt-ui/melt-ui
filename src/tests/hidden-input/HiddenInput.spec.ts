@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { writable } from 'svelte/store';
 import { test } from 'vitest';
-import type { HiddenInputProps } from './HiddenInputTest.svelte';
+import type { HiddenInputProps } from './HiddenInput.js';
 import HiddenInputTest from './HiddenInputTest.svelte';
 import { sleep } from '$lib/internal/helpers/sleep.js';
 

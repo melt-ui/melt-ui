@@ -8,6 +8,7 @@ export function generateId(): string {
 	return nanoid(10);
 }
 
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 export type IdObj<T extends readonly string[]> = Expand<{ [K in T[number]]: string }>;
 
 export function generateIds<T extends readonly string[]>(args: T): IdObj<T> {

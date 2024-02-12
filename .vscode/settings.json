@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "*.ignore-svelte": "svelte",
-    "*.ignore-ts": "typescript"
-  }
+    "*.ignore-ts": "typescript",
+    "api-extractor.json": "jsonc"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

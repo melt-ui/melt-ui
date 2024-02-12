@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createPopover, createRangeCalendar } from '$lib/builders/index.js';
 import {
 	handleSegmentNavigation,

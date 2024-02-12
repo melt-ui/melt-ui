@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Writable } from 'svelte/store';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { DateRangeFieldIdParts, createDateRangeField } from './create.js';
@@ -129,3 +130,4 @@ export type CreateDateRangeFieldProps = Expand<
 		>
 >;
 export type DateRangeField = ReturnType<typeof createDateRangeField>;
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;

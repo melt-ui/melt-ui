@@ -59,7 +59,7 @@ describe('TagsInput', () => {
 			props: {
 				unique: true,
 				defaultTags: [newTag],
-				add(v) {
+				add(v: string) {
 					return v.trim();
 				},
 				trim: false,
@@ -149,7 +149,7 @@ describe('TagsInput', () => {
 		const { findByRole, queryByText } = render(TagsInput, {
 			props: {
 				allowed: [allowedTag],
-				add(v) {
+				add(v: string) {
 					return v.trim();
 				},
 			},

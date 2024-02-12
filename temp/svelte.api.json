@@ -1,0 +1,921 @@
+{
+  "metadata": {
+    "toolPackage": "@microsoft/api-extractor",
+    "toolVersion": "7.40.1",
+    "schemaVersion": 1011,
+    "oldestForwardsCompatibleVersion": 1001,
+    "tsdocConfig": {
+      "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+      "noStandardTags": true,
+      "tagDefinitions": [
+        {
+          "tagName": "@alpha",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@beta",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@defaultValue",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@decorator",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@deprecated",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@eventProperty",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@example",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@experimental",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@inheritDoc",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@internal",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@label",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@link",
+          "syntaxKind": "inline",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@override",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@packageDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@param",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@privateRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@public",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@readonly",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@remarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@returns",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@sealed",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@see",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@throws",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@typeParam",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@virtual",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@betaDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@internalRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@preapproved",
+          "syntaxKind": "modifier"
+        }
+      ],
+      "supportForTags": {
+        "@alpha": true,
+        "@beta": true,
+        "@defaultValue": true,
+        "@decorator": true,
+        "@deprecated": true,
+        "@eventProperty": true,
+        "@example": true,
+        "@experimental": true,
+        "@inheritDoc": true,
+        "@internal": true,
+        "@label": true,
+        "@link": true,
+        "@override": true,
+        "@packageDocumentation": true,
+        "@param": true,
+        "@privateRemarks": true,
+        "@public": true,
+        "@readonly": true,
+        "@remarks": true,
+        "@returns": true,
+        "@sealed": true,
+        "@see": true,
+        "@throws": true,
+        "@typeParam": true,
+        "@virtual": true,
+        "@betaDocumentation": true,
+        "@internalRemarks": true,
+        "@preapproved": true
+      },
+      "reportUnsupportedHtmlElements": false
+    }
+  },
+  "kind": "Package",
+  "canonicalReference": "@melt-ui/svelte!",
+  "docComment": "",
+  "name": "@melt-ui/svelte",
+  "preserveMemberOrder": false,
+  "members": [
+    {
+      "kind": "EntryPoint",
+      "canonicalReference": "@melt-ui/svelte!",
+      "name": "",
+      "preserveMemberOrder": false,
+      "members": [
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!a:type",
+          "docComment": "/**\n * When types or functions are shared between multiple builders with the expectation that they will be exported for users to use, they should be exported from this file to prevent conflicts with other builders that may export the same types or functions.\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type a = "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/shared/index.ts",
+          "releaseTag": "Public",
+          "name": "a",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!AnyMeltElement:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type AnyMeltElement = "
+            },
+            {
+              "kind": "Reference",
+              "text": "MeltElement",
+              "canonicalReference": "@melt-ui/svelte!~MeltElement:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Stores",
+              "canonicalReference": "!\"\\\"svelte/store\\\"\".Stores:type"
+            },
+            {
+              "kind": "Content",
+              "text": ", "
+            },
+            {
+              "kind": "Reference",
+              "text": "Action",
+              "canonicalReference": "!\"\\\"svelte/action\\\"\".Action:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ", "
+            },
+            {
+              "kind": "Reference",
+              "text": "ElementCallback",
+              "canonicalReference": "@melt-ui/svelte!~ElementCallback:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Stores",
+              "canonicalReference": "!\"\\\"svelte/store\\\"\".Stores:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">, string>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/makeElement.ts",
+          "releaseTag": "Public",
+          "name": "AnyMeltElement",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 11
+          }
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@melt-ui/svelte!createSync:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createSync<Stores extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Writable",
+              "canonicalReference": "!\"\\\"svelte/store\\\"\".Writable:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<unknown>>"
+            },
+            {
+              "kind": "Content",
+              "text": ">(stores: "
+            },
+            {
+              "kind": "Content",
+              "text": "Stores"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Content",
+              "text": "{ [K in keyof Stores]: (value: "
+            },
+            {
+              "kind": "Reference",
+              "text": "WritableValue",
+              "canonicalReference": "@melt-ui/svelte!~WritableValue:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Stores[K]>, setter?: ((value: "
+            },
+            {
+              "kind": "Reference",
+              "text": "WritableValue",
+              "canonicalReference": "@melt-ui/svelte!~WritableValue:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Stores[K]>) => void) | undefined) => void; }"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/sync.ts",
+          "returnTypeTokenRange": {
+            "startIndex": 8,
+            "endIndex": 13
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "stores",
+              "parameterTypeTokenRange": {
+                "startIndex": 6,
+                "endIndex": 7
+              },
+              "isOptional": false
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "Stores",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 5
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createSync"
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!DateRange:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type DateRange = "
+            },
+            {
+              "kind": "Content",
+              "text": "{\n\tstart: "
+            },
+            {
+              "kind": "Reference",
+              "text": "DateValue",
+              "canonicalReference": "@internationalized/date!DateValue:type"
+            },
+            {
+              "kind": "Content",
+              "text": " | undefined;\n\tend: "
+            },
+            {
+              "kind": "Reference",
+              "text": "DateValue",
+              "canonicalReference": "@internationalized/date!DateValue:type"
+            },
+            {
+              "kind": "Content",
+              "text": " | undefined;\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/date/types.ts",
+          "releaseTag": "Public",
+          "name": "DateRange",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@melt-ui/svelte!emptyMeltElement:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "emptyMeltElement: "
+            },
+            {
+              "kind": "Reference",
+              "text": "MeltElement",
+              "canonicalReference": "@melt-ui/svelte!~MeltElement:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Stores",
+              "canonicalReference": "!\"\\\"svelte/store\\\"\".Stores:type"
+            },
+            {
+              "kind": "Content",
+              "text": " | undefined, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Action",
+              "canonicalReference": "!\"\\\"svelte/action\\\"\".Action:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<any, any, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<never, any>>, (() => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any> | ((...args: any[]) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any>)) | ((values: any) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any> | ((...args: any[]) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any>)) | ((values: any[]) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any> | ((...args: any[]) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any>)) | ((values: [any, ...any[]]) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any> | ((...args: any[]) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any>)), \"empty\">"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/makeElement.ts",
+          "isReadonly": true,
+          "releaseTag": "Public",
+          "name": "emptyMeltElement",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 25
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!FocusProp:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type FocusProp = "
+            },
+            {
+              "kind": "Reference",
+              "text": "FocusTarget",
+              "canonicalReference": "@melt-ui/svelte!FocusTarget:type"
+            },
+            {
+              "kind": "Content",
+              "text": " | ((defaultEl?: "
+            },
+            {
+              "kind": "Reference",
+              "text": "HTMLElement",
+              "canonicalReference": "!HTMLElement:interface"
+            },
+            {
+              "kind": "Content",
+              "text": " | null) => "
+            },
+            {
+              "kind": "Reference",
+              "text": "FocusTarget",
+              "canonicalReference": "@melt-ui/svelte!FocusTarget:type"
+            },
+            {
+              "kind": "Content",
+              "text": ")"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/focus.ts",
+          "releaseTag": "Public",
+          "name": "FocusProp",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 7
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!FocusTarget:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type FocusTarget = "
+            },
+            {
+              "kind": "Content",
+              "text": "string | "
+            },
+            {
+              "kind": "Reference",
+              "text": "HTMLElement",
+              "canonicalReference": "!HTMLElement:interface"
+            },
+            {
+              "kind": "Content",
+              "text": " | "
+            },
+            {
+              "kind": "Reference",
+              "text": "SVGElement",
+              "canonicalReference": "!SVGElement:interface"
+            },
+            {
+              "kind": "Content",
+              "text": " | null"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/focus.ts",
+          "releaseTag": "Public",
+          "name": "FocusTarget",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!Granularity:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type Granularity = "
+            },
+            {
+              "kind": "Content",
+              "text": "'day' | 'hour' | 'minute' | 'second'"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/date/types.ts",
+          "releaseTag": "Public",
+          "name": "Granularity",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!Matcher:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type Matcher = "
+            },
+            {
+              "kind": "Content",
+              "text": "(date: "
+            },
+            {
+              "kind": "Reference",
+              "text": "DateValue",
+              "canonicalReference": "@internationalized/date!DateValue:type"
+            },
+            {
+              "kind": "Content",
+              "text": ") => boolean"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/date/types.ts",
+          "releaseTag": "Public",
+          "name": "Matcher",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 4
+          }
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@melt-ui/svelte!melt:function(1)",
+          "docComment": "/**\n * A special action for Melt UI's preprocessor `@melt-ui/pp`.\n *\n * @example\n * ```svelte\n * <script>\n * \timport { createLabel, melt } from '@melt-ui/svelte';\n * \tconst { elements: { root } } = createLabel();\n * </script>\n *\n * <label use:melt={$root} />\n * ```\n *\n * @see\n *\n * https://www.melt-ui.com/docs/preprocessor\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function melt<Builder extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "SomeBuilder",
+              "canonicalReference": "@melt-ui/svelte!~SomeBuilder:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Element, Param, A>"
+            },
+            {
+              "kind": "Content",
+              "text": ", Element extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "HTMLElement",
+              "canonicalReference": "!HTMLElement:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ", Attributes extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "GetActionAttributes",
+              "canonicalReference": "@melt-ui/svelte!~GetActionAttributes:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Builder>"
+            },
+            {
+              "kind": "Content",
+              "text": ", A extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Record",
+              "canonicalReference": "!Record:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, any>"
+            },
+            {
+              "kind": "Content",
+              "text": ", Param = "
+            },
+            {
+              "kind": "Content",
+              "text": "never"
+            },
+            {
+              "kind": "Content",
+              "text": ">(node: "
+            },
+            {
+              "kind": "Content",
+              "text": "Element"
+            },
+            {
+              "kind": "Content",
+              "text": ", params: "
+            },
+            {
+              "kind": "Content",
+              "text": "Builder"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "ActionReturn",
+              "canonicalReference": "!\"\\\"svelte/action\\\"\".ActionReturn:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<Builder, Attributes>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/actions/melt/index.ts",
+          "returnTypeTokenRange": {
+            "startIndex": 18,
+            "endIndex": 20
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "node",
+              "parameterTypeTokenRange": {
+                "startIndex": 14,
+                "endIndex": 15
+              },
+              "isOptional": false
+            },
+            {
+              "parameterName": "params",
+              "parameterTypeTokenRange": {
+                "startIndex": 16,
+                "endIndex": 17
+              },
+              "isOptional": false
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "Builder",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "Element",
+              "constraintTokenRange": {
+                "startIndex": 4,
+                "endIndex": 5
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "Attributes",
+              "constraintTokenRange": {
+                "startIndex": 6,
+                "endIndex": 8
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "A",
+              "constraintTokenRange": {
+                "startIndex": 9,
+                "endIndex": 11
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "Param",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 12,
+                "endIndex": 13
+              }
+            }
+          ],
+          "name": "melt"
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@melt-ui/svelte!Month:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export type Month<T> = "
+            },
+            {
+              "kind": "Content",
+              "text": "{\n\tvalue: "
+            },
+            {
+              "kind": "Reference",
+              "text": "DateValue",
+              "canonicalReference": "@internationalized/date!DateValue:type"
+            },
+            {
+              "kind": "Content",
+              "text": ";\n\n\tweeks: T[][];\n\n\tdates: T[];\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "fileUrlPath": "src/lib/internal/helpers/date/types.ts",
+          "releaseTag": "Public",
+          "name": "Month",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 4
+          }
+        }
+      ]
+    }
+  ]
+}

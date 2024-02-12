@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
-import PortalNestedTest, { structure, type Structure } from './PortalNested.svelte';
+import PortalNestedTest from './PortalNested.svelte';
+import { structure, type Structure } from './PortalNested.js';
 
 // Recursive function to test the components
 const testComponent = async (component: Structure, level = 0) => {

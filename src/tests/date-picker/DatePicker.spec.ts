@@ -537,7 +537,7 @@ describe('DatePicker', () => {
 
 	test("doesn't close on outside click if preventDefault called in `onOutsideClick`", async () => {
 		const { getByTestId, trigger, user } = setup({
-			onOutsideClick: (e) => {
+			onOutsideClick: (e: Event) => {
 				e.preventDefault();
 			},
 		});

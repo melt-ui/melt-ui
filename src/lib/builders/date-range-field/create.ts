@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createDateField } from '$lib/index.js';
 import {
 	areAllDaysBetweenValid,

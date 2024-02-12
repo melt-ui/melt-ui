@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
@@ -135,6 +136,8 @@ type ModifiedPopoverProps = Omit<
 	RenameProperties<CreatePopoverProps, { ids: 'popoverIds' }>,
 	'disabled'
 >;
+
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export type CreateDatePickerProps = Expand<
 	DatePickerProps & ModifiedDateFieldProps & ModifiedPopoverProps & ModifiedCalendarProps

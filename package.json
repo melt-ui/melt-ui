@@ -24,7 +24,8 @@
 		"build-storybook": "storybook build -s static",
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
-		"changeset": "changeset"
+		"changeset": "changeset",
+		"generate:declarations": "rm -rf ./declarations && pnpm tsc -p ./tsconfig-api.json"
 	},
 	"exports": {
 		".": {
@@ -73,6 +74,7 @@
 		"@fontsource/inter": "^5.0.8",
 		"@huntabyte/mdsvex": "0.16.5",
 		"@melt-ui/pp": "0.1.0",
+		"@microsoft/api-extractor": "^7.40.1",
 		"@playwright/test": "^1.39.0",
 		"@storybook/addon-a11y": "^7.6.12",
 		"@storybook/addon-essentials": "^7.6.12",

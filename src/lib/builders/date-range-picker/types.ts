@@ -134,6 +134,7 @@ type ModifiedPopoverProps = Omit<
 	RenameProperties<CreatePopoverProps, { ids: 'popoverIds' }>,
 	'disabled'
 >;
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export type CreateDateRangePickerProps = Expand<
 	DateRangePickerProps & ModifiedDateFieldProps & ModifiedPopoverProps & ModifiedCalendarProps

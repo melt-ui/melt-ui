@@ -202,7 +202,7 @@ describe('Select', () => {
 	test("doesn't close when preventDefault called in `onOutsideClick`", async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(SelectTest, {
-			onOutsideClick: (e) => {
+			onOutsideClick: (e: Event) => {
 				e.preventDefault();
 			},
 		});
