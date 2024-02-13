@@ -85,9 +85,6 @@ async function main() {
 		console.log(`Inspecting ${builderName}...`);
 
 		const typesPath = `${baseDir}/types.ts`;
-		const glob = `${baseDir}/**/*.ts`;
-
-		project.addSourceFilesAtPaths(glob);
 
 		const typesSrc = project.getSourceFile(typesPath);
 		const aliases = typesSrc?.getTypeAliases();
@@ -107,7 +104,6 @@ async function main() {
 				?.getType()
 				.getAliasTypeArguments()
 				.map((t) => t.getText());
-			console.log(name, type);
 		});
 	}
 
