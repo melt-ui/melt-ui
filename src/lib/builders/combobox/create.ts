@@ -51,6 +51,7 @@ export function createCombobox<
 				...omit($trigger, 'action'),
 				role: 'combobox',
 				value: $inputValue,
+				autocomplete: 'off',
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['input']> => {
