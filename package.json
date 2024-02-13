@@ -24,7 +24,8 @@
 		"build-storybook": "storybook build -s static",
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
-		"changeset": "changeset"
+		"changeset": "changeset",
+		"generate:api": "tsx ./scripts/generateApi.ts"
 	},
 	"exports": {
 		".": {
@@ -109,6 +110,7 @@
 		"eslint-config-prettier": "^8.9.0",
 		"eslint-plugin-storybook": "^0.6.15",
 		"eslint-plugin-svelte": "^2.33.0",
+		"glob": "^10.3.10",
 		"hast-util-to-html": "^9.0.0",
 		"jest-axe": "^8.0.0",
 		"jsdom": "^24.0.0",
@@ -135,7 +137,9 @@
 		"tailwind-merge": "^2.2.1",
 		"tailwind-variants": "^0.1.8",
 		"tailwindcss": "^3.4.1",
+		"ts-morph": "^21.0.1",
 		"tslib": "^2.6.1",
+		"tsx": "^4.7.1",
 		"typescript": "^5.1.6",
 		"unified": "^11.0.4",
 		"unist-util-visit": "^5.0.0",

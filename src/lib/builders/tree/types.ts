@@ -1,8 +1,13 @@
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, WithGet } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createTreeView } from './create.js';
 
 export type CreateTreeViewProps = {
+	/**
+	 * If `true`, hidden elements will be visible.
+	 *
+	 * @default false
+	 */
 	forceVisible?: boolean;
 
 	/**
@@ -37,5 +42,10 @@ export type ItemDescription = {
 
 export type TreeView = ReturnType<typeof createTreeView>;
 export type TreeViewElements = TreeView['elements'];
-export type TreeViewStates = TreeView['states'];
+export type TreeViewStates = {
+	/** A store holding the expanded items of the tree. */
+	expanded: WithGet<Writable<string[]>>;
+	/** A store holding the currently selected item in the tree. */
+	selectedId: WithGet<Writable<string | null>>;
+};
 export type TreeViewHelpers = TreeView['helpers'];

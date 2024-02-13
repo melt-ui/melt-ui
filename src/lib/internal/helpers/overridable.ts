@@ -1,9 +1,12 @@
 import type { Updater, Writable } from 'svelte/store';
-import { withGet } from './withGet.js';
+import { withGet, type WithGet } from './withGet.js';
 
 export type ChangeFn<T> = (args: { curr: T; next: T }) => T;
 
-export const overridable = <T>(_store: Writable<T>, onChange?: ChangeFn<T>) => {
+export const overridable = <T>(
+	_store: Writable<T>,
+	onChange?: ChangeFn<T>
+): WithGet<Writable<T>> => {
 	const store = withGet(_store);
 
 	const update = (updater: Updater<T>, sideEffect?: (newValue: T) => void) => {
