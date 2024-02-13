@@ -2,9 +2,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { writeFileSync } from 'fs';
 import { glob } from 'glob';
-import { type } from 'os';
 import { join } from 'path';
-import { ModuleResolutionKind, Project, Symbol, TypeChecker, TypeAliasDeclaration } from 'ts-morph';
+import { ModuleResolutionKind, Project, Symbol, TypeAliasDeclaration, TypeChecker } from 'ts-morph';
 
 function trimType(value: string) {
 	return value
@@ -44,7 +43,6 @@ function getEntity({ name, aliases, typeChecker }: GetEntityArgs) {
 	entityType?.getProperties().forEach((property) => {
 		const name = property.getName();
 		const type = property.getValueDeclaration()?.getType()?.getText();
-		console.log(name, property.getValueDeclaration()?.getType());
 
 		const defaultValue = getDefaultValue(property);
 		const description = getDescription(property, typeChecker) || 'N/A';
@@ -79,7 +77,6 @@ async function main() {
 	> = {};
 
 	const builders = await glob('src/lib/builders/*/types.ts');
-	console.log('builders', builders);
 
 	for (const path of builders.slice(0, 1)) {
 		// for (const path of builders) {
@@ -92,17 +89,29 @@ async function main() {
 
 		project.addSourceFilesAtPaths(glob);
 
-		const contextSrc = project.getSourceFile(typesPath);
-		const aliases = contextSrc?.getTypeAliases();
+		const typesSrc = project.getSourceFile(typesPath);
+		const aliases = typesSrc?.getTypeAliases();
 
 		result[builderName] = {
 			props: getEntity({ name: 'Props', aliases, typeChecker }),
 			states: getEntity({ name: 'States', aliases, typeChecker }),
 			helpers: getEntity({ name: 'Helpers', aliases, typeChecker }),
 		};
+
+		/* Elements */
+		const entityType = aliases?.find((alias) => alias.getName().endsWith('Elements'))?.getType();
+		entityType?.getProperties().forEach((property) => {
+			const name = property.getName();
+			const type = property
+				.getValueDeclaration()
+				?.getType()
+				.getAliasTypeArguments()
+				.map((t) => t.getText());
+			console.log(name, type);
+		});
 	}
 
-	console.log('result', JSON.stringify(result, null, 2));
+	// console.log('result', JSON.stringify(result, null, 2));
 	const outPath = join(process.cwd(), 'src', 'docs', 'api.json');
 	writeFileSync(outPath, JSON.stringify(result, null, 2));
 }

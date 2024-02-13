@@ -1,6 +1,7 @@
 import type { ChangeFn, WithGet } from '$lib/internal/helpers/index.js';
 import type { Readable, Writable } from 'svelte/store';
 import type { createTreeView } from './create.js';
+import type { Action } from 'svelte/action';
 
 export type CreateTreeViewProps = {
 	/**
@@ -40,8 +41,28 @@ export type ItemDescription = {
 	childrenIdxs: number[];
 };
 
+type FnElement<
+	Props extends unknown[],
+	Attributes,
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	Events extends Record<string, any> = {}
+> = Readable<(...props: Props) => Attributes & Action<HTMLElement, undefined, Events>>;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Element<Attributes, Events extends Record<string, any> = {}> = Readable<
+	Attributes & Action<HTMLElement, undefined, Events>
+>;
+
 export type TreeView = ReturnType<typeof createTreeView>;
-export type TreeViewElements = TreeView['elements'];
+export type TreeViewElements = {
+	tree: Element<{ 'data-melt-id': string }>;
+	item: FnElement<
+		[{ id: string; hasChildren?: boolean }],
+		{ 'data-melt-id': string },
+		{ 'm-keydown': CustomEvent }
+	>;
+	group: Element<{ 'data-melt-id': string }>;
+};
 export type TreeViewStates = {
 	/** A store holding the expanded items of the tree. */
 	expanded: WithGet<Writable<string[]>>;
