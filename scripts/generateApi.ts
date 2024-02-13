@@ -4,7 +4,7 @@ import { writeFileSync } from 'fs';
 import { glob } from 'glob';
 import { type } from 'os';
 import { join } from 'path';
-import { ModuleResolutionKind, Project, Symbol, TypeChecker } from 'ts-morph';
+import { ModuleResolutionKind, Project, Symbol, TypeChecker, TypeAliasDeclaration } from 'ts-morph';
 
 function trimType(value: string) {
 	return value
@@ -25,10 +25,36 @@ function getDescription(property: Symbol, typeChecker?: TypeChecker) {
 	return description?.text;
 }
 
-interface Prop {
+interface Entity {
 	type: string;
 	description: string;
-	defaultValue: string | null;
+	defaultValue?: string | null;
+}
+
+type GetEntityArgs = {
+	name: string;
+	aliases?: TypeAliasDeclaration[];
+	typeChecker: TypeChecker;
+};
+
+function getEntity({ name, aliases, typeChecker }: GetEntityArgs) {
+	const result: Record<string, Entity> = {};
+
+	const entityType = aliases?.find((alias) => alias.getName().endsWith(name))?.getType();
+	entityType?.getProperties().forEach((property) => {
+		const name = property.getName();
+		const type = property.getValueDeclaration()?.getType()?.getText();
+		console.log(name, property.getValueDeclaration()?.getType());
+
+		const defaultValue = getDefaultValue(property);
+		const description = getDescription(property, typeChecker) || 'N/A';
+
+		if (type) {
+			result[name] = { type: trimType(type), description, defaultValue };
+		}
+	});
+
+	return result;
 }
 
 async function main() {
@@ -45,8 +71,9 @@ async function main() {
 	const result: Record<
 		string,
 		{
-			props?: Record<string, Prop>;
-			states?: Record<string, { type: string; description: string }>;
+			props?: Record<string, Entity>;
+			states?: Record<string, Entity>;
+			helpers?: Record<string, Entity>;
 			// elements?: Record<string, { type: string; description: string; }>;
 		}
 	> = {};
@@ -60,10 +87,6 @@ async function main() {
 		const builderName = baseDir.split('/').pop()!;
 		console.log(`Inspecting ${builderName}...`);
 
-		result[builderName] = {
-			props: {},
-			states: {},
-		};
 		const typesPath = `${baseDir}/types.ts`;
 		const glob = `${baseDir}/**/*.ts`;
 
@@ -72,33 +95,11 @@ async function main() {
 		const contextSrc = project.getSourceFile(typesPath);
 		const aliases = contextSrc?.getTypeAliases();
 
-		/* Get Props */
-		const propsType = aliases?.find((alias) => alias.getName().endsWith('Props'))?.getType();
-		propsType?.getProperties().forEach((property) => {
-			const name = property.getName();
-			const type = property.getValueDeclaration()?.getType()?.getText();
-			console.log(name, property.getValueDeclaration()?.getType());
-
-			const defaultValue = getDefaultValue(property);
-			const description = getDescription(property, typeChecker) || 'N/A';
-
-			if (type) {
-				result[builderName].props![name] = { type: trimType(type), description, defaultValue };
-			}
-		});
-
-		/* Get States */
-		const statesType = aliases?.find((alias) => alias.getName().endsWith('States'))?.getType();
-		statesType?.getProperties().forEach((property) => {
-			const name = property.getName();
-			const type = property.getValueDeclaration()?.getType()?.getText();
-
-			const description = getDescription(property, typeChecker) || 'N/A';
-
-			if (type) {
-				result[builderName].states![name] = { type: trimType(type), description };
-			}
-		});
+		result[builderName] = {
+			props: getEntity({ name: 'Props', aliases, typeChecker }),
+			states: getEntity({ name: 'States', aliases, typeChecker }),
+			helpers: getEntity({ name: 'Helpers', aliases, typeChecker }),
+		};
 	}
 
 	console.log('result', JSON.stringify(result, null, 2));

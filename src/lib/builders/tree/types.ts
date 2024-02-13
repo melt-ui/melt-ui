@@ -1,5 +1,5 @@
 import type { ChangeFn, WithGet } from '$lib/internal/helpers/index.js';
-import type { Writable } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
 import type { createTreeView } from './create.js';
 
 export type CreateTreeViewProps = {
@@ -48,4 +48,9 @@ export type TreeViewStates = {
 	/** A store holding the currently selected item in the tree. */
 	selectedId: WithGet<Writable<string | null>>;
 };
-export type TreeViewHelpers = TreeView['helpers'];
+export type TreeViewHelpers = {
+	/** A helper store that determines if the tree view item with id === `itemId` is expanded. */
+	isExpanded: Readable<(itemId: string) => boolean>;
+	/** A helper store that determines if the tree view item with id === `itemId` is selected. */
+	isSelected: Readable<(itemId: string) => boolean>;
+};
