@@ -16,4 +16,4 @@ export const hiddenInputAttrs = {
 		margin: 0,
 		transform: 'translateX(-100%)',
 	}),
-};
+} as const;
