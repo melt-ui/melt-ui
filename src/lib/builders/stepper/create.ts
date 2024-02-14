@@ -130,14 +130,13 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 	});
 
-	const incrementer = builder(name('incrementer'), {
+	const incrementButton = builder(name('increment-button'), {
 		stores: disabled,
 		returned: ($disabled) => {
 			return {
 				type: 'button',
 				tabindex: -1,
 				disabled: disabledAttr($disabled),
-				'aria-disabled': $disabled,
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -156,14 +155,13 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 	});
 
-	const decrementer = builder(name('decrementer'), {
+	const decrementButton = builder(name('decrement-button'), {
 		stores: disabled,
 		returned: ($disabled) => {
 			return {
 				type: 'button',
 				tabindex: -1,
 				disabled: disabledAttr($disabled),
-				'aria-disabled': $disabled,
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -213,8 +211,8 @@ export function createStepper(props?: CreateStepperProps) {
 	return {
 		elements: {
 			stepper,
-			incrementer,
-			decrementer,
+			incrementButton,
+			decrementButton,
 			hiddenInput,
 		},
 		states: {
