@@ -54,7 +54,7 @@ export function createStepper(props?: CreateStepperProps) {
 	});
 
 	/**
-	 * Increments the stepper's value by the step amount.
+	 * Increases the stepper's value by `step`.
 	 */
 	function increment() {
 		const $next = next.get();
@@ -64,7 +64,7 @@ export function createStepper(props?: CreateStepperProps) {
 	}
 
 	/**
-	 * Decrements the stepper's value by the step amount.
+	 * Decreases the stepper's value by `step`.
 	 */
 	function decrement() {
 		const $previous = previous.get();
@@ -131,12 +131,12 @@ export function createStepper(props?: CreateStepperProps) {
 	});
 
 	const incrementButton = builder(name('increment-button'), {
-		stores: disabled,
-		returned: ($disabled) => {
+		stores: [disabled, next],
+		returned: ([$disabled, $next]) => {
 			return {
 				type: 'button',
 				tabindex: -1,
-				disabled: disabledAttr($disabled),
+				disabled: disabledAttr($disabled || $next === null),
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -156,12 +156,12 @@ export function createStepper(props?: CreateStepperProps) {
 	});
 
 	const decrementButton = builder(name('decrement-button'), {
-		stores: disabled,
-		returned: ($disabled) => {
+		stores: [disabled, previous],
+		returned: ([$disabled, $previous]) => {
 			return {
 				type: 'button',
 				tabindex: -1,
-				disabled: disabledAttr($disabled),
+				disabled: disabledAttr($disabled || $previous === null),
 			} as const;
 		},
 		action: (node: HTMLElement) => {
