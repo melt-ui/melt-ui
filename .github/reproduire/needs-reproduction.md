@@ -15,7 +15,7 @@ If `needs reproduction` labeled issues don't receive any activity (e.g., a comme
 
 ### How can I create a reproduction?
 
-You can use [this template](https://bits-ui.com/repro) to create a minimal reproduction. You can also link to a GitHub repository with the reproduction.
+You can use [this template](https://melt-ui.com/repro) to create a minimal reproduction. You can also link to a GitHub repository with the reproduction.
 
 Please ensure that the reproduction is as **minimal** as possible. If there is a ton of custom logic in your reproduction, it is difficult to determine if the issue is with your code or with the library. The more minimal the reproduction, the more likely it is that we'll be able to assist.
 
