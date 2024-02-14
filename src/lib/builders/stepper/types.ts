@@ -36,14 +36,14 @@ export type CreateStepperProps = {
 	max?: number;
 
 	/**
-	 * The amount to increment or decrement for each step.
+	 * The amount to increment or decrement by.
 	 *
 	 * @default 1
 	 */
 	step?: number;
 
 	/**
-	 * When `true`, prevents the user from interacting with the stepper.
+	 * Whether or not the stepper is disabled.
 	 *
 	 * @default false
 	 */
