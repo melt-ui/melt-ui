@@ -128,8 +128,8 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const overlay = makeElement(name('overlay'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isVisible, open],
+		returned: ([$isVisible, $open]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
@@ -137,7 +137,7 @@ export function createDialog(props?: CreateDialogProps) {
 					display: $isVisible ? undefined : 'none',
 				}),
 				'aria-hidden': true,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open ? 'open' : 'closed',
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -163,15 +163,15 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, ids.content, ids.description, ids.title],
-		returned: ([$isVisible, $contentId, $descriptionId, $titleId]) => {
+		stores: [isVisible, ids.content, ids.description, ids.title, open],
+		returned: ([$isVisible, $contentId, $descriptionId, $titleId, $open]) => {
 			return {
 				id: $contentId,
 				role: role.get(),
 				'aria-describedby': $descriptionId,
 				'aria-labelledby': $titleId,
 				'aria-modal': $isVisible ? ('true' as const) : undefined,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
 				style: styleToString({
@@ -295,9 +295,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const close = makeElement(name('close'), {
 		returned: () =>
-			({
-				type: 'button',
-			} as const),
+		({
+			type: 'button',
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
