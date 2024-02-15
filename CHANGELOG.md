@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.74.0
+
+### Minor Changes
+
+- Dialog: change data-state conditions ([`0c7bf6df`](https://github.com/melt-ui/melt-ui/commit/0c7bf6dfd338103f7288b84c1fc5ae1c7f8b8770))
+
+### Patch Changes
+
+- Combobox: autocomplete off ([`db53236b`](https://github.com/melt-ui/melt-ui/commit/db53236b6bac88f3a3008269e32841467885b8f3))
+
 ## 0.73.0
 
 ### Minor Changes
