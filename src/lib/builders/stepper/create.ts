@@ -15,6 +15,7 @@ const defaults = {
 	min: undefined,
 	max: undefined,
 	step: 1,
+	loop: false,
 	disabled: false,
 } satisfies CreateStepperProps;
 
@@ -29,29 +30,45 @@ export function createStepper(props?: CreateStepperProps) {
 	);
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'defaultValue', 'onValueChange'));
-	const { min, max, step, disabled } = options;
+	const { min, max, step, loop, disabled } = options;
 
 	/**
 	 * The previous value of the stepper, or `null` if there is no previous value.
+	 *
+	 * If `loop` is `true`, the previous value will be `max` instead of `null`.
 	 */
-	const previous = withGet.derived([value, min, step], ([$value, $min, $step]) => {
-		const $previous = $value - $step;
-		if ($min !== undefined && $previous < $min) {
+	const previous = withGet.derived(
+		[value, min, max, step, loop],
+		([$value, $min, $max, $step, $loop]) => {
+			const $previous = $value - $step;
+			if ($min === undefined || $previous >= $min) {
+				return $previous;
+			}
+			if ($loop && $max !== undefined) {
+				return $max;
+			}
 			return null;
 		}
-		return $previous;
-	});
+	);
 
 	/**
 	 * The next value of the stepper, or `null` if there is no next value.
+	 *
+	 * If `loop` is `true`, the next value will be `min` instead of `null`.
 	 */
-	const next = withGet.derived([value, max, step], ([$value, $max, $step]) => {
-		const $next = $value + $step;
-		if ($max !== undefined && $max < $next) {
+	const next = withGet.derived(
+		[value, min, max, step, loop],
+		([$value, $min, $max, $step, $loop]) => {
+			const $next = $value + $step;
+			if ($max === undefined || $next <= $max) {
+				return $next;
+			}
+			if ($loop && $min !== undefined) {
+				return $min;
+			}
 			return null;
 		}
-		return $next;
-	});
+	);
 
 	/**
 	 * Increases the stepper's value by `step`.
