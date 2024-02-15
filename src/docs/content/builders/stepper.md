@@ -20,6 +20,7 @@ above to create your stepper.
 
 ## Accessibility
 
-Adheres to the [Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/)
+Adheres to the
+[Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/)
 
 <KbdTable {keyboard} />

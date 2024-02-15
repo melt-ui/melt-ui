@@ -10,7 +10,7 @@
 		defaultValue: 1,
 		min: 1,
 		max: 12,
-		loop: true
+		loop: true,
 	});
 
 	const monthMap = {

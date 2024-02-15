@@ -45,7 +45,7 @@ export type CreateStepperProps = {
 	/**
 	 * Whether or not the stepper should loop back to `min`
 	 * when `max` is reached, and vice versa.
-	 * 
+	 *
 	 * @default false
 	 */
 	loop?: boolean;

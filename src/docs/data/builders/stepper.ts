@@ -23,7 +23,8 @@ const OPTION_PROPS = [
 	{
 		name: 'loop',
 		type: 'boolean',
-		description: 'Whether or not the stepper should loop back to `min` when `max` is reached, and vice versa.',
+		description:
+			'Whether or not the stepper should loop back to `min` when `max` is reached, and vice versa.',
 		default: 'false',
 	},
 	PROPS.DISABLED({
