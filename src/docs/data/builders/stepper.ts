@@ -20,6 +20,12 @@ const OPTION_PROPS = [
 		description: 'The amount to increment or decrement by.',
 		default: '1',
 	},
+	{
+		name: 'loop',
+		type: 'boolean',
+		description: 'Whether or not the stepper should loop back to `min` when `max` is reached, and vice versa.',
+		default: 'false',
+	},
 	PROPS.DISABLED({
 		name: 'stepper',
 	}),

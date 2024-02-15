@@ -10,6 +10,7 @@
 		defaultValue: 1,
 		min: 1,
 		max: 12,
+		loop: true
 	});
 
 	const monthMap = {
@@ -30,8 +31,8 @@
 	type Month = keyof typeof monthMap;
 
 	$: month = monthMap[$value as Month];
-	$: previousMonth = $previous ? monthMap[$previous as Month] : '';
-	$: nextMonth = $next ? monthMap[$next as Month] : '';
+	$: previousMonth = monthMap[$previous as Month];
+	$: nextMonth = monthMap[$next as Month];
 </script>
 
 <p id="month-label" class="font-semibold text-magnum-900">Month</p>
