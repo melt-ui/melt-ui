@@ -2,9 +2,9 @@ import { tick } from 'svelte';
 import type { ActionReturn } from 'svelte/action';
 import { isHTMLElement } from '../helpers/is.js';
 
-export type PortalTarget = string | HTMLElement | undefined;
+export type PortalConfig = string | HTMLElement | undefined;
 
-export function usePortal(el: HTMLElement, target?: PortalTarget) {
+export function usePortal(el: HTMLElement, target?: PortalConfig) {
 	async function run() {
 		const targetEl = await getTargetEl(target);
 		targetEl.appendChild(el);
@@ -22,10 +22,10 @@ export function usePortal(el: HTMLElement, target?: PortalTarget) {
 		destroy() {
 			el.remove();
 		},
-	} satisfies ActionReturn<PortalTarget>;
+	} satisfies ActionReturn<PortalConfig>;
 }
 
-async function getTargetEl(target: PortalTarget) {
+async function getTargetEl(target: PortalConfig) {
 	if (target === undefined) {
 		return document.body;
 	}
