@@ -14,14 +14,15 @@ const defaults: { items: string[]; type: 'single' | 'multiple' } = {
 	type: 'single',
 };
 
-function setup(
-	props?: Omit<CreateToggleGroupProps, 'type'> & { items: string[]; type: 'single' | 'multiple' }
+function setup<T extends 'single' | 'multiple'>(
+	props?: CreateToggleGroupProps<T> & { items?: string[]; type: 'single' | 'multiple' }
 ) {
 	const withDefaults = { ...defaults, ...props };
 	const user = userEvent.setup();
 	const result = render(ToggleGroupTest, withDefaults);
 	const tabButton = result.getByTestId('tab-btn');
-	return { user, ...result, tabButton };
+	const root = result.getByTestId('root');
+	return { user, ...result, tabButton, root };
 }
 
 describe('Toggle Group', () => {
@@ -45,10 +46,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('keyboard navigation between items', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
 			loop: false,
 		});
 
@@ -66,10 +65,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('keyboard navigation between items - loop', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
 			loop: true,
 		});
 
@@ -87,8 +84,7 @@ describe('Toggle Group', () => {
 	});
 
 	test('only one item can be selected in single mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
 			items,
 		});
@@ -108,10 +104,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('multiple items can be selected in multiple mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'multiple',
-			items,
 		});
 
 		getByTestId(items[0]).focus();
@@ -130,10 +124,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('can uncheck items in single mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
 		});
 
 		getByTestId(items[0]).focus();
@@ -145,8 +137,7 @@ describe('Toggle Group', () => {
 	});
 
 	test('can uncheck items in multiple mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'multiple',
 			items,
 		});
@@ -160,9 +151,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('defaultValue is respected in single mode', async () => {
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'single',
-			items,
 			defaultValue: items[1],
 		});
 
@@ -172,9 +162,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('defaultValue is respected in multiple mode', async () => {
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'multiple',
-			items,
 			defaultValue: [items[1], items[2]],
 		});
 
@@ -185,9 +174,8 @@ describe('Toggle Group', () => {
 
 	test('value prop overrides defaultValue - single', async () => {
 		const valueStore = writable<string>(items[1]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'single',
-			items,
 			defaultValue: items[0],
 			value: valueStore,
 		});
@@ -199,9 +187,8 @@ describe('Toggle Group', () => {
 
 	test('value prop overrides defaultValue - multiple', async () => {
 		const valueStore = writable<string[]>([items[1], items[2]]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'multiple',
-			items,
 			defaultValue: [items[0]],
 			value: valueStore,
 		});
@@ -213,9 +200,8 @@ describe('Toggle Group', () => {
 
 	test('value prop programmatically updates - single', async () => {
 		const valueStore = writable<string>(items[1]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'single',
-			items,
 			value: valueStore,
 		});
 
@@ -233,9 +219,8 @@ describe('Toggle Group', () => {
 
 	test('value prop programmatically updates - multiple', async () => {
 		const valueStore = writable<string[]>([items[1], items[2]]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'multiple',
-			items,
 			value: valueStore,
 		});
 
@@ -252,10 +237,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('change function is respected - single', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
 			onValueChange: () => items[0],
 		});
 
@@ -270,10 +253,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('change function is respected - multiple', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { user, getByTestId } = setup({
 			type: 'multiple',
-			items,
 			onValueChange: () => [items[0], items[1]],
 		});
 
