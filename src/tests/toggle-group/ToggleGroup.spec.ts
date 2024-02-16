@@ -1,4 +1,3 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
 import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -6,8 +5,24 @@ import { describe } from 'vitest';
 import ToggleGroupTest from './ToggleGroupTest.svelte';
 import { tick } from 'svelte';
 import { writable } from 'svelte/store';
+import type { CreateToggleGroupProps } from '$lib/index.js';
+import { testKbd as kbd } from '../utils.js';
 
 const items = ['item-1', 'item-2', 'item-3'];
+const defaults: { items: string[]; type: 'single' | 'multiple' } = {
+	items,
+	type: 'single',
+};
+
+function setup(
+	props?: Omit<CreateToggleGroupProps, 'type'> & { items: string[]; type: 'single' | 'multiple' }
+) {
+	const withDefaults = { ...defaults, ...props };
+	const user = userEvent.setup();
+	const result = render(ToggleGroupTest, withDefaults);
+	const tabButton = result.getByTestId('tab-btn');
+	return { user, ...result, tabButton };
+}
 
 describe('Toggle Group', () => {
 	test('has no accessibility violations', async () => {
@@ -17,11 +32,7 @@ describe('Toggle Group', () => {
 	});
 
 	test('tab does not navigate between items', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
-			type: 'single',
-			items,
-		});
+		const { user, getByTestId } = setup();
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
@@ -38,18 +49,19 @@ describe('Toggle Group', () => {
 		const { getByTestId } = render(ToggleGroupTest, {
 			type: 'single',
 			items,
+			loop: false,
 		});
 
 		getByTestId(items[0]).focus();
 
 		for (const item of items) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 		}
 
 		for (const item of [...items].reverse()) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+			await user.keyboard(kbd.ARROW_LEFT);
 		}
 	});
 
@@ -65,12 +77,12 @@ describe('Toggle Group', () => {
 
 		for (const item of items) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 		}
 
 		for (const item of items) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 		}
 	});
 
@@ -83,12 +95,12 @@ describe('Toggle Group', () => {
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-checked', 'true');
 
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(getByTestId(items[1])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 
 		const root = getByTestId('root');
 		const checkedItems = root.querySelectorAll<HTMLElement>('[aria-checked="true"]');
@@ -104,12 +116,12 @@ describe('Toggle Group', () => {
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'true');
 
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(getByTestId(items[1])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[1])).toHaveAttribute('aria-pressed', 'true');
 
 		const root = getByTestId('root');
@@ -126,9 +138,9 @@ describe('Toggle Group', () => {
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-checked', 'true');
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-checked', 'false');
 	});
 
@@ -141,9 +153,9 @@ describe('Toggle Group', () => {
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'true');
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'false');
 	});
 
@@ -274,5 +286,23 @@ describe('Toggle Group', () => {
 		expect(item3).not.toHaveAttribute('aria-pressed', 'true');
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'true');
 		expect(getByTestId(items[1])).toHaveAttribute('aria-pressed', 'true');
+	});
+
+	test('toggle group focusable when in single mode', async () => {
+		const { user, tabButton, getByTestId } = setup();
+
+		tabButton.focus();
+		expect(tabButton).toHaveFocus();
+		await user.keyboard(kbd.TAB);
+		expect(getByTestId(items[0])).toHaveFocus();
+	});
+
+	test('toggle group focusable when in multiple mode', async () => {
+		const { user, tabButton, getByTestId } = setup({ type: 'multiple', items });
+
+		tabButton.focus();
+		expect(tabButton).toHaveFocus();
+		await user.keyboard(kbd.TAB);
+		expect(getByTestId(items[0])).toHaveFocus();
 	});
 });

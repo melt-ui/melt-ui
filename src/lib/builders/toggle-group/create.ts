@@ -41,7 +41,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 	const defaultValue = withDefaults.defaultValue
 		? withDefaults.defaultValue
 		: withDefaults.type === 'single'
-		? 'undefined'
+		? undefined
 		: [];
 
 	const valueWritable = withDefaults.value ?? writable(defaultValue);
@@ -90,7 +90,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 
 			const items = Array.from(parentGroup.querySelectorAll(selector('item')));
 			const $value = value.get();
-			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value ? true : false;
 
 			if (!anyPressed && items[0] === node) {
 				node.tabIndex = 0;
