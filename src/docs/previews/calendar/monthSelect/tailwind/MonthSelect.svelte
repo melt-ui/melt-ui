@@ -18,9 +18,13 @@
 		12: 'December',
 	} as const;
 
-	export let onSelectedChange: CreateSelectProps<number>['onSelectedChange'] =
-		undefined;
-	export let selected: CreateSelectProps<number>['selected'] = undefined;
+	export let onSelectedChange: CreateSelectProps<
+		number,
+		false
+	>['onSelectedChange'] = undefined;
+
+	export let selected: CreateSelectProps<number, false>['selected'] = undefined;
+
 	const {
 		elements: { trigger, menu, option, label },
 		states: { selectedLabel, open },

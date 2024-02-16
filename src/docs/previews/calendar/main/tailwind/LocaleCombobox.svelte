@@ -16,9 +16,15 @@
 		}),
 	);
 
-	export let onSelectedChange: CreateComboboxProps<string>['onSelectedChange'] =
-		undefined;
-	export let defaultSelected: CreateComboboxProps<string>['defaultSelected'] = {
+	export let onSelectedChange: CreateComboboxProps<
+		string,
+		false
+	>['onSelectedChange'] = undefined;
+
+	export let defaultSelected: CreateComboboxProps<
+		string,
+		false
+	>['defaultSelected'] = {
 		value: 'en-US',
 		label: 'English (US)',
 	};

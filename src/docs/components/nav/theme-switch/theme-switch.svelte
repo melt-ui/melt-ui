@@ -3,10 +3,10 @@
 	import type { Theme } from './types.js';
 
 	export const getThemeCtx = () => {
-		return getContext<Select<Theme>>('theme');
+		return getContext<Select<Theme, false>>('theme');
 	};
 
-	export const setThemeCtx = (ctx: Select<Theme>) => {
+	export const setThemeCtx = (ctx: Select<Theme, false>) => {
 		setContext('theme', ctx);
 	};
 

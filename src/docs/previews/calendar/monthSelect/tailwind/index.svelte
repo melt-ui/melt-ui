@@ -17,7 +17,7 @@
 		month: 'long',
 	});
 
-	const selected: CreateSelectProps<number>['selected'] = writable({
+	const selected: CreateSelectProps<number, false>['selected'] = writable({
 		value: $placeholder.month,
 		label: monthFormatter.format($placeholder.toDate(getLocalTimeZone())),
 	});
