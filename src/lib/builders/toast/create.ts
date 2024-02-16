@@ -192,7 +192,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 	const close = makeElement(name('close'), {
 		returned: () => {
 			return (id: string) => ({
-				type: 'button',
+				type: 'button' as const,
 				'data-id': id,
 			});
 		},
