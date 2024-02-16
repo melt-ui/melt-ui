@@ -1,4 +1,4 @@
-import { builder, toWritableStores } from '$lib/internal/helpers/index.js';
+import { makeElement, toWritableStores } from '$lib/internal/helpers/index.js';
 import type { Defaults } from '$lib/internal/types.js';
 import type { CreateSeparatorProps } from './types.js';
 
@@ -12,7 +12,7 @@ export const createSeparator = (props?: CreateSeparatorProps) => {
 	const options = toWritableStores(withDefaults);
 	const { orientation, decorative } = options;
 
-	const root = builder('separator', {
+	const root = makeElement('separator', {
 		stores: [orientation, decorative],
 		returned: ([$orientation, $decorative]) => {
 			const ariaOrientation = $orientation === 'vertical' ? $orientation : undefined;

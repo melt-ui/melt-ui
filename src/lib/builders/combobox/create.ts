@@ -2,7 +2,7 @@ import { useEscapeKeydown } from '$lib/internal/actions/index.js';
 import {
 	addEventListener,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -44,13 +44,14 @@ export function createCombobox<
 	/* -------- */
 
 	/** Action and attributes for the text input. */
-	const input = builder(name('input'), {
+	const input = makeElement(name('input'), {
 		stores: [listbox.elements.trigger, inputValue],
 		returned: ([$trigger, $inputValue]) => {
 			return {
 				...omit($trigger, 'action'),
 				role: 'combobox',
 				value: $inputValue,
+				autocomplete: 'off',
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['input']> => {

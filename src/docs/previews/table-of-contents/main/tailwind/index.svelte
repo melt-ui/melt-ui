@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Bird } from 'lucide-svelte';
+	import { Bird } from '$icons/index.js';
 	import Tree from './tree.svelte';
 	import { createTableOfContents } from '$lib/index.js';
 

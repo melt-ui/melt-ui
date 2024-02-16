@@ -6,7 +6,7 @@ import {
 	addEventListener,
 	addHighlight,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	createTypeaheadSearch,
 	derivedVisible,
@@ -152,7 +152,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		activeTrigger: rootActiveTrigger,
 	});
 
-	const rootMenu = builder(name(), {
+	const rootMenu = makeElement(name(), {
 		stores: [isVisible, portal, rootIds.menu, rootIds.trigger],
 		returned: ([$isVisible, $portal, $rootMenuId, $rootTriggerId]) => {
 			return {
@@ -266,7 +266,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 	});
 
-	const rootTrigger = builder(name('trigger'), {
+	const rootTrigger = makeElement(name('trigger'), {
 		stores: [rootOpen, rootIds.menu, rootIds.trigger],
 		returned: ([$rootOpen, $rootMenuId, $rootTriggerId]) => {
 			return {
@@ -319,7 +319,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 	});
 
-	const rootArrow = builder(name('arrow'), {
+	const rootArrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
 			'data-arrow': true,
@@ -331,7 +331,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}),
 	});
 
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		returned: () => {
 			return {
 				role: 'menuitem',
@@ -395,7 +395,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 	});
 
-	const group = builder(name('group'), {
+	const group = makeElement(name('group'), {
 		returned: () => {
 			return (groupId: string) => ({
 				role: 'group',
@@ -404,7 +404,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 	});
 
-	const groupLabel = builder(name('group-label'), {
+	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
 			return (groupId: string) => ({
 				id: groupId,
@@ -423,7 +423,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const checked = overridable(checkedWritable, withDefaults.onCheckedChange);
 		const disabled = writable(withDefaults.disabled);
 
-		const checkboxItem = builder(name('checkbox-item'), {
+		const checkboxItem = makeElement(name('checkbox-item'), {
 			stores: [checked, disabled],
 			returned: ([$checked, $disabled]) => {
 				return {
@@ -530,7 +530,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const valueWritable = args.value ?? writable(args.defaultValue ?? null);
 		const value = overridable(valueWritable, args.onValueChange);
 
-		const radioGroup = builder(name('radio-group'), {
+		const radioGroup = makeElement(name('radio-group'), {
 			returned: () => ({
 				role: 'group',
 			}),
@@ -540,7 +540,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			disabled: false,
 		};
 
-		const radioItem = builder(name('radio-item'), {
+		const radioItem = makeElement(name('radio-item'), {
 			stores: [value],
 			returned: ([$value]) => {
 				return (itemProps: _RadioItemProps) => {
@@ -708,7 +708,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			activeTrigger: subActiveTrigger,
 		});
 
-		const subMenu = builder(name('submenu'), {
+		const subMenu = makeElement(name('submenu'), {
 			stores: [subIsVisible, subIds.menu, subIds.trigger],
 			returned: ([$subIsVisible, $subMenuId, $subTriggerId]) => {
 				return {
@@ -848,7 +848,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			},
 		});
 
-		const subTrigger = builder(name('subtrigger'), {
+		const subTrigger = makeElement(name('subtrigger'), {
 			stores: [subOpen, disabled, subIds.menu, subIds.trigger],
 			returned: ([$subOpen, $disabled, $subMenuId, $subTriggerId]) => {
 				return {
@@ -1018,7 +1018,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			},
 		});
 
-		const subArrow = builder(name('subarrow'), {
+		const subArrow = makeElement(name('subarrow'), {
 			stores: arrowSize,
 			returned: ($arrowSize) => ({
 				'data-arrow': true,

@@ -1,8 +1,8 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	builder,
-	builderArray,
+	makeElement,
+	makeElementArray,
 	createElHelpers,
 	disabledAttr,
 	effect,
@@ -112,7 +112,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	// Elements
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [disabled, orientation, dir],
 		returned: ([$disabled, $orientation, $dir]) => {
 			return {
@@ -129,7 +129,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 	});
 
-	const range = builder(name('range'), {
+	const range = makeElement(name('range'), {
 		stores: [value, direction, position],
 		returned: ([$value, $direction, $position]) => {
 			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
@@ -168,7 +168,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 	});
 
-	const thumbs = builderArray(name('thumb'), {
+	const thumbs = makeElementArray(name('thumb'), {
 		stores: [value, position, min, max, disabled, orientation, direction],
 		returned: ([$value, $position, $min, $max, $disabled, $orientation, $direction]) => {
 			const result = Array.from({ length: $value.length || 1 }, (_, i) => {
@@ -326,7 +326,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 	});
 
-	const ticks = builderArray(name('tick'), {
+	const ticks = makeElementArray(name('tick'), {
 		stores: [value, min, max, step, direction],
 		returned: ([$value, $min, $max, $step, $direction]) => {
 			const difference = $max - $min;

@@ -1,16 +1,15 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	builder,
 	createElHelpers,
 	disabledAttr,
 	effect,
 	executeCallbacks,
 	getDirectionalKeys,
 	getElemDirection,
-	hiddenInputAttrs,
 	isHTMLElement,
 	kbd,
+	makeElement,
 	omit,
 	overridable,
 	toWritableStores,
@@ -18,6 +17,7 @@ import {
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable } from 'svelte/store';
+import { createHiddenInput } from '../hidden-input/create.js';
 import type { RadioGroupEvents } from './events.js';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types.js';
 
@@ -30,7 +30,8 @@ const defaults = {
 } satisfies Defaults<CreateRadioGroupProps>;
 
 type RadioGroupParts = 'item' | 'hidden-input';
-const { name, selector } = createElHelpers<RadioGroupParts>('radio-group');
+const prefix = 'radio-group';
+const { name, selector } = createElHelpers<RadioGroupParts>(prefix);
 
 export function createRadioGroup(props?: CreateRadioGroupProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateRadioGroupProps;
@@ -78,7 +79,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 	};
 
 	/** Elements */
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [required, orientation],
 		returned: ([$required, $orientation]) => {
 			return {
@@ -89,7 +90,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		},
 	});
 
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		stores: [value, orientation, disabled],
 		returned: ([$value, $orientation, $disabled]) => {
 			return (props: RadioGroupItemProps) => {
@@ -174,20 +175,10 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		},
 	});
 
-	const hiddenInput = builder(name('hidden-input'), {
-		stores: [disabled, value, required],
-		returned: ([$disabled, $value, $required]) => {
-			return {
-				...hiddenInputAttrs,
-				disabled: disabledAttr($disabled),
-				value: $value,
-				required: $required,
-			};
-		},
-		action: (_node: HTMLInputElement) => {
-			_node;
-			// no-op, just to enforce the type of the element
-		},
+	const hiddenInput = createHiddenInput({
+		value,
+		disabled,
+		required,
 	});
 
 	const isChecked = derived(value, ($value) => {

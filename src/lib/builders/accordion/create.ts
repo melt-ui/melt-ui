@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -58,7 +58,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		return (key: string) => isSelected(key, $value);
 	});
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		returned: () => ({
 			'data-melt-id': meltIds.root,
 		}),
@@ -80,7 +80,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		}
 	};
 
-	const item = builder(name('item'), {
+	const item = makeElement(name('item'), {
 		stores: value,
 		returned: ($value) => {
 			return (props: AccordionItemProps) => {
@@ -94,7 +94,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		},
 	});
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [value, disabled],
 		returned: ([$value, $disabled]) => {
 			return (props: AccordionItemProps) => {
@@ -168,7 +168,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		},
 	});
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [value, disabled, forceVisible],
 		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
@@ -202,7 +202,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		},
 	});
 
-	const heading = builder(name('heading'), {
+	const heading = makeElement(name('heading'), {
 		returned: () => {
 			return (props: AccordionHeadingProps) => {
 				const { level } = parseHeadingProps(props);

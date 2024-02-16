@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { Tooltip } from '$docs/components/index.js';
 	import { createCombobox, createDialog, melt } from '$lib/index.js';
-	import { CornerDownRight, LoaderIcon, Search as SearchIcon } from 'lucide-svelte';
+	import { CornerDownRight, LoaderIcon, Search as SearchIcon } from '$icons/index.js';
 	import { onMount } from 'svelte';
 	import type { Pagefind, PagefindSearchFragment, PagefindSubResult } from '../../pagefind.js';
 
@@ -57,20 +57,12 @@
 	});
 
 	let search: Promise<PagefindSearchFragment[]> | null = null;
-	let searchDebounce: ReturnType<typeof setTimeout>;
 
 	async function getResultsFromSearch(query: string) {
-		if (searchDebounce) {
-			clearTimeout(searchDebounce);
-		}
 		if (!pagefind || !query) {
 			return [];
 		}
-		await new Promise((resolve) => {
-			search = null;
-			searchDebounce = setTimeout(resolve, 450);
-		});
-		const s = await pagefind.search(query);
+		const s = await pagefind.debouncedSearch(query, undefined, 450);
 		return await Promise.all(
 			s.results.map(async (result) => {
 				return await result.data();
@@ -118,11 +110,11 @@
 						}
 					}}
 				/>
-				<SearchIcon class="absolute left-2 top-1/2 -translate-y-1/2 square-4" />
+				<SearchIcon class="absolute left-2 top-1/2 size-4 -translate-y-1/2" />
 				{#if search}
 					{#await search}
 						<div class="absolute right-2 top-1/2 -translate-y-1/2">
-							<LoaderIcon class="animate-spin square-4" />
+							<LoaderIcon class="size-4 animate-spin" />
 						</div>
 					{/await}
 				{/if}
@@ -163,7 +155,7 @@
 									use:melt={$option({ value: subresult, label: subresult.title })}
 								>
 									<div class="flex items-center gap-1">
-										<CornerDownRight class="opacity-75 square-4" />
+										<CornerDownRight class="size-4 opacity-75" />
 										<a
 											class="font-semibold underline hover:opacity-75"
 											href={sanitizeLink(subresult.url)}

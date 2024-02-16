@@ -9,7 +9,7 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -174,7 +174,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		}
 	);
 
-	const label = builder(name('label'), {
+	const label = makeElement(name('label'), {
 		stores: [isInvalid, options.disabled, ids.label],
 		returned: ([$isInvalid, $disabled, $labelId]) => {
 			return {
@@ -215,7 +215,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		}
 	);
 
-	const field = builder(name('field'), {
+	const field = makeElement(name('field'), {
 		stores: [isCompleted, isInvalid, fieldIdDeps],
 		returned: ([$isCompleted, $isInvalid, $ids]) => {
 			const describedBy = $isCompleted
@@ -240,7 +240,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		},
 	});
 
-	const validation = builder(name('validation'), {
+	const validation = makeElement(name('validation'), {
 		stores: [isInvalid, ids.validation],
 		returned: ([$isInvalid, $validationId]) => {
 			const validStyle = styleToString({

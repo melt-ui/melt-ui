@@ -2,7 +2,7 @@
 	import { createDialog, melt } from '$lib/index.js';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 
 	const {
 		elements: {
@@ -38,7 +38,7 @@
 			}}
 		>
 			<button use:melt={$close} aria-label="Close" class="close">
-				<X class="square-4" />
+				<X class="size-4" />
 			</button>
 			<h2 use:melt={$title} class="title">Notifications</h2>
 			<p use:melt={$description} class="description">

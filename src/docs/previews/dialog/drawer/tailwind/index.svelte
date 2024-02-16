@@ -2,7 +2,7 @@
 	import { createDialog, melt } from '$lib/index.js';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 
 	const {
 		elements: {
@@ -53,7 +53,7 @@
                 hover:bg-magnum-100 focus:shadow-magnum-400 focus:outline-none focus:ring-2
                 focus:ring-magnum-400"
 			>
-				<X class="square-4" />
+				<X class="size-4" />
 			</button>
 			<h2 use:melt={$title} class="mb-0 text-lg font-medium text-black">
 				Notifications

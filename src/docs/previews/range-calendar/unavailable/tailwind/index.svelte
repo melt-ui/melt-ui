@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createRangeCalendar, melt } from '$lib/index.js';
 	import { isWeekend } from '@internationalized/date';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
