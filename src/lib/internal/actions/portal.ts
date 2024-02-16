@@ -1,50 +1,50 @@
 import { tick } from 'svelte';
-import type { Action } from 'svelte/action';
-import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
+import type { ActionReturn } from 'svelte/action';
+import { isHTMLElement } from '../helpers/is.js';
 
-export type PortalConfig = string | HTMLElement | undefined;
+export type PortalTarget = string | HTMLElement | undefined;
 
-export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
-	let targetEl;
-
-	if (!isHTMLElement(target) && typeof target !== 'string') {
-		return {
-			destroy: noop,
-		};
-	}
-
-	async function update(newTarget: HTMLElement | string | undefined) {
-		target = newTarget;
-		if (typeof target === 'string') {
-			targetEl = document.querySelector(target);
-			if (targetEl === null) {
-				await tick();
-				targetEl = document.querySelector(target);
-			}
-			if (targetEl === null) {
-				throw new Error(`No element found matching css selector: "${target}"`);
-			}
-		} else if (target instanceof HTMLElement) {
-			targetEl = target;
-		} else {
-			throw new TypeError(
-				`Unknown portal target type: ${
-					target === null ? 'null' : typeof target
-				}. Allowed types: string (CSS selector) or HTMLElement.`
-			);
-		}
-		el.dataset.portal = '';
+export function usePortal(el: HTMLElement, target?: PortalTarget) {
+	async function run() {
+		const targetEl = await getTargetEl(target);
 		targetEl.appendChild(el);
+		el.dataset.portal = '';
 		el.hidden = false;
 	}
 
-	function destroy() {
-		el.remove();
+	run();
+
+	return {
+		update(newTarget) {
+			target = newTarget;
+			run();
+		},
+		destroy() {
+			el.remove();
+		},
+	} satisfies ActionReturn<PortalTarget>;
+}
+
+async function getTargetEl(target: PortalTarget) {
+	if (target === undefined) {
+		return document.body;
 	}
 
-	update(target);
-	return {
-		update,
-		destroy,
-	};
-};
+	if (isHTMLElement(target)) {
+		return target;
+	}
+
+	let targetEl = document.querySelector(target);
+	if (targetEl !== null) {
+		return targetEl;
+	}
+
+	await tick();
+
+	targetEl = document.querySelector(target);
+	if (targetEl !== null) {
+		return targetEl;
+	}
+
+	throw new Error(`No element found matching CSS selector: "${target}"`);
+}
