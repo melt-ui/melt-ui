@@ -5,7 +5,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { ToggleGroupComponentEvents } from './events.js';
 export type ToggleGroupType = 'single' | 'multiple';
 
-export type CreateToggleGroupProps<T extends ToggleGroupType = 'single'> = {
+export type CreateToggleGroupProps<T extends ToggleGroupType = ToggleGroupType> = {
 	defaultValue?: T extends 'single' ? string : string[];
 	value?: Writable<string | string[] | undefined>;
 	onValueChange?: ChangeFn<string | string[] | undefined>;
@@ -23,18 +23,22 @@ export type ToggleGroupItemProps =
 	  }
 	| string;
 
-export type ToggleGroup<T extends ToggleGroupType = 'single'> = BuilderReturn<
+export type ToggleGroup<T extends ToggleGroupType = ToggleGroupType> = BuilderReturn<
 	typeof createToggleGroup<T>
 >;
-export type ToggleGroupElements<T extends ToggleGroupType = 'single'> = BuilderReturn<
+
+export type ToggleGroupElements<T extends ToggleGroupType = ToggleGroupType> = BuilderReturn<
 	typeof createToggleGroup<T>
 >['elements'];
-export type ToggleGroupOptions<T extends ToggleGroupType = 'single'> = BuilderReturn<
+
+export type ToggleGroupOptions<T extends ToggleGroupType = ToggleGroupType> = BuilderReturn<
 	typeof createToggleGroup<T>
 >['options'];
-export type ToggleGroupStates<T extends ToggleGroupType = 'single'> = BuilderReturn<
+
+export type ToggleGroupStates<T extends ToggleGroupType = ToggleGroupType> = BuilderReturn<
 	typeof createToggleGroup<T>
 >['states'];
-export type ToggleGroupHelpers<T extends ToggleGroupType = 'single'> = BuilderReturn<
+
+export type ToggleGroupHelpers<T extends ToggleGroupType = ToggleGroupType> = BuilderReturn<
 	typeof createToggleGroup<T>
 >['helpers'];

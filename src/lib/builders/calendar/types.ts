@@ -12,7 +12,7 @@ export type CalendarValue<Multiple extends boolean, Value extends DateValue = Da
 >;
 
 export type CreateCalendarProps<
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	Value extends DateValue = DateValue,
 	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>
 > = {

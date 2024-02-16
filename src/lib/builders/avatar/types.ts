@@ -3,9 +3,7 @@ import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 
-const imageLoadingStatus = ['loading', 'loaded', 'error'] as const;
-
-export type ImageLoadingStatus = (typeof imageLoadingStatus)[number];
+export type ImageLoadingStatus = 'loading' | 'loaded' | 'error';
 
 export type CreateAvatarProps = {
 	/**

@@ -18,7 +18,7 @@ export type ListboxSelected<Multiple extends boolean, Value> = WhenTrue<
 
 export type CreateListboxProps<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = {
 	/**
@@ -182,30 +182,30 @@ export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {
 
 export type Listbox<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = BuilderReturn<typeof createListbox<Value, Multiple, S>>;
 
 export type ListboxElements<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Listbox<Value, Multiple, S>['elements'];
 
 export type ListboxOptions<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Listbox<Value, Multiple, S>['options'];
 
 export type ListboxStates<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Listbox<Value, Multiple, S>['states'];
 
 export type ListboxHelpers<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Listbox<Value, Multiple, S>['helpers'];

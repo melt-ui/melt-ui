@@ -11,36 +11,36 @@ export type {
 
 export type CreateComboboxProps<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Omit<CreateListboxProps<Value, Multiple, S>, 'builder' | 'typeahead'>;
 
 export type Combobox<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = BuilderReturn<typeof createCombobox<Value, Multiple, S>>;
 
 export type ComboboxElements<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Combobox<Value, Multiple, S>['elements'];
 
 export type ComboboxOptions<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Combobox<Value, Multiple, S>['options'];
 
 export type ComboboxStates<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Combobox<Value, Multiple, S>['states'];
 
 export type ComboboxHelpers<
 	Value = unknown,
-	Multiple extends boolean = false,
+	Multiple extends boolean = boolean,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = Combobox<Value, Multiple, S>['helpers'];
