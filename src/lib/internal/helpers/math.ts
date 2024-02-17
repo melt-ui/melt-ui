@@ -39,3 +39,17 @@ export function snapValueToStep(value: number, min: number, max: number, step: n
 export function clamp(min: number, value: number, max: number) {
 	return Math.max(min, Math.min(value, max));
 }
+
+/**
+ * Returns the remainder of dividing `a` by `b`,
+ * but always positive.
+ *
+ * @example
+ * ```ts
+ * -1 % 5 = -1
+ * modulo(-1, 5) = 4
+ * ```
+ */
+export function modulo(a: number, b: number) {
+	return ((a % b) + b) % b;
+}

@@ -2,6 +2,7 @@ import { disabledAttr, hiddenInputAttrs } from '$lib/internal/helpers/attr.js';
 import { builder, createElHelpers } from '$lib/internal/helpers/builder.js';
 import { addMeltEventListener } from '$lib/internal/helpers/event.js';
 import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { modulo } from '$lib/internal/helpers/math.js';
 import { omit } from '$lib/internal/helpers/object.js';
 import { overridable } from '$lib/internal/helpers/overridable.js';
 import { effect } from '$lib/internal/helpers/store/effect.js';
@@ -35,7 +36,7 @@ export function createStepper(props?: CreateStepperProps) {
 	/**
 	 * The previous value of the stepper, or `null` if there is no previous value.
 	 *
-	 * If `loop` is `true`, the previous value will be `max` instead of `null`.
+	 * If `loop` is `true`, stepping before `min` loops back to `max`, instead.
 	 */
 	const previous = withGet.derived(
 		[value, min, max, step, loop],
@@ -45,7 +46,9 @@ export function createStepper(props?: CreateStepperProps) {
 				return $previous;
 			}
 			if ($loop && $max !== undefined) {
-				return $max;
+				const length = $max - $min + 1;
+				const overstep = modulo($min - $previous, length);
+				return $max - (overstep - 1);
 			}
 			return null;
 		}
@@ -54,7 +57,7 @@ export function createStepper(props?: CreateStepperProps) {
 	/**
 	 * The next value of the stepper, or `null` if there is no next value.
 	 *
-	 * If `loop` is `true`, the next value will be `min` instead of `null`.
+	 * If `loop` is `true`, stepping after `max` loops back to `min` instead.
 	 */
 	const next = withGet.derived(
 		[value, min, max, step, loop],
@@ -64,7 +67,9 @@ export function createStepper(props?: CreateStepperProps) {
 				return $next;
 			}
 			if ($loop && $min !== undefined) {
-				return $min;
+				const length = $max - $min + 1;
+				const overstep = modulo($next - $max, length);
+				return $min + (overstep - 1);
 			}
 			return null;
 		}

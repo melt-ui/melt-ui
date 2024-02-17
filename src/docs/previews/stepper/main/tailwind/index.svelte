@@ -13,26 +13,24 @@
 		loop: true,
 	});
 
-	const monthMap = {
-		1: 'January',
-		2: 'February',
-		3: 'March',
-		4: 'April',
-		5: 'May',
-		6: 'June',
-		7: 'July',
-		8: 'August',
-		9: 'September',
-		10: 'October',
-		11: 'November',
-		12: 'December',
-	};
+	const months = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December',
+	];
 
-	type Month = keyof typeof monthMap;
-
-	$: month = monthMap[$value as Month];
-	$: previousMonth = monthMap[$previous as Month];
-	$: nextMonth = monthMap[$next as Month];
+	$: month = months[$value - 1];
+	$: previousMonth = months[$previous as number - 1];
+	$: nextMonth = months[$next as number - 1];
 </script>
 
 <p id="month-label" class="font-semibold text-magnum-900">Month</p>
