@@ -161,7 +161,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}),
 				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': $portal ? '' : undefined,
+				'data-portal': $portal !== null ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {
