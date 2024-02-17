@@ -29,8 +29,8 @@
 	];
 
 	$: month = months[$value - 1];
-	$: previousMonth = months[$previous as number - 1];
-	$: nextMonth = months[$next as number - 1];
+	$: previousMonth = months[($previous as number) - 1];
+	$: nextMonth = months[($next as number) - 1];
 </script>
 
 <p id="month-label" class="font-semibold text-magnum-900">Month</p>
