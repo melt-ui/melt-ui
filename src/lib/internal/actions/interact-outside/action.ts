@@ -41,7 +41,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		// Use pointer events if available, otherwise use mouse/touch events
 		if (typeof PointerEvent !== 'undefined') {
 			const onPointerUp = (e: PointerEvent) => {
-				if (isPointerDown && !isPointerDownInside && isValidEvent(e, node)) {
+				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
 				resetPointerState();
@@ -55,7 +55,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 			const onMouseUp = (e: MouseEvent) => {
 				if (ignoreEmulatedMouseEvents) {
 					ignoreEmulatedMouseEvents = false;
-				} else if (isPointerDown && !isPointerDownInside && isValidEvent(e, node)) {
+				} else if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
 				resetPointerState();
@@ -63,7 +63,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 
 			const onTouchEnd = (e: TouchEvent) => {
 				ignoreEmulatedMouseEvents = true;
-				if (isPointerDown && !isPointerDownInside && isValidEvent(e, node)) {
+				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
 				resetPointerState();
@@ -76,6 +76,13 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 				addEventListener(documentObj, 'touchend', onTouchEnd, true)
 			);
 		}
+	}
+
+	function shouldTriggerInteractOutside(e: InteractOutsideEvent) {
+		if (isPointerDown && !isPointerDownInside && isValidEvent(e, node)) {
+			return true;
+		}
+		return false;
 	}
 
 	function resetPointerState() {
