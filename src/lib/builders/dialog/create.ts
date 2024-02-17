@@ -1,7 +1,7 @@
 import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -100,7 +100,7 @@ export function createDialog(props?: CreateDialogProps) {
 		});
 	}
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [open],
 		returned: ([$open]) => {
 			return {
@@ -127,9 +127,9 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const overlay = builder(name('overlay'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+	const overlay = makeElement(name('overlay'), {
+		stores: [isVisible, open],
+		returned: ([$isVisible, $open]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
@@ -137,7 +137,7 @@ export function createDialog(props?: CreateDialogProps) {
 					display: $isVisible ? undefined : 'none',
 				}),
 				'aria-hidden': true,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open ? 'open' : 'closed',
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -162,16 +162,16 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const content = builder(name('content'), {
-		stores: [isVisible, ids.content, ids.description, ids.title],
-		returned: ([$isVisible, $contentId, $descriptionId, $titleId]) => {
+	const content = makeElement(name('content'), {
+		stores: [isVisible, ids.content, ids.description, ids.title, open],
+		returned: ([$isVisible, $contentId, $descriptionId, $titleId, $open]) => {
 			return {
 				id: $contentId,
 				role: role.get(),
 				'aria-describedby': $descriptionId,
 				'aria-labelledby': $titleId,
 				'aria-modal': $isVisible ? ('true' as const) : undefined,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
 				style: styleToString({
@@ -253,7 +253,7 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const portalled = builder(name('portalled'), {
+	const portalled = makeElement(name('portalled'), {
 		stores: portal,
 		returned: ($portal) => ({
 			'data-portal': $portal ? '' : undefined,
@@ -279,21 +279,21 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	const title = builder(name('title'), {
+	const title = makeElement(name('title'), {
 		stores: [ids.title],
 		returned: ([$titleId]) => ({
 			id: $titleId,
 		}),
 	});
 
-	const description = builder(name('description'), {
+	const description = makeElement(name('description'), {
 		stores: [ids.description],
 		returned: ([$descriptionId]) => ({
 			id: $descriptionId,
 		}),
 	});
 
-	const close = builder(name('close'), {
+	const close = makeElement(name('close'), {
 		returned: () =>
 			({
 				type: 'button',

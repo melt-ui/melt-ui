@@ -1,12 +1,14 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
 	getPortalDestination,
 	isBrowser,
+	isDocument,
+	isElement,
 	isTouch,
 	kbd,
 	makeHullFromElements,
@@ -130,7 +132,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		return $open || $forceVisible;
 	});
 
-	const trigger = builder(name('trigger'), {
+	const trigger = makeElement(name('trigger'), {
 		stores: [ids.content, ids.trigger, open],
 		returned: ([$contentId, $triggerId, $open]) => {
 			return {
@@ -188,7 +190,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
-	const content = builder(name('content'), {
+	const content = makeElement(name('content'), {
 		stores: [isVisible, open, portal, ids.content],
 		returned: ([$isVisible, $open, $portal, $contentId]) => {
 			return {
@@ -233,9 +235,24 @@ export function createTooltip(props?: CreateTooltipProps) {
 				}
 			);
 
+			/**
+			 * We don't want the tooltip to remain open if the user starts scrolling
+			 * while their pointer is over the tooltip, so we close it.
+			 */
+			function handleScroll(e: Event) {
+				if (!open.get()) return;
+				const target = e.target;
+				if (!isElement(target) && !isDocument(target)) return;
+				const triggerEl = getEl('trigger');
+				if (triggerEl && target.contains(triggerEl)) {
+					closeTooltip();
+				}
+			}
+
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', () => openTooltip('pointer')),
-				addMeltEventListener(node, 'pointerdown', () => openTooltip('pointer'))
+				addMeltEventListener(node, 'pointerdown', () => openTooltip('pointer')),
+				addEventListener(window, 'scroll', handleScroll, { capture: true })
 			);
 
 			return {
@@ -249,7 +266,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
-	const arrow = builder(name('arrow'), {
+	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
 			'data-arrow': true,

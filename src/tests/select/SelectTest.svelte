@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createSelect, melt, type CreateSelectProps } from '$lib/index.js';
-	import { Check } from 'lucide-svelte';
+	import { Check } from '$icons/index.js';
 	import { tick } from 'svelte';
 	import { removeUndefined } from '../utils.js';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { PreviewWrapper } from '$docs/components/index.js';
+	import PreviewWrapper from '$docs/components/preview-wrapper.svelte';
 	import { createCollapsible, melt, type CreateCollapsibleProps } from '$lib/index.js';
-	import { ChevronsUpDown, X } from 'lucide-svelte';
+	import { ChevronsUpDown, X } from '$icons/index.js';
 
 	export let defaultOpen = false;
 	export let open: CreateCollapsibleProps['open'] = undefined;
@@ -38,9 +38,9 @@
 				>
 					<div class="abs-center" aria-hidden="true">
 						{#if $localOpen}
-							<X class="square-4" />
+							<X class="size-4" />
 						{:else}
-							<ChevronsUpDown class="square-4" />
+							<ChevronsUpDown class="size-4" />
 						{/if}
 					</div>
 				</button>

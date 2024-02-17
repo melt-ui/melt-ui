@@ -77,11 +77,11 @@
 		<fieldset class="mb-4 flex w-full flex-col justify-start">
 			<label
 				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="new"
+				for="newPassword"
 			>
 				New password
 			</label>
-			<input id="new" type="password" />
+			<input id="newPassword" type="password" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
 			<button class="save">Save changes</button>
@@ -95,11 +95,11 @@
 		<fieldset class="mb-4 flex w-full flex-col justify-start">
 			<label
 				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="new"
+				for="newEmail"
 			>
 				New email
 			</label>
-			<input id="new" type="email" />
+			<input id="newEmail" type="email" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
 			<button class="save">Save changes</button>

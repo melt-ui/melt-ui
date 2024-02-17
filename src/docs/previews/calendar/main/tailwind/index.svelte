@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCalendar, melt } from '$lib/index.js';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft } from '$icons/index.js';
 	import LocaleCombobox from './LocaleCombobox.svelte';
 
 	const {

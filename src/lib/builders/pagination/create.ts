@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	executeCallbacks,
 	isHTMLElement,
@@ -45,7 +45,7 @@ export function createPagination(props: CreatePaginationProps) {
 		return { start, end };
 	});
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		returned: () => ({
 			'data-scope': 'pagination',
 		}),
@@ -91,7 +91,7 @@ export function createPagination(props: CreatePaginationProps) {
 		}
 	};
 
-	const pageTrigger = builder(name('page'), {
+	const pageTrigger = makeElement(name('page'), {
 		stores: page,
 		returned: ($page) => {
 			return (pageItem: Page) => {
@@ -118,7 +118,7 @@ export function createPagination(props: CreatePaginationProps) {
 		},
 	});
 
-	const prevButton = builder(name('prev'), {
+	const prevButton = makeElement(name('prev'), {
 		stores: page,
 		returned: ($page) => {
 			return {
@@ -140,7 +140,7 @@ export function createPagination(props: CreatePaginationProps) {
 		},
 	});
 
-	const nextButton = builder(name('next'), {
+	const nextButton = makeElement(name('next'), {
 		stores: [page, totalPages],
 		returned: ([$page, $totalPages]) => {
 			return {

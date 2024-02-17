@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	createElHelpers,
 	disabledAttr,
 	kbd,
@@ -39,7 +39,7 @@ export function createSwitch(props?: CreateSwitchProps) {
 		checked.update((prev) => !prev);
 	}
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
 			return {
@@ -70,7 +70,7 @@ export function createSwitch(props?: CreateSwitchProps) {
 		},
 	});
 
-	const input = builder(name('input'), {
+	const input = makeElement(name('input'), {
 		stores: [checked, nameStore, required, disabled, value],
 		returned: ([$checked, $name, $required, $disabled, $value]) => {
 			return {

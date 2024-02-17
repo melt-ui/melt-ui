@@ -47,3 +47,18 @@ export function stripValues<T extends Record<string, unknown>, ToStrip>(
 		Object.entries(inputObject).filter(([_, value]) => !dequal(value, toStrip))
 	) as typeof recursive extends true ? StripValuesRecursive<T, ToStrip> : StripValues<T, ToStrip>;
 }
+
+export function removeUndefined<T extends object>(
+	obj: T
+): {
+	[K in keyof T]-?: Exclude<T[K], undefined>;
+} {
+	const result = {} as { [K in keyof T]-?: Exclude<T[K], undefined> };
+	for (const key in obj) {
+		const value = obj[key];
+		if (value !== undefined) {
+			result[key] = value as any;
+		}
+	}
+	return result;
+}

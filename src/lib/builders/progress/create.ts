@@ -1,5 +1,5 @@
 import {
-	builder,
+	makeElement,
 	createElHelpers,
 	omit,
 	overridable,
@@ -24,7 +24,7 @@ export const createProgress = (props?: CreateProgressProps) => {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const root = builder(name(), {
+	const root = makeElement(name(), {
 		stores: [value, max],
 		returned: ([$value, $max]) => {
 			return {

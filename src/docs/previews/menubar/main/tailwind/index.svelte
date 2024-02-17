@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createMenubar, melt } from '$lib/index.js';
 	import { writable } from 'svelte/store';
-	import { ChevronRight, Check } from 'lucide-svelte';
+	import { ChevronRight, Check } from '$icons/index.js';
 
 	const tipsAndTricks = writable(true);
 	const hideMeltUI = writable(false);
@@ -118,7 +118,7 @@
 		<div class="item" use:melt={$subTrigger}>
 			Select theme
 			<div class="rightSlot">
-				<ChevronRight class="square-4" />
+				<ChevronRight class="size-4" />
 			</div>
 		</div>
 		<div class="menu subMenu" use:melt={$subMenu}>
@@ -211,7 +211,7 @@
 		<div class="item" use:melt={$subTriggerB}>
 			Appearance
 			<div class="rightSlot">
-				<ChevronRight class="square-4" />
+				<ChevronRight class="size-4" />
 			</div>
 		</div>
 		<div class="menu subMenu" use:melt={$subMenuB}>
@@ -225,7 +225,7 @@
 		<div class="item" use:melt={$wordWrapCheckbox}>
 			<div class="check">
 				{#if $wordWrap}
-					<Check class="square-4" />
+					<Check class="size-4" />
 				{/if}
 			</div>
 			Word Wrap
@@ -234,7 +234,7 @@
 		<div class="item" use:melt={$stickyScrollCheckbox}>
 			<div class="check">
 				{#if $stickyScroll}
-					<Check class="square-4" />
+					<Check class="size-4" />
 				{/if}
 			</div>
 			Sticky Scroll
@@ -260,7 +260,7 @@
 		<div class="item" use:melt={$tipsAndTricksCheckbox}>
 			<div class="check">
 				{#if $tipsAndTricks}
-					<Check class="square-4" />
+					<Check class="size-4" />
 				{/if}
 			</div>
 			Tips & Tricks
@@ -271,7 +271,7 @@
 		<div class="item" use:melt={$hideMeltUICheckbox}>
 			<div class="check">
 				{#if $hideMeltUI}
-					<Check class="square-4" />
+					<Check class="size-4" />
 				{/if}
 			</div>
 			Documentation

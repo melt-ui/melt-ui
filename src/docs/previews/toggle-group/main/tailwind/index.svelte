@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createToggleGroup, melt } from '$lib/index.js';
-	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
+	import { AlignCenter, AlignLeft, AlignRight } from '$icons/index.js';
 
 	const {
 		elements: { root, item },
@@ -19,21 +19,21 @@
 		use:melt={$item('left')}
 		aria-label="Left aligned"
 	>
-		<AlignLeft class="square-4" />
+		<AlignLeft class="size-4" />
 	</button>
 	<button
 		class="toggle-item"
 		use:melt={$item('center')}
 		aria-label="Center aligned"
 	>
-		<AlignCenter class="square-4" />
+		<AlignCenter class="size-4" />
 	</button>
 	<button
 		class="toggle-item"
 		use:melt={$item('right')}
 		aria-label="Right aligned"
 	>
-		<AlignRight class="square-4" />
+		<AlignRight class="size-4" />
 	</button>
 </div>
 

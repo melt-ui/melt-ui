@@ -1,6 +1,6 @@
 import {
 	addMeltEventListener,
-	builder,
+	makeElement,
 	disabledAttr,
 	executeCallbacks,
 	kbd,
@@ -33,7 +33,7 @@ export function createToggle(props?: CreateToggleProps) {
 		pressed.update((v) => !v);
 	}
 
-	const root = builder('toggle', {
+	const root = makeElement('toggle', {
 		stores: [pressed, disabled],
 		returned: ([$pressed, $disabled]) => {
 			return {

@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import { ArrowLeft, Folder, FolderOpen } from 'lucide-svelte';
+	import { ArrowLeft, Folder, FolderOpen } from '$icons/index.js';
 	import JS from './icons/JS.svelte';
 	import Svelte from './icons/Svelte.svelte';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDialog, melt } from '$lib/index.js';
 	import { fade, fly } from 'svelte/transition';
-	import { Menu, X } from 'lucide-svelte';
+	import { Menu, X } from '$icons/index.js';
 	import { Button, Logo, MobileNavLink } from '$docs/components/index.js';
 	import { navConfig } from '$docs/config.js';
 	import Switch from '../switch.svelte';
@@ -22,7 +22,7 @@
 	use:melt={$trigger}
 	class="text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
-	<Menu class="square-6" />
+	<Menu class="size-6" />
 	<span class="sr-only">Toggle Menu</span>
 </button>
 <div use:melt={$portalled} class="md:hidden">
@@ -43,7 +43,7 @@
 					<Logo class="h-9" withText textColor="white" />
 				</MobileNavLink>
 				<Button class="px-2" size="sm" variant="faded" {...$close} action={$close.action}>
-					<X class="square-4" />
+					<X class="size-4" />
 				</Button>
 			</div>
 

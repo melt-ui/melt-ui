@@ -34,3 +34,6 @@ playwright-report
 .vercel
 
 src/pagefind/**/*
+
+# Don't format our pregenerated tailwind & globalcss highlighted snippets
+other/**/*

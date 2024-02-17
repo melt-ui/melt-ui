@@ -6,52 +6,55 @@
 	@apply bg-neutral-700/50 text-neutral-50;
 }
 
-[data-theme='default'] {
-	display: flex;
-	flex-direction: column;
+[data-theme*=' '] {
+	display: block;
 }
 
-[data-rehype-pretty-code-fragment] [data-line-numbers] > [data-line]::before {
-	@apply text-xs text-neutral-400/40;
+[data-rehype-pretty-code-figure] [data-line-numbers] > [data-line]::before {
+	@apply text-[11px] text-neutral-400/40;
 	counter-increment: line;
 	content: counter(line);
 	display: inline-block;
-	width: 1.4rem;
-	margin-right: 1rem;
-	text-align: right;
+	width: 1.25rem;
+	margin-right: 0.5rem;
+	text-align: center;
 }
 
 [data-metadata] [data-code-copy] {
 	@apply top-16 !important;
 }
 
-[data-rehype-pretty-code-fragment] {
-	@apply relative;
+[data-rehype-pretty-code-figure] {
+	@apply relative !important;
 
 	& pre {
-		@apply mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border-x border-b border-neutral-500/50 bg-neutral-950/60 py-4 text-[13px] font-medium;
+		@apply mb-4 mt-6 flex max-h-[650px] min-h-0 overflow-x-auto  rounded-lg border-x border-b border-neutral-500/50 bg-neutral-950/60 py-4 text-[13px] font-medium;
 	}
 
 	& code {
-		@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
+		@apply block min-w-full rounded-none border-0 bg-transparent p-0;
 		counter-reset: line;
 		box-decoration-break: clone;
 	}
 
 	& [data-line] {
-		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent py-0.5 pl-2 pr-5;
+		@apply min-h-[1.375rem] w-full border-l-[3px] border-l-transparent px-4;
 	}
 
 	& [data-highlighted-line] {
-		@apply border-l-magnum-300 bg-magnum-500/[0.1];
+		@apply z-10 w-full border-l-magnum-300 bg-magnum-500/[0.1];
 	}
 
 	& [data-chars-id] {
 		@apply pb-0.5 shadow-none;
 	}
+
+	& [data-line-numbers] [data-line] {
+		@apply pr-2;
+	}
 }
 
-[data-comp-preview] [data-rehype-pretty-code-fragment] {
+[data-comp-preview] [data-rehype-pretty-code-figure] {
 	& pre {
 		@apply mt-0 rounded-b-lg rounded-t-none;
 	}
@@ -95,4 +98,10 @@
 
 [data-metadata]:not(:has(pre)) {
 	display: none;
+}
+
+code[data-theme*=' '],
+code[data-theme*=' '] span {
+	color: var(--shiki-light);
+	background-color: var(--shiki-light-bg);
 }

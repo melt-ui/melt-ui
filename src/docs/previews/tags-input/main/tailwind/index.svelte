@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createTagsInput, melt } from '$lib/index.js';
-	import { X } from 'lucide-svelte';
+	import { X } from '$icons/index.js';
 
 	const {
 		elements: { root, input, tag, deleteTrigger, edit },
@@ -35,7 +35,7 @@
 					use:melt={$deleteTrigger(t)}
 					class="flex h-full items-center px-1 enabled:hover:bg-magnum-300"
 				>
-					<X class="square-3" />
+					<X class="size-3" />
 				</button>
 			</div>
 			<div

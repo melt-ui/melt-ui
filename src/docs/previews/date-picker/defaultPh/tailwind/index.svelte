@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createDatePicker, melt } from '$lib/index.js';
-	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft, Calendar } from '$icons/index.js';
 	import { fade } from 'svelte/transition';
 	import { CalendarDateTime } from '@internationalized/date';
 
