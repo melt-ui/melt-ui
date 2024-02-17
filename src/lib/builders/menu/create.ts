@@ -164,7 +164,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				id: $rootMenuId,
 				'aria-labelledby': $rootTriggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': $portal ? '' : undefined,
+				'data-portal': $portal !== null ? '' : undefined,
 				tabindex: -1,
 			} as const;
 		},
