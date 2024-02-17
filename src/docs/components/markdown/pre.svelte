@@ -65,4 +65,8 @@
 	pre {
 		font-weight: initial;
 	}
+
+	pre :global(span) {
+		display: inline;
+	}
 </style>

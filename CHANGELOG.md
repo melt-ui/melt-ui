@@ -1,5 +1,25 @@
 # @melt-ui/svelte
 
+## 0.74.1
+
+### Patch Changes
+
+- Date Picker/Date Range Picker: disable trigger when picker is disabled (Closes #815) ([#989](https://github.com/melt-ui/melt-ui/pull/989))
+
+- Toast: return close element `type` attribute type as `"button"` instead of `string` ([#993](https://github.com/melt-ui/melt-ui/pull/993))
+
+- ToggleGroup: Fixes curr & next always bbeing the same value ([#983](https://github.com/melt-ui/melt-ui/pull/983))
+
+## 0.74.0
+
+### Minor Changes
+
+- Dialog: change data-state conditions ([`0c7bf6df`](https://github.com/melt-ui/melt-ui/commit/0c7bf6dfd338103f7288b84c1fc5ae1c7f8b8770))
+
+### Patch Changes
+
+- Combobox: autocomplete off ([`db53236b`](https://github.com/melt-ui/melt-ui/commit/db53236b6bac88f3a3008269e32841467885b8f3))
+
 ## 0.73.0
 
 ### Minor Changes

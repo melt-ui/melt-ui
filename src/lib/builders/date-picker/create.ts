@@ -74,12 +74,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	const trigger = makeElement('popover-trigger', {
-		stores: [popover.elements.trigger],
-		returned: ([$trigger]) => {
+		stores: [popover.elements.trigger, options.disabled],
+		returned: ([$trigger, $disabled]) => {
 			return {
 				...omit($trigger, 'action'),
 				'aria-label': 'Open date picker',
 				'data-segment': 'trigger',
+				disabled: $disabled ? true : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<DatePickerEvents['trigger']> => {

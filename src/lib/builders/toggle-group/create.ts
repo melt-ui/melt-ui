@@ -112,8 +112,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 						if ($value.includes(itemValue)) {
 							return $value.filter((i) => i !== itemValue);
 						}
-						$value.push(itemValue);
-						return $value;
+						return [...$value, itemValue];
 					}
 					return $value === itemValue ? undefined : itemValue;
 				});

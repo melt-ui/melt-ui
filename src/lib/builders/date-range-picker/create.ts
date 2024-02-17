@@ -86,12 +86,13 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	const placeholder = dateStore(rfPlaceholder, withDefaults.defaultPlaceholder ?? defaultDate);
 
 	const trigger = makeElement('popover-trigger', {
-		stores: [popover.elements.trigger],
-		returned: ([$trigger]) => {
+		stores: [popover.elements.trigger, options.disabled],
+		returned: ([$trigger, $disabled]) => {
 			return {
 				...omit($trigger, 'action'),
 				'aria-label': 'Open date picker',
 				'data-segment': 'trigger',
+				disabled: $disabled ? true : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<DateRangePickerEvents['trigger']> => {
