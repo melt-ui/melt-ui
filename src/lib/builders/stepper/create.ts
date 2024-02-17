@@ -1,14 +1,15 @@
-import { disabledAttr, hiddenInputAttrs } from '$lib/internal/helpers/attr.js';
-import { builder, createElHelpers } from '$lib/internal/helpers/builder.js';
+import { disabledAttr } from '$lib/internal/helpers/attr.js';
 import { addMeltEventListener } from '$lib/internal/helpers/event.js';
 import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { createElHelpers, makeElement } from '$lib/internal/helpers/makeElement.js';
 import { modulo } from '$lib/internal/helpers/math.js';
 import { omit } from '$lib/internal/helpers/object.js';
 import { overridable } from '$lib/internal/helpers/overridable.js';
 import { effect } from '$lib/internal/helpers/store/effect.js';
 import { toWritableStores } from '$lib/internal/helpers/store/toWritableStores.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
+import { createHiddenInput } from '../hidden-input/create.js';
 import type { CreateStepperProps } from './types.js';
 
 const defaults = {
@@ -95,7 +96,7 @@ export function createStepper(props?: CreateStepperProps) {
 		}
 	}
 
-	const stepper = builder(name(), {
+	const stepper = makeElement(name(), {
 		stores: [value, min, max, disabled],
 		returned: ([$value, $min, $max, $disabled]) => {
 			return {
@@ -152,7 +153,7 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 	});
 
-	const incrementButton = builder(name('increment-button'), {
+	const incrementButton = makeElement(name('increment-button'), {
 		stores: [disabled, next],
 		returned: ([$disabled, $next]) => {
 			return {
@@ -177,7 +178,7 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 	});
 
-	const decrementButton = builder(name('decrement-button'), {
+	const decrementButton = makeElement(name('decrement-button'), {
 		stores: [disabled, previous],
 		returned: ([$disabled, $previous]) => {
 			return {
@@ -202,14 +203,8 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 	});
 
-	const hiddenInput = builder(name('hidden-input'), {
-		stores: value,
-		returned: ($value) => {
-			return {
-				...hiddenInputAttrs,
-				value: $value,
-			} as const;
-		},
+	const hiddenInput = createHiddenInput({
+		value: derived(value, ($value) => String($value)),
 	});
 
 	effect([value, min, max, step], ([$value, $min, $max, $step]) => {
