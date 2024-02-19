@@ -1,3 +1,4 @@
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { createTableOfContents } from './create.js';
 
 export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
@@ -24,19 +25,19 @@ export type CreateTableOfContentsArgs = {
 	/**
 	 * The ID of the container holding the page content.
 	 */
-	selector: string;
+	selector: ReadableProp<string>;
 	/**
 	 * An array of headings to exclude from the table.
 	 */
-	exclude?: Heading[];
+	exclude?: ReadableProp<Heading[]>;
 	/**
 	 * The pixel offset added when scrolling to a heading.
 	 */
-	scrollOffset?: number;
+	scrollOffset?: ReadableProp<number>;
 	/**
 	 * The scroll behavior ('smooth' or 'instant').
 	 */
-	scrollBehaviour?: ScrollBehaviour;
+	scrollBehaviour?: ReadableProp<ScrollBehaviour>;
 	/**
 	 * The type of headings to consider as active:
 	 * - 'none': No intersection observers are added, and no headings are considered active.
@@ -47,15 +48,15 @@ export type CreateTableOfContentsArgs = {
 	 * - 'lowest-parents': Parents of the heading with the lowest visible content are also considered active.
 	 * - 'highest-parents': Parents of the heading with the highest visible content are also considered active.
 	 */
-	activeType?: ActiveType;
+	activeType?: ReadableProp<ActiveType>;
 	/**
 	 * A custom filter function for headings.
 	 */
-	headingFilterFn?: HeadingFilterFn;
+	headingFilterFn?: ReadableProp<HeadingFilterFn>;
 	/**
 	 * A custom scroll function.
 	 */
-	scrollFn?: ScrollFn;
+	scrollFn?: ReadableProp<ScrollFn>;
 };
 
 export type ElementHeadingLU = {

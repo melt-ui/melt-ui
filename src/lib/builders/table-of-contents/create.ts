@@ -27,6 +27,7 @@ const defaults = {
 } satisfies Defaults<CreateTableOfContentsArgs>;
 
 export function createTableOfContents(args: CreateTableOfContentsArgs) {
+	// const props = parseProps(props, defaults); // TODO: fix this
 	const argsWithDefaults = { ...defaults, ...args };
 	const {
 		selector,

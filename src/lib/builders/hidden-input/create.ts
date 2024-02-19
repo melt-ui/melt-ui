@@ -46,7 +46,11 @@ export function createHiddenInput(props: CreateHiddenInputProps) {
 		action: (node: HTMLInputElement) => {
 			// When value changes, emit a change event
 			const unsub = value.subscribe((newValue) => {
-				node.value = newValue;
+				if (newValue === undefined) {
+					node.removeAttribute('value');
+				} else {
+					node.value = newValue;
+				}
 				node.dispatchEvent(new Event('change', { bubbles: true }));
 			});
 

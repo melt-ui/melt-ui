@@ -1,4 +1,4 @@
-import type { WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { createCollapsible } from './create.js';
 export type { CollapsibleComponentEvents } from './events.js';
@@ -7,7 +7,7 @@ export type CreateCollapsibleProps = {
 	/**
 	 * Whether the collapsible is disabled which prevents it from being opened.
 	 */
-	disabled?: WritableProp<boolean>;
+	disabled?: ReadableProp<boolean>;
 
 	/**
 	 * Whether the collapsible content should be displayed even if it is not open.
@@ -17,14 +17,14 @@ export type CreateCollapsibleProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: WritableProp<boolean>;
+	forceVisible?: ReadableProp<boolean>;
 
 	/**
 	 * Whether the collapsible is open by default.
 	 *
 	 * @default false
 	 */
-	open?: WritableProp<boolean>;
+	open?: ReadableProp<boolean>;
 };
 
 export type Collapsible = BuilderReturn<typeof createCollapsible>;

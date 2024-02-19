@@ -1,4 +1,5 @@
-import { makeElement, toWritableStores } from '$lib/internal/helpers/index.js';
+import { makeElement } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults } from '$lib/internal/types.js';
 import type { CreateSeparatorProps } from './types.js';
 
@@ -8,8 +9,7 @@ const defaults = {
 } satisfies Defaults<CreateSeparatorProps>;
 
 export const createSeparator = (props?: CreateSeparatorProps) => {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSeparatorProps;
-	const options = toWritableStores(withDefaults);
+	const options = parseProps(props, defaults);
 	const { orientation, decorative } = options;
 
 	const root = makeElement('separator', {

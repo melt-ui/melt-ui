@@ -1,4 +1,4 @@
-import type { WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { createAvatar } from './create.js';
 
@@ -10,21 +10,21 @@ export type CreateAvatarProps = {
 	/**
 	 * The source of the image to display.
 	 */
-	src: WritableProp<string>;
+	src: ReadableProp<string>;
 
 	/**
 	 * The amount of time in milliseconds to wait before displaying the image.
 	 *
 	 * @default 0
 	 */
-	delayMs?: WritableProp<number>;
+	delayMs?: ReadableProp<number>;
 
 	/**
 	 * The controlled loading status for the avatar.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	loadingStatus?: WritableProp<ImageLoadingStatus>;
+	loadingStatus?: ReadableProp<ImageLoadingStatus>;
 };
 
 export type Avatar = BuilderReturn<typeof createAvatar>;

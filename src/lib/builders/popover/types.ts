@@ -1,6 +1,6 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { FocusProp, IdObj } from '$lib/internal/helpers/index.js';
-import type { WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { PopoverIdParts, createPopover } from './create.js';
 export type { PopoverComponentEvents } from './events.js';
@@ -9,40 +9,40 @@ export type CreatePopoverProps = {
 	/**
 	 * The positioning configuration for the floating element.
 	 */
-	positioning?: WritableProp<FloatingConfig>;
+	positioning?: ReadableProp<FloatingConfig>;
 
 	/**
 	 * The size of the optional arrow in pixels.
 	 */
-	arrowSize?: WritableProp<number>;
+	arrowSize?: ReadableProp<number>;
 
 	/**
 	 * If the popover is open or not.
 	 *
 	 * @default false
 	 */
-	open?: WritableProp<boolean>;
+	open?: ReadableProp<boolean>;
 
 	/**
 	 * Whether or not to disable the focus trap when the popover is open.
 	 *
 	 * @default false
 	 */
-	disableFocusTrap?: WritableProp<boolean>;
+	disableFocusTrap?: ReadableProp<boolean>;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: WritableProp<boolean>;
+	closeOnEscape?: ReadableProp<boolean>;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: WritableProp<boolean>;
+	closeOnOutsideClick?: ReadableProp<boolean>;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -50,21 +50,21 @@ export type CreatePopoverProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: WritableProp<(event: PointerEvent) => void>;
+	onOutsideClick?: ReadableProp<(event: PointerEvent) => void>;
 
 	/**
 	 * Whether or not to prevent scrolling when the popover is open.
 	 *
 	 * @default false
 	 */
-	preventScroll?: WritableProp<boolean>;
+	preventScroll?: ReadableProp<boolean>;
 
 	/**
 	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: WritableProp<HTMLElement | string | null>;
+	portal?: ReadableProp<HTMLElement | string | null>;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -74,19 +74,19 @@ export type CreatePopoverProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: WritableProp<boolean>;
+	forceVisible?: ReadableProp<boolean>;
 
 	/**
 	 * Override the default autofocus behavior of the popover
 	 * on open.
 	 */
-	openFocus?: WritableProp<FocusProp>;
+	openFocus?: ReadableProp<FocusProp>;
 
 	/**
 	 * Override the default autofocus behavior of the popover
 	 * on close.
 	 */
-	closeFocus?: WritableProp<FocusProp>;
+	closeFocus?: ReadableProp<FocusProp>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

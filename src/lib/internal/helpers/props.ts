@@ -6,13 +6,13 @@ import { noop } from './callbacks.js';
 
 export type MaybeWritable<T> = Readable<T> & {
 	/**
-	 * Same as Writable set, but if you passed in a Readonly store to this option, nothing will happen.
+	 * Same as Writable's `set` method, but if you passed in a Readonly store to this option, nothing will happen.
 	 *
 	 * @type {Writable<T>['set']}
 	 */
 	set: (v: T) => void;
 	/**
-	 * Same as Writable update, but if you passed in a Readonly store to this option, nothing will happen.
+	 * Same as Writable's `update` method, but if you passed in a Readonly store to this option, nothing will happen.
 	 *
 	 * @type {Writable<T>['update']}
 	 */
@@ -36,12 +36,9 @@ export function withDefaults<
 	return { ...defaults, ...props } as WithDefaults<Props, Defaults>;
 }
 
-export type WritableProp<T> = Writable<T> | T;
-export type ReadableProp<T> = Readable<T> | T;
+export type ReadableProp<T> = Readable<T> | Writable<T> | T;
 
-export function parseProp<T>(prop: WritableProp<T>): WithGet<Writable<T>>;
-export function parseProp<T>(prop: ReadableProp<T>): WithGet<MaybeWritable<T>>;
-export function parseProp<T>(prop: WritableProp<T> | ReadableProp<T>) {
+export function parseProp<T>(prop: ReadableProp<T>): WithGet<MaybeWritable<T>> {
 	if (isWritable(prop)) {
 		return withGet(prop);
 	} else if (isReadable(prop)) {
@@ -55,7 +52,7 @@ export function parseProp<T>(prop: WritableProp<T> | ReadableProp<T>) {
 }
 
 export type ParsedProps<Props extends Record<string, unknown>, Defaults extends Partial<Props>> = {
-	[K in keyof WithDefaults<Props, Defaults>]: WithDefaults<Props, Defaults>[K] extends WritableProp<
+	[K in keyof WithDefaults<Props, Defaults>]: WithDefaults<Props, Defaults>[K] extends ReadableProp<
 		infer T
 	>
 		? WithGet<Writable<T>>

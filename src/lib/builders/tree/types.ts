@@ -1,4 +1,4 @@
-import type { ReadableProp, WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { createTreeView } from './create.js';
 
 export type CreateTreeViewProps = {
@@ -8,7 +8,7 @@ export type CreateTreeViewProps = {
 	 * Which tree items are expanded by default.
 	 * @default []
 	 */
-	expanded?: WritableProp<string[]>;
+	expanded?: ReadableProp<string[]>;
 };
 
 export type TreeParts = 'label' | 'item' | 'group';

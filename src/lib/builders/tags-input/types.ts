@@ -1,23 +1,22 @@
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { createTagsInput } from './create.js';
 export type { TagsInputComponentEvents } from './events.js';
 export type CreateTagsInputProps = {
-	placeholder?: string;
-	disabled?: boolean;
-	editable?: boolean;
-	selected?: Tag;
-	defaultTags?: string[] | Tag[];
-	tags?: Writable<Tag[]>;
-	onTagsChange?: ChangeFn<Tag[]>;
-	unique?: boolean;
-	trim?: boolean;
-	blur?: Blur;
-	addOnPaste?: boolean;
-	maxTags?: number;
-	allowed?: string[];
-	denied?: string[];
+	placeholder?: ReadableProp<string>;
+	disabled?: ReadableProp<boolean>;
+	editable?: ReadableProp<boolean>;
+	selected?: ReadableProp<Tag>;
+
+	tags?: ReadableProp<ReadableProp<Tag[]>>;
+
+	unique?: ReadableProp<boolean>;
+	trim?: ReadableProp<boolean>;
+	blur?: ReadableProp<Blur>;
+	addOnPaste?: ReadableProp<boolean>;
+	maxTags?: ReadableProp<number>;
+	allowed?: ReadableProp<string[]>;
+	denied?: ReadableProp<string[]>;
 	/**
 	 * Optional validator/parser function that runs on tag addition.
 	 *
@@ -27,7 +26,7 @@ export type CreateTagsInputProps = {
 	 *
 	 * @param tag The tag to be added
 	 */
-	add?: AddTag;
+	add?: ReadableProp<AddTag>;
 	/**
 	 * Optional validator/parser function that runs on tag removal.
 	 *
@@ -37,7 +36,7 @@ export type CreateTagsInputProps = {
 	 *
 	 * @param tag The tag to be removed
 	 */
-	remove?: RemoveTag;
+	remove?: ReadableProp<RemoveTag>;
 	/**
 	 * Optional validator/parser function that runs on tag update.
 	 *
@@ -47,7 +46,7 @@ export type CreateTagsInputProps = {
 	 *
 	 * @param tag The tag to be updated
 	 */
-	update?: UpdateTag;
+	update?: ReadableProp<UpdateTag>;
 };
 
 export type Blur = 'nothing' | 'add' | 'clear';

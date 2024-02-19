@@ -1,7 +1,6 @@
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { createRadioGroup } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { RadioGroupComponentEvents } from './events.js';
 
 export type CreateRadioGroupProps = {
@@ -10,7 +9,7 @@ export type CreateRadioGroupProps = {
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: ReadableProp<boolean>;
 
 	/**
 	 * When `true`, indicates that the user must select a radio button before
@@ -18,7 +17,7 @@ export type CreateRadioGroupProps = {
 	 *
 	 * @default false
 	 */
-	required?: boolean;
+	required?: ReadableProp<boolean>;
 
 	/**
 	 * Whether or not the radio group should loop around when the end
@@ -26,34 +25,21 @@ export type CreateRadioGroupProps = {
 	 *
 	 * @default false
 	 */
-	loop?: boolean;
+	loop?: ReadableProp<boolean>;
 
 	/**
 	 * The orientation of the radio group.
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: Orientation;
+	orientation?: ReadableProp<Orientation>;
 
 	/**
 	 * The uncontrolled default value of the radio group.
 	 *
 	 * @default undefined
 	 */
-	defaultValue?: string;
-
-	/**
-	 * The controlled value store for the radio group.
-	 * If provided, this will override the value passed to `defaultValue`.
-	 */
-	value?: Writable<string>;
-
-	/**
-	 * The callback invoked when the value store of the radio group changes.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onValueChange?: ChangeFn<string>;
+	value?: ReadableProp<string>;
 };
 
 export type RadioGroupItemProps =

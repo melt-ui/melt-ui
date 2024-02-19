@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { LinkPreviewIdParts, createLinkPreview } from './create.js';
 export type { LinkPreviewComponentEvents } from './events.js';
 export type CreateLinkPreviewProps = {
@@ -10,36 +10,21 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default  placement: 'bottom'
 	 */
-	positioning?: FloatingConfig;
+	positioning?: ReadableProp<FloatingConfig>;
 
 	/**
 	 * Whether or not the linkpreview is open by default.
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
-
-	/**
-	 * A controlled open state store for the linkpreview. If provided, the
-	 * value of this store will override the `defaultOpen` prop.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
-	 */
-	open?: Writable<boolean>;
-
-	/**
-	 * A callback for when the open state changes
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onOpenChange?: ChangeFn<boolean>;
+	open?: ReadableProp<boolean>;
 
 	/**
 	 * The delay in milliseconds to hover before opening the linkpreview
 	 *
 	 * @default 700
 	 */
-	openDelay?: number;
+	openDelay?: ReadableProp<number>;
 
 	/**
 	 * The delay in milliseconds after the pointer leaves the
@@ -47,7 +32,7 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default 300
 	 */
-	closeDelay?: number;
+	closeDelay?: ReadableProp<number>;
 
 	/**
 	 * Whether or not to close the linkpreview when the pointer is clicked
@@ -55,7 +40,7 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: ReadableProp<boolean>;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -63,7 +48,7 @@ export type CreateLinkPreviewProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: PointerEvent) => void;
+	onOutsideClick?: ReadableProp<(event: PointerEvent) => void>;
 
 	/**
 	 * Whether or not to close the linkpreview when the escape key is pressed
@@ -71,14 +56,14 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: ReadableProp<boolean>;
 
 	/**
 	 * The size of the optional arrow element in pixels
 	 *
 	 * @default 8
 	 */
-	arrowSize?: number;
+	arrowSize?: ReadableProp<number>;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -88,14 +73,14 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: ReadableProp<boolean>;
 
 	/**
 	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: ReadableProp<HTMLElement | string | null>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

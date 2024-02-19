@@ -1,6 +1,5 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -10,14 +9,12 @@ import {
 	isHTMLElement,
 	kbd,
 	last,
+	makeElement,
 	next,
-	omit,
-	overridable,
 	prev,
-	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { writable } from 'svelte/store';
 import type { TabsEvents } from './events.js';
 import type { CreateTabsProps, TabsTriggerProps } from './types.js';
 
@@ -26,23 +23,17 @@ const defaults = {
 	activateOnFocus: true,
 	loop: true,
 	autoSet: true,
+	value: undefined,
 } satisfies Defaults<CreateTabsProps>;
 
 type TabsParts = 'list' | 'trigger' | 'content';
 const { name, selector } = createElHelpers<TabsParts>('tabs');
 
 export function createTabs(props?: CreateTabsProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateTabsProps;
-
-	const options = toWritableStores(
-		omit(withDefaults, 'defaultValue', 'value', 'onValueChange', 'autoSet')
-	);
+	const { value, autoSet, ...options } = parseProps(props, defaults);
 	const { orientation, activateOnFocus, loop } = options;
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
-
-	let ssrValue = withDefaults.defaultValue ?? value.get();
+	let ssrValue = value.get();
 
 	// Root
 	const root = makeElement(name(), {
@@ -80,7 +71,7 @@ export function createTabs(props?: CreateTabsProps) {
 			return (props: TabsTriggerProps) => {
 				const { value: tabValue, disabled } = parseTriggerProps(props);
 
-				if (!$value && !ssrValue && withDefaults.autoSet) {
+				if (!$value && !ssrValue && autoSet) {
 					ssrValue = tabValue;
 					$value = tabValue;
 					value.set(tabValue);

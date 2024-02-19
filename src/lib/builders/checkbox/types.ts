@@ -1,4 +1,4 @@
-import type { WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { createCheckbox } from './create.js';
 export type { CheckboxComponentEvents } from './events.js';
@@ -9,33 +9,33 @@ export type CreateCheckboxProps = {
 	 *
 	 * @default false
 	 */
-	disabled?: WritableProp<boolean>;
+	disabled?: ReadableProp<boolean>;
 
 	/**
 	 * When `true`, indicates that the user must check the checkbox before the owning form can be submitted.
 	 *
 	 * @default false;
 	 */
-	required?: WritableProp<boolean>;
+	required?: ReadableProp<boolean>;
 
 	/**
 	 * The name of the checkbox. Submitted with its owning form as part of a name/value pair.
 	 *
 	 * @default undefined
 	 */
-	name?: WritableProp<string>;
+	name?: ReadableProp<string>;
 
 	/**
 	 * The value given as data when submitted with a `name`.
 	 *
 	 * @default 'on'
 	 */
-	value?: WritableProp<string>;
+	value?: ReadableProp<string>;
 
 	/**
 	 * The checked state of the checkbox.
 	 */
-	checked?: WritableProp<boolean | 'indeterminate'>;
+	checked?: ReadableProp<boolean | 'indeterminate'>;
 };
 
 export type Checkbox = BuilderReturn<typeof createCheckbox>;

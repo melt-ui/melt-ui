@@ -1,4 +1,4 @@
-import type { WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { createPagination } from './create.js';
 export type { PaginationComponentEvents } from './events.js';
@@ -7,33 +7,33 @@ export type CreatePaginationProps = {
 	/**
 	 * The total number of items to be paginated.
 	 */
-	count: WritableProp<number>;
+	count: ReadableProp<number>;
 
 	/**
 	 * Number of items per page
 	 *
 	 * @default 1
 	 */
-	perPage?: WritableProp<number>;
+	perPage?: ReadableProp<number>;
 
 	/**
 	 * Number of visible items before and after the current page
 	 *
 	 * @default 1
 	 */
-	siblingCount?: WritableProp<number>;
+	siblingCount?: ReadableProp<number>;
 
 	/**
 	 * The uncontrolled default page of the pagination.
 	 *
 	 * @default 1
 	 */
-	defaultPage?: WritableProp<number>;
+	defaultPage?: ReadableProp<number>;
 
 	/**
 	 * The current page.
 	 */
-	page?: WritableProp<number>;
+	page?: ReadableProp<number>;
 };
 
 export type Page = {

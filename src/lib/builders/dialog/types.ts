@@ -1,5 +1,5 @@
 import type { FocusProp, IdObj } from '$lib/internal/helpers/index.js';
-import type { WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { DialogIdParts, createDialog } from './create.js';
 export type { DialogComponentEvents } from './events.js';
@@ -10,21 +10,21 @@ export type CreateDialogProps = {
 	 *
 	 * @default true
 	 */
-	preventScroll?: WritableProp<boolean>;
+	preventScroll?: ReadableProp<boolean>;
 
 	/**
 	 * If true, the dialog will close when the user presses the escape key.
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: WritableProp<boolean>;
+	closeOnEscape?: ReadableProp<boolean>;
 
 	/**
 	 * If true, the dialog will close when the user clicks outside of it.
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: WritableProp<boolean>;
+	closeOnOutsideClick?: ReadableProp<boolean>;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -32,28 +32,28 @@ export type CreateDialogProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: WritableProp<(event: PointerEvent | MouseEvent | TouchEvent) => void>;
+	onOutsideClick?: ReadableProp<(event: PointerEvent | MouseEvent | TouchEvent) => void>;
 
 	/**
 	 * The `role` attribute to apply to the dialog.
 	 *
 	 * @default 'dialog'
 	 */
-	role?: WritableProp<'dialog' | 'alertdialog'>;
+	role?: ReadableProp<'dialog' | 'alertdialog'>;
 
 	/**
 	 * If true, the dialog will be open.
 	 *
 	 * @default false
 	 */
-	open?: WritableProp<boolean>;
+	open?: ReadableProp<boolean>;
 
 	/**
 	 * If not undefined, the dialog content will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: WritableProp<HTMLElement | string | null>;
+	portal?: ReadableProp<HTMLElement | string | null>;
 
 	/**
 	 * If true, the dialog will be visible regardless of the open state.
@@ -62,19 +62,19 @@ export type CreateDialogProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: WritableProp<boolean>;
+	forceVisible?: ReadableProp<boolean>;
 
 	/**
 	 * Override the default autofocus behavior of the dialog
 	 * on open.
 	 */
-	openFocus?: WritableProp<FocusProp>;
+	openFocus?: ReadableProp<FocusProp>;
 
 	/**
 	 * Override the default autofocus behavior of the dialog
 	 * on close.
 	 */
-	closeFocus?: WritableProp<FocusProp>;
+	closeFocus?: ReadableProp<FocusProp>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

@@ -1,5 +1,5 @@
 import type { IdObj } from '$lib/internal/helpers/index.js';
-import type { WritableProp } from '$lib/internal/helpers/props.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { PinInputIdParts, createPinInput } from './create.js';
 export type { PinInputComponentEvents } from './events.js';
@@ -10,7 +10,7 @@ export type CreatePinInputProps = {
 	 *
 	 * @default '○'
 	 */
-	placeholder?: WritableProp<string>;
+	placeholder?: ReadableProp<string>;
 
 	/**
 	 * The name of the input. Submitted with its owning form as part
@@ -18,26 +18,26 @@ export type CreatePinInputProps = {
 	 *
 	 * @default undefined
 	 */
-	name?: WritableProp<string>;
+	name?: ReadableProp<string>;
 
 	/**
 	 * If `true`, prevents the user from interacting with the input.
 	 *
 	 * @default false
 	 */
-	disabled?: WritableProp<boolean>;
+	disabled?: ReadableProp<boolean>;
 
 	/**
 	 * The type of the input. Use `password` to mask the input.
 	 *
 	 * @default 'text'
 	 */
-	type?: WritableProp<'text' | 'password'>;
+	type?: ReadableProp<'text' | 'password'>;
 
 	/**
 	 * The PinInput's value.
 	 */
-	value?: WritableProp<string[]>;
+	value?: ReadableProp<string[]>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

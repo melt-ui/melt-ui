@@ -1,6 +1,5 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -8,13 +7,12 @@ import {
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
+	makeElement,
 	noop,
-	omit,
-	overridable,
-	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 import type { ToggleGroupEvents } from './events.js';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types.js';
 
@@ -24,7 +22,7 @@ const defaults = {
 	loop: true,
 	rovingFocus: true,
 	disabled: false,
-	defaultValue: '',
+	value: '',
 } satisfies Defaults<CreateToggleGroupProps>;
 
 type ToggleGroupParts = 'item';
@@ -33,19 +31,8 @@ const { name, selector } = createElHelpers<ToggleGroupParts>('toggle-group');
 export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 	props?: CreateToggleGroupProps<T>
 ) => {
-	const withDefaults = { ...defaults, ...props };
-
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { value, ...options } = parseProps(props, defaults);
 	const { type, orientation, loop, rovingFocus, disabled } = options;
-
-	const defaultValue = withDefaults.defaultValue
-		? withDefaults.defaultValue
-		: withDefaults.type === 'single'
-		? 'undefined'
-		: [];
-
-	const valueWritable = withDefaults.value ?? writable(defaultValue);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = makeElement(name(), {
 		stores: orientation,
