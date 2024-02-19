@@ -20,6 +20,7 @@ import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { AccordionEvents } from './events.js';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 
@@ -29,38 +30,19 @@ const defaults = {
 	multiple: false,
 	disabled: false,
 	forceVisible: false,
+	value: [],
 } satisfies CreateAccordionProps;
 
-export const createAccordion = <Multiple extends boolean = false>(
-	props?: CreateAccordionProps<Multiple>
-) => {
-	const withDefaults = { ...defaults, ...props };
-	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+export function createAccordion(props?: CreateAccordionProps) {
+	const { value, ...options } = parseProps(props, defaults);
+	const { disabled, forceVisible, multiple } = options;
 
-	const meltIds = generateIds(['root']);
+	const ids = generateIds(['root']);
 
-	const { disabled, forceVisible } = options;
-
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-
-	const value = overridable<string | string[] | undefined>(
-		valueWritable,
-		withDefaults?.onValueChange as ChangeFn<string | string[] | undefined>
-	);
-
-	const isSelected = (key: string, v: string | string[] | undefined) => {
-		if (v === undefined) return false;
-		if (typeof v === 'string') return v === key;
-		return v.includes(key);
-	};
-
-	const isSelectedStore = derived(value, ($value) => {
-		return (key: string) => isSelected(key, $value);
-	});
 
 	const root = makeElement(name(), {
 		returned: () => ({
-			'data-melt-id': meltIds.root,
+			'data-melt-id': ids.root,
 		}),
 	});
 
@@ -87,7 +69,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 				const { value: itemValue, disabled } = parseItemProps(props);
 
 				return {
-					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
+					'data-state': $value.includes(itemValue) ? 'open' : 'closed',
 					'data-disabled': disabledAttr(disabled),
 				};
 			};
@@ -103,11 +85,11 @@ export const createAccordion = <Multiple extends boolean = false>(
 				// builder action to ensure the values match.
 				return {
 					disabled: disabledAttr($disabled || disabled),
-					'aria-expanded': isSelected(itemValue, $value) ? true : false,
+					'aria-expanded': $value.includes(itemValue) ? true : false,
 					'aria-disabled': disabled ? true : false,
 					'data-disabled': disabledAttr(disabled),
 					'data-value': itemValue,
-					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
+					'data-state': $value.includes(itemValue) ? 'open' : 'closed',
 				};
 			};
 		},
@@ -135,7 +117,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					}
 
 					const el = e.target;
-					const rootEl = getElementByMeltId(meltIds.root);
+					const rootEl = getElementByMeltId(ids.root);
 					if (!rootEl || !isHTMLElement(el)) return;
 
 					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
@@ -173,7 +155,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue } = parseItemProps(props);
-				const isVisible = isSelected(itemValue, $value) || $forceVisible;
+				const isVisible = $value.includes(itemValue) || $forceVisible;
 				return {
 					'data-state': isVisible ? 'open' : 'closed',
 					'data-disabled': disabledAttr($disabled),
@@ -217,24 +199,16 @@ export const createAccordion = <Multiple extends boolean = false>(
 
 	function handleValueUpdate(itemValue: string) {
 		value.update(($value) => {
-			if ($value === undefined) {
-				return withDefaults.multiple ? [itemValue] : itemValue;
+			if ($value.includes(itemValue)) {
+				return $value.filter((v) => v !== itemValue);
 			}
 
-			if (Array.isArray($value)) {
-				if ($value.includes(itemValue)) {
-					return $value.filter((v) => v !== itemValue);
-				}
-				$value.push(itemValue);
-				return $value;
-			}
-
-			return $value === itemValue ? undefined : itemValue;
+			return [...$value, itemValue];
 		});
 	}
 
 	return {
-		ids: meltIds,
+		ids: ids,
 		elements: {
 			root,
 			item,
@@ -243,11 +217,8 @@ export const createAccordion = <Multiple extends boolean = false>(
 			heading,
 		},
 		states: {
-			value: value as NonNullable<CreateAccordionProps<Multiple>['value']>,
-		},
-		helpers: {
-			isSelected: isSelectedStore,
+			value: value as NonNullable<CreateAccordionProps['value']>,
 		},
 		options,
 	};
-};
+}
