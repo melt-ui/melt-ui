@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
@@ -67,7 +67,7 @@ export type _CreateMenuProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: PointerEvent) => void;
+	onOutsideClick?: (event: InteractOutsideEvent) => void;
 
 	/**
 	 * Whether or not to loop the menu navigation.
@@ -190,7 +190,7 @@ export type _MenuBuilderOptions = {
 		closeFocus: WithGet<Writable<FocusProp | undefined>>;
 		disableFocusFirstItem: WithGet<Writable<boolean>>;
 		closeOnItemClick: WithGet<Writable<boolean>>;
-		onOutsideClick: WithGet<Writable<((event: PointerEvent) => void) | undefined>>;
+		onOutsideClick: WithGet<Writable<((event: InteractOutsideEvent) => void) | undefined>>;
 	};
 
 	nextFocusable: WithGet<Writable<HTMLElement | null>>;

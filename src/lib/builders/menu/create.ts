@@ -31,6 +31,7 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -70,7 +71,7 @@ const defaults = {
 	preventScroll: true,
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
-	portal: 'body',
+	portal: undefined,
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
@@ -164,7 +165,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				id: $rootMenuId,
 				'aria-labelledby': $rootTriggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': $portal ? '' : undefined,
+				'data-portal': portalAttr($portal),
 				tabindex: -1,
 			} as const;
 		},
@@ -190,22 +191,26 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							open: rootOpen,
 							options: {
 								floating: $positioning,
-								clickOutside: $closeOnOutsideClick
-									? {
-											handler: (e) => {
-												onOutsideClick.get()?.(e);
-												if (e.defaultPrevented) return;
+								modal: {
+									closeOnInteractOutside: $closeOnOutsideClick,
+									shouldCloseOnInteractOutside: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return false;
 
-												if (
-													isHTMLElement($rootActiveTrigger) &&
-													!$rootActiveTrigger.contains(e.target as Element)
-												) {
-													rootOpen.set(false);
-													$rootActiveTrigger.focus();
-												}
-											},
-									  }
-									: null,
+										if (
+											isHTMLElement($rootActiveTrigger) &&
+											$rootActiveTrigger.contains(e.target as Element)
+										) {
+											return false;
+										}
+										return true;
+									},
+									onClose: () => {
+										rootOpen.set(false);
+										$rootActiveTrigger.focus();
+									},
+									open: $isVisible,
+								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
@@ -745,7 +750,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								options: {
 									floating: $positioning,
 									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
-									clickOutside: null,
+									modal: null,
 									focusTrap: null,
 									escapeKeydown: null,
 								},

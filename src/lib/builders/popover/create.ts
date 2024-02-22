@@ -16,9 +16,10 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
-import { usePopper } from '$lib/internal/actions/index.js';
+import { usePopper, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -94,7 +95,7 @@ export function createPopover(props?: CreatePopoverProps) {
 				}),
 				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': $portal ? '' : undefined,
+				'data-portal': portalAttr($portal),
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -134,11 +135,12 @@ export function createPopover(props?: CreatePopoverProps) {
 										clickOutsideDeactivates: true,
 										escapeDeactivates: true,
 								  },
-							clickOutside: $closeOnOutsideClick
-								? {
-										handler: handleClickOutside,
-								  }
-								: null,
+							modal: {
+								shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
+								onClose: handleClose,
+								open: $isVisible,
+								closeOnInteractOutside: $closeOnOutsideClick,
+							},
 							escapeKeydown: $closeOnEscape
 								? {
 										handler: () => {
@@ -174,16 +176,16 @@ export function createPopover(props?: CreatePopoverProps) {
 		}
 	}
 
-	function handleClickOutside(e: PointerEvent) {
+	function shouldCloseOnInteractOutside(e: InteractOutsideEvent) {
 		onOutsideClick.get()?.(e);
-		if (e.defaultPrevented) return;
+		if (e.defaultPrevented) return false;
 		const target = e.target;
 		const triggerEl = document.getElementById(ids.trigger.get());
 
 		if (triggerEl && isElement(target)) {
-			if (target === triggerEl || triggerEl.contains(target)) return;
+			if (target === triggerEl || triggerEl.contains(target)) return false;
 		}
-		handleClose();
+		return true;
 	}
 
 	const trigger = makeElement(name('trigger'), {

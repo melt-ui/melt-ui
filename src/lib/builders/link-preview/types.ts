@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import type { IdObj } from '$lib/internal/helpers/index.js';
 import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
@@ -48,7 +48,7 @@ export type CreateLinkPreviewProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: ReadableProp<(event: PointerEvent) => void>;
+	onOutsideClick?: ReadableProp<(event: InteractOutsideEvent) => void>;
 
 	/**
 	 * Whether or not to close the linkpreview when the escape key is pressed

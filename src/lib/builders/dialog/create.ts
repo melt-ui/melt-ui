@@ -17,6 +17,7 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
@@ -42,7 +43,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	role: 'dialog',
 	open: false,
-	portal: 'body',
+	portal: undefined,
 	forceVisible: false,
 	openFocus: undefined,
 	closeFocus: undefined,
@@ -252,11 +253,11 @@ export function createDialog(props?: CreateDialogProps) {
 	const portalled = makeElement(name('portalled'), {
 		stores: portal,
 		returned: ($portal) => ({
-			'data-portal': $portal ? '' : undefined,
+			'data-portal': portalAttr($portal),
 		}),
 		action: (node: HTMLElement) => {
 			const unsubPortal = effect([portal], ([$portal]) => {
-				if (!$portal) return noop;
+				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
 				const portalAction = usePortal(node, portalDestination);
@@ -291,9 +292,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const close = makeElement(name('close'), {
 		returned: () =>
-			({
-				type: 'button',
-			} as const),
+		({
+			type: 'button',
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {

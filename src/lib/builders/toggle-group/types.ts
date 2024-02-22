@@ -4,9 +4,9 @@ import type { createToggleGroup } from './create.js';
 export type { ToggleGroupComponentEvents } from './events.js';
 export type ToggleGroupType = 'single' | 'multiple';
 
-export type CreateToggleGroupProps<T extends ToggleGroupType = 'single'> = {
-	value?: ReadableProp<T extends 'single' ? string : string[]>;
-	type?: ReadableProp<T>;
+export type CreateToggleGroupProps = {
+	value?: ReadableProp<string[]>;
+	type?: ReadableProp<ToggleGroupType>;
 	disabled?: ReadableProp<boolean>;
 	rovingFocus?: ReadableProp<boolean>;
 	loop?: ReadableProp<boolean>;
@@ -15,23 +15,23 @@ export type CreateToggleGroupProps<T extends ToggleGroupType = 'single'> = {
 
 export type ToggleGroupItemProps =
 	| {
-			value: string;
-			disabled?: boolean;
-	  }
+		value: string;
+		disabled?: boolean;
+	}
 	| string;
 
-export type ToggleGroup<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroup = BuilderReturn<
+	typeof createToggleGroup
 >;
-export type ToggleGroupElements<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroupElements = BuilderReturn<
+	typeof createToggleGroup
 >['elements'];
-export type ToggleGroupOptions<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroupOptions = BuilderReturn<
+	typeof createToggleGroup
 >['options'];
-export type ToggleGroupStates<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroupStates = BuilderReturn<
+	typeof createToggleGroup
 >['states'];
-export type ToggleGroupHelpers<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroupHelpers = BuilderReturn<
+	typeof createToggleGroup
 >['helpers'];

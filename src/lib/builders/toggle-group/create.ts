@@ -14,7 +14,7 @@ import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived } from 'svelte/store';
 import type { ToggleGroupEvents } from './events.js';
-import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types.js';
+import type { CreateToggleGroupProps, ToggleGroupItemProps } from './types.js';
 
 const defaults = {
 	type: 'single',
@@ -22,15 +22,13 @@ const defaults = {
 	loop: true,
 	rovingFocus: true,
 	disabled: false,
-	value: '',
+	value: [],
 } satisfies Defaults<CreateToggleGroupProps>;
 
 type ToggleGroupParts = 'item';
 const { name, selector } = createElHelpers<ToggleGroupParts>('toggle-group');
 
-export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
-	props?: CreateToggleGroupProps<T>
-) => {
+export function createToggleGroup(props?: CreateToggleGroupProps) {
 	const { value, ...options } = parseProps(props, defaults);
 	const { type, orientation, loop, rovingFocus, disabled } = options;
 
@@ -77,7 +75,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 
 			const items = Array.from(parentGroup.querySelectorAll(selector('item')));
 			const $value = value.get();
-			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value ? true : false;
 
 			if (!anyPressed && items[0] === node) {
 				node.tabIndex = 0;
@@ -95,13 +93,10 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				if (itemValue === undefined || disabled) return;
 
 				value.update(($value) => {
-					if (Array.isArray($value)) {
-						if ($value.includes(itemValue)) {
-							return $value.filter((i) => i !== itemValue);
-						}
-						return [...$value, itemValue];
+					if ($value.includes(itemValue)) {
+						return $value.filter((i) => i !== itemValue);
 					}
-					return $value === itemValue ? undefined : itemValue;
+					return [...$value, itemValue];
 				});
 			}
 
@@ -195,4 +190,4 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 		},
 		options,
 	};
-};
+}
