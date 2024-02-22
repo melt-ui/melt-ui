@@ -5,9 +5,9 @@ import type { createTreeView } from './create.js';
 export type CreateTreeViewProps = {
 	/**
 	 * Whether or not to force the tree to always be visible.
-	 * 
+	 *
 	 * This is useful for custom transitions and animations using conditional blocks.
-	 * 
+	 *
 	 * @default false
 	 */
 	forceVisible?: boolean;
