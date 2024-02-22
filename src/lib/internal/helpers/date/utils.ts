@@ -25,8 +25,8 @@ const defaultDateDefaults = {
 
 /**
  * A helper function used throughout the various date builders
- * to generate a default `DateValue` using the `defaultValue`,
- * `defaultPlaceholder`, and `granularity` props.
+ * to generate a default `DateValue` using the `value`,
+ * `placeholder`, and `granularity` props.
  *
  * It's important to match the `DateValue` type being used
  * elsewhere in the builder, so they behave according to the

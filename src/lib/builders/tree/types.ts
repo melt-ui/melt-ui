@@ -22,3 +22,4 @@ export type TreeView = ReturnType<typeof createTreeView>;
 export type TreeViewElements = TreeView['elements'];
 export type TreeViewStates = TreeView['states'];
 export type TreeViewHelpers = TreeView['helpers'];
+
