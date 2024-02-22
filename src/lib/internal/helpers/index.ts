@@ -26,3 +26,4 @@ export * from './ignore.js';
 export * from './focus.js';
 export * from './math.js';
 export * from './withGet.js';
+export * from './props.js';
