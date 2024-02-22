@@ -6,9 +6,9 @@ export type CreateTagsInputProps = {
 	placeholder?: ReadableProp<string>;
 	disabled?: ReadableProp<boolean>;
 	editable?: ReadableProp<boolean>;
-	selected?: ReadableProp<Tag>;
+	selected?: ReadableProp<Tag | null>;
 
-	tags?: ReadableProp<ReadableProp<Tag[]>>;
+	tags?: ReadableProp<Tag[]>;
 
 	unique?: ReadableProp<boolean>;
 	trim?: ReadableProp<boolean>;

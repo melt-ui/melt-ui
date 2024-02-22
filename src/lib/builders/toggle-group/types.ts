@@ -32,6 +32,3 @@ export type ToggleGroupOptions = BuilderReturn<
 export type ToggleGroupStates = BuilderReturn<
 	typeof createToggleGroup
 >['states'];
-export type ToggleGroupHelpers = BuilderReturn<
-	typeof createToggleGroup
->['helpers'];

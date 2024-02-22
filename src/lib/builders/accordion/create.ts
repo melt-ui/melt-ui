@@ -1,6 +1,5 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
@@ -9,18 +8,14 @@ import {
 	getElementByMeltId,
 	isHTMLElement,
 	kbd,
-	omit,
-	overridable,
-	styleToString,
-	toWritableStores,
-	type ChangeFn,
+	makeElement,
+	styleToString
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, writable } from 'svelte/store';
 import type { AccordionEvents } from './events.js';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
-import { parseProps } from '$lib/internal/helpers/props.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 
