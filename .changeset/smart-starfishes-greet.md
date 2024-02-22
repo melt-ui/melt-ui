@@ -9,3 +9,7 @@ BIG REFACTOR: Props have been overhauled. e.g. `defaultValue` and `onValueChange
 ### Accordion 
 - `value` always is an array of strings now
 - Removed `isSelected` helper
+
+### Toggle Group
+- `value` always is an array of strings now
+- Removed `isPressed` helper

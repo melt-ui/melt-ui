@@ -171,12 +171,6 @@ export function createToggleGroup(props?: CreateToggleGroupProps) {
 		},
 	});
 
-	const isPressed = derived(value, ($value) => {
-		return (itemValue: string) => {
-			return Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
-		};
-	});
-
 	return {
 		elements: {
 			root,
@@ -184,9 +178,6 @@ export function createToggleGroup(props?: CreateToggleGroupProps) {
 		},
 		states: {
 			value,
-		},
-		helpers: {
-			isPressed,
 		},
 		options,
 	};
