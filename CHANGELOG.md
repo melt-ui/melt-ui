@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.74.2
+
+### Patch Changes
+
+- Fix custom portal issues ([#995](https://github.com/melt-ui/melt-ui/pull/995))
+
+- Dialog: fixed interact outside pointerup/mouseup issue where the dialog would close if you clicked and dragged outside of the dialog before releasing the press (Closes: #750) ([#994](https://github.com/melt-ui/melt-ui/pull/994))
+
+- Toggle Group: fixed bug where `single` groups wouldn't focus (Closes #810) ([#990](https://github.com/melt-ui/melt-ui/pull/990))
+
 ## 0.74.1
 
 ### Patch Changes
