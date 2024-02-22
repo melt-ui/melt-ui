@@ -1,4 +1,4 @@
-import { DESCRIPTIONS, KBD, PROPS } from '$docs/constants.js';
+import { DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import { treeEvents } from '$lib/builders/tree/events.js';
@@ -7,19 +7,38 @@ import type { BuilderData } from './index.js';
 const BUILDER_NAME = 'tree-view';
 
 const builder = builderSchema(BUILDER_NAME, {
-	title: 'createTreeViewBuilder',
+	title: 'createTreeView',
 	description: DESCRIPTIONS.BUILDER('tree-view'),
-	props: [PROPS.FORCE_VISIBLE],
+	props: [
+		PROPS.FORCE_VISIBLE,
+		{
+			name: 'defaultExpanded',
+			type: 'string[]',
+			description: 'Which tree items are expanded by default.',
+			default: '[]',
+		},
+		{
+			name: 'expanded',
+			type: 'Writable<string[]>',
+			description:
+				'Optionally pass a writable store to control the expanded items of the tree. If provided, this will override the value of the `defaultTree` prop.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onExpandedChange',
+			type: 'ChangeFn<string[]>',
+			description: 'A callback called when the value of the `expanded` store should be changed.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	],
 	elements: [
 		{
 			name: 'tree',
 			description: 'The builder store used to create the tree.',
-			link: '#tree',
 		},
 		{
 			name: 'item',
 			description: 'The builder store used to create a tree item.',
-			link: '#item',
 		},
 		{
 			name: 'group',
@@ -28,29 +47,25 @@ const builder = builderSchema(BUILDER_NAME, {
 	],
 	states: [
 		{
-			name: 'collapsedGroups',
-			description: 'The list of IDs of items, who have a group that is not expanded.',
-		},
-		{
-			name: 'focusedItem',
-			description: 'The list item that is currently focused.',
+			name: 'expanded',
+			type: 'Writable<string[]>',
+			description: 'The list of IDs of items that are expanded.',
 		},
 		{
 			name: 'selectedItem',
-			description: 'The list item that is currently selected.',
+			type: 'Writable<HTMLElement | null>',
+			description: 'The currently selected item, or `null` if no item is selected.',
 		},
 	],
 	helpers: [
 		{
-			name: 'isCollapsedGroup',
-			description:
-				'A derived store that returns a function that returns whether or not the item is collapsed.',
+			name: 'isExpanded',
+			description: 'A function that returns whether or not the item is expanded.',
 			type: 'Readable<(itemId: string) => boolean>',
 		},
 		{
 			name: 'isSelected',
-			description:
-				'A derived store that returns a function that returns whether or not the item is selected.',
+			description: 'A function that returns whether or not the item is selected.',
 			type: 'Readable<(itemId: string) => boolean>',
 		},
 	],
@@ -58,7 +73,7 @@ const builder = builderSchema(BUILDER_NAME, {
 
 const tree = elementSchema('tree', {
 	title: 'tree',
-	description: 'The tree <ul> element.',
+	description: 'The tree list element.',
 	dataAttributes: [
 		{
 			name: 'data-melt-id',
@@ -69,22 +84,19 @@ const tree = elementSchema('tree', {
 
 const item = elementSchema('item', {
 	title: 'item',
-	description: 'The list tree item.',
+	description: 'The list item.',
 	props: [
 		{
 			name: 'id',
 			description: 'The unique ID of the item.',
 			type: 'string',
+			required: true,
 		},
 	],
 	dataAttributes: [
 		{
 			name: 'data-id',
 			value: 'A unique ID.',
-		},
-		{
-			name: 'data-value',
-			value: 'The value of the tree item.',
 		},
 	],
 	events: treeEvents['item'],
@@ -98,6 +110,7 @@ const group = elementSchema('group', {
 			name: 'id',
 			description: 'The unique ID of the group. Must match the ID of the item it belongs to.',
 			type: 'string',
+			required: true,
 		},
 	],
 	dataAttributes: [
