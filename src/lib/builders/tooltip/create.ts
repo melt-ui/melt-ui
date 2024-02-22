@@ -18,6 +18,7 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
@@ -201,7 +202,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					display: $isVisible ? undefined : 'none',
 				}),
 				id: $contentId,
-				'data-portal': $portal !== null ? '' : undefined,
+				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
 			};
 		},

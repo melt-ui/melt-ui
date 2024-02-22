@@ -31,6 +31,7 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -164,7 +165,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				id: $rootMenuId,
 				'aria-labelledby': $rootTriggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': $portal !== null ? '' : undefined,
+				'data-portal': portalAttr($portal),
 				tabindex: -1,
 			} as const;
 		},

@@ -18,6 +18,7 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
@@ -161,7 +162,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}),
 				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': $portal !== null ? '' : undefined,
+				'data-portal': portalAttr($portal),
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {
