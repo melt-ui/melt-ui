@@ -1,43 +1,20 @@
-import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
-import type { createDatePicker } from './create.js';
 import type { CreateCalendarProps, CreatePopoverProps } from '$lib/builders/index.js';
+import type { Matcher } from '$lib/index.js';
+import type { ReadableProp } from '$lib/internal/helpers/index.js';
+import type { RenameProperties } from '$lib/internal/types.js';
 import type { DateValue } from '@internationalized/date';
 import type { CreateDateFieldProps } from '../date-field/types.js';
-import type { Matcher } from '$lib/index.js';
-import type { RenameProperties } from '$lib/internal/types.js';
+import type { createDatePicker } from './create.js';
 
 export type DatePickerProps = {
 	/**
-	 * The default value for the date picker. When provided,
+	 * The value for the date picker. When provided,
 	 * the `activeDate` will assume this value so the calendar
 	 * will open to the month/year of this value.
 	 *
-	 * @default undefined;
-	 */
-	defaultValue?: DateValue;
-
-	/**
-	 * A function called when the value of the date picker changes.
-	 * It receives a single argument, which is an object containing
-	 * `curr` and `prev` properties, whose values are the current
-	 * and previous values of the value store. Whatever you return
-	 * from this function will be set as the new value of the value
-	 * store.
-	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateValue | undefined>;
-
-	/**
-	 * A writable store than can be used to control the value of the
-	 * date picker from outside the builder. This is useful if you
-	 * want to sync the value of the date picker with another store
-	 * used in your app.
-	 *
-	 * @default undefined;
-	 */
-	value?: Writable<DateValue | undefined>;
+	value?: ReadableProp<DateValue>;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -51,45 +28,7 @@ export type DatePickerProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
-
-	/**
-	 * A writable store that can be used to control the placeholder
-	 * date from outside the builder. When this prop is provided,
-	 * the `defaultPlaceholder` prop is ignored, and the value
-	 * of this store is used instead.
-	 *
-	 * The `placeholder` store is not used to set the value of the
-	 * date picker, it is only used to control the starting point for
-	 * the calendar. The `placeholder` store is used to determine
-	 * where the calendar should start when it is first opened without
-	 * a value, as well as the starting point for cycling through the
-	 * individual date segments.
-	 *
-	 * When the date picker is first opened, if the `value` of the
-	 * date picker is set, the `placeholder` will be set
-	 * to the same value as the `value` store. If the `value` store is
-	 * not set, the `placeholder` will initially be set to the same
-	 * value as the `defaultPlaceholder` prop.
-	 *
-	 * @default Writable<CalendarDate> - the current date at midnight.
-	 */
-	placeholder?: Writable<DateValue>;
-
-	/**
-	 * A function called when the placeholder value changes. It receives
-	 * a single argument, which is an object containing `curr` and
-	 * `prev` properties, whose values are the current and previous
-	 * values of the `placeholder` store. Whatever you return from this
-	 * function will be set as the new value of the `placeholder` store.
-	 *
-	 * The `placeholder` is kept in sync with the `value` store, so
-	 * ensure you know what you're doing if you intend on overriding the
-	 * value, as it may render the date picker unusable.
-	 *
-	 * @default undefined
-	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	placeholder?: ReadableProp<DateValue>;
 
 	/**
 	 * Any dates that match the provided matchers will
@@ -98,9 +37,9 @@ export type DatePickerProps = {
 	 * attribute that can be used to style them differently
 	 * than the other dates.
 	 *
-	 * @default undefined;
+	 * @default undefined
 	 */
-	isDateDisabled?: Matcher;
+	isDateDisabled?: ReadableProp<Matcher>;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -115,9 +54,9 @@ export type DatePickerProps = {
 	 * the appointment date, so the user can still select them to
 	 * learn more about the appointment.
 	 *
-	 * @default undefined;
+	 * @default undefined
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: ReadableProp<Matcher>;
 
 	/**
 	 * @default 'en'

@@ -21,18 +21,18 @@ export type MaybeWritable<T> = Readable<T> & {
 
 export type WithDefaults<Props extends Record<string, unknown>, Defaults extends Partial<Props>> = {
 	[K in keyof (Props & Defaults)]: K extends keyof Props
-		? K extends keyof Defaults
-			? undefined extends Props[K]
-				? Exclude<Props[K], undefined> | Defaults[K]
-				: Props[K]
-			: Props[K]
-		: never;
+	? K extends keyof Defaults
+	? undefined extends Props[K]
+	? Exclude<Props[K], undefined> | Defaults[K]
+	: Props[K]
+	: Props[K]
+	: never;
 };
 
 export function withDefaults<
 	Props extends Record<string, unknown>,
 	Defaults extends Partial<Props>
->(props: Props, defaults: Defaults) {
+>(props: Props | undefined, defaults: Defaults) {
 	return { ...defaults, ...props } as WithDefaults<Props, Defaults>;
 }
 
@@ -55,10 +55,10 @@ export type ParsedProps<Props extends Record<string, unknown>, Defaults extends 
 	[K in keyof WithDefaults<Props, Defaults>]: WithDefaults<Props, Defaults>[K] extends ReadableProp<
 		infer T
 	>
-		? WithGet<Writable<T>>
-		: WithDefaults<Props, Defaults>[K] extends ReadableProp<infer T>
-		? WithGet<MaybeWritable<T>>
-		: undefined;
+	? WithGet<Writable<T>>
+	: WithDefaults<Props, Defaults>[K] extends ReadableProp<infer T>
+	? WithGet<MaybeWritable<T>>
+	: undefined;
 };
 
 export function parseProps<Props extends Record<string, unknown>, Defaults extends Partial<Props>>(

@@ -38,3 +38,56 @@ export const overridable = <T>(value: Readable<T> | T, onChange?: ChangeFn<T>) =
 		set,
 	};
 };
+
+const ERRORS = {
+	SET: 'Cannot call `overridden.set` from within the `set` method, use the returned `commit` function instead.',
+	SET_READABLE: `Cannot call \`overridden.set\` from within the \`set\` method, use the returned \`commit\` function instead. 
+Alternatively, call \`set\` on the store that was passed in to \`overridable\`.`,
+};
+
+export const newOverridable = <In, Out = In>(
+	value: Readable<In> | In,
+	getset?: {
+		get?: (value: In) => Out;
+		set: (values: { curr: Out; next: Out; commit: (newValue: In) => void }) => void;
+	}
+) => {
+	const _store = isReadable(value) ? value : (writable(value) as Readable<In> | Writable<In>);
+	const store = withGet(_store) as unknown as WithGet<Readable<In>> & WithGet<Writable<In>>;
+	const derived = withGet.derived(store, (getset?.get ?? ((v) => v)) as (v: In) => Out);
+
+	/** To prevent an internal set from calling the getset.set method */
+	let depth = 0;
+
+	const update = (updater: Updater<Out>) => {
+		depth++;
+		const curr = derived.get();
+		const next = updater(curr);
+		if (depth === 1) {
+			getset?.set?.({ curr, next, commit: (newValue) => store.set(newValue) });
+		} else {
+			if (isReadable(store)) {
+
+				throw new Error(ERRORS.SET_READABLE);
+			} else {
+
+				throw new Error(ERRORS.SET);
+			}
+		}
+
+		if (!getset?.set) {
+			store.set(next as unknown as In);
+		}
+		depth--;
+	};
+
+	const set = (nv: Out) => {
+		update(() => nv);
+	};
+
+	return {
+		...derived,
+		update,
+		set,
+	};
+};

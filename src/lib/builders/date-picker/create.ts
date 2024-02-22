@@ -9,6 +9,9 @@ import {
 	effect,
 	omit,
 	toWritableStores,
+	parseProps,
+	withDefaults as getWithDefaults,
+	newOverridable,
 } from '$lib/internal/helpers/index.js';
 import type { CreateDatePickerProps } from './types.js';
 
@@ -39,9 +42,10 @@ const defaults = {
 } satisfies CreateDatePickerProps;
 
 export function createDatePicker(props?: CreateDatePickerProps) {
-	const withDefaults = { ...defaults, ...props };
+	const withDefaults = getWithDefaults(props, defaults);
+	const parsed = parseProps(props, defaults);
+	const options = omit(parsed, 'value', 'placeholder');
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'placeholder'));
 	const dateField = createDateField({
 		...withDefaults,
 		ids: withDefaults.dateFieldIds,
@@ -51,10 +55,17 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		states: { value, placeholder: dfPlaceholder },
 	} = dateField;
 
+	;
+
 	const calendar = createCalendar({
-		...omit(withDefaults, 'onValueChange'),
+		...withDefaults,
 		placeholder: dfPlaceholder,
-		value: value,
+		value: newOverridable(value, {
+			get: (v) => v ? [v] : [],
+			set: ({ next, commit }) => {
+				commit(next[0]);
+			},
+		}),
 		ids: withDefaults.calendarIds,
 	});
 
@@ -151,12 +162,12 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	} = popover;
 
 	const defaultDate = getDefaultDate({
-		defaultPlaceholder: withDefaults.defaultPlaceholder,
-		defaultValue: withDefaults.defaultValue,
-		granularity: withDefaults.granularity,
+		defaultPlaceholder: parsed.placeholder?.get(),
+		defaultValue: parsed.value?.get(),
+		granularity: parsed.granularity?.get(),
 	});
 
-	const placeholder = dateStore(dfPlaceholder, withDefaults.defaultPlaceholder ?? defaultDate);
+	const placeholder = dateStore(dfPlaceholder, parsed.placeholder?.get() ?? defaultDate);
 
 	effect([open], ([$open]) => {
 		if (!$open) {
