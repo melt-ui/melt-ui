@@ -194,22 +194,21 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 						open: open,
 						options: {
 							floating: $positioning,
-							clickOutside: $closeOnOutsideClick
-								? {
-										handler: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return;
-
-											if (
-												isHTMLElement($activeTrigger) &&
-												!$activeTrigger.contains(e.target as Element)
-											) {
-												open.set(false);
-												$activeTrigger.focus();
-											}
-										},
-								  }
-								: null,
+							modal: {
+								closeOnInteractOutside: $closeOnOutsideClick,
+								onClose: () => {
+									open.set(false);
+									$activeTrigger.focus();
+								},
+								shouldCloseOnInteractOutside: (e) => {
+									onOutsideClick.get()?.(e);
+									if (e.defaultPrevented) return false;
+									if (isHTMLElement($activeTrigger) && $activeTrigger.contains(e.target as Element))
+										return false;
+									return true;
+								},
+								open: $isVisible,
+							},
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,
 							escapeKeydown: $closeOnEscape ? undefined : null,

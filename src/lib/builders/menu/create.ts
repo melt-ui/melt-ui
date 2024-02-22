@@ -191,22 +191,26 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							open: rootOpen,
 							options: {
 								floating: $positioning,
-								clickOutside: $closeOnOutsideClick
-									? {
-											handler: (e) => {
-												onOutsideClick.get()?.(e);
-												if (e.defaultPrevented) return;
+								modal: {
+									closeOnInteractOutside: $closeOnOutsideClick,
+									shouldCloseOnInteractOutside: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return false;
 
-												if (
-													isHTMLElement($rootActiveTrigger) &&
-													!$rootActiveTrigger.contains(e.target as Element)
-												) {
-													rootOpen.set(false);
-													$rootActiveTrigger.focus();
-												}
-											},
-									  }
-									: null,
+										if (
+											isHTMLElement($rootActiveTrigger) &&
+											$rootActiveTrigger.contains(e.target as Element)
+										) {
+											return false;
+										}
+										return true;
+									},
+									onClose: () => {
+										rootOpen.set(false);
+										$rootActiveTrigger.focus();
+									},
+									open: $isVisible,
+								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
@@ -746,7 +750,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								options: {
 									floating: $positioning,
 									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
-									clickOutside: null,
+									modal: null,
 									focusTrap: null,
 									escapeKeydown: null,
 								},
