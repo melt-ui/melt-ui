@@ -14,7 +14,7 @@ import {
 	styleToString,
 	toWritableStores,
 	withGet,
-	type WithGet
+	type WithGet,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -75,7 +75,11 @@ export type CalendarIdParts = typeof calendarIdParts;
 export function createCalendar<Value extends DateValue = DateValue>(
 	props?: CreateCalendarProps<Value>
 ) {
-	const { value, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults)
+	const {
+		value,
+		placeholder: _placeholder,
+		...options
+	} = parseProps(omit(props ?? {}, 'ids'), defaults);
 
 	const {
 		preventDeselect,
@@ -92,26 +96,22 @@ export function createCalendar<Value extends DateValue = DateValue>(
 		disabled,
 		readonly,
 		weekdayFormat,
-
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(calendarIdParts), ...props?.ids });
 
-
-
 	const defaultDate = getDefaultDate({
-		defaultPlaceholder: options.placeholder?.get(),
+		defaultPlaceholder: _placeholder?.get(),
 		defaultValue: value.get(),
 	});
 
 	const formatter = createFormatter(locale.get());
 
-	const placeholderWritable = (options.placeholder ?? withGet.writable(defaultDate)) as WithGet<Writable<DateValue>>;
+	const placeholderWritable = (_placeholder ?? withGet.writable(defaultDate)) as WithGet<
+		Writable<DateValue>
+	>;
 
-	const placeholder = dateStore(
-		placeholderWritable,
-		placeholderWritable.get() ?? defaultDate
-	);
+	const placeholder = dateStore(placeholderWritable, placeholderWritable.get() ?? defaultDate);
 
 	/**
 	 * A store containing the months to display in the calendar.
@@ -848,27 +848,49 @@ export function createCalendar<Value extends DateValue = DateValue>(
 		if ($isDateDisabled?.(date) || $isUnavailable?.(date)) return;
 
 		value.update((prev) => {
-			if (!prev) return [date] as Value[];
-			if (!Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
-			const index = prev.findIndex((d) => isSameDay(d, date));
-			const $preventDeselect = preventDeselect.get();
-
-			if (index === -1) {
-				return [...prev, date] as Value[];
-			} else if ($preventDeselect) {
-				return prev;
+			const $multiple = multiple.get();
+			if ($multiple) {
+				return handleMultipleUpdate(prev, date) as Value[];
 			} else {
-				const next = prev.filter((d) => !isSameDay(d, date));
-				if (!next.length) {
-					placeholder.set(date);
-					return undefined;
+				const next = handleSingleUpdate(prev, date);
+				if (!next) {
+					announcer.announce('Selected date is now empty.', 'polite', 5000);
+				} else {
+					announcer.announce(`Selected Date: ${formatter.selectedDate(next[0], false)}`, 'polite');
 				}
 				return next as Value[];
 			}
 		});
 	}
 
+	function handleSingleUpdate(prev: Value[] | undefined, date: DateValue) {
+		if (!prev) return [date];
+		const $preventDeselect = preventDeselect.get();
+		if (!$preventDeselect && isSameDay(prev[0], date)) {
+			placeholder.set(date);
+			return undefined;
+		}
+		return [date];
+	}
 
+	function handleMultipleUpdate(prev: Value[] | undefined, date: DateValue) {
+		if (!prev) return [date];
+		const index = prev.findIndex((d) => isSameDay(d, date));
+		const $preventDeselect = preventDeselect.get();
+
+		if (index === -1) {
+			return [...prev, date];
+		} else if ($preventDeselect) {
+			return prev;
+		} else {
+			const next = prev.filter((d) => !isSameDay(d, date));
+			if (!next.length) {
+				placeholder.set(date);
+				return undefined;
+			}
+			return next;
+		}
+	}
 
 	const SELECT_KEYS = [kbd.ENTER, kbd.SPACE];
 
