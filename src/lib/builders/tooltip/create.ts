@@ -19,6 +19,7 @@ import {
 	styleToString,
 	toWritableStores,
 	portalAttr,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
@@ -27,7 +28,6 @@ import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
-import { onDestroy } from 'svelte';
 
 const defaults = {
 	positioning: {
@@ -126,13 +126,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 				openReason.set(null);
 				if (isBlur) clickedTrigger = false;
 				closeTimeout = null;
-			}, Math.max(closeDelay.get(), 50));
+			}, closeDelay.get());
 		}
 	}
-
-	onDestroy(() => {
-		if (closeTimeout) clearTimeout(closeTimeout);
-	});
 
 	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
 		return $open || $forceVisible;
@@ -185,7 +181,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
+				addMeltEventListener(node, 'blur', async () => {
+					await sleep(0);
+					closeTooltip(true);
+				}),
 				addMeltEventListener(node, 'keydown', keydownHandler),
 				addEventListener(document, 'keydown', keydownHandler)
 			);
