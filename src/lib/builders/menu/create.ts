@@ -205,7 +205,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 										}
 										return true;
 									},
-									onClose: () => {
+									onClose: async () => {
+										await sleep(0);
 										rootOpen.set(false);
 										$rootActiveTrigger.focus();
 									},

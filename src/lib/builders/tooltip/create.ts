@@ -27,6 +27,7 @@ import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
+import { onDestroy } from 'svelte';
 
 const defaults = {
 	positioning: {
@@ -125,9 +126,13 @@ export function createTooltip(props?: CreateTooltipProps) {
 				openReason.set(null);
 				if (isBlur) clickedTrigger = false;
 				closeTimeout = null;
-			}, closeDelay.get());
+			}, Math.max(closeDelay.get(), 50));
 		}
 	}
+
+	onDestroy(() => {
+		if (closeTimeout) clearTimeout(closeTimeout);
+	});
 
 	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
 		return $open || $forceVisible;

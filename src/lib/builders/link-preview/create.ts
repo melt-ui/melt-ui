@@ -196,7 +196,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							floating: $positioning,
 							modal: {
 								closeOnInteractOutside: $closeOnOutsideClick,
-								onClose: () => {
+								onClose: async () => {
+									await sleep(0);
 									open.set(false);
 									$activeTrigger.focus();
 								},
