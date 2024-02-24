@@ -3,6 +3,7 @@ import {
 	addMeltEventListener,
 	effect,
 	executeCallbacks,
+	isFirefox,
 	isHTMLElement,
 	isTouchDevice,
 	makeElement,
@@ -212,6 +213,16 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 				unsubScrollAreaListeners = executeCallbacks(
 					addEventListener(scrollAreaEl, 'touchstart', handlePointerEnter),
 					addEventListener(scrollAreaEl, 'touchend', handlePointerLeave)
+				);
+			} else if (isFirefox()) {
+				/**
+				 * Firefox triggers pointerleave events if you tab away from the window
+				 * without moving the pointer, so we use mouseenter/mouseleave instead
+				 * which works as expected.
+				 */
+				unsubScrollAreaListeners = executeCallbacks(
+					addEventListener(scrollAreaEl, 'mouseenter', handlePointerEnter),
+					addEventListener(scrollAreaEl, 'mouseleave', handlePointerLeave)
 				);
 			} else {
 				unsubScrollAreaListeners = executeCallbacks(
