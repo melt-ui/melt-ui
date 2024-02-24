@@ -247,17 +247,17 @@ export function createScrollScrollbarAction(state: ScrollAreaState) {
 			SCROLL: 'scrolling',
 		},
 		scrolling: {
-			POINTER_ENTER: 'interacting',
 			SCROLL_END: 'idle',
+			POINTER_ENTER: 'interacting',
 		},
 		interacting: {
-			POINTER_LEAVE: 'scrolling',
 			SCROLL: 'interacting',
+			POINTER_LEAVE: 'idle',
 		},
 		idle: {
 			HIDE: 'hidden',
-			POINTER_ENTER: 'interacting',
 			SCROLL: 'scrolling',
+			POINTER_ENTER: 'interacting',
 		},
 	});
 
@@ -301,7 +301,23 @@ export function createScrollScrollbarAction(state: ScrollAreaState) {
 		};
 	});
 
-	return baseAction;
+	function scrollbarScrollAction(node: HTMLElement) {
+		const unsubBaseAction = baseAction(node)?.destroy;
+
+		const unsubListeners = executeCallbacks(
+			addEventListener(node, 'pointerenter', () => machine.dispatch('POINTER_ENTER')),
+			addEventListener(node, 'pointerleave', () => machine.dispatch('POINTER_LEAVE'))
+		);
+
+		return {
+			destroy() {
+				unsubBaseAction?.();
+				unsubListeners();
+			},
+		};
+	}
+
+	return scrollbarScrollAction;
 }
 
 /**
