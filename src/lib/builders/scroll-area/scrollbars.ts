@@ -219,8 +219,13 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 				 * Firefox triggers pointerleave events if you tab away from the window
 				 * without moving the pointer, so we use mouseenter/mouseleave instead
 				 * which works as expected.
+				 *
+				 * In Firefox, mouseenter is not triggered if the pointer was over the scroll area 
+				 * before events were loaded and then starts moving, 
+				 * so we use pointerenter which works as expected.
 				 */
 				unsubScrollAreaListeners = executeCallbacks(
+					addEventListener(scrollAreaEl, 'pointerenter', handlePointerEnter),
 					addEventListener(scrollAreaEl, 'mouseenter', handlePointerEnter),
 					addEventListener(scrollAreaEl, 'mouseleave', handlePointerLeave)
 				);
