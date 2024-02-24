@@ -1,6 +1,5 @@
 // See https://kit.svelte.dev/docs/types#app
 /// <reference types="@sveltejs/kit" />
-/// <reference types="user-agent-data-types" />
 
 import type { TextDirection } from '$lib/internal/types.js';
 
