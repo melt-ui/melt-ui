@@ -29,11 +29,11 @@
 <div class="flex flex-col items-center gap-4 sm:flex-row">
 	<div
 		use:melt={$rootA}
-		class="relative h-72 w-56 overflow-hidden rounded-md border border-neutral-700 bg-neutral-800/90 p-3 text-white shadow-lg"
+		class="relative h-72 w-56 overflow-hidden rounded-md border border-neutral-700 bg-neutral-800/90 text-white shadow-lg"
 	>
 		<div use:melt={$viewportA} class="h-full w-full rounded-[inherit]">
 			<div use:melt={$contentA}>
-				<div class="p-4">
+				<div class="p-7">
 					<h4 class="mb-4 font-semibold leading-none">Endless Flavors</h4>
 					{#each flavors as flavor (flavor)}
 						<div class="text-sm">
@@ -58,12 +58,12 @@
 
 	<div
 		use:melt={$root}
-		class="relative h-72 w-56 overflow-hidden rounded-md border border-neutral-700 bg-neutral-800/90 p-3 text-white shadow-lg"
+		class="relative h-72 w-56 overflow-hidden rounded-md border border-neutral-700 bg-neutral-800/90 text-white shadow-lg"
 		style:height="{height}px"
 	>
 		<div use:melt={$viewport} class="h-full w-full rounded-[inherit]">
 			<div use:melt={$content}>
-				<div class="p-4">
+				<div class="p-7">
 					<h4 class="mb-4 font-semibold leading-none">A Few Flavors</h4>
 					{#each flavors.slice(0, 5) as flavor (flavor)}
 						<div class="text-sm">

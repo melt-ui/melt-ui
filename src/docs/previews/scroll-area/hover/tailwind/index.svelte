@@ -12,11 +12,11 @@
 
 <div
 	use:melt={$root}
-	class="relative h-72 w-56 overflow-hidden rounded-md border border-neutral-700 bg-neutral-800/90 p-3 text-white shadow-lg"
+	class="relative h-72 w-56 overflow-hidden rounded-md border border-neutral-700 bg-neutral-800/90 text-white shadow-lg"
 >
 	<div use:melt={$viewport} class="h-full w-full rounded-[inherit]">
 		<div use:melt={$content}>
-			<div class="p-4">
+			<div class="p-7">
 				<h4 class="mb-4 font-semibold leading-none">Endless Flavors</h4>
 				{#each flavors as flavor (flavor)}
 					<div class="text-sm">
