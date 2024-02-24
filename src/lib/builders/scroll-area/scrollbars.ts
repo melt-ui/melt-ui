@@ -220,8 +220,8 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 				 * without moving the pointer, so we use mouseenter/mouseleave instead
 				 * which works as expected.
 				 *
-				 * In Firefox, mouseenter is not triggered if the pointer was over the scroll area 
-				 * before events were loaded and then starts moving, 
+				 * In Firefox, mouseenter is not triggered if the pointer was over the scroll area
+				 * before events were loaded and then starts moving,
 				 * so we use pointerenter which works as expected.
 				 */
 				unsubScrollAreaListeners = executeCallbacks(
