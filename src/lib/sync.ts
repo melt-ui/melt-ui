@@ -3,8 +3,7 @@
 import { effect, isWritable } from '$lib/internal/helpers/index.js';
 import { dequal } from 'dequal';
 import type { Readable, Writable } from 'svelte/store';
-
-type ReadableValue<T> = T extends Readable<infer V> ? V : never;
+import type { ReadableValue } from './internal/types.js';
 
 /**
  * Typed Object.keys

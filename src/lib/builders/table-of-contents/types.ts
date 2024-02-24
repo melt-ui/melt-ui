@@ -21,7 +21,7 @@ export type HeadingFilterFn = (heading: HTMLHeadingElement) => boolean;
 
 export type ScrollFn = (id: string) => void;
 
-export type CreateTableOfContentsArgs = {
+export type CreateTableOfContentsProps = {
 	/**
 	 * The ID of the container holding the page content.
 	 */
@@ -78,3 +78,5 @@ export type TableOfContentsItem = {
 export type TableOfContents = ReturnType<typeof createTableOfContents>;
 export type TableOfContentsElements = TableOfContents['elements'];
 export type TableOfContentsStates = TableOfContents['states'];
+export type TableOfContentsOptions = TableOfContents['options'];
+export type TableOfContentsHelpers = TableOfContents['helpers'];

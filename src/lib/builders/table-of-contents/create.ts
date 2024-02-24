@@ -1,18 +1,20 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
+	effect,
 	executeCallbacks,
+	makeElement,
+	noop,
+	parseProps,
 } from '$lib/internal/helpers/index.js';
-import type { Defaults } from '$lib/internal/types.js';
+import type { Defaults, ReadableValue } from '$lib/internal/types.js';
 
 import { dequal } from 'dequal';
-import { derived, writable } from 'svelte/store';
+import { derived, type Writable } from 'svelte/store';
 
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type {
-	CreateTableOfContentsArgs,
+	CreateTableOfContentsProps,
 	ElementHeadingLU,
 	Heading,
 	HeadingParentsLU,
@@ -24,11 +26,11 @@ const defaults = {
 	scrollOffset: 0,
 	scrollBehaviour: 'smooth',
 	activeType: 'lowest',
-} satisfies Defaults<CreateTableOfContentsArgs>;
+	headingFilterFn: undefined,
+} satisfies Defaults<CreateTableOfContentsProps>;
 
-export function createTableOfContents(args: CreateTableOfContentsArgs) {
-	// const props = parseProps(props, defaults); // TODO: fix this
-	const argsWithDefaults = { ...defaults, ...args };
+export function createTableOfContents(props: CreateTableOfContentsProps) {
+	const options = parseProps(props, defaults);
 	const {
 		selector,
 		exclude,
@@ -37,7 +39,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		scrollOffset,
 		headingFilterFn,
 		scrollFn,
-	} = argsWithDefaults;
+	} = options;
 
 	const { name } = createElHelpers('table-of-contents');
 
@@ -62,55 +64,61 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	const observer_threshold = 0.01;
 
 	// Stores
-	const activeHeadingIdxs = withGet(writable<number[]>([]));
-	const headingsTree = withGet(writable<TableOfContentsItem[]>([]));
+	const activeHeadingIdxs = withGet.writable<number[]>([]);
+	const headingsTree = withGet.writable<TableOfContentsItem[]>([]);
 
 	// Helpers
-	function generateInitialLists(elementTarget: Element) {
-		let headingsList: HTMLHeadingElement[] = [];
-		let elementsList: Element[] = [];
+	const generateInitialLists = withGet.derived(
+		[exclude, headingFilterFn],
+		([$exclude, $headingFilterFn]) => {
+			return (elementTarget: Element) => {
+				let headingsList: HTMLHeadingElement[] = [];
+				let elementsList: Element[] = [];
 
-		const includedHeadings = possibleHeadings.filter((h) => !exclude.includes(h));
+				const includedHeadings = possibleHeadings.filter((h) => !$exclude.includes(h));
 
-		const targetHeaders: NodeListOf<HTMLHeadingElement> | undefined =
-			elementTarget?.querySelectorAll(includedHeadings.join(', '));
+				const targetHeaders: NodeListOf<HTMLHeadingElement> | undefined =
+					elementTarget?.querySelectorAll(includedHeadings.join(', '));
 
-		// Create a unique ID for each heading which doesn't have one.
-		targetHeaders?.forEach((el: HTMLHeadingElement) => {
-			if (!el.id) {
-				const uniqueID = el.innerText
-					.replaceAll(/[^a-zA-Z0-9 ]/g, '')
-					.replaceAll(' ', '-')
-					.toLowerCase();
-				el.id = `${uniqueID}`;
-			}
+				// Create a unique ID for each heading which doesn't have one.
+				targetHeaders?.forEach((el: HTMLHeadingElement) => {
+					if (!el.id) {
+						const uniqueID = el.innerText
+							.replaceAll(/[^a-zA-Z0-9 ]/g, '')
+							.replaceAll(' ', '-')
+							.toLowerCase();
+						el.id = `${uniqueID}`;
+					}
 
-			headingsList.push(el);
-		});
+					headingsList.push(el);
+				});
 
-		headingsList = [...headingsList];
+				headingsList = [...headingsList];
 
-		if (headingFilterFn) {
-			headingsList = headingsList.filter((heading) => headingFilterFn(heading));
+				if ($headingFilterFn) {
+					headingsList = headingsList.filter((heading) => $headingFilterFn(heading));
+				}
+
+				// Get all elements in our elementTarget and convert it from an HTMLCollection to an array.
+				elementsList = [].slice.call(elementTarget?.getElementsByTagName('*'));
+
+				// Filter the array, so that only the allowed headings and elements with no children are in the list to avoid problems with elements that wrap around others.
+				elementsList = elementsList.filter(
+					(el) =>
+						(<string[]>includedHeadings).includes(el.nodeName.toLowerCase()) ||
+						el.children.length === 0
+				);
+
+				// We don't care about elements before our first header element, so we can remove those as well.
+				elementsList.splice(0, elementsList.indexOf(headingsList[0]));
+
+				return {
+					headingsList,
+					elementsList,
+				};
+			};
 		}
-
-		// Get all elements in our elementTarget and convert it from an HTMLCollection to an array.
-		elementsList = [].slice.call(elementTarget?.getElementsByTagName('*'));
-
-		// Filter the array, so that only the allowed headings and elements with no children are in the list to avoid problems with elements that wrap around others.
-		elementsList = elementsList.filter(
-			(el) =>
-				(<string[]>includedHeadings).includes(el.nodeName.toLowerCase()) || el.children.length === 0
-		);
-
-		// We don't care about elements before our first header element, so we can remove those as well.
-		elementsList.splice(0, elementsList.indexOf(headingsList[0]));
-
-		return {
-			headingsList,
-			elementsList,
-		};
-	}
+	);
 
 	/**
 	 * Create a tree view of our headings so that the hierarchy is represented.
@@ -162,19 +170,24 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		if (element) {
 			const elementPosition = element.getBoundingClientRect().top;
-			const offsetPosition = elementPosition + window.scrollY - scrollOffset;
+			const offsetPosition = elementPosition + window.scrollY - scrollOffset.get();
 
 			window.scrollTo({
 				top: offsetPosition,
-				behavior: scrollBehaviour,
+				behavior: scrollBehaviour.get(),
 			});
 		}
 	}
 
-	const shouldHighlightParents =
-		activeType === 'highest-parents' ||
-		activeType === 'lowest-parents' ||
-		activeType === 'all-parents';
+	function shouldHighlightParents() {
+		const $activeType = activeType.get();
+
+		return (
+			$activeType === 'highest-parents' ||
+			$activeType === 'lowest-parents' ||
+			$activeType === 'all-parents'
+		);
+	}
 
 	function handleElementObservation(entries: IntersectionObserverEntry[]) {
 		// Iterate through all elements that crossed the observer_threshold.
@@ -192,7 +205,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 					visibleElementIdxs.set(tempVisibleElementIdxs);
 
 					// Only add active parents if parent headings should be highlighted.
-					if (shouldHighlightParents && headingParentsLU[toc_idx]) {
+					if (shouldHighlightParents() && headingParentsLU[toc_idx]) {
 						activeParentIdxs.update((prev) => {
 							return [...prev, ...(<number[]>headingParentsLU[toc_idx])];
 						});
@@ -204,7 +217,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 				visibleElementIdxs.set(tempVisibleElementIdxs);
 
 				// Remove all parents of obsIndex from the activeParentIdxs list.
-				if (shouldHighlightParents && headingParentsLU[toc_idx]) {
+				if (shouldHighlightParents() && headingParentsLU[toc_idx]) {
 					activeParentIdxs.update((prev) => {
 						const newArr = [...prev];
 						headingParentsLU[toc_idx]?.forEach((parent: number) => {
@@ -224,10 +237,12 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		let activeHeaderIdxs: number[];
 
+		const $activeType = activeType.get();
+
 		if (allActiveHeaderIdxs.length === 0) {
 			activeHeaderIdxs = [];
 		} else {
-			switch (activeType) {
+			switch ($activeType) {
 				case 'highest':
 					activeHeaderIdxs = [Math.min(...allActiveHeaderIdxs)];
 					break;
@@ -244,7 +259,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 				}
 				default: {
 					const activeHeaderIdx =
-						activeType === 'highest-parents'
+						$activeType === 'highest-parents'
 							? Math.min(...allActiveHeaderIdxs)
 							: Math.max(...allActiveHeaderIdxs);
 
@@ -261,89 +276,97 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		activeHeadingIdxs.set(activeHeaderIdxs);
 	}
 
-	function initialization() {
-		observer?.disconnect();
-
-		/** Get all parents for each heading element, by checking
-		 *  which previous headings in the list have a lower H value,
-		 *  so H1 < H2 < H3 < ...
-		 */
-		headingsList.forEach((h, i) => {
-			headingParentsLU[i] = null;
-
-			let current_heading: string = h.tagName;
-			let parents: number[] = [];
-
-			for (let j = i - 1; j >= 0; j--) {
-				if (headingsList[j].tagName < current_heading) {
-					current_heading = headingsList[j].tagName;
-					parents = [...parents, j];
-				}
-			}
-
-			headingParentsLU[i] = parents.length > 0 ? parents : null;
-
-			// Find all elements between the current heading and the next one and assign them the current heading.
-			const startIndex = elementsList.indexOf(headingsList[i]);
-			const endIndex =
-				i !== headingsList.length - 1
-					? elementsList.indexOf(headingsList[i + 1])
-					: elementsList.length;
-
-			for (let j = startIndex; j < endIndex; j++) {
-				elementHeadingLU[j] = i;
-			}
-		});
-
-		headingsTree.set(createTree(headingsList));
-
-		if (activeType !== 'none') {
-			// Create observer and observe all elements.
-			observer = new IntersectionObserver(handleElementObservation, {
-				root: null,
-				threshold: observer_threshold,
-			});
-			elementsList.forEach((el) => observer?.observe(el));
-		}
-	}
-
-	function mutationHandler() {
-		const newElementTarget = document.querySelector(selector);
-
-		if (!newElementTarget) return;
-
-		const { headingsList: newHeadingsList, elementsList: newElementsList } =
-			generateInitialLists(newElementTarget);
-
-		if (dequal(headingsList, newHeadingsList)) return;
-
-		// Update lists and LUs and re-run initialization.
-		headingsList = newHeadingsList;
-		elementsList = newElementsList;
-
-		headingParentsLU = {};
-		elementHeadingLU = {};
-
-		initialization();
-	}
-
-	safeOnMount(() => {
-		elementTarget = document.querySelector(selector);
-
-		if (!elementTarget) return;
-
-		({ headingsList, elementsList } = generateInitialLists(elementTarget));
-
-		initialization();
-
-		mutationObserver = new MutationObserver(mutationHandler);
-		mutationObserver.observe(elementTarget, { childList: true, subtree: true });
-
+	const initialize = withGet.derived([activeType], ([$activeType]) => {
 		return () => {
 			observer?.disconnect();
-			mutationObserver?.disconnect();
+
+			/** Get all parents for each heading element, by checking
+			 *  which previous headings in the list have a lower H value,
+			 *  so H1 < H2 < H3 < ...
+			 */
+			headingsList.forEach((h, i) => {
+				headingParentsLU[i] = null;
+
+				let current_heading: string = h.tagName;
+				let parents: number[] = [];
+
+				for (let j = i - 1; j >= 0; j--) {
+					if (headingsList[j].tagName < current_heading) {
+						current_heading = headingsList[j].tagName;
+						parents = [...parents, j];
+					}
+				}
+
+				headingParentsLU[i] = parents.length > 0 ? parents : null;
+
+				// Find all elements between the current heading and the next one and assign them the current heading.
+				const startIndex = elementsList.indexOf(headingsList[i]);
+				const endIndex =
+					i !== headingsList.length - 1
+						? elementsList.indexOf(headingsList[i + 1])
+						: elementsList.length;
+
+				for (let j = startIndex; j < endIndex; j++) {
+					elementHeadingLU[j] = i;
+				}
+			});
+
+			headingsTree.set(createTree(headingsList));
+
+			if ($activeType !== 'none') {
+				// Create observer and observe all elements.
+				observer = new IntersectionObserver(handleElementObservation, {
+					root: null,
+					threshold: observer_threshold,
+				});
+				elementsList.forEach((el) => observer?.observe(el));
+			}
 		};
 	});
+
+	const mutationHandler = withGet.derived(
+		[selector, generateInitialLists, initialize],
+		([$selector, $generateInitialLists, $initialize]) => {
+			return () => {
+				const newElementTarget = document.querySelector($selector);
+
+				if (!newElementTarget) return;
+
+				const { headingsList: newHeadingsList, elementsList: newElementsList } =
+					$generateInitialLists(newElementTarget);
+
+				if (dequal(headingsList, newHeadingsList)) return;
+
+				// Update lists and LUs and re-run initialization.
+				headingsList = newHeadingsList;
+				elementsList = newElementsList;
+
+				headingParentsLU = {};
+				elementHeadingLU = {};
+			};
+		}
+	);
+
+	effect(
+		[selector, generateInitialLists, initialize, mutationHandler],
+		([$selector, $generateInitialLists, $initialize, $mutationHandler]) => {
+			elementTarget = document.querySelector($selector);
+
+			if (!elementTarget) return;
+
+			({ headingsList, elementsList } = $generateInitialLists(elementTarget));
+
+			$initialize();
+
+			mutationObserver = new MutationObserver($mutationHandler);
+			mutationObserver.observe(elementTarget, { childList: true, subtree: true });
+
+			return () => {
+				observer?.disconnect();
+				mutationObserver?.disconnect();
+			};
+		}
+	);
 
 	// Elements
 	const item = makeElement(name('item'), {
@@ -365,9 +388,10 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					e.preventDefault();
+					const $scrollFn = scrollFn?.get();
 
-					if (scrollFn) {
-						scrollFn(`${id}`);
+					if ($scrollFn) {
+						$scrollFn(`${id}`);
 					} else {
 						scrollToTargetAdjusted(`${id}`);
 					}
@@ -401,6 +425,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			activeHeadingIdxs,
 			headingsTree,
 		},
+		options,
 		helpers: {
 			isActive,
 		},
