@@ -28,12 +28,7 @@ const { name } = createElHelpers('combobox');
  *
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<
-	Value,
-	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
->(props?: CreateComboboxProps<Value, Multiple, S>) {
+export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	const listbox = createListbox({ ...props, builder: 'combobox', typeahead: false });
 
 	const inputValue = writable('');

@@ -12,6 +12,14 @@ All builders have been modified to use the new prop syntax. However, some specif
 - `value` always is an array of strings now
 - Removed `isSelected` helper
 
+### Combobox
+- `selected` always is an array of strings now
+- Removed `isSelected` helper
+
+### Select
+- `selected` always is an array of strings now
+- Removed `isSelected` helper
+
 ### Toggle Group
 - `value` always is an array of strings now
 - Removed `isPressed` helper

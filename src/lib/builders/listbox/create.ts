@@ -29,6 +29,7 @@ import {
 	noop,
 	omit,
 	overridable,
+	parseProps,
 	prev,
 	removeHighlight,
 	removeScroll,
@@ -64,7 +65,8 @@ const defaults = {
 	},
 	scrollAlignment: 'nearest',
 	loop: true,
-	defaultOpen: false,
+	open: false,
+	selected: [],
 	closeOnOutsideClick: true,
 	preventScroll: true,
 	closeOnEscape: true,
@@ -77,6 +79,7 @@ const defaults = {
 	typeahead: true,
 	highlightOnHover: true,
 	onOutsideClick: undefined,
+	multiple: false,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
@@ -98,37 +101,18 @@ type ListboxParts =
  *
  * @TODO multi-select using `tags-input` builder?
  */
-export function createListbox<
-	Value,
-	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
->(props?: CreateListboxProps<Value, Multiple, S>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateListboxProps<Value, Multiple, S>;
+export function createListbox<Value>(props?: CreateListboxProps<Value>) {
+	const withDefaults = { ...defaults, ...props };
+	const { selected, open, ...options } = parseProps(omit(props ?? {}, 'builder', 'ids'), defaults);
 
 	// Trigger element for the popper portal. This will be our input element.
-	const activeTrigger = withGet(writable<HTMLElement | null>(null));
+	const activeTrigger = withGet.writable<HTMLElement | null>(null);
 	// The currently highlighted menu item.
-	const highlightedItem = withGet(writable<HTMLElement | null>(null));
-
-	const selectedWritable =
-		withDefaults.selected ?? writable<S | undefined>(withDefaults.defaultSelected);
-
-	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
+	const highlightedItem = withGet.writable<HTMLElement | null>(null);
 
 	const highlighted = derived(highlightedItem, ($highlightedItem) =>
 		$highlightedItem ? getOptionProps($highlightedItem) : undefined
 	) as Readable<ListboxOption<Value> | undefined>;
-
-	// Either the provided open store or a store with the default open value
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-	// The overridable open store which is the source of truth for the open state.
-	const open = overridable(openWritable, withDefaults?.onOpenChange);
-
-	const options = toWritableStores({
-		...omit(withDefaults, 'open', 'defaultOpen', 'builder', 'ids'),
-		multiple: withDefaults.multiple ?? (false as Multiple),
-	});
 
 	const {
 		scrollAlignment,
@@ -184,9 +168,10 @@ export function createListbox<
 				const optionArr = Array.isArray($option) ? $option : [];
 				return toggle(newOption, optionArr, (itemA, itemB) =>
 					deepEqual(itemA.value, itemB.value)
-				) as S;
+				)
+			} else {
+				return [newOption];
 			}
-			return newOption as S;
 		});
 	};
 
@@ -241,23 +226,6 @@ export function createListbox<
 	/* ------ */
 	/* STATES */
 	/* ------ */
-
-	/**
-	 * Determines if a given item is selected.
-	 * This is useful for displaying additional markup on the selected item.
-	 */
-	const isSelected = derived([selected], ([$selected]) => {
-		return (value: Value) => {
-			if (Array.isArray($selected)) {
-				return $selected.some((o) => deepEqual(o.value, value));
-			}
-			if (isObject(value)) {
-				return deepEqual($selected?.value, stripValues(value, undefined, true));
-			}
-			return deepEqual($selected?.value, value);
-		};
-	});
-
 	/**
 	 * Determines if a given item is highlighted.
 	 * This is useful for displaying additional markup on the highlighted item.
@@ -540,23 +508,23 @@ export function createListbox<
 	});
 
 	const option = makeElement(name('option'), {
-		stores: [isSelected],
+		stores: [selected],
 		returned:
-			([$isSelected]) =>
-			(props: ListboxOptionProps<Value>) => {
-				const selected = $isSelected(props.value);
+			([$selected]) =>
+				(props: ListboxOptionProps<Value>) => {
+					const selected = $selected.includes(props);
 
-				return {
-					'data-value': JSON.stringify(props.value),
-					'data-label': props.label,
-					'data-disabled': disabledAttr(props.disabled),
-					'aria-disabled': props.disabled ? true : undefined,
-					'aria-selected': selected,
-					'data-selected': selected ? '' : undefined,
-					id: generateId(),
-					role: 'option',
-				} as const;
-			},
+					return {
+						'data-value': JSON.stringify(props.value),
+						'data-label': props.label,
+						'data-disabled': disabledAttr(props.disabled),
+						'aria-disabled': props.disabled ? true : undefined,
+						'aria-selected': selected,
+						'data-selected': selected ? '' : undefined,
+						id: generateId(),
+						role: 'option',
+					} as const;
+				},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['item']> => {
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -609,8 +577,8 @@ export function createListbox<
 
 	const hiddenInput = createHiddenInput({
 		value: derived([selected], ([$selected]) => {
-			const value = Array.isArray($selected) ? $selected.map((o) => o.value) : $selected?.value;
-			return typeof value === 'string' ? value : JSON.stringify(value);
+			const value = $selected.map((o) => o.value)
+			return JSON.stringify(value);
 		}),
 		name: readonly(nameProp),
 		required,
@@ -697,7 +665,6 @@ export function createListbox<
 			highlightedItem,
 		},
 		helpers: {
-			isSelected,
 			isHighlighted,
 			closeMenu,
 		},
