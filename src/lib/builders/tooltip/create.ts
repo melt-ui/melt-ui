@@ -19,6 +19,7 @@ import {
 	styleToString,
 	toWritableStores,
 	portalAttr,
+	removeUndefined,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
@@ -194,17 +195,15 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const content = makeElement(name('content'), {
 		stores: [isVisible, open, portal, ids.content],
 		returned: ([$isVisible, $open, $portal, $contentId]) => {
-			return {
+			return removeUndefined({
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
 				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
-			};
+			});
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
