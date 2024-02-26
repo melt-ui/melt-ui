@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Tooltip } from '$docs/components/index.js';
-	import { createCombobox, createDialog, melt, overridable } from '$lib/index.js';
 	import { CornerDownRight, LoaderIcon, Search as SearchIcon } from '$icons/index.js';
+	import {
+		type ComboboxSelected,
+		createCombobox,
+		createDialog,
+		melt,
+		overridable,
+	} from '$lib/index.js';
 	import { onMount } from 'svelte';
 	import type { Pagefind, PagefindSearchFragment, PagefindSubResult } from '../../pagefind.js';
 
@@ -28,16 +34,23 @@
 	const {
 		elements: { input, menu, option },
 		states: { open: cbOpen, inputValue },
-	} = createCombobox<PagefindSearchFragment | PagefindSubResult>({
-		onSelectedChange({ next }) {
-			if (next) {
-				gotoLink(next.value.url);
+	} = createCombobox({
+		selected: overridable(
+			[] as ComboboxSelected<PagefindSearchFragment | PagefindSubResult>,
+			({ next }) => {
+				if (next) {
+					gotoLink(next[0].value.url);
+				}
+				return [];
 			}
-			return undefined;
-		},
-		forceVisible: true,
+		),
 		preventScroll: false,
 		highlightOnHover: false,
+		portal: null,
+		onOutsideClick() {
+			open.set(false);
+			cbOpen.set(false);
+		},
 	});
 
 	let comboboxInput: HTMLInputElement | null = null;
