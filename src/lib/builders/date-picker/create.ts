@@ -83,7 +83,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				'aria-label': 'Open date picker',
 				'data-segment': 'trigger',
 				disabled: $disabled ? true : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<DatePickerEvents['trigger']> => {
 			const unsubKeydown = addMeltEventListener(node, 'keydown', handleTriggerKeydown);

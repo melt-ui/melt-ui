@@ -115,13 +115,13 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		stores: [open, ids.trigger, ids.content],
 		returned: ([$open, $triggerId, $contentId]) => {
 			return {
-				role: 'button' as const,
-				'aria-haspopup': 'dialog' as const,
+				role: 'button',
+				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': $contentId,
 				id: $triggerId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['trigger']> => {
 			const unsub = executeCallbacks(
@@ -163,7 +163,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {
 			let unsub = noop;
@@ -260,14 +260,15 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	effect([containSelection], ([$containSelection]) => {
