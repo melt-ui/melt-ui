@@ -20,7 +20,7 @@ import {
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
-import { usePopper, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import { usePopper } from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -141,12 +141,11 @@ export function createPopover(args?: CreatePopoverProps) {
 										clickOutsideDeactivates: true,
 										escapeDeactivates: true,
 								  },
-							modal: {
-								shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
-								onClose: handleClose,
-								open: $isVisible,
-								closeOnInteractOutside: $closeOnOutsideClick,
-							},
+							clickOutside: $closeOnOutsideClick
+								? {
+										handler: handleClickOutside,
+								  }
+								: null,
 							escapeKeydown: $closeOnEscape
 								? {
 										handler: () => {
@@ -182,16 +181,16 @@ export function createPopover(args?: CreatePopoverProps) {
 		}
 	}
 
-	function shouldCloseOnInteractOutside(e: InteractOutsideEvent) {
+	function handleClickOutside(e: PointerEvent) {
 		onOutsideClick.get()?.(e);
-		if (e.defaultPrevented) return false;
+		if (e.defaultPrevented) return;
 		const target = e.target;
 		const triggerEl = document.getElementById(ids.trigger.get());
 
 		if (triggerEl && isElement(target)) {
-			if (target === triggerEl || triggerEl.contains(target)) return false;
+			if (target === triggerEl || triggerEl.contains(target)) return;
 		}
-		return true;
+		handleClose();
 	}
 
 	const trigger = makeElement(name('trigger'), {

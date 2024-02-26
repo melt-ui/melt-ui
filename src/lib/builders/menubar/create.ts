@@ -169,21 +169,21 @@ export function createMenubar(props?: CreateMenubarProps) {
 								options: {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
-									modal: {
-										closeOnInteractOutside: $closeOnOutsideClick,
-										shouldCloseOnInteractOutside: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return false;
-											const target = e.target;
-											const menubarEl = document.getElementById(ids.menubar.get());
-											if (!menubarEl || !isElement(target)) return true;
-											return !menubarEl.contains(target);
-										},
-										onClose: () => {
-											activeMenu.set('');
-										},
-										open: $rootOpen,
-									},
+									clickOutside: $closeOnOutsideClick
+										? {
+												ignore: (e) => {
+													const target = e.target;
+													const menubarEl = document.getElementById(ids.menubar.get());
+													if (!menubarEl || !isElement(target)) return false;
+													return menubarEl.contains(target);
+												},
+												handler: (e) => {
+													onOutsideClick.get()?.(e);
+													if (e.defaultPrevented) return;
+													activeMenu.set('');
+												},
+										  }
+										: null,
 								},
 							});
 

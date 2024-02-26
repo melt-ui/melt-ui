@@ -1,5 +1,6 @@
 import {
 	createFocusTrap,
+	useClickOutside,
 	useEscapeKeydown,
 	useFloating,
 	usePortal,
@@ -12,12 +13,11 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { Action } from 'svelte/action';
 import type { PopperArgs, PopperConfig } from './types.js';
-import { useModal } from '../modal/action.js';
 
 const defaultConfig = {
 	floating: {},
 	focusTrap: {},
-	modal: {},
+	clickOutside: {},
 	escapeKeydown: {},
 	portal: 'body',
 } satisfies PopperConfig;
@@ -60,25 +60,19 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		}
 	}
 
-	if (opts.modal !== null) {
+	if (opts.clickOutside !== null) {
 		callbacks.push(
-			useModal(popperElement, {
-				onClose: () => {
-					if (isHTMLElement(anchorElement)) {
+			useClickOutside(popperElement, {
+				enabled: open,
+				handler: (e: PointerEvent) => {
+					if (e.defaultPrevented) return;
+
+					if (isHTMLElement(anchorElement) && !anchorElement.contains(e.target as Element)) {
 						open.set(false);
 						anchorElement.focus();
 					}
 				},
-				shouldCloseOnInteractOutside: (e) => {
-					if (e.defaultPrevented) return false;
-
-					if (isHTMLElement(anchorElement) && anchorElement.contains(e.target as Element)) {
-						return false;
-					}
-
-					return true;
-				},
-				...opts.modal,
+				...opts.clickOutside,
 			}).destroy
 		);
 	}
