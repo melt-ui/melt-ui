@@ -360,6 +360,7 @@ export function createCalendar<
 			const disabled = $isPrevButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Previous',
 				'aria-disabled': disabled ? 'true' : undefined,
 				'data-disabled': disabled ? '' : undefined,
@@ -391,6 +392,7 @@ export function createCalendar<
 			const disabled = $isNextButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Next',
 				'aria-disabled': disabled ? 'true' : undefined,
 				'data-disabled': disabled ? '' : undefined,

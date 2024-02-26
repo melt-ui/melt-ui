@@ -8,6 +8,9 @@
 	} = createTooltip({
 		forceVisible: true,
 		openDelay: 500,
+		positioning: {
+			strategy: 'fixed',
+		},
 	});
 
 	export let text = 'Tooltip text';

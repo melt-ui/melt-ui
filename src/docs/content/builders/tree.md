@@ -13,7 +13,6 @@ description:
 ## Anatomy
 
 - **Tree**: The container in which the tree lies.
-- **Label**: The element that describes the tree.
 - **Item**: The individual tree item element.
 - **Group**: An element where a subtree is nested.
 

@@ -32,6 +32,7 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	sleep,
 	stripValues,
 	styleToString,
 	toWritableStores,
@@ -226,7 +227,8 @@ export function createListbox<
 	}
 
 	/** Closes the menu & clears the active trigger */
-	function closeMenu() {
+	async function closeMenu() {
+		await sleep(0);
 		open.set(false);
 		highlightedItem.set(null);
 	}
