@@ -48,9 +48,10 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 			({
 				role: 'button',
 				type: 'button',
-				tabIndex: -1,
 			} as const),
 		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['button']> => {
+			setNodeTabIndex(node);
+
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
@@ -63,10 +64,10 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		returned: () =>
 			({
 				role: 'link',
-				'data-melt-toolbar-item': '',
-				tabIndex: -1,
 			} as const),
 		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['link']> => {
+			setNodeTabIndex(node);
+
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
@@ -149,6 +150,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				};
 			},
 			action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['item']> => {
+				setNodeTabIndex(node);
+
 				function getNodeProps() {
 					const itemValue = node.dataset.value;
 					const disabled = node.dataset.disabled === 'true';
@@ -170,17 +173,6 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 						}
 						return $value === itemValue ? undefined : itemValue;
 					});
-				}
-
-				const parentToolbar = node.closest('[data-melt-toolbar]');
-				if (!isHTMLElement(parentToolbar)) return {};
-
-				const items = getToolbarItems(parentToolbar);
-
-				if (items[0] === node) {
-					node.tabIndex = 0;
-				} else {
-					node.tabIndex = -1;
 				}
 
 				const unsub = executeCallbacks(
@@ -224,12 +216,6 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		};
 	};
 
-	function getToolbarItems(element: HTMLElement) {
-		return Array.from(
-			element.querySelectorAll(`${selector('item')}, ${selector('button')}`)
-		).filter((el): el is HTMLElement => isHTMLElement(el));
-	}
-
 	function handleKeyDown(e: KeyboardEvent) {
 		const $orientation = orientation.get();
 		const $loop = loop.get();
@@ -250,9 +236,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		const root = el.closest('[data-melt-toolbar]');
 		if (!isHTMLElement(root)) return;
 
-		const items = Array.from(
-			root.querySelectorAll(`${selector('item')}, ${selector('button')}`)
-		).filter((el): el is HTMLElement => isHTMLElement(el));
+		const items = getToolbarItems(root);
 
 		const currentIndex = items.indexOf(el);
 
@@ -294,3 +278,30 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		options,
 	};
 };
+
+/**
+ * Sets the appropriate tabIndex for the node based on its position in the
+ * parent toolbar.
+ */
+function setNodeTabIndex(node: HTMLElement) {
+	const parentToolbar = node.closest('[data-melt-toolbar]');
+
+	if (!isHTMLElement(parentToolbar)) return;
+
+	const items = getToolbarItems(parentToolbar);
+
+	if (items[0] === node) {
+		node.tabIndex = 0;
+	} else {
+		node.tabIndex = -1;
+	}
+}
+
+/**
+ * Returns an array of all toolbar items within the given element.
+ */
+function getToolbarItems(element: HTMLElement) {
+	return Array.from(
+		element.querySelectorAll(`${selector('item')}, ${selector('button')}, ${selector('link')}`)
+	).filter((el): el is HTMLElement => isHTMLElement(el));
+}
