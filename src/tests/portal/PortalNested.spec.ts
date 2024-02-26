@@ -66,4 +66,4 @@ const testComponent = async (component: Structure, level = 0) => {
 test('recursive component test', async () => {
 	await render(PortalNestedTest);
 	await testComponent(structure);
-},);
+});
