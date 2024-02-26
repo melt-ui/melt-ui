@@ -37,11 +37,6 @@
 		},
 		preventScroll: false,
 		highlightOnHover: false,
-		portal: null,
-		onOutsideClick() {
-			open.set(false);
-			cbOpen.set(false);
-		},
 	});
 
 	let comboboxInput: HTMLInputElement | null = null;

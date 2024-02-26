@@ -1,4 +1,4 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -66,7 +66,7 @@ export type CreatePopoverProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: InteractOutsideEvent) => void;
+	onOutsideClick?: (event: PointerEvent) => void;
 
 	/**
 	 * Whether or not to prevent scrolling when the popover is open.
