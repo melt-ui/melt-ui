@@ -59,8 +59,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			if (pausedAt) {
 				return (100 * (pausedAt - createdAt - pauseDuration)) / closeDelay;
 			} else {
-				const now = performance.now();
-				return (100 * (now - createdAt - pauseDuration)) / closeDelay;
+				return (100 * (performance.now() - createdAt - pauseDuration)) / closeDelay;
 			}
 		};
 
