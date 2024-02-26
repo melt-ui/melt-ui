@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.74.3
+
+### Patch Changes
+
+- Revert regressions caused by PRs #977 and #995 ([#1016](https://github.com/melt-ui/melt-ui/pull/1016))
+
+- Toolbar: set correct tabindex for buttons and links ([#1004](https://github.com/melt-ui/melt-ui/pull/1004))
+
 ## 0.74.2
 
 ### Patch Changes
