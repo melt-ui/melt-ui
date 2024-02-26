@@ -334,6 +334,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const disabled = $isPrevButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Previous',
 				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
@@ -358,6 +359,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const disabled = $isNextButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Next',
 				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
