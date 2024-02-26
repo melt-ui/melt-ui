@@ -16,14 +16,14 @@
 	export const structure: Structure = {
 		name: 'dialog',
 		children: [
-			{
-				name: 'dialog',
-				children: [
-					{
-						name: 'select',
-					},
-				],
-			},
+			// {
+			// 	name: 'dialog',
+			// 	children: [
+			// 		{
+			// 			name: 'select',
+			// 		},
+			// 	],
+			// },
 			{
 				name: 'popover',
 				children: [{ name: 'dialog' }, { name: 'popover' }],

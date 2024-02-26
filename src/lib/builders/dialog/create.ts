@@ -17,7 +17,6 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -43,7 +42,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	role: 'dialog',
 	defaultOpen: false,
-	portal: undefined,
+	portal: 'body',
 	forceVisible: false,
 	openFocus: undefined,
 	closeFocus: undefined,
@@ -257,11 +256,11 @@ export function createDialog(props?: CreateDialogProps) {
 	const portalled = makeElement(name('portalled'), {
 		stores: portal,
 		returned: ($portal) => ({
-			'data-portal': portalAttr($portal),
+			'data-portal': $portal ? '' : undefined,
 		}),
 		action: (node: HTMLElement) => {
 			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+				if (!$portal) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
 				const portalAction = usePortal(node, portalDestination);

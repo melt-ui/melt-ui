@@ -7,7 +7,6 @@
 import type { SegmentPart, EditableSegmentPart } from '$lib/builders/date-field/_internal/types.js';
 import type { Granularity, Matcher, DateRange, Month } from '$lib/internal/helpers/date/index.js';
 import type { FocusProp, FocusTarget } from '$lib/internal/helpers/index.js';
-import type { InteractOutsideEvent } from '$lib/internal/actions/index.js';
 
 export type {
 	Granularity,
@@ -18,5 +17,4 @@ export type {
 	Month,
 	SegmentPart,
 	EditableSegmentPart,
-	InteractOutsideEvent,
 };

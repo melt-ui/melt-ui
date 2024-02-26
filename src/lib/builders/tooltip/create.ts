@@ -18,7 +18,6 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
-	portalAttr,
 	removeUndefined,
 } from '$lib/internal/helpers/index.js';
 
@@ -39,7 +38,7 @@ const defaults = {
 	openDelay: 1000,
 	closeDelay: 0,
 	forceVisible: false,
-	portal: undefined,
+	portal: 'body',
 	closeOnEscape: true,
 	disableHoverableContent: false,
 	group: undefined,
@@ -201,7 +200,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				tabindex: -1,
 				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-portal': portalAttr($portal),
+				'data-portal': $portal ? '' : undefined,
 				'data-state': $open ? 'open' : 'closed',
 			});
 		},
@@ -221,7 +220,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 					const floatingReturn = useFloating(triggerEl, node, $positioning);
 					unsubFloating = floatingReturn.destroy;
-					if ($portal === null) {
+					if (!$portal) {
 						unsubPortal();
 						return;
 					}

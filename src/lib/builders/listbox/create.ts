@@ -487,22 +487,22 @@ export function createListbox<
 							options: {
 								floating: $positioning,
 								focusTrap: null,
-								modal: {
-									closeOnInteractOutside: $closeOnOutsideClick,
-									onClose: closeMenu,
-									open: $isVisible,
-									shouldCloseOnInteractOutside: (e) => {
-										onOutsideClick.get()?.(e);
-										if (e.defaultPrevented) return false;
-										const target = e.target;
-										if (!isElement(target)) return false;
-										if (target === $activeTrigger || $activeTrigger.contains(target)) {
-											return false;
-										}
-										// return opposite of the result of the ignoreHandler
-										return !ignoreHandler(e);
-									},
-								},
+								clickOutside: $closeOnOutsideClick
+									? {
+											handler: (e) => {
+												onOutsideClick.get()?.(e);
+												if (e.defaultPrevented) return;
+
+												const target = e.target;
+												if (!isElement(target)) return;
+												if (target === $activeTrigger || $activeTrigger.contains(target)) {
+													return;
+												}
+												closeMenu();
+											},
+											ignore: ignoreHandler,
+									  }
+									: null,
 								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),
 							},
