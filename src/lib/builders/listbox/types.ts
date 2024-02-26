@@ -1,4 +1,4 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -117,7 +117,7 @@ export type CreateListboxProps<
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: InteractOutsideEvent) => void;
+	onOutsideClick?: (event: PointerEvent) => void;
 
 	/**
 	 * Whether or not to prevent scrolling the page when the
