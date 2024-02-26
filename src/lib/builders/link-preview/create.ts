@@ -18,7 +18,6 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
@@ -42,7 +41,7 @@ const defaults = {
 	arrowSize: 8,
 	closeOnOutsideClick: true,
 	forceVisible: false,
-	portal: undefined,
+	portal: 'body',
 	closeOnEscape: true,
 	onOutsideClick: undefined,
 } satisfies CreateLinkPreviewProps;
@@ -162,7 +161,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}),
 				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': portalAttr($portal),
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {

@@ -20,7 +20,6 @@ import {
 	toWritableStores,
 	withGet,
 	type WithGet,
-	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
@@ -148,7 +147,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				id: $menuId,
 				'aria-labelledby': $triggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': portalAttr($portal),
+				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
 			} as const;
 		},
