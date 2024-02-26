@@ -195,7 +195,9 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							floating: $positioning,
 							clickOutside: $closeOnOutsideClick
 								? {
-										handler: (e) => {
+										handler: async (e) => {
+											await sleep(0);
+
 											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return;
 
