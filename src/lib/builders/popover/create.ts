@@ -17,6 +17,7 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper } from '$lib/internal/actions/index.js';
@@ -81,7 +82,8 @@ export function createPopover(args?: CreatePopoverProps) {
 		activeTrigger.set(document.getElementById(ids.trigger.get()));
 	});
 
-	function handleClose() {
+	async function handleClose() {
+		await sleep(0);
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger.get());
 		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
