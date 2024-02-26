@@ -25,7 +25,6 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { safeOnDestroy, safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
@@ -149,7 +148,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 					'aria-labelledby': $triggerId,
 					'data-state': $isVisible ? 'open' : 'closed',
 					'data-melt-scope': $menubarId,
-					'data-portal': portalAttr($portal),
+					'data-portal': $portal ? '' : undefined,
 					tabindex: -1,
 				} as const;
 			},
@@ -169,21 +168,21 @@ export function createMenubar(props?: CreateMenubarProps) {
 								options: {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
-									modal: {
-										closeOnInteractOutside: $closeOnOutsideClick,
-										shouldCloseOnInteractOutside: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return false;
-											const target = e.target;
-											const menubarEl = document.getElementById(ids.menubar.get());
-											if (!menubarEl || !isElement(target)) return true;
-											return !menubarEl.contains(target);
-										},
-										onClose: () => {
-											activeMenu.set('');
-										},
-										open: $rootOpen,
-									},
+									clickOutside: $closeOnOutsideClick
+										? {
+												ignore: (e) => {
+													const target = e.target;
+													const menubarEl = document.getElementById(ids.menubar.get());
+													if (!menubarEl || !isElement(target)) return false;
+													return menubarEl.contains(target);
+												},
+												handler: (e) => {
+													onOutsideClick.get()?.(e);
+													if (e.defaultPrevented) return;
+													activeMenu.set('');
+												},
+										  }
+										: null,
 								},
 							});
 

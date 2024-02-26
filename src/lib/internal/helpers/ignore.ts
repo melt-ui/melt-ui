@@ -1,8 +1,7 @@
 import { getElementByMeltId, isElement, isHTMLLabelElement } from '$lib/internal/helpers/index.js';
-import type { InteractOutsideEvent } from '../actions/index.js';
 
 export function createClickOutsideIgnore(meltId: string) {
-	return (e: InteractOutsideEvent) => {
+	return (e: PointerEvent) => {
 		const target = e.target;
 		const triggerEl = getElementByMeltId(meltId);
 		if (!triggerEl || !isElement(target)) return false;

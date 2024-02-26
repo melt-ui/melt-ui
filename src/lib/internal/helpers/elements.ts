@@ -16,7 +16,8 @@ export function getPortalDestination(
 	node: HTMLElement,
 	portalProp: string | HTMLElement | undefined | null
 ) {
+	const portalParent = getPortalParent(node);
 	if (portalProp !== undefined) return portalProp;
-	if (portalProp === null) return null;
-	return getPortalParent(node);
+	if (portalParent === 'body') return document.body;
+	return null;
 }
