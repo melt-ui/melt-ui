@@ -638,13 +638,13 @@ export function createListbox<
 	safeOnMount(() => {
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu.get());
-		if (!menuEl) return;
 
 		const triggerEl = document.getElementById(ids.trigger.get());
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
 
+		if (!menuEl) return;
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
 	});
