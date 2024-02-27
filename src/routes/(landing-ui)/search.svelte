@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Tooltip } from '$docs/components/index.js';
-	import { createCombobox, createDialog, createSync, melt } from '$lib/index.js';
+	import { createCombobox, createDialog, melt } from '$lib/index.js';
 	import { CornerDownRight, LoaderIcon, Search as SearchIcon } from '$icons/index.js';
 	import { onMount } from 'svelte';
 	import type { Pagefind, PagefindSearchFragment, PagefindSubResult } from '../../pagefind.js';
