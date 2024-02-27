@@ -9,15 +9,14 @@ function getPortalParent(node: HTMLElement) {
 	while (isHTMLElement(parent) && !parent.hasAttribute('data-portal')) {
 		parent = parent.parentElement;
 	}
-	return parent || 'body';
+	return parent || document.body;
 }
 
 export function getPortalDestination(
 	node: HTMLElement,
 	portalProp: string | HTMLElement | undefined | null
 ) {
-	const portalParent = getPortalParent(node);
+	if (portalProp === null) return null;
 	if (portalProp !== undefined) return portalProp;
-	if (portalParent === 'body') return document.body;
-	return null;
+	return getPortalParent(node);
 }
