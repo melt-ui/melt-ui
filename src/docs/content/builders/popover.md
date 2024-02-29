@@ -28,7 +28,9 @@ above to create your popover.
 To specify that the popover should be open by default, set the `defaultOpen` prop to `true`.
 
 ```ts {2}
-const { trigger, content, open, arrow, close } = createPopover({
+const {
+	/** ... */
+} = createPopover({
 	defaultOpen: true
 })
 ```
@@ -65,6 +67,34 @@ const open = writable(false)
 const popover = createPopover({
 	open
 })
+```
+
+### Modal Behavior
+
+To give the popover modal behavior, where body scrolling is disabled and an overlay is rendered
+behind the popover to prevent interaction with the rest of the page, use the `preventScroll` prop
+and `overlay` builder element.
+
+```svelte
+<script lang="ts">
+	import { createPopover, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { content, trigger, overlay, close, arrow }
+	} = createPopover({
+		preventScroll: true
+	})
+</script>
+
+<button type="button" use:melt={$trigger}> Open </button>
+<div use:melt={$overlay} />
+<div use:melt={$content}>
+	<div use:melt={$arrow} />
+	<div>
+		<!-- ... -->
+	</div>
+	<button use:melt={$close}> Close </button>
+</div>
 ```
 
 ## Example Components

@@ -20,7 +20,7 @@ import {
 	sleep,
 } from '$lib/internal/helpers/index.js';
 
-import { usePopper } from '$lib/internal/actions/index.js';
+import { useEscapeKeydown, usePopper, usePortal } from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -47,7 +47,7 @@ const defaults = {
 	onOutsideClick: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
-type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
+type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close' | 'overlay';
 const { name } = createElHelpers<PopoverParts>('popover');
 
 export const popoverIdParts = ['trigger', 'content'] as const;
@@ -224,6 +224,54 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
+	const overlay = makeElement(name('overlay'), {
+		stores: [isVisible, open],
+		returned: ([$isVisible, $open]) => {
+			return {
+				hidden: $isVisible ? undefined : true,
+				tabindex: -1,
+				style: styleToString({
+					display: $isVisible ? undefined : 'none',
+				}),
+				'aria-hidden': true,
+				'data-state': $open ? 'open' : 'closed',
+			} as const;
+		},
+		action: (node: HTMLElement) => {
+			let unsubEscapeKeydown = noop;
+
+			if (closeOnEscape.get()) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						handleClose();
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
+				}
+			}
+
+			const unsubPortal = effect([portal], ([$portal]) => {
+				if ($portal === null) return noop;
+				const portalDestination = getPortalDestination(node, $portal);
+				if (portalDestination === null) return noop;
+				const portalAction = usePortal(node, portalDestination);
+				if (portalAction && portalAction.destroy) {
+					return portalAction.destroy;
+				} else {
+					return noop;
+				}
+			});
+
+			return {
+				destroy() {
+					unsubEscapeKeydown();
+					unsubPortal();
+				},
+			};
+		},
+	});
+
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) => ({
@@ -295,6 +343,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			content,
 			arrow,
 			close,
+			overlay,
 		},
 		states: {
 			open,
