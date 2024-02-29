@@ -17,3 +17,14 @@ export const hiddenInputAttrs = {
 		transform: 'translateX(-100%)',
 	}),
 };
+
+/**
+ * @param portal The value of the `portal` option store.
+ * @returns the value of the `data-portal` attribute.
+ */
+export function portalAttr(portal: string | HTMLElement | null | undefined) {
+	if (portal !== null) {
+		return portal;
+	}
+	return undefined;
+}
