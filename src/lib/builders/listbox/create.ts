@@ -182,7 +182,7 @@ export function createListbox<
 		selected.update(($option) => {
 			const $multiple = multiple.get();
 			if ($multiple) {
-				const optionArr = Array.isArray($option) ? $option : [];
+				const optionArr = Array.isArray($option) ? [...$option] : [];
 				return toggle(newOption, optionArr, (itemA, itemB) =>
 					deepEqual(itemA.value, itemB.value)
 				) as S;
