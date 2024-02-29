@@ -1,9 +1,12 @@
 import { render, screen } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PortalNestedTest, { structure, type Structure } from './PortalNested.svelte';
+import { testKbd as kbd } from '../utils.js';
+
+type UserEventUser = ReturnType<typeof userEvent.setup>;
 
 // Recursive function to test the components
-const testComponent = async (component: Structure, level = 0) => {
+const testComponent = async (component: Structure, level: number, user: UserEventUser) => {
 	// Get the elements
 	const trigger = screen.getByTestId(`${component.name}-trigger-${level}`);
 	const content = screen.getByTestId(`${component.name}-content-${level}`);
@@ -15,7 +18,7 @@ const testComponent = async (component: Structure, level = 0) => {
 	expect(content).not.toBeVisible();
 
 	// Click the trigger
-	await userEvent.click(trigger);
+	await user.click(trigger);
 
 	// After clicking the root trigger, all its elements must be visible.
 	expect(trigger).toBeVisible();
@@ -37,13 +40,13 @@ const testComponent = async (component: Structure, level = 0) => {
 			}
 
 			// Recursively test the child components
-			await testComponent(child, level + 1);
+			await testComponent(child, level + 1, user);
 		}
 	}
 
 	// Testing closing
 	// By clicking escape
-	await userEvent.keyboard('{Escape}');
+	await user.keyboard(kbd.ESCAPE);
 	expect(trigger).toBeVisible();
 	expect(content).not.toBeVisible();
 	expect(outside).toBeVisible();
@@ -64,6 +67,7 @@ const testComponent = async (component: Structure, level = 0) => {
 
 // Execute the test
 test('recursive component test', async () => {
-	await render(PortalNestedTest);
-	await testComponent(structure);
+	const user = userEvent.setup();
+	render(PortalNestedTest);
+	await testComponent(structure, 0, user);
 });
