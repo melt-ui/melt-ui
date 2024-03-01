@@ -77,7 +77,7 @@ export function parseStringToDateValue(dateStr: string, referenceVal: DateValue)
 	} else {
 		dateValue = parseDate(dateStr);
 	}
-	
+
 	// ensure the parsed date is in the same calendar as the reference date set by the user.
 	return dateValue.calendar !== referenceVal.calendar
 		? toCalendar(dateValue, referenceVal.calendar)
