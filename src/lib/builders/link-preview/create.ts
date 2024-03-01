@@ -18,6 +18,7 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
@@ -41,7 +42,7 @@ const defaults = {
 	arrowSize: 8,
 	closeOnOutsideClick: true,
 	forceVisible: false,
-	portal: 'body',
+	portal: undefined,
 	closeOnEscape: true,
 	onOutsideClick: undefined,
 } satisfies CreateLinkPreviewProps;
@@ -161,7 +162,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				}),
 				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
-				'data-portal': $portal ? '' : undefined,
+				'data-portal': portalAttr($portal),
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {
@@ -193,24 +194,21 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 						open: open,
 						options: {
 							floating: $positioning,
-							clickOutside: $closeOnOutsideClick
-								? {
-										handler: async (e) => {
-											await sleep(0);
-
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return;
-
-											if (
-												isHTMLElement($activeTrigger) &&
-												!$activeTrigger.contains(e.target as Element)
-											) {
-												open.set(false);
-												$activeTrigger.focus();
-											}
-										},
-								  }
-								: null,
+							modal: {
+								closeOnInteractOutside: $closeOnOutsideClick,
+								onClose: () => {
+									open.set(false);
+									$activeTrigger.focus();
+								},
+								shouldCloseOnInteractOutside: (e) => {
+									onOutsideClick.get()?.(e);
+									if (e.defaultPrevented) return false;
+									if (isHTMLElement($activeTrigger) && $activeTrigger.contains(e.target as Element))
+										return false;
+									return true;
+								},
+								open: $isVisible,
+							},
 							portal: getPortalDestination(node, $portal),
 							focusTrap: null,
 							escapeKeydown: $closeOnEscape ? undefined : null,
