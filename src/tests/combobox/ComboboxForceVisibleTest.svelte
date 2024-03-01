@@ -35,6 +35,7 @@
 			ids,
 			onOutsideClick,
 			closeOnEscape,
+			forceVisible: true,
 		})
 	);
 
@@ -51,20 +52,22 @@
 
 	<input use:melt={$input} data-testid="input" />
 
-	<ul use:melt={$menu} data-testid="menu">
-		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-		<div tabindex="0">
-			{#each options as o, index (index)}
-				<li use:melt={$option(o)}>
-					<div>
-						<span>{o.label}</span>
-						<span>{o.value}</span>
-					</div>
-				</li>
-			{:else}
-				<li>No results found</li>
-			{/each}
-		</div>
-	</ul>
+	{#if $open}
+		<ul use:melt={$menu} data-testid="menu">
+			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+			<div tabindex="0">
+				{#each options as o, index (index)}
+					<li use:melt={$option(o)}>
+						<div>
+							<span>{o.label}</span>
+							<span>{o.value}</span>
+						</div>
+					</li>
+				{:else}
+					<li>No results found</li>
+				{/each}
+			</div>
+		</ul>
+	{/if}
 	<div data-testid="outside-click" />
 </main>

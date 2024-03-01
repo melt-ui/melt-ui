@@ -1,5 +1,19 @@
 # @melt-ui/svelte
 
+## 0.74.4
+
+### Patch Changes
+
+- Listbox: fixed bug preventing programmatic opening (Closes #1014) ([#1020](https://github.com/melt-ui/melt-ui/pull/1020))
+
+- fix(Calendar/Range Calendar): use `'button'` for button elements' `type` ([#1003](https://github.com/melt-ui/melt-ui/pull/1003))
+
+- fixed issues with portals and outside interactions (Closes #992) ([#1018](https://github.com/melt-ui/melt-ui/pull/1018))
+
+- Listbox: fixed bug causing `multiple` change function `curr` and `next` always being equal (Closes #1019) ([#1021](https://github.com/melt-ui/melt-ui/pull/1021))
+
+- Fixed bug where on outside interaction in several components (popover, menu, link preview, tooltip, listbox), on component unmount, the content jumps during out transition if content was mounted in an else if block (closes #1005) ([#1006](https://github.com/melt-ui/melt-ui/pull/1006))
+
 ## 0.74.3
 
 ### Patch Changes
