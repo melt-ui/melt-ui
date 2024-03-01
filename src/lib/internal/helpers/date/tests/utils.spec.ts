@@ -4,6 +4,8 @@ import {
 	CalendarDateTime,
 	ZonedDateTime,
 	getLocalTimeZone,
+	HebrewCalendar,
+	toCalendar,
 	now,
 	toZoned,
 } from '@internationalized/date';
@@ -75,6 +77,17 @@ describe('Date Utils', () => {
 			const zdt = now(getLocalTimeZone());
 			const zdtStr = zdt.toString();
 			expect(parseStringToDateValue(zdtStr, zdt)).toEqual(zdt);
+		});
+		it('should return a date in the same calendar as the reference date', () => {
+			const gregorianDate = new CalendarDate(2020, 9, 19);
+			const hebrewDate = toCalendar(gregorianDate, new HebrewCalendar());
+
+			const gregorianDateStr = gregorianDate.toString();
+
+			const parsedDate = parseStringToDateValue(gregorianDateStr, hebrewDate);
+
+			expect(parsedDate).toEqual(hebrewDate);
+			expect(parsedDate).not.toEqual(gregorianDate);
 		});
 	});
 });
