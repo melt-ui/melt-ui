@@ -201,13 +201,13 @@ export function createPopover(args?: CreatePopoverProps) {
 	}
 
 	const trigger = makeElement(name('trigger'), {
-		stores: [open, ids.content, ids.trigger],
-		returned: ([$open, $contentId, $triggerId]) => {
+		stores: [isVisible, ids.content, ids.trigger],
+		returned: ([$isVisible, $contentId, $triggerId]) => {
 			return {
 				role: 'button',
 				'aria-haspopup': 'dialog',
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
+				'aria-expanded': $isVisible ? 'true' : 'false',
+				'data-state': stateAttr($isVisible),
 				'aria-controls': $contentId,
 				id: $triggerId,
 			} as const;
@@ -231,16 +231,16 @@ export function createPopover(args?: CreatePopoverProps) {
 	});
 
 	const overlay = makeElement(name('overlay'), {
-		stores: [isVisible, open],
-		returned: ([$isVisible, $open]) => {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				'aria-hidden': true,
-				'data-state': $open ? 'open' : 'closed',
+				'aria-hidden': 'true',
+				'data-state': stateAttr($isVisible),
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -356,4 +356,8 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 		options,
 	};
+}
+
+function stateAttr(open: boolean) {
+	return open ? 'open' : 'closed';
 }
