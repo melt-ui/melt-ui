@@ -33,6 +33,7 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 			// we only want to call onClose if this is the topmost modal
 			if (isLastModal() && onClose) {
 				onClose();
+				removeNodeFromVisibleModals();
 			}
 		}
 		function onInteractOutsideStart(e: InteractOutsideEvent) {

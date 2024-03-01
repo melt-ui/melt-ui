@@ -12,12 +12,26 @@ function getPortalParent(node: HTMLElement) {
 	return parent || 'body';
 }
 
+/**
+ * Gets the destination for a portal given the node and a user-specified portal prop.
+ * If a portal prop is not `undefined`, it is used as the destination.
+ */
 export function getPortalDestination(
 	node: HTMLElement,
 	portalProp: string | HTMLElement | undefined | null
 ) {
-	const portalParent = getPortalParent(node);
+	// user-specified portal prop, use it
 	if (portalProp !== undefined) return portalProp;
+
+	// find the closest portal parent, or the body if none is found
+	const portalParent = getPortalParent(node);
+
+	// if the portalParent is the body, we portal to the body
+	// making it a "top-level" portal
 	if (portalParent === 'body') return document.body;
+
+	// if the portalParent is not the body, we have a portal parent
+	// and shouldn't portal to anything so it remains within that parent
+	// so we return `null`
 	return null;
 }
