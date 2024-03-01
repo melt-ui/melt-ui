@@ -97,12 +97,20 @@ and `overlay` builder element.
 </div>
 ```
 
+The [Modal Popover](#modal-popover) example below demonstrates this behavior in action.
+
 ## Example Components
 
 ### Nested Popovers
 
 <Preview code={snippets.nested}>
     <svelte:component this={previews.nested} />
+</Preview>
+
+### Modal Popover
+
+<Preview code={snippets.modal}>
+	<svelte:component this={previews.modal} />
 </Preview>
 
 ## API Reference
