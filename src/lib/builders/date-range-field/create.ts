@@ -6,6 +6,7 @@ import {
 	getDefaultDate,
 	getFirstSegment,
 	isBefore,
+	isBeforeOrSame,
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
@@ -154,7 +155,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 				return false;
 			}
 
-			if (!isBefore($value?.start, $value?.end)) {
+			if (!isBeforeOrSame($value?.start, $value?.end)) {
 				return true;
 			}
 
