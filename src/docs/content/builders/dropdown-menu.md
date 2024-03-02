@@ -115,6 +115,9 @@ The [Modal Dropdown](#modal-dropdown) example below demonstrates this behavior i
 
 ### Modal Dropdown
 
+An example using the `overlay` builder element to prevent interaction with the rest of the page
+while the menu is open.
+
 <Preview code={snippets.modal}>
     <svelte:component this={previews.modal} />
 </Preview>
