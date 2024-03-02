@@ -19,6 +19,7 @@ import {
 	toWritableStores,
 	sleep,
 	portalAttr,
+	generateIds,
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
@@ -26,7 +27,6 @@ import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id.js';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 
