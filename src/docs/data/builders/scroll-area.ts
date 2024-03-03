@@ -172,7 +172,7 @@ const schemas: BuilderData['schemas'] = [
 const features: BuilderData['features'] = [
 	'Scrolling behavior is native to the platform',
 	'Scrollbar is positioned above the content so no layout shifting occurs',
-	'Keyboard controls follow platform conventions',
+	'Keyboard controls are unaffected and follow platform conventions',
 ];
 
 export const scrollAreaData: BuilderData = {
