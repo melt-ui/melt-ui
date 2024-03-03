@@ -65,14 +65,12 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 	);
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, disabled],
-		returned: ([$isVisible, $disabled]) => ({
-			'data-state': $isVisible ? 'open' : 'closed',
+		stores: [isVisible, open, disabled],
+		returned: ([$isVisible, $open, $disabled]) => ({
+			'data-state': $open ? 'open' : 'closed',
 			'data-disabled': disabledAttr($disabled),
 			hidden: $isVisible ? undefined : true,
-			style: styleToString({
-				display: $isVisible ? undefined : 'none',
-			}),
+			style: $isVisible ? undefined : styleToString({ display: 'none' }),
 		}),
 	});
 
