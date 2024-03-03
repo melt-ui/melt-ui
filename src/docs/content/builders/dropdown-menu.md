@@ -5,9 +5,11 @@ description:
 ---
 
 <script>
-    import { KbdTable, APIReference } from '$docs/components'
+    import { KbdTable, APIReference, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+	export let snippets
+	export let previews
 </script>
 
 ## Anatomy
@@ -23,6 +25,8 @@ description:
 - **Separator**: A visual divider between menu items.
 
 ## Usage
+
+### Basic
 
 The first thing you need to do is create a dropdown menu using the `createDropdownMenu` function.
 
@@ -83,6 +87,40 @@ occurring.
 	Item 2
 </div>
 ```
+
+### Modal Behavior
+
+To give the dropdown menu complete modal behavior, where an overlay is rendered behind the menu to
+prevent interaction with the rest of the page while open, use the `overlay` builder element.
+
+```svelte
+<script lang="ts">
+	import { createDropdownMenu, melt } from '@melt-ui/svelte'
+	const {
+		elements: { trigger, menu, item, separator, arrow, overlay }
+	} = createDropdownMenu()
+</script>
+
+<button type="button" use:melt={$trigger}> Open </button>
+<div use:melt={$overlay} />
+<div use:melt={$menu}>
+	<div use:melt={$arrow} />
+	<div use:melt={$item} />
+</div>
+```
+
+The [Modal Dropdown](#modal-dropdown) example below demonstrates this behavior in action.
+
+## Example Components
+
+### Modal Dropdown
+
+An example using the `overlay` builder element to prevent interaction with the rest of the page
+while the menu is open.
+
+<Preview code={snippets.modal}>
+    <svelte:component this={previews.modal} />
+</Preview>
 
 ## API Reference
 

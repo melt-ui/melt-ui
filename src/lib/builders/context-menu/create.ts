@@ -74,18 +74,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const nextFocusable = withGet.writable<HTMLElement | null>(null);
 	const prevFocusable = withGet.writable<HTMLElement | null>(null);
 
-	const {
-		item,
-		createCheckboxItem,
-		arrow,
-		createSubmenu,
-		createMenuRadioGroup,
-		ids,
-		separator,
-		handleTypeaheadSearch,
-		group,
-		groupLabel,
-	} = createMenuBuilder({
+	const { elements, builders, ids, options, helpers, states } = createMenuBuilder({
 		rootOpen,
 		rootOptions,
 		rootActiveTrigger: withGet(rootActiveTrigger),
@@ -95,6 +84,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		removeScroll: true,
 		ids: withDefaults.ids,
 	});
+
+	const { handleTypeaheadSearch } = helpers;
 
 	const point = writable<Point | null>(null);
 	const virtual: WithGet<Readable<VirtualElement | null>> = withGet(
@@ -317,23 +308,13 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	return {
 		ids,
 		elements: {
+			...elements,
 			menu,
 			trigger,
-			item,
-			arrow,
-			separator,
-			group,
-			groupLabel,
 		},
-		states: {
-			open: rootOpen,
-		},
-		builders: {
-			createSubmenu,
-			createCheckboxItem,
-			createMenuRadioGroup,
-		},
-		options: rootOptions,
+		states,
+		builders,
+		options,
 	};
 }
 
