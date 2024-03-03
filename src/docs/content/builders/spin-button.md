@@ -1,5 +1,5 @@
 ---
-title: Stepper
+title: Spin Button
 description: An input that restricts its value to a set or range of discrete values.
 ---
 
@@ -11,7 +11,7 @@ description: An input that restricts its value to a set or range of discrete val
 
 ## Usage
 
-To create a stepper, use the `createStepper` builder function. Follow the anatomy or the example
+To create a stepper, use the `createSpinButton` builder function. Follow the anatomy or the example
 above to create your stepper.
 
 ## API Reference

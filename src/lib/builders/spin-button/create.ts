@@ -10,7 +10,9 @@ import { toWritableStores } from '$lib/internal/helpers/store/toWritableStores.j
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import { derived, writable } from 'svelte/store';
 import { createHiddenInput } from '../hidden-input/create.js';
-import type { CreateStepperProps } from './types.js';
+import type { CreateSpinButtonProps } from './types.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { SpinButtonEvents } from './events.js';
 
 const defaults = {
 	defaultValue: 0,
@@ -19,12 +21,12 @@ const defaults = {
 	step: 1,
 	loop: false,
 	disabled: false,
-} satisfies CreateStepperProps;
+} satisfies CreateSpinButtonProps;
 
-const { name } = createElHelpers('stepper');
+const { name } = createElHelpers('spin-button');
 
-export function createStepper(props?: CreateStepperProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateStepperProps;
+export function createSpinButton(props?: CreateSpinButtonProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSpinButtonProps;
 
 	const value = overridable(
 		withDefaults.value ?? writable(withDefaults.defaultValue),
@@ -96,7 +98,7 @@ export function createStepper(props?: CreateStepperProps) {
 		}
 	}
 
-	const stepper = makeElement(name(), {
+	const root = makeElement(name('root'), {
 		stores: [value, min, max, disabled],
 		returned: ([$value, $min, $max, $disabled]) => {
 			return {
@@ -108,11 +110,9 @@ export function createStepper(props?: CreateStepperProps) {
 				'aria-disabled': $disabled,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<SpinButtonEvents['root']> => {
 			function handleKeyDown(event: KeyboardEvent) {
-				if (disabled.get()) {
-					return;
-				}
+				if (disabled.get()) return;
 
 				switch (event.key) {
 					case kbd.ARROW_UP: {
@@ -127,18 +127,14 @@ export function createStepper(props?: CreateStepperProps) {
 					}
 					case kbd.HOME: {
 						const $min = min.get();
-						if ($min === undefined) {
-							break;
-						}
+						if ($min === undefined) break;
 						preventDefaultStopPropogation(event);
 						value.set($min);
 						break;
 					}
 					case kbd.END: {
 						const $max = max.get();
-						if ($max === undefined) {
-							break;
-						}
+						if ($max === undefined) break;
 						preventDefaultStopPropogation(event);
 						value.set($max);
 						break;
@@ -153,7 +149,7 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 	});
 
-	const incrementButton = makeElement(name('increment-button'), {
+	const incrementer = makeElement(name('incrementer'), {
 		stores: [disabled, next],
 		returned: ([$disabled, $next]) => {
 			return {
@@ -162,11 +158,9 @@ export function createStepper(props?: CreateStepperProps) {
 				disabled: disabledAttr($disabled || $next === null),
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<SpinButtonEvents['incrementer']> => {
 			function handleClick(event: MouseEvent) {
-				if (disabled.get()) {
-					return;
-				}
+				if (disabled.get()) return;
 				preventDefaultStopPropogation(event);
 				increment();
 			}
@@ -178,7 +172,7 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 	});
 
-	const decrementButton = makeElement(name('decrement-button'), {
+	const decrementer = makeElement(name('decrementer'), {
 		stores: [disabled, previous],
 		returned: ([$disabled, $previous]) => {
 			return {
@@ -189,9 +183,7 @@ export function createStepper(props?: CreateStepperProps) {
 		},
 		action: (node: HTMLElement) => {
 			function handleClick(event: MouseEvent) {
-				if (disabled.get()) {
-					return;
-				}
+				if (disabled.get()) return;
 				preventDefaultStopPropogation(event);
 				decrement();
 			}
@@ -227,9 +219,9 @@ export function createStepper(props?: CreateStepperProps) {
 
 	return {
 		elements: {
-			stepper,
-			incrementButton,
-			decrementButton,
+			root,
+			incrementer,
+			decrementer,
 			hiddenInput,
 		},
 		states: {

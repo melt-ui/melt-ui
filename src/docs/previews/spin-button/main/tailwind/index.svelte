@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { createStepper, melt } from '$lib/index.js';
+	import { createSpinButton, melt } from '$lib/index.js';
 	import ChevronUpIcon from 'lucide-svelte/icons/chevron-up';
 	import ChevronDownIcon from 'lucide-svelte/icons/chevron-down';
 
 	const {
-		elements: { stepper, incrementButton, decrementButton },
+		elements: { root, incrementer, decrementer },
 		states: { value, previous, next },
-	} = createStepper({
+	} = createSpinButton({
 		defaultValue: 1,
 		min: 1,
 		max: 12,
@@ -35,7 +35,7 @@
 
 <p id="month-label" class="font-semibold text-magnum-900">Month</p>
 <div
-	use:melt={$stepper}
+	use:melt={$root}
 	aria-labelledby="month-label"
 	aria-valuetext={month}
 	class="
@@ -44,7 +44,7 @@
 	"
 >
 	<button
-		use:melt={$decrementButton}
+		use:melt={$decrementer}
 		class="flex h-10 w-full items-center justify-center border-b-2 border-magnum-400 text-magnum-400 disabled:text-opacity-[0.38]"
 	>
 		<ChevronUpIcon />
@@ -59,7 +59,7 @@
 		{nextMonth}
 	</p>
 	<button
-		use:melt={$incrementButton}
+		use:melt={$incrementer}
 		class="flex h-10 w-full items-center justify-center border-t-2 border-magnum-400 text-magnum-400 disabled:text-opacity-[0.38]"
 	>
 		<ChevronDownIcon />

@@ -1,37 +1,37 @@
 import type { ChangeFn } from '$lib/internal/helpers/overridable.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createStepper } from './create.js';
+import type { createSpinButton } from './create.js';
 
-export type CreateStepperProps = {
+export type CreateSpinButtonProps = {
 	/**
-	 * The uncontrolled default value of the stepper.
+	 * The uncontrolled default value of the spin button.
 	 *
 	 * @default 0
 	 */
 	defaultValue?: number;
 
 	/**
-	 * The controlled value store for the stepper.
+	 * The controlled value store for the spin button.
 	 *
 	 * If provided, this will override the value passed to `defaultValue`.
 	 */
 	value?: Writable<number>;
 
 	/**
-	 * The callback invoked when the value store of the stepper changes.
+	 * The callback invoked when the value store of the spin button changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onValueChange?: ChangeFn<number>;
 
 	/**
-	 * The minimum value of the stepper.
+	 * The minimum value of the spin button.
 	 */
 	min?: number;
 
 	/**
-	 * The maximum value of the stepper.
+	 * The maximum value of the spin button.
 	 */
 	max?: number;
 
@@ -43,7 +43,7 @@ export type CreateStepperProps = {
 	step?: number;
 
 	/**
-	 * Whether or not the stepper should loop back to `min`
+	 * Whether or not the spin button should loop back to `min`
 	 * when `max` is reached, and vice versa.
 	 *
 	 * @default false
@@ -51,15 +51,15 @@ export type CreateStepperProps = {
 	loop?: boolean;
 
 	/**
-	 * Whether or not the stepper is disabled.
+	 * Whether or not the spin button is disabled.
 	 *
 	 * @default false
 	 */
 	disabled?: boolean;
 };
 
-export type Stepper = BuilderReturn<typeof createStepper>;
-export type StepperElements = Stepper['elements'];
-export type StepperStates = Stepper['states'];
-export type StepperOptions = Stepper['options'];
-export type StepperHelpers = Stepper['helpers'];
+export type SpinButton = BuilderReturn<typeof createSpinButton>;
+export type SpinButtonElements = SpinButton['elements'];
+export type SpinButtonStates = SpinButton['states'];
+export type SpinButtonOptions = SpinButton['options'];
+export type SpinButtonHelpers = SpinButton['helpers'];

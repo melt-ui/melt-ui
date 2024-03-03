@@ -7,12 +7,12 @@ const OPTION_PROPS = [
 	{
 		name: 'min',
 		type: 'number',
-		description: 'The minimum value of the stepper.',
+		description: 'The minimum value of the spin button.',
 	},
 	{
 		name: 'max',
 		type: 'number',
-		description: 'The maximum value of the stepper.',
+		description: 'The maximum value of the spin button.',
 	},
 	{
 		name: 'step',
@@ -24,16 +24,16 @@ const OPTION_PROPS = [
 		name: 'loop',
 		type: 'boolean',
 		description:
-			'Whether or not the stepper should loop back to `min` when `max` is reached, and vice versa.',
+			'Whether or not the spin button should loop back to `min` when `max` is reached, and vice versa.',
 		default: 'false',
 	},
 	PROPS.DISABLED({
-		name: 'stepper',
+		name: 'spin button',
 	}),
 ];
 
 const builder = builderSchema('stepper', {
-	title: 'createStepper',
+	title: 'createSpinButton',
 	description: DESCRIPTIONS.BUILDER('stepper'),
 	props: [
 		{
@@ -58,15 +58,15 @@ const builder = builderSchema('stepper', {
 	],
 	elements: [
 		{
-			name: 'stepper',
-			description: 'The builder store used to create the stepper element.',
+			name: 'root',
+			description: 'The builder store used to create the spin button element.',
 		},
 		{
-			name: 'incrementButton',
+			name: 'incrementer',
 			description: 'The builder store used to create the increment button.',
 		},
 		{
-			name: 'decrementButton',
+			name: 'decrementer',
 			description: 'The builder store used to create the decrement button.',
 		},
 	],
@@ -74,17 +74,18 @@ const builder = builderSchema('stepper', {
 		{
 			name: 'value',
 			type: 'Writable<number>',
-			description: 'A writable store that can be used to get the current value of the stepper.',
+			description: 'A writable store that can be used to get the current value of the spin button.',
 		},
 		{
 			name: 'previous',
 			type: 'Readable<number | null>',
-			description: 'A readable store that can be used to get the previous value of the stepper.',
+			description:
+				'A readable store that can be used to get the previous value of the spin button.',
 		},
 		{
 			name: 'next',
 			type: 'Readable<number | null>',
-			description: 'A readable store that can be used to get the next value of the stepper.',
+			description: 'A readable store that can be used to get the next value of the spin button.',
 		},
 	],
 	options: OPTION_PROPS,
@@ -92,47 +93,47 @@ const builder = builderSchema('stepper', {
 		{
 			name: 'increment',
 			type: '() => void',
-			description: "Increses the stepper's value by `step`.",
+			description: "Increses the spin button's value by `step`.",
 		},
 		{
 			name: 'decrement',
 			type: '() => void',
-			description: "Decreases the stepper's value by `step`.",
+			description: "Decreases the spin button's value by `step`.",
 		},
 	],
 });
 
-const stepper = elementSchema('stepper', {
-	description: 'The stepper component.',
+const root = elementSchema('root', {
+	description: 'The root spin button element that contains the increment and decrement buttons.',
 	dataAttributes: [
 		{
-			name: 'data-melt-stepper',
-			value: ATTRS.MELT('stepper'),
+			name: 'data-melt-spin-button-root',
+			value: ATTRS.MELT('spin button root'),
 		},
 	],
 });
 
-const incrementButton = elementSchema('incrementButton', {
-	description: 'The stepper increment button component.',
+const incrementer = elementSchema('incrementer', {
+	description: 'The stepper increment button.',
 	dataAttributes: [
 		{
-			name: 'data-melt-stepper-increment-button',
-			value: ATTRS.MELT('stepper increment button'),
+			name: 'data-melt-spin-button-incrementer',
+			value: ATTRS.MELT('spin button incrementer'),
 		},
 	],
 });
 
-const decrementButton = elementSchema('decrementButton', {
-	description: 'The stepper decrement button component.',
+const decrementer = elementSchema('decrementer', {
+	description: 'The stepper decrement button.',
 	dataAttributes: [
 		{
-			name: 'data-melt-stepper-decrement-button',
-			value: ATTRS.MELT('stepper decrement button'),
+			name: 'data-melt-stepper-decrementer',
+			value: ATTRS.MELT('stepper decrementer'),
 		},
 	],
 });
 
-const schemas = [builder, stepper, incrementButton, decrementButton];
+const schemas = [builder, root, incrementer, decrementer];
 
 const features = [
 	'Can be controlled or uncontrolled',
@@ -160,7 +161,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-export const stepperData: BuilderData = {
+export const spinButtonData: BuilderData = {
 	schemas,
 	features,
 	keyboard,

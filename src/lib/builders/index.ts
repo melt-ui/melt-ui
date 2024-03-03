@@ -23,7 +23,7 @@ export * from './range-calendar/index.js';
 export * from './select/index.js';
 export * from './separator/index.js';
 export * from './slider/index.js';
-export * from './stepper/index.js';
+export * from './spin-button/index.js';
 export * from './switch/index.js';
 export * from './table-of-contents/index.js';
 export * from './tabs/index.js';

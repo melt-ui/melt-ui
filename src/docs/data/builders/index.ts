@@ -34,7 +34,7 @@ import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
 import { datePickerData } from './date-picker.js';
-import { stepperData } from './stepper.js';
+import { spinButtonData } from './spin-button.js';
 
 export type BuilderData = {
 	schemas?: APISchema[];
@@ -69,7 +69,7 @@ export const builderMap = {
 	select: selectData,
 	separator: separatorData,
 	slider: sliderData,
-	stepper: stepperData,
+	'spin-button': spinButtonData,
 	switch: switchData,
 	'table-of-contents': tableOfContentsData,
 	tabs: tabsData,
