@@ -49,6 +49,7 @@ export function getMenuSchemas(name: Menu) {
 	return {
 		menu: getMenuMenuSchema(name),
 		arrow: getMenuArrowSchema(name),
+		overlay: getMenuOverlaySchema(name),
 		submenuBuilder: getMenuSubmenuBuilderSchema(),
 		submenu: getMenuSubmenuSchema(name),
 		subTrigger: getMenuSubTriggerSchema(name),
@@ -203,6 +204,23 @@ function getMenuMenuSchema(builderName: string) {
 			},
 		],
 		events: menuEvents['menu'],
+	});
+}
+
+function getMenuOverlaySchema(builderName: string) {
+	return elementSchema('overlay', {
+		description:
+			'An optional overlay element to prevent interaction with the rest of the page while the menu is open',
+		dataAttributes: [
+			{
+				name: 'data-state',
+				value: ATTRS.OPEN_CLOSED,
+			},
+			{
+				name: `data-melt-${toKebabCase(builderName)}-overlay`,
+				value: ATTRS.MELT('overlay'),
+			},
+		],
 	});
 }
 

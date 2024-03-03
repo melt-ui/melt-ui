@@ -28,6 +28,7 @@ const {
 	checkboxItemBuilder,
 	group,
 	groupLabel,
+	overlay,
 } = getMenuSchemas(BUILDER_NAME);
 
 const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NAME);
@@ -56,6 +57,7 @@ const schemas = [
 	trigger,
 	menu,
 	item,
+	overlay,
 	separator,
 	arrow,
 	checkboxItemBuilder,

@@ -37,19 +37,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	const nextFocusable = withGet(writable<HTMLElement | null>(null));
 	const prevFocusable = withGet(writable<HTMLElement | null>(null));
 
-	const {
-		trigger,
-		menu,
-		item,
-		arrow,
-		createSubmenu,
-		createCheckboxItem,
-		createMenuRadioGroup,
-		separator,
-		group,
-		groupLabel,
-		ids,
-	} = createMenuBuilder({
+	const { elements, builders, ids, states, options } = createMenuBuilder({
 		rootOptions,
 		rootOpen,
 		rootActiveTrigger: withGet(rootActiveTrigger),
@@ -62,23 +50,9 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 
 	return {
 		ids,
-		elements: {
-			trigger,
-			menu,
-			item,
-			arrow,
-			separator,
-			group,
-			groupLabel,
-		},
-		states: {
-			open: rootOpen,
-		},
-		builders: {
-			createCheckboxItem,
-			createSubmenu,
-			createMenuRadioGroup,
-		},
-		options: rootOptions,
+		elements,
+		states,
+		builders,
+		options,
 	};
 }
