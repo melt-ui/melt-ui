@@ -1,0 +1,67 @@
+<script lang="ts">
+	import { createSpinButton, melt } from '$lib/index.js';
+	import ChevronUpIcon from 'lucide-svelte/icons/chevron-up';
+	import ChevronDownIcon from 'lucide-svelte/icons/chevron-down';
+
+	const {
+		elements: { root, incrementer, decrementer },
+		states: { value, previous, next },
+	} = createSpinButton({
+		defaultValue: 1,
+		min: 1,
+		max: 12,
+		loop: true,
+	});
+
+	const months = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December',
+	];
+
+	$: month = months[$value - 1];
+	$: previousMonth = months[($previous as number) - 1];
+	$: nextMonth = months[($next as number) - 1];
+</script>
+
+<p id="month-label" class="font-semibold text-magnum-900">Month</p>
+<div
+	use:melt={$root}
+	aria-labelledby="month-label"
+	aria-valuetext={month}
+	class="
+		mt-1 flex w-32 flex-col items-center gap-3 rounded-md bg-magnum-900
+		focus-visible:!outline focus-visible:!outline-2 focus-visible:!outline-offset-2 focus-visible:!outline-magnum-900
+	"
+>
+	<button
+		use:melt={$decrementer}
+		class="flex h-10 w-full items-center justify-center border-b-2 border-magnum-400 text-magnum-400 disabled:text-opacity-[0.38]"
+	>
+		<ChevronUpIcon />
+	</button>
+	<p class="h-6 text-center text-base font-medium text-white/[0.38]">
+		{previousMonth}
+	</p>
+	<p class="h-6 text-center text-base font-medium">
+		{month}
+	</p>
+	<p class="h-6 text-center text-base font-medium text-white/[0.38]">
+		{nextMonth}
+	</p>
+	<button
+		use:melt={$incrementer}
+		class="flex h-10 w-full items-center justify-center border-t-2 border-magnum-400 text-magnum-400 disabled:text-opacity-[0.38]"
+	>
+		<ChevronDownIcon />
+	</button>
+</div>
