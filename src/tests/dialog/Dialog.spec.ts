@@ -247,4 +247,34 @@ describe('Dialog', () => {
 		expect(title.id).toBe(ids.title);
 		expect(description.id).toBe(ids.description);
 	});
+
+	it("Doesn't close on pointerup if the previous pointerdown didn't occur inside the dialog", async () => {
+		const { getByTestId, user, trigger } = setup();
+		const overlay = getByTestId('overlay');
+		const content = getByTestId('content');
+
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await sleep(100);
+		expect(overlay).toBeVisible();
+		await user.pointer({ target: content, offset: 2, keys: '[MouseLeft>]' });
+		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
+		expect(content).toBeVisible();
+	});
+
+	it('Closes on pointerup if the previous pointerdown occurred outside the dialog', async () => {
+		const { getByTestId, user, trigger } = setup();
+		const overlay = getByTestId('overlay');
+		const content = getByTestId('content');
+
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await sleep(100);
+		expect(overlay).toBeVisible();
+		await user.pointer({ target: overlay, offset: 2, keys: '[MouseLeft>]' });
+		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
+		expect(content).not.toBeVisible();
+	});
 });

@@ -32,6 +32,7 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	sleep,
 	stripValues,
 	styleToString,
 	toWritableStores,
@@ -181,7 +182,7 @@ export function createListbox<
 		selected.update(($option) => {
 			const $multiple = multiple.get();
 			if ($multiple) {
-				const optionArr = Array.isArray($option) ? $option : [];
+				const optionArr = Array.isArray($option) ? [...$option] : [];
 				return toggle(newOption, optionArr, (itemA, itemB) =>
 					deepEqual(itemA.value, itemB.value)
 				) as S;
@@ -226,7 +227,8 @@ export function createListbox<
 	}
 
 	/** Closes the menu & clears the active trigger */
-	function closeMenu() {
+	async function closeMenu() {
+		await sleep(0);
 		open.set(false);
 		highlightedItem.set(null);
 	}
@@ -487,22 +489,24 @@ export function createListbox<
 							options: {
 								floating: $positioning,
 								focusTrap: null,
-								clickOutside: $closeOnOutsideClick
-									? {
-											handler: (e) => {
-												onOutsideClick.get()?.(e);
-												if (e.defaultPrevented) return;
+								modal: {
+									closeOnInteractOutside: $closeOnOutsideClick,
+									onClose: closeMenu,
+									open: $isVisible,
+									shouldCloseOnInteractOutside: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return false;
+										const target = e.target;
+										if (!isElement(target)) return false;
+										if (target === $activeTrigger || $activeTrigger.contains(target)) {
+											return false;
+										}
+										// return opposite of the result of the ignoreHandler
+										if (ignoreHandler(e)) return false;
+										return true;
+									},
+								},
 
-												const target = e.target;
-												if (!isElement(target)) return;
-												if (target === $activeTrigger || $activeTrigger.contains(target)) {
-													return;
-												}
-												closeMenu();
-											},
-											ignore: ignoreHandler,
-									  }
-									: null,
 								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),
 							},
@@ -636,13 +640,13 @@ export function createListbox<
 	safeOnMount(() => {
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu.get());
-		if (!menuEl) return;
 
 		const triggerEl = document.getElementById(ids.trigger.get());
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
 
+		if (!menuEl) return;
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
 	});

@@ -552,4 +552,12 @@ describe('DatePicker', () => {
 		await user.click(outside);
 		await waitFor(() => expect(content).toBeVisible());
 	});
+
+	test('trigger is disabled when `disabled` prop is true', async () => {
+		const { trigger } = setup({
+			disabled: true,
+		});
+
+		expect(trigger).toBeDisabled();
+	});
 });

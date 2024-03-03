@@ -18,6 +18,9 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
+	removeUndefined,
+	sleep,
+	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
@@ -37,7 +40,7 @@ const defaults = {
 	openDelay: 1000,
 	closeDelay: 0,
 	forceVisible: false,
-	portal: 'body',
+	portal: undefined,
 	closeOnEscape: true,
 	disableHoverableContent: false,
 	group: undefined,
@@ -179,7 +182,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
+				addMeltEventListener(node, 'blur', async () => {
+					await sleep(0);
+					closeTooltip(true);
+				}),
 				addMeltEventListener(node, 'keydown', keydownHandler),
 				addEventListener(document, 'keydown', keydownHandler)
 			);
@@ -193,17 +199,15 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const content = makeElement(name('content'), {
 		stores: [isVisible, open, portal, ids.content],
 		returned: ([$isVisible, $open, $portal, $contentId]) => {
-			return {
+			return removeUndefined({
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-portal': $portal ? '' : undefined,
+				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
-			};
+			});
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
@@ -221,7 +225,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 					const floatingReturn = useFloating(triggerEl, node, $positioning);
 					unsubFloating = floatingReturn.destroy;
-					if (!$portal) {
+					if ($portal === null) {
 						unsubPortal();
 						return;
 					}

@@ -9,19 +9,26 @@ import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
 	let unsub = noop;
 
+	let isPointerDown = false;
+	let isPointerDownInside = false;
+	let ignoreEmulatedMouseEvents = false;
+
 	function update(config: InteractOutsideConfig) {
 		unsub();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 
 		if (!enabled) return;
 
-		let isPointerDown = false;
-		let ignoreEmulatedMouseEvents = false;
-
 		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
 			if (onInteractOutside && isValidEvent(e, node)) {
 				onInteractOutsideStart?.(e);
 			}
+			const target = e.target;
+
+			if (isElement(target) && isOrContainsTarget(node, target)) {
+				isPointerDownInside = true;
+			}
+
 			isPointerDown = true;
 		}
 
@@ -34,10 +41,10 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		// Use pointer events if available, otherwise use mouse/touch events
 		if (typeof PointerEvent !== 'undefined') {
 			const onPointerUp = (e: PointerEvent) => {
-				if (isPointerDown && isValidEvent(e, node)) {
+				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
-				isPointerDown = false;
+				resetPointerState();
 			};
 
 			unsub = executeCallbacks(
@@ -48,18 +55,18 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 			const onMouseUp = (e: MouseEvent) => {
 				if (ignoreEmulatedMouseEvents) {
 					ignoreEmulatedMouseEvents = false;
-				} else if (isPointerDown && isValidEvent(e, node)) {
+				} else if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
-				isPointerDown = false;
+				resetPointerState();
 			};
 
 			const onTouchEnd = (e: TouchEvent) => {
 				ignoreEmulatedMouseEvents = true;
-				if (isPointerDown && isValidEvent(e, node)) {
+				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
-				isPointerDown = false;
+				resetPointerState();
 			};
 
 			unsub = executeCallbacks(
@@ -69,6 +76,18 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 				addEventListener(documentObj, 'touchend', onTouchEnd, true)
 			);
 		}
+	}
+
+	function shouldTriggerInteractOutside(e: InteractOutsideEvent) {
+		if (isPointerDown && !isPointerDownInside && isValidEvent(e, node)) {
+			return true;
+		}
+		return false;
+	}
+
+	function resetPointerState() {
+		isPointerDown = false;
+		isPointerDownInside = false;
 	}
 
 	update(config);
@@ -90,7 +109,11 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 		return false;
 	}
 
-	return node && !node.contains(target);
+	return node && !isOrContainsTarget(node, target);
+}
+
+function isOrContainsTarget(node: HTMLElement, target: Element) {
+	return node === target || node.contains(target);
 }
 
 function getOwnerDocument(el: Element | null | undefined) {

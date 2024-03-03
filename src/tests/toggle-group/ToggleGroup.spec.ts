@@ -1,4 +1,3 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
 import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -6,8 +5,25 @@ import { describe } from 'vitest';
 import ToggleGroupTest from './ToggleGroupTest.svelte';
 import { tick } from 'svelte';
 import { writable } from 'svelte/store';
+import type { CreateToggleGroupProps } from '$lib/index.js';
+import { testKbd as kbd } from '../utils.js';
 
 const items = ['item-1', 'item-2', 'item-3'];
+const defaults: { items: string[]; type: 'single' | 'multiple' } = {
+	items,
+	type: 'single',
+};
+
+function setup<T extends 'single' | 'multiple'>(
+	props?: CreateToggleGroupProps<T> & { items?: string[]; type: 'single' | 'multiple' }
+) {
+	const withDefaults = { ...defaults, ...props };
+	const user = userEvent.setup();
+	const result = render(ToggleGroupTest, withDefaults);
+	const tabButton = result.getByTestId('tab-btn');
+	const root = result.getByTestId('root');
+	return { user, ...result, tabButton, root };
+}
 
 describe('Toggle Group', () => {
 	test('has no accessibility violations', async () => {
@@ -17,11 +33,7 @@ describe('Toggle Group', () => {
 	});
 
 	test('tab does not navigate between items', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
-			type: 'single',
-			items,
-		});
+		const { user, getByTestId } = setup();
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
@@ -34,30 +46,27 @@ describe('Toggle Group', () => {
 	});
 
 	test('keyboard navigation between items', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
+			loop: false,
 		});
 
 		getByTestId(items[0]).focus();
 
 		for (const item of items) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 		}
 
 		for (const item of [...items].reverse()) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+			await user.keyboard(kbd.ARROW_LEFT);
 		}
 	});
 
 	test('keyboard navigation between items - loop', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
 			loop: true,
 		});
 
@@ -65,30 +74,29 @@ describe('Toggle Group', () => {
 
 		for (const item of items) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 		}
 
 		for (const item of items) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 		}
 	});
 
 	test('only one item can be selected in single mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
 			items,
 		});
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-checked', 'true');
 
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(getByTestId(items[1])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 
 		const root = getByTestId('root');
 		const checkedItems = root.querySelectorAll<HTMLElement>('[aria-checked="true"]');
@@ -96,20 +104,18 @@ describe('Toggle Group', () => {
 	});
 
 	test('multiple items can be selected in multiple mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'multiple',
-			items,
 		});
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'true');
 
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(getByTestId(items[1])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[1])).toHaveAttribute('aria-pressed', 'true');
 
 		const root = getByTestId('root');
@@ -118,39 +124,35 @@ describe('Toggle Group', () => {
 	});
 
 	test('can uncheck items in single mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
 		});
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-checked', 'true');
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-checked', 'false');
 	});
 
 	test('can uncheck items in multiple mode', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'multiple',
 			items,
 		});
 
 		getByTestId(items[0]).focus();
 		expect(getByTestId(items[0])).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'true');
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'false');
 	});
 
 	test('defaultValue is respected in single mode', async () => {
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'single',
-			items,
 			defaultValue: items[1],
 		});
 
@@ -160,9 +162,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('defaultValue is respected in multiple mode', async () => {
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'multiple',
-			items,
 			defaultValue: [items[1], items[2]],
 		});
 
@@ -173,9 +174,8 @@ describe('Toggle Group', () => {
 
 	test('value prop overrides defaultValue - single', async () => {
 		const valueStore = writable<string>(items[1]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'single',
-			items,
 			defaultValue: items[0],
 			value: valueStore,
 		});
@@ -187,9 +187,8 @@ describe('Toggle Group', () => {
 
 	test('value prop overrides defaultValue - multiple', async () => {
 		const valueStore = writable<string[]>([items[1], items[2]]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'multiple',
-			items,
 			defaultValue: [items[0]],
 			value: valueStore,
 		});
@@ -201,9 +200,8 @@ describe('Toggle Group', () => {
 
 	test('value prop programmatically updates - single', async () => {
 		const valueStore = writable<string>(items[1]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'single',
-			items,
 			value: valueStore,
 		});
 
@@ -221,9 +219,8 @@ describe('Toggle Group', () => {
 
 	test('value prop programmatically updates - multiple', async () => {
 		const valueStore = writable<string[]>([items[1], items[2]]);
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId } = setup({
 			type: 'multiple',
-			items,
 			value: valueStore,
 		});
 
@@ -240,10 +237,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('change function is respected - single', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { getByTestId, user } = setup({
 			type: 'single',
-			items,
 			onValueChange: () => items[0],
 		});
 
@@ -258,10 +253,8 @@ describe('Toggle Group', () => {
 	});
 
 	test('change function is respected - multiple', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToggleGroupTest, {
+		const { user, getByTestId } = setup({
 			type: 'multiple',
-			items,
 			onValueChange: () => [items[0], items[1]],
 		});
 
@@ -274,5 +267,23 @@ describe('Toggle Group', () => {
 		expect(item3).not.toHaveAttribute('aria-pressed', 'true');
 		expect(getByTestId(items[0])).toHaveAttribute('aria-pressed', 'true');
 		expect(getByTestId(items[1])).toHaveAttribute('aria-pressed', 'true');
+	});
+
+	test('toggle group focusable when in single mode', async () => {
+		const { user, tabButton, getByTestId } = setup();
+
+		tabButton.focus();
+		expect(tabButton).toHaveFocus();
+		await user.keyboard(kbd.TAB);
+		expect(getByTestId(items[0])).toHaveFocus();
+	});
+
+	test('toggle group focusable when in multiple mode', async () => {
+		const { user, tabButton, getByTestId } = setup({ type: 'multiple', items });
+
+		tabButton.focus();
+		expect(tabButton).toHaveFocus();
+		await user.keyboard(kbd.TAB);
+		expect(getByTestId(items[0])).toHaveFocus();
 	});
 });

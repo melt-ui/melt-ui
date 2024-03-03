@@ -334,6 +334,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const disabled = $isPrevButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Previous',
 				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
@@ -358,6 +359,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const disabled = $isNextButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Next',
 				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
@@ -782,8 +784,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			}
 		}
 
-		if ($startValue && isSameDay($startValue, date) && !preventDeselect.get() && !$endValue) {
+		if ($startValue && $endValue && isSameDay($endValue, date) && !preventDeselect.get()) {
 			startValue.set(undefined);
+			endValue.set(undefined);
 			placeholder.set(date);
 			announcer.announce('Selected date is now empty.', 'polite');
 			return;

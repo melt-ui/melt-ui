@@ -35,7 +35,6 @@
 			}
 			return undefined;
 		},
-		forceVisible: true,
 		preventScroll: false,
 		highlightOnHover: false,
 	});

@@ -1,5 +1,47 @@
 # @melt-ui/svelte
 
+## 0.74.4
+
+### Patch Changes
+
+- Listbox: fixed bug preventing programmatic opening (Closes #1014) ([#1020](https://github.com/melt-ui/melt-ui/pull/1020))
+
+- fix(Calendar/Range Calendar): use `'button'` for button elements' `type` ([#1003](https://github.com/melt-ui/melt-ui/pull/1003))
+
+- fixed issues with portals and outside interactions (Closes #992) ([#1018](https://github.com/melt-ui/melt-ui/pull/1018))
+
+- Listbox: fixed bug causing `multiple` change function `curr` and `next` always being equal (Closes #1019) ([#1021](https://github.com/melt-ui/melt-ui/pull/1021))
+
+- Fixed bug where on outside interaction in several components (popover, menu, link preview, tooltip, listbox), on component unmount, the content jumps during out transition if content was mounted in an else if block (closes #1005) ([#1006](https://github.com/melt-ui/melt-ui/pull/1006))
+
+## 0.74.3
+
+### Patch Changes
+
+- Revert regressions caused by PRs #977 and #995 ([#1016](https://github.com/melt-ui/melt-ui/pull/1016))
+
+- Toolbar: set correct tabindex for buttons and links ([#1004](https://github.com/melt-ui/melt-ui/pull/1004))
+
+## 0.74.2
+
+### Patch Changes
+
+- Fix custom portal issues ([#995](https://github.com/melt-ui/melt-ui/pull/995))
+
+- Dialog: fixed interact outside pointerup/mouseup issue where the dialog would close if you clicked and dragged outside of the dialog before releasing the press (Closes: #750) ([#994](https://github.com/melt-ui/melt-ui/pull/994))
+
+- Toggle Group: fixed bug where `single` groups wouldn't focus (Closes #810) ([#990](https://github.com/melt-ui/melt-ui/pull/990))
+
+## 0.74.1
+
+### Patch Changes
+
+- Date Picker/Date Range Picker: disable trigger when picker is disabled (Closes #815) ([#989](https://github.com/melt-ui/melt-ui/pull/989))
+
+- Toast: return close element `type` attribute type as `"button"` instead of `string` ([#993](https://github.com/melt-ui/melt-ui/pull/993))
+
+- ToggleGroup: Fixes curr & next always bbeing the same value ([#983](https://github.com/melt-ui/melt-ui/pull/983))
+
 ## 0.74.0
 
 ### Minor Changes

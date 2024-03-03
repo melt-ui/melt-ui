@@ -8,6 +8,9 @@
 	} = createTooltip({
 		forceVisible: true,
 		openDelay: 500,
+		positioning: {
+			strategy: 'fixed',
+		},
 	});
 
 	export let text = 'Tooltip text';
@@ -36,7 +39,7 @@
 	[data-melt-tooltip-content] {
 		opacity: 0;
 		visibility: hidden;
-		transition: 150ms ease;
+		transition: opacity 150ms ease;
 
 		&[data-open] {
 			opacity: 1;
