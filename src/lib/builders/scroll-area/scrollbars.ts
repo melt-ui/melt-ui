@@ -8,7 +8,6 @@ import {
 	isTouchDevice,
 	makeElement,
 	noop,
-	sleep,
 	styleToString,
 } from '$lib/internal/helpers/index.js';
 import { createStateMachine } from '$lib/internal/helpers/store/stateMachine.js';
@@ -98,12 +97,6 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 		const maxScrollPos = $sizes.content - $sizes.viewport;
 		scrollbarState.handleWheelScroll(e, maxScrollPos);
 	}
-
-	// We need to recompute the sizes when the visibility of
-	// the scrollbar changes
-	effect([scrollbarState.isVisible], ([_]) => {
-		sleep(1).then(() => scrollbarState.handleSizeChange());
-	});
 
 	function baseAction(node: HTMLElement) {
 		scrollbarState.scrollbarEl.set(node);
@@ -210,6 +203,7 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 		const unsubBaseAction = baseAction(node)?.destroy;
 		const scrollAreaEl = node.closest('[data-melt-scroll-area]');
 		let unsubScrollAreaListeners = noop;
+
 		if (scrollAreaEl) {
 			if (isTouchDevice()) {
 				unsubScrollAreaListeners = executeCallbacks(
