@@ -785,8 +785,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			}
 		}
 
-		if ($startValue && isSameDay($startValue, date) && !preventDeselect.get() && !$endValue) {
+		if ($startValue && $endValue && isSameDay($endValue, date) && !preventDeselect.get()) {
 			startValue.set(undefined);
+			endValue.set(undefined);
 			placeholder.set(date);
 			announcer.announce('Selected date is now empty.', 'polite');
 			return;
