@@ -11,6 +11,7 @@ import {
 	kbd,
 	noop,
 	omit,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { get, writable } from 'svelte/store';
@@ -104,11 +105,20 @@ export function createCombobox<
 		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['trigger']> => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const inputEl = document.getElementById(get(listbox.elements.trigger).id);
-					if (inputEl) {
-						inputEl.focus();
-					}
-					listbox.states.open.update((curr) => !curr);
+					listbox.states.open.update((curr) => {
+						if (!curr) {
+							// we're opening so focus the input
+							const inputEl = document.getElementById(get(listbox.elements.trigger).id);
+							inputEl?.focus();
+						} else {
+							// by default, when the menu closes it focuses the input
+							// but we want to focus the trigger here since it was just clicked
+							sleep(1).then(() => {
+								node.focus();
+							});
+						}
+						return !curr;
+					});
 				})
 			);
 

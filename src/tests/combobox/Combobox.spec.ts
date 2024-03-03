@@ -1,4 +1,4 @@
-import { act, fireEvent, render, waitFor } from '@testing-library/svelte';
+import { act, render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
@@ -27,7 +27,7 @@ describe('Combobox', () => {
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
-	test('Opens/Closes when input is clicked', async () => {
+	test('Opens when input is clicked', async () => {
 		const { getByTestId } = render(ComboboxTest);
 		const input = getByTestId('input');
 		const menu = getByTestId('menu');
@@ -36,9 +36,19 @@ describe('Combobox', () => {
 		expect(menu).not.toBeVisible();
 		await user.click(input);
 		expect(getByTestId('menu')).toBeVisible();
+	});
 
-		await user.click(input);
+	test("Doesn't close when the input is clicked again while open", async () => {
+		const { getByTestId } = render(ComboboxTest);
+		const input = getByTestId('input');
+		const menu = getByTestId('menu');
+		const user = userEvent.setup();
+
 		expect(menu).not.toBeVisible();
+		await user.click(input);
+		expect(menu).toBeVisible();
+		await user.click(input);
+		expect(menu).toBeVisible();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
@@ -240,7 +250,7 @@ describe('Combobox', () => {
 		expect(trigger).not.toHaveFocus();
 		await user.click(trigger);
 		expect(menu).not.toBeVisible();
-		expect(input).toHaveFocus();
+		expect(trigger).toHaveFocus();
 	});
 
 	test.todo('Selects multiple items when `multiple` is true');
@@ -266,7 +276,19 @@ describe('Combobox (forceVisible)', () => {
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
-	test('Opens/Closes when input is clicked', async () => {
+	test('Opens when input is clicked', async () => {
+		const user = userEvent.setup();
+		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest);
+		const input = getByTestId('input');
+		const getMenu = () => queryByTestId('menu');
+
+		expect(getMenu()).toBeNull();
+
+		await user.click(input);
+		expect(getMenu()).not.toBeNull();
+	});
+
+	test("Doesn't close when the input is clicked again while open", async () => {
 		const user = userEvent.setup();
 		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest);
 		const input = getByTestId('input');
@@ -278,7 +300,7 @@ describe('Combobox (forceVisible)', () => {
 		expect(getMenu()).not.toBeNull();
 
 		await user.click(input);
-		expect(getMenu()).toBeNull();
+		expect(getMenu()).not.toBeNull();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
@@ -499,7 +521,7 @@ describe('Combobox (forceVisible)', () => {
 		expect(trigger).not.toHaveFocus();
 		await user.click(trigger);
 		expect(getMenu()).toBeNull();
-		expect(input).toHaveFocus();
+		expect(trigger).toHaveFocus();
 	});
 
 	test.todo('Selects multiple items when `multiple` is true');
