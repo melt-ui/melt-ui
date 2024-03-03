@@ -1,4 +1,4 @@
-import { noop, safeOnDestroy } from '$lib/internal/helpers/index.js';
+import { noop, safeOnDestroy, clamp } from '$lib/internal/helpers/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
 
 export type Sizes = {
@@ -104,10 +104,6 @@ export function getScrollPositionFromPointer(
 	return interpolate(pointerPos);
 }
 
-function clamp(value: number, [min, max]: [number, number]): number {
-	return Math.min(max, Math.max(min, value));
-}
-
 export function getThumbOffsetFromScroll(
 	scrollPos: number,
 	sizes: Sizes,
@@ -118,8 +114,9 @@ export function getThumbOffsetFromScroll(
 	const scrollbar = sizes.scrollbar.size - scrollbarPadding;
 	const maxScrollPos = sizes.content - sizes.viewport;
 	const maxThumbPos = scrollbar - thumbSizePx;
-	const scrollClampRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
-	const scrollWithoutMomentum = clamp(scrollPos, scrollClampRange as [number, number]);
+	const [scrollClampMin, scrollClampMax] =
+		dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
+	const scrollWithoutMomentum = clamp(scrollClampMin, scrollPos, scrollClampMax);
 	const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos]);
 	return interpolate(scrollWithoutMomentum);
 }

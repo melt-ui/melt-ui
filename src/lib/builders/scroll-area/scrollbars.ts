@@ -35,32 +35,35 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 
 	function handleDragScroll(e: MouseEvent) {
 		const $domRect = scrollbarState.domRect.get();
-		if ($domRect) {
-			const x = e.clientX - $domRect.left;
-			const y = e.clientY - $domRect.top;
-			const $isHorizontal = scrollbarState.isHorizontal.get();
-			if ($isHorizontal) {
-				scrollbarState.onDragScroll(x);
-			} else {
-				scrollbarState.onDragScroll(y);
-			}
+		if (!$domRect) return;
+		const x = e.clientX - $domRect.left;
+		const y = e.clientY - $domRect.top;
+		const $isHorizontal = scrollbarState.isHorizontal.get();
+		if ($isHorizontal) {
+			scrollbarState.onDragScroll(x);
+		} else {
+			scrollbarState.onDragScroll(y);
 		}
 	}
 
 	function handlePointerDown(e: PointerEvent) {
 		if (e.button !== 0) return;
+
 		const target = e.target;
 		if (!isHTMLElement(target)) return;
 		target.setPointerCapture(e.pointerId);
+
 		const currentTarget = e.currentTarget;
 		if (!isHTMLElement(currentTarget)) return;
 		scrollbarState.domRect.set(currentTarget.getBoundingClientRect());
 		scrollbarState.prevWebkitUserSelect.set(document.body.style.webkitUserSelect);
 		document.body.style.webkitUserSelect = 'none';
+
 		const $viewportEl = rootState.viewportEl.get();
 		if ($viewportEl) {
 			$viewportEl.style.scrollBehavior = 'auto';
 		}
+
 		handleDragScroll(e);
 	}
 
@@ -141,12 +144,11 @@ export function createAutoScrollbarAction(state: ScrollAreaState) {
 
 	const handleResize = debounceCallback(() => {
 		const $viewportEl = rootState.viewportEl.get();
-		if ($viewportEl) {
-			const isOverflowX = $viewportEl.offsetWidth < $viewportEl.scrollWidth;
-			const isOverflowY = $viewportEl.offsetHeight < $viewportEl.scrollHeight;
+		if (!$viewportEl) return;
+		const isOverflowX = $viewportEl.offsetWidth < $viewportEl.scrollWidth;
+		const isOverflowY = $viewportEl.offsetHeight < $viewportEl.scrollHeight;
 
-			scrollbarState.isVisible.set(scrollbarState.isHorizontal.get() ? isOverflowX : isOverflowY);
-		}
+		scrollbarState.isVisible.set(scrollbarState.isHorizontal.get() ? isOverflowX : isOverflowY);
 	}, 10);
 
 	function scrollbarAutoAction(node: HTMLElement) {

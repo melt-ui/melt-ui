@@ -423,17 +423,13 @@ function createScrollbarThumb(state: ScrollAreaState) {
 		action: (node: HTMLElement): MeltActionReturn<ScrollAreaEvents['thumb']> => {
 			scrollbarState.thumbEl.set(node);
 
-			let effectHasRan = 0;
-			let unsubViewportScroll = noop;
-
-			effect([scrollbarState.sizes], ([_]) => {
-				if (effectHasRan === 2) return;
+			const unsubEffect = effect([scrollbarState.sizes], ([_]) => {
 				const $viewportEl = rootState.viewportEl.get();
-				if ($viewportEl) {
-					scrollbarState.onThumbPositionChange();
-					unsubViewportScroll = addEventListener($viewportEl, 'scroll', handleScroll);
-					effectHasRan++;
-				}
+				if (!$viewportEl) return noop;
+
+				scrollbarState.onThumbPositionChange();
+
+				return addEventListener($viewportEl, 'scroll', handleScroll);
 			});
 
 			const unsubEvents = executeCallbacks(
@@ -444,8 +440,8 @@ function createScrollbarThumb(state: ScrollAreaState) {
 			return {
 				destroy() {
 					unsubListener?.();
-					unsubViewportScroll();
 					unsubEvents();
+					unsubEffect();
 				},
 			};
 		},
