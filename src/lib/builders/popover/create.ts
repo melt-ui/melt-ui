@@ -21,7 +21,12 @@ import {
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
-import { usePopper, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import {
+	useEscapeKeydown,
+	usePopper,
+	usePortal,
+	type InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -48,7 +53,7 @@ const defaults = {
 	onOutsideClick: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
-type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
+type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close' | 'overlay';
 const { name } = createElHelpers<PopoverParts>('popover');
 
 export const popoverIdParts = ['trigger', 'content'] as const;
@@ -196,13 +201,13 @@ export function createPopover(args?: CreatePopoverProps) {
 	}
 
 	const trigger = makeElement(name('trigger'), {
-		stores: [open, ids.content, ids.trigger],
-		returned: ([$open, $contentId, $triggerId]) => {
+		stores: [isVisible, ids.content, ids.trigger],
+		returned: ([$isVisible, $contentId, $triggerId]) => {
 			return {
 				role: 'button',
 				'aria-haspopup': 'dialog',
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
+				'aria-expanded': $isVisible ? 'true' : 'false',
+				'data-state': stateAttr($isVisible),
 				'aria-controls': $contentId,
 				id: $triggerId,
 			} as const;
@@ -221,6 +226,54 @@ export function createPopover(args?: CreatePopoverProps) {
 
 			return {
 				destroy: unsub,
+			};
+		},
+	});
+
+	const overlay = makeElement(name('overlay'), {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
+			return {
+				hidden: $isVisible ? undefined : true,
+				tabindex: -1,
+				style: styleToString({
+					display: $isVisible ? undefined : 'none',
+				}),
+				'aria-hidden': 'true',
+				'data-state': stateAttr($isVisible),
+			} as const;
+		},
+		action: (node: HTMLElement) => {
+			let unsubEscapeKeydown = noop;
+
+			if (closeOnEscape.get()) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						handleClose();
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
+				}
+			}
+
+			const unsubPortal = effect([portal], ([$portal]) => {
+				if ($portal === null) return noop;
+				const portalDestination = getPortalDestination(node, $portal);
+				if (portalDestination === null) return noop;
+				const portalAction = usePortal(node, portalDestination);
+				if (portalAction && portalAction.destroy) {
+					return portalAction.destroy;
+				} else {
+					return noop;
+				}
+			});
+
+			return {
+				destroy() {
+					unsubEscapeKeydown();
+					unsubPortal();
+				},
 			};
 		},
 	});
@@ -296,10 +349,15 @@ export function createPopover(args?: CreatePopoverProps) {
 			content,
 			arrow,
 			close,
+			overlay,
 		},
 		states: {
 			open,
 		},
 		options,
 	};
+}
+
+function stateAttr(open: boolean) {
+	return open ? 'open' : 'closed';
 }
