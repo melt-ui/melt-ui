@@ -42,6 +42,10 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the popover content.',
 		},
 		{
+			name: 'overlay',
+			description: 'The builder store used to create the popover overlay.',
+		},
+		{
 			name: 'close',
 			description: 'The builder store used to create the popover close button.',
 		},
@@ -79,8 +83,27 @@ const content = elementSchema('content', {
 	description: 'The popover content.',
 	dataAttributes: [
 		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
 			name: 'data-melt-popover-content',
 			value: ATTRS.MELT('content'),
+		},
+	],
+});
+
+const overlay = elementSchema('overlay', {
+	description:
+		'The optional popover overlay element, which can be used to give the popover modal-like behavior where the user cannot interact with the rest of the page while the popover is open.',
+	dataAttributes: [
+		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
+			name: 'data-melt-popover-overlay',
+			value: ATTRS.MELT('overlay'),
 		},
 	],
 });
@@ -137,7 +160,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, content, close, arrow];
+const schemas = [builder, trigger, content, overlay, close, arrow];
 
 const features = [
 	'Full keyboard navigation',
