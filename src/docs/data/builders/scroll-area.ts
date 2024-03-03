@@ -170,9 +170,9 @@ const schemas: BuilderData['schemas'] = [
 ];
 
 const features: BuilderData['features'] = [
-	'Full keyboard navigation',
-	'Can expand one or multiple items',
-	'Can be controlled or uncontrolled',
+	'Scrolling behavior is native to the platform',
+	'Scrollbar is positioned above the content so no layout shifting occurs',
+	'Keyboard controls follow platform conventions',
 ];
 
 export const scrollAreaData: BuilderData = {
