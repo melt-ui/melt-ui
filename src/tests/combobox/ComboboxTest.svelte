@@ -21,7 +21,7 @@
 	export let closeOnEscape: CreateComboboxProps<unknown>['closeOnEscape'] = undefined;
 
 	const {
-		elements: { menu, input, option, label },
+		elements: { menu, input, option, label, trigger },
 		states: { open, inputValue, selected },
 	} = createCombobox(
 		removeUndefined({
@@ -48,8 +48,9 @@
 	>
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label use:melt={$label} data-testid="label">Label</label>
-
 	<input use:melt={$input} data-testid="input" />
+	<button use:melt={$trigger} data-testid="trigger">Toggle</button>
+	<button data-testid="outside-click">Outside click</button>
 
 	<ul use:melt={$menu} data-testid="menu">
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -66,5 +67,4 @@
 			{/each}
 		</div>
 	</ul>
-	<div data-testid="outside-click" />
 </main>

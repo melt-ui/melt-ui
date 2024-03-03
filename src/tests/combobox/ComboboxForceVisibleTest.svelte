@@ -21,7 +21,7 @@
 	export let closeOnEscape: CreateComboboxProps<unknown>['closeOnEscape'] = undefined;
 
 	const {
-		elements: { menu, input, option, label },
+		elements: { menu, input, option, label, trigger },
 		states: { open, inputValue, selected },
 	} = createCombobox(
 		removeUndefined({
@@ -51,6 +51,7 @@
 	<label use:melt={$label} data-testid="label">Label</label>
 
 	<input use:melt={$input} data-testid="input" />
+	<button use:melt={$trigger} data-testid="trigger">Toggle</button>
 
 	{#if $open}
 		<ul use:melt={$menu} data-testid="menu">

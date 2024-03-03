@@ -81,6 +81,10 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the collapsible input.',
 		},
 		{
+			name: 'trigger',
+			description: 'An optional button that opens the combobox menu.',
+		},
+		{
 			name: 'item',
 			description: 'The builder store used to create the menu item.',
 		},
@@ -171,7 +175,7 @@ const input = elementSchema('input', {
 		},
 		{
 			name: 'data-disabled',
-			value: ATTRS.DISABLED('`select`'),
+			value: ATTRS.DISABLED('`combobox`'),
 		},
 		{
 			name: 'data-melt-combobox-input',
@@ -179,6 +183,24 @@ const input = elementSchema('input', {
 		},
 	],
 	events: comboboxEvents['input'],
+});
+
+const trigger = elementSchema('trigger', {
+	description: 'An optional button that toggles the menu open and closed when pressed.',
+	dataAttributes: [
+		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
+			name: 'data-disabled',
+			value: ATTRS.DISABLED('`combobox`'),
+		},
+		{
+			name: 'data-melt-combobox-trigger',
+			value: ATTRS.MELT('trigger'),
+		},
+	],
 });
 
 const item = elementSchema('item', {
@@ -315,7 +337,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, label, group, groupLabel, arrow, hiddenInput];
+const schemas = [builder, menu, input, trigger, item, label, group, groupLabel, arrow, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',

@@ -13,7 +13,7 @@ import {
 	omit,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { createListbox } from '../listbox/create.js';
 import type { ComboboxEvents } from './events.js';
 import type { ComboboxSelected, CreateComboboxProps } from './types.js';
@@ -94,6 +94,32 @@ export function createCombobox<
 		},
 	});
 
+	const trigger = makeElement(name('trigger'), {
+		stores: [listbox.elements.trigger],
+		returned: ([$trigger]) => {
+			return {
+				...omit($trigger, 'action', 'id'),
+			};
+		},
+		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['trigger']> => {
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					const inputEl = document.getElementById(get(listbox.elements.trigger).id);
+					if (inputEl) {
+						inputEl.focus();
+					}
+					listbox.states.open.update((curr) => !curr);
+				})
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
+
 	effect(listbox.states.open, ($open) => {
 		if (!$open) {
 			touchedInput.set(false);
@@ -104,6 +130,7 @@ export function createCombobox<
 		...listbox,
 		elements: {
 			...omit(listbox.elements, 'trigger'),
+			trigger,
 			input,
 		},
 		states: {

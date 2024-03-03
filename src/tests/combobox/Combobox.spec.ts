@@ -1,4 +1,4 @@
-import { act, render, waitFor } from '@testing-library/svelte';
+import { act, fireEvent, render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
@@ -198,7 +198,6 @@ describe('Combobox', () => {
 	});
 
 	test('Can programatically open the combobox with the `open` store', async () => {
-		//
 		const user = userEvent.setup();
 		const { getByTestId } = render(ComboboxTest);
 
@@ -209,6 +208,39 @@ describe('Combobox', () => {
 		await user.click(toggleBtn);
 		await sleep(100);
 		expect(menu).toBeVisible();
+	});
+
+	test('Opens the menu when closed and trigger is clicked', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(ComboboxTest);
+
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const input = getByTestId('input');
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+		expect(input).toHaveFocus();
+		expect(trigger).not.toHaveFocus();
+	});
+
+	test('Closes the menu when the trigger is clicked and the menu is open', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(ComboboxTest);
+
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const input = getByTestId('input');
+
+		expect(menu).not.toBeVisible();
+		await user.click(input);
+		expect(menu).toBeVisible();
+		expect(input).toHaveFocus();
+		expect(trigger).not.toHaveFocus();
+		await user.click(trigger);
+		expect(menu).not.toBeVisible();
+		expect(input).toHaveFocus();
 	});
 
 	test.todo('Selects multiple items when `multiple` is true');
@@ -379,7 +411,7 @@ describe('Combobox (forceVisible)', () => {
 
 	test.skip('Closes on outside click by default', async () => {
 		const user = userEvent.setup();
-		const { getByTestId, queryByTestId } = render(ComboboxTest);
+		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest);
 		const input = getByTestId('input');
 
 		const getMenu = () => queryByTestId('menu');
@@ -435,6 +467,39 @@ describe('Combobox (forceVisible)', () => {
 		await user.click(toggleBtn);
 		await sleep(100);
 		expect(getMenu()).not.toBeNull();
+	});
+
+	test('Opens the menu when closed and trigger is clicked', async () => {
+		const user = userEvent.setup();
+		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest);
+
+		const trigger = getByTestId('trigger');
+		const getMenu = () => queryByTestId('menu');
+		const input = getByTestId('input');
+
+		expect(getMenu()).toBeNull();
+		await user.click(trigger);
+		expect(getMenu()).not.toBeNull();
+		expect(input).toHaveFocus();
+		expect(trigger).not.toHaveFocus();
+	});
+
+	test('Closes the menu when the trigger is clicked and the menu is open', async () => {
+		const user = userEvent.setup();
+		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest);
+
+		const trigger = getByTestId('trigger');
+		const getMenu = () => queryByTestId('menu');
+		const input = getByTestId('input');
+
+		expect(getMenu()).toBeNull();
+		await user.click(input);
+		expect(getMenu()).not.toBeNull();
+		expect(input).toHaveFocus();
+		expect(trigger).not.toHaveFocus();
+		await user.click(trigger);
+		expect(getMenu()).toBeNull();
+		expect(input).toHaveFocus();
 	});
 
 	test.todo('Selects multiple items when `multiple` is true');
