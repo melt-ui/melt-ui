@@ -88,8 +88,8 @@ export function makeElement<
 				const result = returned(values);
 				if (isFunctionWithParams(result)) {
 					const fn = (...args: Parameters<typeof result>) => {
-						return removeUndefined(
-							hiddenAction({
+						return hiddenAction(
+							removeUndefined({
 								...result(...args),
 								[`data-melt-${name}`]: '',
 								action: action ?? noop,
@@ -100,8 +100,8 @@ export function makeElement<
 					return fn;
 				}
 
-				return removeUndefined(
-					hiddenAction({
+				return hiddenAction(
+					removeUndefined({
 						...result,
 						[`data-melt-${name}`]: '',
 						action: action ?? noop,
@@ -115,8 +115,8 @@ export function makeElement<
 
 			if (isFunctionWithParams(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
-					return removeUndefined(
-						hiddenAction({
+					return hiddenAction(
+						removeUndefined({
 							...result(...args),
 							[`data-melt-${name}`]: '',
 							action: action ?? noop,
@@ -129,8 +129,8 @@ export function makeElement<
 			}
 
 			return lightable(
-				removeUndefined(
-					hiddenAction({
+				hiddenAction(
+					removeUndefined({
 						...result,
 						[`data-melt-${name}`]: '',
 						action: action ?? noop,
