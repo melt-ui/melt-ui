@@ -189,7 +189,12 @@ export function createHoverScrollbarAction(state: ScrollAreaState) {
 	function handlePointerEnter() {
 		window.clearTimeout(timeout);
 		if (scrollbarState.isVisible.get()) return;
-		scrollbarState.isVisible.set(true);
+		const $viewportEl = rootState.viewportEl.get();
+		if (!$viewportEl) return;
+		const isOverflowX = $viewportEl.offsetWidth < $viewportEl.scrollWidth;
+		const isOverflowY = $viewportEl.offsetHeight < $viewportEl.scrollHeight;
+
+		scrollbarState.isVisible.set(scrollbarState.isHorizontal.get() ? isOverflowX : isOverflowY);
 	}
 
 	function handlePointerLeave() {
@@ -347,9 +352,9 @@ export function createScrollbarX(state: ScrollAreaState, createAction: CreateScr
 					position: 'absolute',
 					bottom: 0,
 					left: $dir === 'rtl' ? 'var(--melt-scroll-area-corner-width)' : 0,
-					right: $dir === 'ltr' ? 'var(--melt-scroll-area-corner-width' : 0,
-					'--melt-scroll-area-thumb-width': $sizes ? `${getThumbSize($sizes)}px` : undefined,
-					display: !$isVisible ? 'none' : undefined,
+					right: $dir === 'ltr' ? 'var(--melt-scroll-area-corner-width)' : 0,
+					'--melt-scroll-area-thumb-width': `${getThumbSize($sizes)}px`,
+					visibility: !$isVisible ? 'hidden' : undefined,
 				}),
 				'data-state': $isVisible ? 'visible' : 'hidden',
 			};
