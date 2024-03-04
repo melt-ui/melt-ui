@@ -20,6 +20,7 @@ import {
 	withGet,
 	type WithGet,
 	portalAttr,
+	isElement,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
@@ -109,15 +110,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		if (e.defaultPrevented) return false;
 
 		const target = e.target;
-		if (!(target instanceof Element)) return false;
+		if (!isElement(target)) return false;
 
 		const isClickInsideTrigger = target.closest(`[data-id="${ids.trigger.get()}"]`) !== null;
-
-		if (!isClickInsideTrigger || isLeftClick(e)) {
-			return true;
-		}
-
-		return false;
+		return !isClickInsideTrigger || isLeftClick(e);
 	}
 
 	const isVisible = derivedVisible({
@@ -162,7 +158,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 						setMeltMenuAttribute(node, selector);
 						const $virtual = virtual.get();
 						const popper = usePopper(node, {
-							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
+							anchorElement: $virtual ?? $rootActiveTrigger,
 							open: rootOpen,
 							options: {
 								floating: $positioning,
@@ -245,6 +241,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
+			rootActiveTrigger.set(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {
 				point.set({
@@ -253,7 +250,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				});
 				nextFocusable.set(getNextFocusable(node));
 				prevFocusable.set(getPreviousFocusable(node));
-				rootActiveTrigger.set(node);
 				rootOpen.set(true);
 			};
 
