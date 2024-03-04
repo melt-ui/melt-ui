@@ -1,5 +1,5 @@
 import { createSeparator } from '$lib/builders/index.js';
-import { usePopper } from '$lib/internal/actions/index.js';
+import { useEscapeKeydown, usePopper, usePortal } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -335,6 +335,56 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
+	});
+
+	const overlay = makeElement(name('overlay'), {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
+			return {
+				hidden: $isVisible ? undefined : true,
+				tabindex: -1,
+				style: styleToString({
+					display: $isVisible ? undefined : 'none',
+				}),
+				'aria-hidden': 'true',
+				'data-state': stateAttr($isVisible),
+			} as const;
+		},
+		action: (node: HTMLElement) => {
+			let unsubEscapeKeydown = noop;
+
+			if (closeOnEscape.get()) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						rootOpen.set(false);
+						const $rootActiveTrigger = rootActiveTrigger.get();
+						if ($rootActiveTrigger) $rootActiveTrigger.focus();
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
+				}
+			}
+
+			const unsubPortal = effect([portal], ([$portal]) => {
+				if ($portal === null) return noop;
+				const portalDestination = getPortalDestination(node, $portal);
+				if (portalDestination === null) return noop;
+				const portalAction = usePortal(node, portalDestination);
+				if (portalAction && portalAction.destroy) {
+					return portalAction.destroy;
+				} else {
+					return noop;
+				}
+			});
+
+			return {
+				destroy() {
+					unsubEscapeKeydown();
+					unsubPortal();
+				},
+			};
+		},
 	});
 
 	const item = makeElement(name('item'), {
@@ -1369,20 +1419,29 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	}
 
 	return {
+		elements: {
+			trigger: rootTrigger,
+			menu: rootMenu,
+			overlay,
+			item,
+			group,
+			groupLabel,
+			arrow: rootArrow,
+			separator,
+		},
+		builders: {
+			createCheckboxItem,
+			createSubmenu,
+			createMenuRadioGroup,
+		},
+		states: {
+			open: rootOpen,
+		},
+		helpers: {
+			handleTypeaheadSearch,
+		},
 		ids: rootIds,
-		trigger: rootTrigger,
-		menu: rootMenu,
-		open: rootOpen,
-		item,
-		group,
-		groupLabel,
-		arrow: rootArrow,
 		options: opts.rootOptions,
-		createCheckboxItem,
-		createSubmenu,
-		createMenuRadioGroup,
-		separator,
-		handleTypeaheadSearch,
 	};
 }
 
@@ -1559,4 +1618,8 @@ function isFocusWithinSubmenu(submenuId: string) {
 	// so we're using a data attribute.
 	const submenuEl = activeEl.closest(`[data-id="${submenuId}"]`);
 	return isHTMLElement(submenuEl);
+}
+
+function stateAttr(open: boolean) {
+	return open ? 'open' : 'closed';
 }

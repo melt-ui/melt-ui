@@ -210,6 +210,7 @@ export type _MenuParts =
 	| 'arrow'
 	| 'checkbox-item'
 	| 'item'
+	| 'overlay'
 	| 'radio-group'
 	| 'radio-item'
 	| 'submenu'
