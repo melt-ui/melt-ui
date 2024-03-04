@@ -1,12 +1,8 @@
-import { render, act, waitFor, fireEvent, screen } from '@testing-library/svelte';
-import { axe } from 'jest-axe';
+import { render, waitFor, fireEvent } from '@testing-library/svelte';
 import { describe, it } from 'vitest';
 import { userEvent } from '@testing-library/user-event';
-import { testKbd as kbd } from '../utils.js';
 import ScrollAreaTest from './ScrollAreaTest.svelte';
 import type { CreateScrollAreaProps } from '$lib/index.js';
-import { sleep } from '$lib/internal/helpers/sleep.js';
-import { tick } from 'svelte';
 
 function setup(
 	props?: CreateScrollAreaProps & {
