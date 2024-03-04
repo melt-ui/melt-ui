@@ -8,6 +8,8 @@ description:
     import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+	export let previews
+	export let snippets
 </script>
 
 ## Anatomy
@@ -23,6 +25,8 @@ description:
 - **Separator**: A visual divider between menu items.
 
 ## Usage
+
+### Basic
 
 The first thing you need to do is create a context menu using the `createContextMenu` function.
 
@@ -83,6 +87,40 @@ occurring.
 	Item 2
 </div>
 ```
+
+### Modal Behavior
+
+To give the context menu complete modal behavior, where an overlay is rendered behind the menu to
+prevent interaction with the rest of the page while open, use the `overlay` builder element.
+
+```svelte
+<script lang="ts">
+	import { createContextMenu, melt } from '@melt-ui/svelte'
+	const {
+		elements: { trigger, menu, item, separator, arrow, overlay }
+	} = createContextMenu()
+</script>
+
+<div use:melt={$trigger}>Right click to open</div>
+<div use:melt={$overlay} />
+<div use:melt={$menu}>
+	<div use:melt={$arrow} />
+	<div use:melt={$item} />
+</div>
+```
+
+The [Modal Context Menu](#modal-context-menu) example below demonstrates this behavior in action.
+
+## Example Components
+
+### Modal Context Menu
+
+An example using the `overlay` builder element to prevent interaction with the rest of the page
+while the menu is open.
+
+<Preview code={snippets.modal}>
+    <svelte:component this={previews.modal} />
+</Preview>
 
 ## API Reference
 

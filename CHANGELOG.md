@@ -1,5 +1,37 @@
 # @melt-ui/svelte
 
+## 0.75.2
+
+### Patch Changes
+
+- Scroll Area: fixed bug with `type: 'hover'` scrollbars always showing on hover even if content not overflowing ([#1046](https://github.com/melt-ui/melt-ui/pull/1046))
+
+- Scroll Area: fixed bug with `scrollbarX` styles ([#1046](https://github.com/melt-ui/melt-ui/pull/1046))
+
+## 0.75.1
+
+### Patch Changes
+
+- Scroll Area: export types ([#1044](https://github.com/melt-ui/melt-ui/pull/1044))
+
+## 0.75.0
+
+### Minor Changes
+
+- Popover: add optional `overlay` element builder for simplified modal behavior (part of #1018) ([#1025](https://github.com/melt-ui/melt-ui/pull/1025))
+
+- Menus: add `overlay` element ([#1035](https://github.com/melt-ui/melt-ui/pull/1035))
+
+- New Builder: Scroll Area ([#908](https://github.com/melt-ui/melt-ui/pull/908))
+
+### Patch Changes
+
+- Range Calendar/Picker: fixed bug preventing a range with the same start and end date (Closes #898) ([#1037](https://github.com/melt-ui/melt-ui/pull/1037))
+
+- Tooltip: fixed bug where tooltip content style gets reset when forceVisible is true and $open gets updated #1010 ([#1011](https://github.com/melt-ui/melt-ui/pull/1011))
+
+- Calendars: ensure dates use the same calendar as the reference value ([#1026](https://github.com/melt-ui/melt-ui/pull/1026))
+
 ## 0.74.4
 
 ### Patch Changes
