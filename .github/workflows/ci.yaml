@@ -34,7 +34,7 @@ jobs:
         with:
           version: 8.6.3
           run_install: true
-      - run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} && pnpm run check
+      - run: pnpm run check
       
 
   Tests:
@@ -45,5 +45,5 @@ jobs:
         with:
           version: 8.6.3
           run_install: true
-      - run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} && pnpm run test
+      - run: pnpm run test
       

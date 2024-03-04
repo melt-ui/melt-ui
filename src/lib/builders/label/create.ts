@@ -1,18 +1,41 @@
-import { addMeltEventListener, makeElement } from '$lib/internal/helpers/index.js';
+import { addMeltEventListener, makeElement, withGet } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
+import { readonly } from 'svelte/store';
 import type { LabelEvents } from './events.js';
+import type { CreateLabelProps } from './types.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 
-export function createLabel() {
+const defaults = {
+	id: undefined,
+	for: undefined,
+} satisfies CreateLabelProps;
+
+export function createLabel(props?: CreateLabelProps) {
+	const { id, for: htmlFor } = parseProps(props, defaults);
+	const mounted = withGet.writable(false);
+
 	const root = makeElement('label', {
+		stores: [id, htmlFor],
+		returned([$id, $htmlFor]) {
+			return {
+				id: $id,
+				for: $htmlFor,
+			};
+		},
 		action: (node: HTMLElement): MeltActionReturn<LabelEvents['root']> => {
-			const mouseDown = addMeltEventListener(node, 'mousedown', (e) => {
+			mounted.set(true);
+
+			const unsub = addMeltEventListener(node, 'mousedown', (e) => {
 				if (!e.defaultPrevented && e.detail > 1) {
 					e.preventDefault();
 				}
 			});
 
 			return {
-				destroy: mouseDown,
+				destroy: () => {
+					unsub();
+					mounted.set(false);
+				},
 			};
 		},
 	});
@@ -20,6 +43,11 @@ export function createLabel() {
 	return {
 		elements: {
 			root,
+		},
+		states: { mounted: readonly(mounted) },
+		options: {
+			id,
+			for: htmlFor,
 		},
 	};
 }

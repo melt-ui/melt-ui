@@ -6,10 +6,42 @@ import type { BuilderData } from './index.js';
 const BUILDER_NAME = 'label';
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createLabel',
+	props: [
+		{
+			name: 'id',
+			description: 'The id of the label.',
+			type: 'string',
+		},
+		{
+			name: 'for',
+			description: 'The id of the control the label is for.',
+			type: 'string',
+		},
+	],
 	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the label root.',
+		},
+	],
+	states: [
+		{
+			name: 'mounted',
+			description:
+				'A readable store that is true when the label is mounted and false when it is not.',
+			type: 'Readable<boolean>',
+		},
+	],
+	options: [
+		{
+			name: 'id',
+			description: 'The writable store for the id of the label.',
+			type: 'Writable<string>',
+		},
+		{
+			name: 'for',
+			description: 'The writable store for the id of the control the label is for.',
+			type: 'Writable<string>',
 		},
 	],
 });

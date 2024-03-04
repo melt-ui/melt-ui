@@ -1,6 +1,6 @@
 import type { Action } from 'svelte/action';
 import { derived, type Readable, type Stores, type StoresValues } from 'svelte/store';
-import { isBrowser, isHTMLElement, noop } from './index.js';
+import { isBrowser, isHTMLElement, isReadable, noop } from './index.js';
 import { lightable } from './store/lightable.js';
 
 export function getElementByMeltId(id: string) {
@@ -30,7 +30,7 @@ type ElementCallback<S extends Stores | undefined> = S extends Stores
 const isFunctionWithParams = (
 	fn: unknown
 ): fn is (...args: unknown[]) => Record<string, unknown> => {
-	return typeof fn === 'function';
+	return typeof fn === 'function' && !isReadable(fn);
 };
 
 type MeltElementStore<
@@ -131,10 +131,9 @@ export function makeElement<
 		}
 	})() as MeltElementStore<S, A, R, Name>;
 
-	const actionFn = (action ??
-		(() => {
-			/** noop */
-		})) as A & { subscribe: typeof derivedStore.subscribe };
+	const actionFn = ((...args) => {
+		return action?.(...args);
+	}) as A & { subscribe: typeof derivedStore.subscribe };
 	actionFn.subscribe = derivedStore.subscribe;
 
 	return actionFn;

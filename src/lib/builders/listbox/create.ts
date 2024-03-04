@@ -44,7 +44,7 @@ import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { tick } from 'svelte';
-import { derived, get, readonly, writable, type Readable } from 'svelte/store';
+import { derived, readonly, writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import { createHiddenInput } from '../hidden-input/create.js';
 import { createLabel } from '../label/create.js';
@@ -242,16 +242,43 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 	/* ELEMENTS */
 	/* -------- */
 
-	/** Action and attributes for the text input. */
+	// Use our existing label builder to create a label for the listbox input.
+	const originalLabel = createLabel({
+		for: ids.trigger,
+		id: ids.label,
+	});
+
+	const label = makeElement(name('label'), {
+		stores: [originalLabel.elements.root],
+		returned: ([$root]) => omit($root ?? {}, 'data-melt-label'),
+		action: originalLabel.elements.root,
+	});
+
 	const trigger = makeElement(name('trigger'), {
-		stores: [open, highlightedItem, disabled, ids.menu, ids.trigger, ids.label],
-		returned: ([$open, $highlightedItem, $disabled, $menuId, $triggerId, $labelId]) => {
+		stores: [
+			open,
+			highlightedItem,
+			disabled,
+			ids.menu,
+			ids.trigger,
+			ids.label,
+			originalLabel.states.mounted,
+		],
+		returned: ([
+			$open,
+			$highlightedItem,
+			$disabled,
+			$menuId,
+			$triggerId,
+			$labelId,
+			$labelMounted,
+		]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
 				'aria-controls': $menuId,
 				'aria-expanded': $open,
-				'aria-labelledby': $labelId,
+				'aria-labelledby': $labelMounted ? $labelId : undefined,
 				// autocomplete: 'off',
 				id: $triggerId,
 				role: 'combobox',
@@ -492,23 +519,6 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 				},
 			};
 		},
-	});
-
-	// Use our existing label builder to create a label for the listbox input.
-	const {
-		elements: { root: labelBuilder },
-	} = createLabel();
-	const { action: labelAction } = get(labelBuilder);
-
-	const label = makeElement(name('label'), {
-		stores: [ids.label, ids.trigger],
-		returned: ([$labelId, $triggerId]) => {
-			return {
-				id: $labelId,
-				for: $triggerId,
-			};
-		},
-		action: labelAction,
 	});
 
 	const option = makeElement(name('option'), {
