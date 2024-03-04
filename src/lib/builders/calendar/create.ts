@@ -78,8 +78,9 @@ export function createCalendar<Value extends DateValue = DateValue>(
 	const {
 		value,
 		placeholder: _placeholder,
+		ids,
 		...options
-	} = parseProps(omit(props ?? {}, 'ids'), defaults);
+	} = parseProps({ props, defaults, idParts: calendarIdParts });
 
 	const {
 		preventDeselect,
@@ -97,8 +98,6 @@ export function createCalendar<Value extends DateValue = DateValue>(
 		readonly,
 		weekdayFormat,
 	} = options;
-
-	const ids = toWritableStores({ ...generateIds(calendarIdParts), ...props?.ids });
 
 	const defaultDate = getDefaultDate({
 		defaultPlaceholder: _placeholder?.get(),

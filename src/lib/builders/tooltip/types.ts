@@ -1,5 +1,5 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
-import type { IdObj, ReadableProp } from '$lib/internal/helpers/index.js';
+import type { IdObjProp, ReadableProp } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { TooltipIdParts, createTooltip } from './create.js';
 export type { TooltipComponentEvents } from './events.js';
@@ -30,7 +30,7 @@ export type CreateTooltipProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<TooltipIdParts>>;
+	ids?: Partial<IdObjProp<TooltipIdParts>>;
 };
 
 export type Tooltip = BuilderReturn<typeof createTooltip>;

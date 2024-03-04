@@ -1,5 +1,5 @@
 import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
-import type { ChangeFn, IdObj, ReadableProp } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, IdObjProp, ReadableProp } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { ListboxIdParts, createListbox } from './create.js';
@@ -133,7 +133,7 @@ export type CreateListboxProps<Value = unknown> = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<ListboxIdParts>>;
+	ids?: Partial<IdObjProp<ListboxIdParts>>;
 };
 
 export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {

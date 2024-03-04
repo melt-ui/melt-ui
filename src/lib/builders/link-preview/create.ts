@@ -14,18 +14,15 @@ import {
 	isTouch,
 	makeElement,
 	noop,
+	portalAttr,
 	sleep,
 	styleToString,
-	toWritableStores,
-	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { writable, type Readable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id.js';
-import { omit } from '../../internal/helpers/object.js';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
 
@@ -51,7 +48,7 @@ export const linkPreviewIdParts = ['trigger', 'content'] as const;
 export type LinkPreviewIdParts = typeof linkPreviewIdParts;
 
 export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
-	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
+	const { open, ids, ...options } = parseProps({ props, defaults, idParts: linkPreviewIdParts });
 
 	const hasSelection = withGet.writable(false);
 	const isPointerDownOnContent = withGet.writable(false);
@@ -70,7 +67,6 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		onOutsideClick,
 	} = options;
 
-	const ids = toWritableStores({ ...generateIds(linkPreviewIdParts), ...props.ids });
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 

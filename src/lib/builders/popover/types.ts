@@ -1,5 +1,5 @@
 import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
-import type { FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { FocusProp, IdObjProp } from '$lib/internal/helpers/index.js';
 import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { PopoverIdParts, createPopover } from './create.js';
@@ -91,7 +91,7 @@ export type CreatePopoverProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<PopoverIdParts>>;
+	ids?: IdObjProp<PopoverIdParts>;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

@@ -1,6 +1,7 @@
 import {
 	addMeltEventListener,
 	createElHelpers,
+	defineIdParts,
 	derivedVisible,
 	effect,
 	executeCallbacks,
@@ -12,13 +13,10 @@ import {
 	kbd,
 	makeElement,
 	noop,
-	omit,
-	removeScroll,
-	styleToString,
-	toWritableStores,
-	sleep,
 	portalAttr,
-	generateIds,
+	removeScroll,
+	sleep,
+	styleToString,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -55,11 +53,11 @@ const defaults = {
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close' | 'overlay';
 const { name } = createElHelpers<PopoverParts>('popover');
 
-export const popoverIdParts = ['trigger', 'content'] as const;
+export const popoverIdParts = defineIdParts(['trigger', 'content']);
 export type PopoverIdParts = typeof popoverIdParts;
 
 export function createPopover(props?: CreatePopoverProps) {
-	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
+	const { open, ids, ...options } = parseProps({ props, defaults, idParts: popoverIdParts });
 	const {
 		positioning,
 		arrowSize,
@@ -75,8 +73,6 @@ export function createPopover(props?: CreatePopoverProps) {
 	} = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
-
-	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...props?.ids });
 
 	safeOnMount(() => {
 		activeTrigger.set(document.getElementById(ids.trigger.get()));

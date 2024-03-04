@@ -9,7 +9,7 @@ const defaults = {
 } satisfies CreateAvatarProps;
 
 export const createAvatar = (props?: CreateAvatarProps) => {
-	const { loadingStatus, ...options } = parseProps(props, defaults);
+	const { loadingStatus, ...options } = parseProps({ props, defaults });
 	const { src, delayMs } = options;
 
 	effect([src, delayMs], ([$src, $delayMs]) => {

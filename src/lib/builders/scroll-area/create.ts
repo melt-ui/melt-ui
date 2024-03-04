@@ -10,7 +10,7 @@ import {
 	noop,
 	styleToString,
 	toWritableStores,
-	type IdObj,
+	type IdObjProp,
 	type ToWritableStores,
 	omit,
 	withGet,
@@ -56,7 +56,7 @@ export type ScrollAreaRootState = {
 	viewportEl: WithGet<Writable<HTMLElement | null>>;
 	contentEl: WithGet<Writable<HTMLElement | null>>;
 	options: ToWritableStores<Required<Omit<CreateScrollAreaProps, 'ids'>>>;
-	ids: ToWritableStores<IdObj<ScrollAreaIdParts>>;
+	ids: ToWritableStores<IdObjProp<ScrollAreaIdParts>>;
 };
 
 export type ScrollAreaScrollbarState = {

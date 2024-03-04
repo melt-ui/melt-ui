@@ -21,7 +21,7 @@ const defaults = {
 } satisfies Defaults<CreateCheckboxProps>;
 
 export function createCheckbox(props?: CreateCheckboxProps) {
-	const { checked, ...options } = parseProps(props, defaults);
+	const { checked, ...options } = parseProps({ props, defaults });
 	const { disabled, name, required, value } = options;
 
 	const root = makeElement('checkbox', {

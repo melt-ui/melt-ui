@@ -20,7 +20,7 @@ const defaults = {
 const { name } = createElHelpers('collapsible');
 
 export function createCollapsible(props?: CreateCollapsibleProps) {
-	const { open, ...options } = parseProps(props, defaults);
+	const { open, ...options } = parseProps({ props, defaults });
 	const { disabled, forceVisible } = options;
 
 	const root = makeElement(name(), {

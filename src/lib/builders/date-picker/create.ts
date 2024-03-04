@@ -5,13 +5,12 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
-	makeElement,
 	effect,
-	omit,
-	toWritableStores,
-	parseProps,
 	withDefaults as getWithDefaults,
+	makeElement,
 	newOverridable,
+	omit,
+	parseProps,
 } from '$lib/internal/helpers/index.js';
 import type { CreateDatePickerProps } from './types.js';
 
@@ -43,7 +42,7 @@ const defaults = {
 
 export function createDatePicker(props?: CreateDatePickerProps) {
 	const withDefaults = getWithDefaults(props, defaults);
-	const parsed = parseProps(props, defaults);
+	const parsed = parseProps({ props, defaults });
 	const options = omit(parsed, 'value', 'placeholder');
 
 	const dateField = createDateField({
@@ -55,13 +54,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		states: { value, placeholder: dfPlaceholder },
 	} = dateField;
 
-	;
-
 	const calendar = createCalendar({
 		...withDefaults,
 		placeholder: dfPlaceholder,
 		value: newOverridable(value, {
-			get: (v) => v ? [v] : [],
+			get: (v) => (v ? [v] : []),
 			set: ({ next, commit }) => {
 				commit(next[0]);
 			},

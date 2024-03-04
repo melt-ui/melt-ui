@@ -1,5 +1,5 @@
 import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
-import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { IdObjProp } from '$lib/internal/helpers/index.js';
 import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { LinkPreviewIdParts, createLinkPreview } from './create.js';
@@ -85,7 +85,7 @@ export type CreateLinkPreviewProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<LinkPreviewIdParts>>;
+	ids?: Partial<IdObjProp<LinkPreviewIdParts>>;
 };
 
 export type LinkPreview = BuilderReturn<typeof createLinkPreview>;

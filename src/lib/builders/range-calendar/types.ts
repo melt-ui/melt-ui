@@ -3,7 +3,7 @@ import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { DateValue } from '@internationalized/date';
 import type { DateRange, Matcher } from '$lib/index.js';
-import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { IdObjProp } from '$lib/internal/helpers/index.js';
 
 export type RangeCalendarProps = {
 	/**
@@ -253,7 +253,7 @@ export type RangeCalendarProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<IdObj<RangeCalendarIdParts>>;
+	ids?: Partial<IdObjProp<RangeCalendarIdParts>>;
 };
 
 export type CreateRangeCalendarProps = RangeCalendarProps;

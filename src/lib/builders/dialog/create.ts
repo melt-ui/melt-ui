@@ -3,9 +3,9 @@ import { useModal } from '$lib/internal/actions/modal/action.js';
 import {
 	addMeltEventListener,
 	createElHelpers,
+	defineIdParts,
 	effect,
 	executeCallbacks,
-	generateIds,
 	getPortalDestination,
 	handleFocus,
 	isBrowser,
@@ -13,11 +13,9 @@ import {
 	kbd,
 	makeElement,
 	noop,
-	omit,
+	portalAttr,
 	removeScroll,
 	styleToString,
-	toWritableStores,
-	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
@@ -50,11 +48,11 @@ const defaults = {
 	onOutsideClick: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
-export const dialogIdParts = ['content', 'title', 'description'] as const;
+export const dialogIdParts = defineIdParts(['content', 'title', 'description']);
 export type DialogIdParts = typeof dialogIdParts;
 
 export function createDialog(props?: CreateDialogProps) {
-	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
+	const { open, ids, ...options } = parseProps({ props, defaults, idParts: dialogIdParts });
 
 	const {
 		preventScroll,
@@ -69,11 +67,6 @@ export function createDialog(props?: CreateDialogProps) {
 	} = options;
 
 	const activeTrigger = withGet.writable<HTMLElement | null>(null);
-
-	const ids = toWritableStores({
-		...generateIds(dialogIdParts),
-		...props?.ids,
-	});
 
 	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
 		return $open || $forceVisible;
@@ -292,9 +285,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const close = makeElement(name('close'), {
 		returned: () =>
-		({
-			type: 'button',
-		} as const),
+			({
+				type: 'button',
+			} as const),
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {

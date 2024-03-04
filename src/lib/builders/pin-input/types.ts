@@ -1,4 +1,4 @@
-import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { IdObjProp } from '$lib/internal/helpers/index.js';
 import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { PinInputIdParts, createPinInput } from './create.js';
@@ -42,7 +42,7 @@ export type CreatePinInputProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<PinInputIdParts>>;
+	ids?: Partial<IdObjProp<PinInputIdParts>>;
 };
 
 export type PinInput = BuilderReturn<typeof createPinInput>;

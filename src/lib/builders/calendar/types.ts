@@ -1,5 +1,5 @@
 import type { Matcher } from '$lib/index.js';
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, IdObjProp } from '$lib/internal/helpers/index.js';
 import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { DateValue } from '@internationalized/date';
 import type { Writable } from 'svelte/store';
@@ -193,7 +193,7 @@ export type CreateCalendarProps<Value extends DateValue = DateValue> = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<CalendarIdParts>>;
+	ids?: Partial<IdObjProp<CalendarIdParts>>;
 };
 
 export type Calendar = ReturnType<typeof createCalendar>;

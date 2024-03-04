@@ -1,5 +1,5 @@
 import type { Granularity, Matcher } from '$lib/index.js';
-import type { IdObj, ReadableProp } from '$lib/internal/helpers/index.js';
+import type { IdObjProp, ReadableProp } from '$lib/internal/helpers/index.js';
 import type { EditableSegmentPart } from '$lib/shared/index.js';
 import type { DateValue } from '@internationalized/date';
 import type { DateFieldIdParts, createDateField } from './create.js';
@@ -142,7 +142,7 @@ export type DateFieldProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<IdObj<DateFieldIdParts>>;
+	ids?: Partial<IdObjProp<DateFieldIdParts>>;
 };
 
 export type CreateDateFieldProps = DateFieldProps;

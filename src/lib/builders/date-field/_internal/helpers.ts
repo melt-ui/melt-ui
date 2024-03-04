@@ -35,7 +35,7 @@ import {
 	styleToString,
 } from '$lib/internal/helpers/index.js';
 import { get, type Writable } from 'svelte/store';
-import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { IdObjProp } from '$lib/internal/helpers/index.js';
 import type { DateFieldIdParts } from '../create.js';
 
 export function initializeSegmentValues(granularity: Granularity) {
@@ -205,7 +205,7 @@ export function initSegmentIds() {
 		ALL_SEGMENT_PARTS.map((part) => {
 			return [part, generateId()];
 		}).filter(([key]) => key !== 'literal')
-	) as IdObj<DateFieldIdParts>;
+	) as IdObjProp<DateFieldIdParts>;
 }
 
 export function isDateSegmentPart(part: unknown): part is DateSegmentPart {

@@ -1,4 +1,4 @@
-import type { IdObj } from '$lib/internal/helpers/id.js';
+import type { IdObjProp } from '$lib/internal/helpers/id.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
 import type { MenubarIdParts, createMenubar } from './create.js';
@@ -32,7 +32,7 @@ export type CreateMenubarProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<MenubarIdParts>>;
+	ids?: Partial<IdObjProp<MenubarIdParts>>;
 };
 
 export type CreateMenubarMenuProps = Omit<_Menu['builder'], 'preventScroll'>;

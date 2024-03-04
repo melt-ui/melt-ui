@@ -1,6 +1,6 @@
 import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
-import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, FocusProp, IdObjProp } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { _MenuIdParts, createMenuBuilder } from './create.js';
 import type { WithGet } from '$lib/internal/helpers/withGet.js';
@@ -130,7 +130,7 @@ export type _CreateMenuProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<_MenuIdParts>>;
+	ids?: Partial<IdObjProp<_MenuIdParts>>;
 };
 
 export type _CreateSubmenuProps = Pick<
@@ -202,7 +202,7 @@ export type _MenuBuilderOptions = {
 	 */
 	removeScroll: boolean;
 
-	ids?: Partial<IdObj<_MenuIdParts>>;
+	ids?: Partial<IdObjProp<_MenuIdParts>>;
 };
 
 export type _MenuParts =

@@ -1,4 +1,4 @@
-import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { IdObjProp } from '$lib/internal/helpers/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
 import type { ScrollAreaIdParts, createScrollArea } from './index.js';
 
@@ -32,7 +32,7 @@ export type CreateScrollAreaProps = {
 	 * Optionally override the default ids assigned to the
 	 * elements.
 	 */
-	ids?: Partial<IdObj<ScrollAreaIdParts>>;
+	ids?: Partial<IdObjProp<ScrollAreaIdParts>>;
 };
 
 export type ScrollArea = ReturnType<typeof createScrollArea>;

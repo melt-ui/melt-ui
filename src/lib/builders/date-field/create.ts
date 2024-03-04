@@ -107,8 +107,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const {
 		value,
 		placeholder: _placeholder,
+		ids,
 		...options
-	} = parseProps(omit(props ?? {}, 'ids'), defaults);
+	} = parseProps({ props, defaults, idParts: dateFieldIdParts });
 
 	const {
 		locale,
@@ -174,8 +175,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const readonlySegmentsSet = withGet(
 		derived(readonlySegments, ($readonlySegments) => new Set<SegmentPart>($readonlySegments))
 	);
-
-	const ids = toWritableStores({ ...generateIds(dateFieldIdParts), ...props?.ids });
 
 	const idValues = derived(
 		[

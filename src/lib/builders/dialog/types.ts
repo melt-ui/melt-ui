@@ -1,4 +1,4 @@
-import type { FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { FocusProp, IdObjProp } from '$lib/internal/helpers/index.js';
 import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { DialogIdParts, createDialog } from './create.js';
@@ -79,7 +79,7 @@ export type CreateDialogProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<DialogIdParts>>;
+	ids?: Partial<IdObjProp<DialogIdParts>>;
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;

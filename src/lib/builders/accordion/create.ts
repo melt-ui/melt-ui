@@ -4,12 +4,11 @@ import {
 	disabledAttr,
 	executeCallbacks,
 	generateId,
-	generateIds,
 	getElementByMeltId,
 	isHTMLElement,
 	kbd,
 	makeElement,
-	styleToString
+	styleToString,
 } from '$lib/internal/helpers/index.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
@@ -29,11 +28,8 @@ const defaults = {
 } satisfies CreateAccordionProps;
 
 export function createAccordion(props?: CreateAccordionProps) {
-	const { value, ...options } = parseProps(props, defaults);
+	const { value, ids, ...options } = parseProps({ props, defaults, idParts: ['root'] as const });
 	const { disabled, forceVisible, multiple } = options;
-
-	const ids = generateIds(['root']);
-
 
 	const root = makeElement(name(), {
 		returned: () => ({
@@ -112,7 +108,7 @@ export function createAccordion(props?: CreateAccordionProps) {
 					}
 
 					const el = e.target;
-					const rootEl = getElementByMeltId(ids.root);
+					const rootEl = getElementByMeltId(ids.root.get());
 					if (!rootEl || !isHTMLElement(el)) return;
 
 					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));

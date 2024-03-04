@@ -21,22 +21,18 @@ import {
 	isHTMLButtonElement,
 	isHTMLElement,
 	isHTMLInputElement,
-	isObject,
 	kbd,
 	last,
 	makeElement,
 	next,
 	noop,
 	omit,
-	overridable,
 	parseProps,
 	prev,
 	removeHighlight,
 	removeScroll,
 	sleep,
-	stripValues,
 	styleToString,
-	toWritableStores,
 	toggle,
 	withGet,
 } from '$lib/internal/helpers/index.js';
@@ -44,17 +40,11 @@ import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { tick } from 'svelte';
-import { derived, get, readonly, writable, type Readable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id.js';
+import { derived, get, readonly, type Readable } from 'svelte/store';
 import { createHiddenInput } from '../hidden-input/create.js';
 import { createLabel } from '../label/create.js';
 import type { ListboxEvents } from './events.js';
-import type {
-	CreateListboxProps,
-	ListboxOption,
-	ListboxOptionProps,
-	ListboxSelected,
-} from './types.js';
+import type { CreateListboxProps, ListboxOption, ListboxOptionProps } from './types.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -104,7 +94,11 @@ type ListboxParts =
  */
 export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 	const withDefaults = { ...defaults, ...props };
-	const { selected, open, ...options } = parseProps(omit(props ?? {}, 'builder', 'ids'), defaults);
+	const { selected, open, ids, ...options } = parseProps({
+		props: omit(props ?? {}, 'builder'),
+		defaults,
+		idParts: listboxIdParts,
+	});
 
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = withGet.writable<HTMLElement | null>(null);
@@ -134,8 +128,6 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 		onOutsideClick,
 	} = options;
 	const { name, selector } = createElHelpers<ListboxParts>(withDefaults.builder);
-
-	const ids = toWritableStores({ ...generateIds(listboxIdParts), ...withDefaults.ids });
 
 	const { handleTypeaheadSearch } = createTypeaheadSearch({
 		onMatch: (element) => {
@@ -167,9 +159,7 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 			const $multiple = multiple.get();
 			if ($multiple) {
 				const optionArr = Array.isArray($option) ? [...$option] : [];
-				return toggle(newOption, optionArr, (itemA, itemB) =>
-					deepEqual(itemA.value, itemB.value)
-				)
+				return toggle(newOption, optionArr, (itemA, itemB) => deepEqual(itemA.value, itemB.value));
 			} else {
 				return [newOption];
 			}
@@ -515,20 +505,20 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 		stores: [selected],
 		returned:
 			([$selected]) =>
-				(props: ListboxOptionProps<Value>) => {
-					const selected = $selected.includes(props);
+			(props: ListboxOptionProps<Value>) => {
+				const selected = $selected.includes(props);
 
-					return {
-						'data-value': JSON.stringify(props.value),
-						'data-label': props.label,
-						'data-disabled': disabledAttr(props.disabled),
-						'aria-disabled': props.disabled ? true : undefined,
-						'aria-selected': selected,
-						'data-selected': selected ? '' : undefined,
-						id: generateId(),
-						role: 'option',
-					} as const;
-				},
+				return {
+					'data-value': JSON.stringify(props.value),
+					'data-label': props.label,
+					'data-disabled': disabledAttr(props.disabled),
+					'aria-disabled': props.disabled ? true : undefined,
+					'aria-selected': selected,
+					'data-selected': selected ? '' : undefined,
+					id: generateId(),
+					role: 'option',
+				} as const;
+			},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['item']> => {
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -581,7 +571,7 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 
 	const hiddenInput = createHiddenInput({
 		value: derived([selected], ([$selected]) => {
-			const value = $selected.map((o) => o.value)
+			const value = $selected.map((o) => o.value);
 			return JSON.stringify(value);
 		}),
 		name: readonly(nameProp),
