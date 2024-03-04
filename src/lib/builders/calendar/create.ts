@@ -357,6 +357,7 @@ export function createCalendar<Value extends DateValue = DateValue>(
 			const disabled = $isPrevButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Previous',
 				'aria-disabled': disabled ? ('true' as const) : undefined,
 				'data-disabled': disabled ? '' : undefined,
@@ -388,6 +389,7 @@ export function createCalendar<Value extends DateValue = DateValue>(
 			const disabled = $isNextButtonDisabled;
 			return {
 				role: 'button',
+				type: 'button' as const,
 				'aria-label': 'Next',
 				'aria-disabled': disabled ? ('true' as const) : undefined,
 				'data-disabled': disabled ? '' : undefined,

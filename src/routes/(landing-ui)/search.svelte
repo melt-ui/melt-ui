@@ -3,11 +3,11 @@
 	import { Tooltip } from '$docs/components/index.js';
 	import { CornerDownRight, LoaderIcon, Search as SearchIcon } from '$icons/index.js';
 	import {
-		type ComboboxSelected,
 		createCombobox,
 		createDialog,
 		melt,
 		overridable,
+		type ComboboxSelected,
 	} from '$lib/index.js';
 	import { onMount } from 'svelte';
 	import type { Pagefind, PagefindSearchFragment, PagefindSubResult } from '../../pagefind.js';
@@ -46,11 +46,6 @@
 		),
 		preventScroll: false,
 		highlightOnHover: false,
-		portal: null,
-		onOutsideClick() {
-			open.set(false);
-			cbOpen.set(false);
-		},
 	});
 
 	let comboboxInput: HTMLInputElement | null = null;

@@ -5,6 +5,7 @@ export * from './dom.js';
 export * from './event.js';
 export * from './highlight.js';
 export * from './is.js';
+export * from './lifecycle.js';
 export * from './list.js';
 export * from './locale.js';
 export * from './object.js';

@@ -151,7 +151,6 @@ describe('Context Menu', () => {
 		await sleep(100);
 		expect(outsideClick).toBeVisible();
 		await user.click(outsideClick);
-		await sleep(100);
 		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
 	});
 

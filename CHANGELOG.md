@@ -1,5 +1,59 @@
 # @melt-ui/svelte
 
+## 0.75.2
+
+### Patch Changes
+
+- Scroll Area: fixed bug with `type: 'hover'` scrollbars always showing on hover even if content not overflowing ([#1046](https://github.com/melt-ui/melt-ui/pull/1046))
+
+- Scroll Area: fixed bug with `scrollbarX` styles ([#1046](https://github.com/melt-ui/melt-ui/pull/1046))
+
+## 0.75.1
+
+### Patch Changes
+
+- Scroll Area: export types ([#1044](https://github.com/melt-ui/melt-ui/pull/1044))
+
+## 0.75.0
+
+### Minor Changes
+
+- Popover: add optional `overlay` element builder for simplified modal behavior (part of #1018) ([#1025](https://github.com/melt-ui/melt-ui/pull/1025))
+
+- Menus: add `overlay` element ([#1035](https://github.com/melt-ui/melt-ui/pull/1035))
+
+- New Builder: Scroll Area ([#908](https://github.com/melt-ui/melt-ui/pull/908))
+
+### Patch Changes
+
+- Range Calendar/Picker: fixed bug preventing a range with the same start and end date (Closes #898) ([#1037](https://github.com/melt-ui/melt-ui/pull/1037))
+
+- Tooltip: fixed bug where tooltip content style gets reset when forceVisible is true and $open gets updated #1010 ([#1011](https://github.com/melt-ui/melt-ui/pull/1011))
+
+- Calendars: ensure dates use the same calendar as the reference value ([#1026](https://github.com/melt-ui/melt-ui/pull/1026))
+
+## 0.74.4
+
+### Patch Changes
+
+- Listbox: fixed bug preventing programmatic opening (Closes #1014) ([#1020](https://github.com/melt-ui/melt-ui/pull/1020))
+
+- fix(Calendar/Range Calendar): use `'button'` for button elements' `type` ([#1003](https://github.com/melt-ui/melt-ui/pull/1003))
+
+- fixed issues with portals and outside interactions (Closes #992) ([#1018](https://github.com/melt-ui/melt-ui/pull/1018))
+
+- Listbox: fixed bug causing `multiple` change function `curr` and `next` always being equal (Closes #1019) ([#1021](https://github.com/melt-ui/melt-ui/pull/1021))
+
+- Fixed bug where on outside interaction in several components (popover, menu, link preview, tooltip, listbox), on component unmount, the content jumps during out transition if content was mounted in an else if block (closes #1005) ([#1006](https://github.com/melt-ui/melt-ui/pull/1006))
+
+## 0.74.3
+
+### Patch Changes
+
+- Revert regressions caused by PRs #977 and #995 ([#1016](https://github.com/melt-ui/melt-ui/pull/1016))
+
+- Toolbar: set correct tabindex for buttons and links ([#1004](https://github.com/melt-ui/melt-ui/pull/1004))
+
 ## 0.74.2
 
 ### Patch Changes

@@ -44,6 +44,8 @@
 </script>
 
 <main>
+	<button on:click={() => open.update((curr) => !curr)} data-testid="toggle-btn">Toggle Open</button
+	>
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label use:melt={$label} data-testid="label">Label</label>
 

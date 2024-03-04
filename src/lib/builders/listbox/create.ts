@@ -33,6 +33,7 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	sleep,
 	stripValues,
 	styleToString,
 	toWritableStores,
@@ -165,7 +166,7 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 		selected.update(($option) => {
 			const $multiple = multiple.get();
 			if ($multiple) {
-				const optionArr = Array.isArray($option) ? $option : [];
+				const optionArr = Array.isArray($option) ? [...$option] : [];
 				return toggle(newOption, optionArr, (itemA, itemB) =>
 					deepEqual(itemA.value, itemB.value)
 				)
@@ -211,7 +212,8 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 	}
 
 	/** Closes the menu & clears the active trigger */
-	function closeMenu() {
+	async function closeMenu() {
+		await sleep(0);
 		open.set(false);
 		highlightedItem.set(null);
 	}
@@ -468,9 +470,11 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 											return false;
 										}
 										// return opposite of the result of the ignoreHandler
-										return !ignoreHandler(e);
+										if (ignoreHandler(e)) return false;
+										return true;
 									},
 								},
+
 								escapeKeydown: null,
 								portal: getPortalDestination(node, $portal),
 							},
@@ -604,13 +608,13 @@ export function createListbox<Value>(props?: CreateListboxProps<Value>) {
 	safeOnMount(() => {
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu.get());
-		if (!menuEl) return;
 
 		const triggerEl = document.getElementById(ids.trigger.get());
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
 
+		if (!menuEl) return;
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
 	});

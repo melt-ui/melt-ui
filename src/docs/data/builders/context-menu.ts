@@ -38,6 +38,7 @@ const {
 	subTrigger,
 	group,
 	groupLabel,
+	overlay,
 } = getMenuSchemas(BUILDER_NAME);
 
 const TRIGGER_NAME = 'trigger' as const;
@@ -54,6 +55,7 @@ const schemas = [
 	trigger,
 	menu,
 	item,
+	overlay,
 	separator,
 	arrow,
 	checkboxItemBuilder,

@@ -73,6 +73,7 @@ describe('Popover (Default)', () => {
 		await user.click(content);
 		await waitFor(() => expect(content).toBeVisible());
 		const outside = getByTestId('outside');
+		await user.click(outside);
 		await sleep(100);
 		expect(outside).toBeVisible();
 		await user.click(outside);

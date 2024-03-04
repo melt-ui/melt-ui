@@ -9,6 +9,7 @@ import {
 	parseDate,
 	getLocalTimeZone,
 	getDayOfWeek,
+	toCalendar,
 } from '@internationalized/date';
 
 type GetDefaultDateProps = {
@@ -68,13 +69,19 @@ export function getDefaultDate(props?: GetDefaultDateProps): DateValue {
  * strings, to the same type being used by the date component.
  */
 export function parseStringToDateValue(dateStr: string, referenceVal: DateValue): DateValue {
+	let dateValue: DateValue;
 	if (referenceVal instanceof ZonedDateTime) {
-		return parseZonedDateTime(dateStr);
+		dateValue = parseZonedDateTime(dateStr);
 	} else if (referenceVal instanceof CalendarDateTime) {
-		return parseDateTime(dateStr);
+		dateValue = parseDateTime(dateStr);
 	} else {
-		return parseDate(dateStr);
+		dateValue = parseDate(dateStr);
 	}
+
+	// ensure the parsed date is in the same calendar as the reference date set by the user.
+	return dateValue.calendar !== referenceVal.calendar
+		? toCalendar(dateValue, referenceVal.calendar)
+		: dateValue;
 }
 
 /**

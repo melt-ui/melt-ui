@@ -128,7 +128,7 @@
 
 <style lang="postcss">
 	.menu {
-		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg;
+		@apply z-40 flex max-h-[300px] min-w-[220px] flex-col shadow-lg;
 		@apply rounded-md bg-white p-1 shadow-neutral-900/30 lg:max-h-none;
 		@apply ring-0 !important;
 	}
@@ -137,7 +137,7 @@
 	}
 	.item {
 		@apply relative h-6 min-h-[24px] select-none rounded-sm pl-6 pr-1;
-		@apply z-20 text-magnum-900 outline-none;
+		@apply z-40 text-magnum-900 outline-none;
 		@apply data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
 		@apply data-[disabled]:text-neutral-300;
 		@apply flex items-center text-sm leading-none;

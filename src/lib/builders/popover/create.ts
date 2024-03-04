@@ -16,16 +16,22 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	sleep,
 	portalAttr,
+	generateIds,
 } from '$lib/internal/helpers/index.js';
 
-import { usePopper, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import {
+	useEscapeKeydown,
+	usePopper,
+	usePortal,
+	type InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id.js';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 
@@ -46,7 +52,7 @@ const defaults = {
 	onOutsideClick: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
-type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
+type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close' | 'overlay';
 const { name } = createElHelpers<PopoverParts>('popover');
 
 export const popoverIdParts = ['trigger', 'content'] as const;
@@ -76,7 +82,8 @@ export function createPopover(props?: CreatePopoverProps) {
 		activeTrigger.set(document.getElementById(ids.trigger.get()));
 	});
 
-	function handleClose() {
+	async function handleClose() {
+		await sleep(0);
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger.get());
 		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
@@ -175,7 +182,6 @@ export function createPopover(props?: CreatePopoverProps) {
 			activeTrigger.set(triggerEl);
 		}
 	}
-
 	function shouldCloseOnInteractOutside(e: InteractOutsideEvent) {
 		onOutsideClick.get()?.(e);
 		if (e.defaultPrevented) return false;
@@ -189,13 +195,13 @@ export function createPopover(props?: CreatePopoverProps) {
 	}
 
 	const trigger = makeElement(name('trigger'), {
-		stores: [open, ids.content, ids.trigger],
-		returned: ([$open, $contentId, $triggerId]) => {
+		stores: [isVisible, ids.content, ids.trigger],
+		returned: ([$isVisible, $contentId, $triggerId]) => {
 			return {
 				role: 'button',
 				'aria-haspopup': 'dialog',
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
+				'aria-expanded': $isVisible ? 'true' : 'false',
+				'data-state': stateAttr($isVisible),
 				'aria-controls': $contentId,
 				id: $triggerId,
 			} as const;
@@ -214,6 +220,54 @@ export function createPopover(props?: CreatePopoverProps) {
 
 			return {
 				destroy: unsub,
+			};
+		},
+	});
+
+	const overlay = makeElement(name('overlay'), {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
+			return {
+				hidden: $isVisible ? undefined : true,
+				tabindex: -1,
+				style: styleToString({
+					display: $isVisible ? undefined : 'none',
+				}),
+				'aria-hidden': 'true',
+				'data-state': stateAttr($isVisible),
+			} as const;
+		},
+		action: (node: HTMLElement) => {
+			let unsubEscapeKeydown = noop;
+
+			if (closeOnEscape.get()) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						handleClose();
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
+				}
+			}
+
+			const unsubPortal = effect([portal], ([$portal]) => {
+				if ($portal === null) return noop;
+				const portalDestination = getPortalDestination(node, $portal);
+				if (portalDestination === null) return noop;
+				const portalAction = usePortal(node, portalDestination);
+				if (portalAction && portalAction.destroy) {
+					return portalAction.destroy;
+				} else {
+					return noop;
+				}
+			});
+
+			return {
+				destroy() {
+					unsubEscapeKeydown();
+					unsubPortal();
+				},
 			};
 		},
 	});
@@ -289,10 +343,15 @@ export function createPopover(props?: CreatePopoverProps) {
 			content,
 			arrow,
 			close,
+			overlay,
 		},
 		states: {
 			open,
 		},
 		options,
 	};
+}
+
+function stateAttr(open: boolean) {
+	return open ? 'open' : 'closed';
 }

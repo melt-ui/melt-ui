@@ -177,7 +177,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 											const target = e.target;
 											const menubarEl = document.getElementById(ids.menubar.get());
 											if (!menubarEl || !isElement(target)) return true;
-											return !menubarEl.contains(target);
+											if (menubarEl.contains(target)) return false;
+											return true;
 										},
 										onClose: () => {
 											activeMenu.set('');
@@ -233,7 +234,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						const isCharacterKey = e.key.length === 1;
 						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 						if (!isModifierKey && isCharacterKey) {
-							m.handleTypeaheadSearch(e.key, getMenuItems(menuEl));
+							m.helpers.handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
 					})
 				);
@@ -409,22 +410,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 		return {
 			ids: m.ids,
 			elements: {
+				...m.elements,
 				menu,
 				trigger,
-				item: m.item,
-				arrow: m.arrow,
-				separator: m.separator,
-				group: m.group,
-				groupLabel: m.groupLabel,
 			},
-			builders: {
-				createCheckboxItem: m.createCheckboxItem,
-				createSubmenu: m.createSubmenu,
-				createMenuRadioGroup: m.createMenuRadioGroup,
-			},
-			states: {
-				open: rootOpen,
-			},
+			builders: m.builders,
+			states: m.states,
 			options,
 		};
 	};

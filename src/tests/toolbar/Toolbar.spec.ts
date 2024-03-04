@@ -6,6 +6,7 @@ import { describe } from 'vitest';
 import ToolbarTest from './ToolbarTest.svelte';
 import { writable } from 'svelte/store';
 import { tick } from 'svelte';
+import { type CreateToolbarProps } from '$lib/index.js';
 
 const group1Items = ['item-1', 'item-2', 'item-3'];
 const group2Items = ['item-4', 'item-5', 'item-6'];
@@ -13,8 +14,15 @@ const tbItems = [...group1Items, ...group2Items];
 
 const tbLinks = ['link-1'];
 const tbButtons = ['button-1'];
+const tbLinksAndButtons = [...tbLinks, ...tbButtons];
+const tbButtonsAndLinks = [...tbButtons, ...tbLinks];
 
 const allToolbarItems = [...tbItems, ...tbLinks, ...tbButtons];
+const allToolbarItemsLinksFirst = [...tbLinks, ...tbItems, ...tbButtons];
+const allToolbarItemsButtonsFirst = [...tbButtons, ...tbItems, ...tbLinks];
+
+const horizontal: CreateToolbarProps['orientation'] = 'horizontal';
+const vertical: CreateToolbarProps['orientation'] = 'vertical';
 
 describe('Toolbar', () => {
 	test('has no accessibility violations', async () => {
@@ -22,62 +30,287 @@ describe('Toolbar', () => {
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
-	test("tab enters toolbar but doesn't navigate between items", async () => {
+	test.each([
+		{ desc: '', props: {}, items: allToolbarItems },
+		{
+			desc: 'first item is a link',
+			props: { linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'first item is a button',
+			props: { buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'no group items, first item is a link',
+			props: { linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'no group items, first item is a button',
+			props: { linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+	])("tab enters toolbar but doesn't navigate between items - $desc", async ({ props, items }) => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(ToolbarTest);
+		const { getByTestId } = render(ToolbarTest, props);
 
 		await user.tab();
-		expect(getByTestId('item-1')).toHaveFocus();
+		expect(getByTestId(items[0])).toHaveFocus();
 		await user.tab();
-		expect(getByTestId('item-2')).not.toHaveFocus();
+		expect(getByTestId(items[1])).not.toHaveFocus();
 		await user.tab({ shift: true });
-		expect(getByTestId('item-1')).toHaveFocus();
+		expect(getByTestId(items[0])).toHaveFocus();
 		await user.tab({ shift: true });
-		expect(getByTestId('item-1')).not.toHaveFocus();
+		expect(getByTestId(items[0])).not.toHaveFocus();
 	});
 
-	test('arrow keys navigate between items', async () => {
+	test.each([
+		{ desc: 'horizontal', props: { orientation: horizontal }, items: allToolbarItems },
+		{ desc: 'vertical', props: { orientation: vertical }, items: allToolbarItems },
+		{
+			desc: 'horizontal, first item is a link',
+			props: { orientation: horizontal, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'vertical, first item is a link',
+			props: { orientation: vertical, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'horizontal, first item is a button',
+			props: { orientation: horizontal, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'vertical, first item is a button',
+			props: { orientation: vertical, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a link',
+			props: { orientation: horizontal, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'vertical, no group items, first item is a link',
+			props: { orientation: vertical, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a button',
+			props: { orientation: horizontal, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+		{
+			desc: 'vertical, no group items, first item is a button',
+			props: { orientation: vertical, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+	])('arrow keys navigate between items - $desc', async ({ props, items }) => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(ToolbarTest);
+		const { getByTestId } = render(ToolbarTest, props);
+
+		const nextKey = `{${props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN}}`;
+		const prevKey = `{${props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP}}`;
+
+		const reversedItems = [...items].reverse();
 
 		await user.tab();
 
-		const reversedItems = [...allToolbarItems].reverse();
-
-		for (const item of allToolbarItems) {
+		for (const item of items) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(nextKey);
 		}
 
 		for (const item of reversedItems) {
 			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+			await user.keyboard(prevKey);
 		}
 	});
 
-	test('home and end keys focus first and last items - horizontal', async () => {
+	test.each([
+		{ desc: 'horizontal', props: { orientation: horizontal }, items: allToolbarItems },
+		{ desc: 'vertical', props: { orientation: vertical }, items: allToolbarItems },
+		{
+			desc: 'horizontal, first item is a link',
+			props: { orientation: horizontal, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'vertical, first item is a link',
+			props: { orientation: vertical, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'horizontal, first item is a button',
+			props: { orientation: horizontal, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'vertical, first item is a button',
+			props: { orientation: vertical, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a link',
+			props: { orientation: horizontal, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'vertical, no group items, first item is a link',
+			props: { orientation: vertical, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a button',
+			props: { orientation: horizontal, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+		{
+			desc: 'vertical, no group items, first item is a button',
+			props: { orientation: vertical, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+	])(
+		'arrow key navigation loops around when looping is enabled - $desc',
+		async ({ props, items }) => {
+			const user = userEvent.setup();
+			const { getByTestId } = render(ToolbarTest, { loop: true, ...props });
+
+			const nextKey = `{${props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN}}`;
+			const prevKey = `{${props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP}}`;
+
+			await user.tab();
+			const firstItem = getByTestId(items[0]);
+			const lastItem = getByTestId(items[items.length - 1]);
+			expect(firstItem).toHaveFocus();
+			await user.keyboard(prevKey);
+			expect(lastItem).toHaveFocus();
+			await user.keyboard(nextKey);
+			expect(firstItem).toHaveFocus();
+		}
+	);
+
+	test.each([
+		{ desc: 'horizontal', props: { orientation: horizontal }, items: allToolbarItems },
+		{ desc: 'vertical', props: { orientation: vertical }, items: allToolbarItems },
+		{
+			desc: 'horizontal, first item is a link',
+			props: { orientation: horizontal, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'vertical, first item is a link',
+			props: { orientation: vertical, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'horizontal, first item is a button',
+			props: { orientation: horizontal, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'vertical, first item is a button',
+			props: { orientation: vertical, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a link',
+			props: { orientation: horizontal, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'vertical, no group items, first item is a link',
+			props: { orientation: vertical, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a button',
+			props: { orientation: horizontal, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+		{
+			desc: 'vertical, no group items, first item is a button',
+			props: { orientation: vertical, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+	])(
+		'arrow key navigation does not loop around when looping is disabled - $desc',
+		async ({ props, items }) => {
+			const user = userEvent.setup();
+			const { getByTestId } = render(ToolbarTest, { loop: false, ...props });
+
+			const nextKey = `{${props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN}}`;
+			const prevKey = `{${props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP}}`;
+
+			const firstItem = getByTestId(items[0]);
+			const lastItem = getByTestId(items[items.length - 1]);
+
+			firstItem.focus();
+			expect(firstItem).toHaveFocus();
+			await user.keyboard(prevKey);
+			expect(firstItem).toHaveFocus();
+
+			lastItem.focus();
+			expect(lastItem).toHaveFocus();
+			await user.keyboard(nextKey);
+			expect(lastItem).toHaveFocus();
+		}
+	);
+
+	test.each([
+		{ desc: 'horizontal', props: { orientation: horizontal }, items: allToolbarItems },
+		{ desc: 'vertical', props: { orientation: vertical }, items: allToolbarItems },
+		{
+			desc: 'horizontal, first item is a link',
+			props: { orientation: horizontal, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'vertical, first item is a link',
+			props: { orientation: vertical, linksFirst: true },
+			items: allToolbarItemsLinksFirst,
+		},
+		{
+			desc: 'horizontal, first item is a button',
+			props: { orientation: horizontal, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'vertical, first item is a button',
+			props: { orientation: vertical, buttonsFirst: true },
+			items: allToolbarItemsButtonsFirst,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a link',
+			props: { orientation: horizontal, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'vertical, no group items, first item is a link',
+			props: { orientation: vertical, linksButtonsOnly: true, linksFirst: true },
+			items: tbLinksAndButtons,
+		},
+		{
+			desc: 'horizontal, no group items, first item is a button',
+			props: { orientation: horizontal, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+		{
+			desc: 'vertical, no group items, first item is a button',
+			props: { orientation: vertical, linksButtonsOnly: true, buttonsFirst: true },
+			items: tbButtonsAndLinks,
+		},
+	])('home and end keys focus first and last items - $desc', async ({ props, items }) => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(ToolbarTest);
+		const { getByTestId } = render(ToolbarTest, props);
 
 		await user.tab();
-		const firstItem = getByTestId('item-1');
-		const lastItem = getByTestId('button-1');
-		expect(firstItem).toHaveFocus();
-		await user.keyboard(`{${kbd.END}}`);
-		expect(lastItem).toHaveFocus();
-		await user.keyboard(`{${kbd.HOME}}`);
-		expect(firstItem).toHaveFocus();
-	});
-
-	test('home and end keys focus first and last items - vertical', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToolbarTest, {
-			orientation: 'vertical',
-		});
-
-		await user.tab();
-		const firstItem = getByTestId('item-1');
-		const lastItem = getByTestId('button-1');
+		const firstItem = getByTestId(items[0]);
+		const lastItem = getByTestId(items[items.length - 1]);
 		expect(firstItem).toHaveFocus();
 		await user.keyboard(`{${kbd.END}}`);
 		expect(lastItem).toHaveFocus();
@@ -155,27 +388,6 @@ describe('Toolbar', () => {
 		const group2 = getByTestId('group-2');
 		const group2OnItems = group2.querySelectorAll<HTMLElement>('[data-state="on"]');
 		expect(group2OnItems.length).toBe(1);
-	});
-
-	test('orientation changes keyboard nav', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(ToolbarTest, {
-			orientation: 'vertical',
-		});
-
-		await user.tab();
-
-		const reversedItems = [...allToolbarItems].reverse();
-
-		for (const item of allToolbarItems) {
-			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-		}
-
-		for (const item of reversedItems) {
-			expect(getByTestId(item)).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_UP}}`);
-		}
 	});
 
 	test('default value sets initial pressed/checked items', async () => {
