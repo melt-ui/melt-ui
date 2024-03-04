@@ -1,6 +1,6 @@
 import type { IdObj } from '$lib/internal/helpers/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
-import type { ScrollAreaIdParts } from './index.js';
+import type { ScrollAreaIdParts, createScrollArea } from './index.js';
 
 export type ScrollAreaType = 'auto' | 'always' | 'scroll' | 'hover';
 
@@ -34,3 +34,5 @@ export type CreateScrollAreaProps = {
 	 */
 	ids?: Partial<IdObj<ScrollAreaIdParts>>;
 };
+
+export type ScrollArea = ReturnType<typeof createScrollArea>;
