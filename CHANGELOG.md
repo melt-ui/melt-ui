@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.75.1
+
+### Patch Changes
+
+- Scroll Area: export types ([#1044](https://github.com/melt-ui/melt-ui/pull/1044))
+
 ## 0.75.0
 
 ### Minor Changes
