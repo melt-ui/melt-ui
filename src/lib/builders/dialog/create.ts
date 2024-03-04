@@ -9,7 +9,6 @@ import {
 	getPortalDestination,
 	handleFocus,
 	isBrowser,
-	isHTMLElement,
 	kbd,
 	noop,
 	omit,
@@ -85,12 +84,8 @@ export function createDialog(props?: CreateDialogProps) {
 
 	let unsubScroll = noop;
 
-	function handleOpen(e: Event) {
-		const el = e.currentTarget;
-		const triggerEl = e.currentTarget;
-		if (!isHTMLElement(el) || !isHTMLElement(triggerEl)) return;
+	function handleOpen() {
 		open.set(true);
-		activeTrigger.set(triggerEl);
 	}
 
 	function handleClose() {
@@ -111,14 +106,13 @@ export function createDialog(props?: CreateDialogProps) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['trigger']> => {
+			activeTrigger.set(node);
 			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'click', (e) => {
-					handleOpen(e);
-				}),
+				addMeltEventListener(node, 'click', handleOpen),
 				addMeltEventListener(node, 'keydown', (e) => {
 					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
 					e.preventDefault();
-					handleOpen(e);
+					handleOpen();
 				})
 			);
 
