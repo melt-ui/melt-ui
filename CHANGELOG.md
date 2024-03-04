@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.75.2
+
+### Patch Changes
+
+- Scroll Area: fixed bug with `type: 'hover'` scrollbars always showing on hover even if content not overflowing ([#1046](https://github.com/melt-ui/melt-ui/pull/1046))
+
+- Scroll Area: fixed bug with `scrollbarX` styles ([#1046](https://github.com/melt-ui/melt-ui/pull/1046))
+
 ## 0.75.1
 
 ### Patch Changes
