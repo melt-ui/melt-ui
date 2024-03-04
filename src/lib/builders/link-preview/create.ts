@@ -20,7 +20,6 @@ import {
 	toWritableStores,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { writable, type Readable } from 'svelte/store';
@@ -124,6 +123,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['trigger']> => {
+			activeTrigger.set(node);
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
@@ -290,12 +290,6 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			contentElement.style.userSelect = originalContentUserSelect;
 			contentElement.style.webkitUserSelect = originalContentUserSelect;
 		};
-	});
-
-	safeOnMount(() => {
-		const triggerEl = document.getElementById(ids.trigger.get());
-		if (!triggerEl) return;
-		activeTrigger.set(triggerEl);
 	});
 
 	effect([open], ([$open]) => {
