@@ -25,7 +25,7 @@ const defaults = {
 } satisfies CreateToasterProps;
 
 export function createToaster<T = object>(props?: CreateToasterProps) {
-	const options = parseProps(props, defaults);
+	const options = parseProps({ props, defaults });
 	const { closeDelay, type } = options;
 
 	const toastsMap = writable(new Map<string, Toast<T>>());
@@ -47,8 +47,8 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			closeDelay.get() === 0
 				? null
 				: window.setTimeout(() => {
-					removeToast(ids.content);
-				}, closeDelay.get());
+						removeToast(ids.content);
+				  }, closeDelay.get());
 
 		const getPercentage = () => {
 			const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;

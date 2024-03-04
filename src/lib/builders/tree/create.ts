@@ -35,7 +35,7 @@ const ATTRS = {
 const { name } = createElHelpers<TreeParts>('tree-view');
 
 export function createTreeView(props?: CreateTreeViewProps) {
-	const { expanded, ...options } = parseProps(props, defaults);
+	const { expanded, ...options } = parseProps({ props, defaults });
 	const { forceVisible } = options;
 
 	/**

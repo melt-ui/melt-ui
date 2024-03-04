@@ -1,7 +1,4 @@
-import {
-	createElHelpers,
-	makeElement
-} from '$lib/internal/helpers/index.js';
+import { createElHelpers, makeElement } from '$lib/internal/helpers/index.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults } from '$lib/internal/types.js';
 import type { CreateProgressProps } from './types.js';
@@ -14,7 +11,7 @@ const defaults = {
 const { name } = createElHelpers('progress');
 
 export const createProgress = (props?: CreateProgressProps) => {
-	const { value, ...options } = parseProps(props, defaults);
+	const { value, ...options } = parseProps({ props, defaults });
 	const { max } = options;
 
 	const root = makeElement(name(), {

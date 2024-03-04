@@ -25,7 +25,7 @@ type PaginationParts = 'page' | 'prev' | 'next';
 const { name, selector } = createElHelpers<PaginationParts>('pagination');
 
 export function createPagination(props: CreatePaginationProps) {
-	const { page, ...options } = parseProps(props, defaults);
+	const { page, ...options } = parseProps({ props, defaults });
 	const { perPage, siblingCount, count } = options;
 
 	const totalPages = withGet.derived([count, perPage], ([$count, $perPage]) => {

@@ -1,7 +1,6 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -11,23 +10,20 @@ import {
 	isElement,
 	isTouch,
 	kbd,
+	makeElement,
 	makeHullFromElements,
 	noop,
-	omit,
-	overridable,
+	parseProps,
 	pointInPolygon,
-	styleToString,
-	toWritableStores,
+	portalAttr,
 	removeUndefined,
 	sleep,
-	portalAttr,
-	parseProps,
+	styleToString,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
 
@@ -57,7 +53,7 @@ export const tooltipIdParts = ['trigger', 'content'] as const;
 export type TooltipIdParts = typeof tooltipIdParts;
 
 export function createTooltip(props?: CreateTooltipProps) {
-	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
+	const { open, ids, ...options } = parseProps({ props, defaults, idParts: tooltipIdParts });
 
 	const {
 		positioning,
@@ -74,8 +70,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	type OpenReason = 'pointer' | 'focus';
 	const openReason = writable<null | OpenReason>(null);
-
-	const ids = toWritableStores({ ...generateIds(tooltipIdParts), ...props?.ids });
 
 	let clickedTrigger = false;
 

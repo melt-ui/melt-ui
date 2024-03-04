@@ -29,7 +29,7 @@ const defaults = {
 const { name, selector } = createElHelpers('toolbar');
 
 export const createToolbar = (props?: CreateToolbarProps) => {
-	const options = parseProps(props, defaults);
+	const options = parseProps({ props, defaults });
 	const { loop, orientation } = options;
 
 	const root = makeElement(name(), {

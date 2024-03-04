@@ -30,7 +30,7 @@ const defaults = {
 } satisfies Defaults<CreateTableOfContentsProps>;
 
 export function createTableOfContents(props: CreateTableOfContentsProps) {
-	const options = parseProps(props, defaults);
+	const options = parseProps({ props, defaults });
 	const {
 		selector,
 		exclude,

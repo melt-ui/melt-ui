@@ -9,15 +9,12 @@ import {
 	last,
 	makeElement,
 	next,
-	omit,
 	prev,
-	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, readonly } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id.js';
 import { createHiddenInput } from '../hidden-input/create.js';
 import type { PinInputEvents } from './events.js';
 import type { CreatePinInputProps } from './types.js';
@@ -51,11 +48,9 @@ export const pinInputIdParts = ['root'] as const;
 export type PinInputIdParts = typeof pinInputIdParts;
 
 export function createPinInput(props?: CreatePinInputProps) {
-	const { value, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
+	const { value, ids, ...options } = parseProps({ props, defaults, idParts: pinInputIdParts });
 	const { placeholder, disabled, type, name: nameStore } = options;
 	const valueStr = derived(value, (v) => v.join(''));
-
-	const ids = toWritableStores({ ...generateIds(pinInputIdParts), ...props?.ids });
 
 	const root = makeElement(name(), {
 		stores: [value, ids.root],

@@ -37,7 +37,7 @@ const defaults = {
 const { name } = createElHelpers('slider');
 
 export const createSlider = (props?: CreateSliderProps) => {
-	const { value, ...options } = parseProps(props, defaults);
+	const { value, ...options } = parseProps({ props, defaults });
 	const { min, max, step, orientation, dir, disabled } = options;
 
 	const isActive = withGet(writable(false));

@@ -16,7 +16,7 @@ const defaults = {
 } satisfies CreateToggleProps;
 
 export function createToggle(props?: CreateToggleProps) {
-	const { pressed, disabled } = parseProps(props, defaults);
+	const { pressed, disabled } = parseProps({ props, defaults });
 
 	function handleToggle() {
 		const $disabled = disabled.get();

@@ -47,7 +47,7 @@ type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
 const { name, attribute, selector } = createElHelpers<TagsInputParts>('tags-input');
 
 export function createTagsInput(props?: CreateTagsInputProps) {
-	const { tags, selected, ...options } = parseProps(props, defaults);
+	const { tags, selected, ...options } = parseProps({ props, defaults });
 
 	const {
 		placeholder,
@@ -471,11 +471,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				};
 			};
@@ -612,11 +612,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				};
 			};

@@ -30,7 +30,7 @@ type TabsParts = 'list' | 'trigger' | 'content';
 const { name, selector } = createElHelpers<TabsParts>('tabs');
 
 export function createTabs(props?: CreateTabsProps) {
-	const { value, autoSet, ...options } = parseProps(props, defaults);
+	const { value, autoSet, ...options } = parseProps({ props, defaults });
 	const { orientation, activateOnFocus, loop } = options;
 
 	let ssrValue = value.get();

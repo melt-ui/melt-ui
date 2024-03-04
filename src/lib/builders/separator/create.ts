@@ -9,7 +9,7 @@ const defaults = {
 } satisfies Defaults<CreateSeparatorProps>;
 
 export const createSeparator = (props?: CreateSeparatorProps) => {
-	const options = parseProps(props, defaults);
+	const options = parseProps({ props, defaults });
 	const { orientation, decorative } = options;
 
 	const root = makeElement('separator', {

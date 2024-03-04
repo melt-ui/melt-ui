@@ -23,7 +23,7 @@ const defaults = {
 const { name } = createElHelpers('switch');
 
 export function createSwitch(props?: CreateSwitchProps) {
-	const { checked, ...options } = parseProps(props, defaults);
+	const { checked, ...options } = parseProps({ props, defaults });
 
 	const { disabled, required, name: nameStore, value } = options;
 

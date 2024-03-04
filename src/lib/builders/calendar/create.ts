@@ -3,16 +3,13 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	generateIds,
 	isBrowser,
 	isHTMLElement,
 	isValidIndex,
 	kbd,
 	makeElement,
-	omit,
 	parseProps,
 	styleToString,
-	toWritableStores,
 	withGet,
 	type WithGet,
 } from '$lib/internal/helpers/index.js';
@@ -41,10 +38,10 @@ import {
 	type DateValue,
 } from '@internationalized/date';
 import { tick } from 'svelte';
+import type { Writable } from 'svelte/store';
 import { derived, writable } from 'svelte/store';
 import type { CalendarEvents } from './events.js';
 import type { CreateCalendarProps } from './types.js';
-import type { Writable } from 'svelte/store';
 
 const defaults = {
 	isDateDisabled: undefined,

@@ -32,7 +32,7 @@ const prefix = 'radio-group';
 const { name, selector } = createElHelpers<RadioGroupParts>(prefix);
 
 export function createRadioGroup(props?: CreateRadioGroupProps) {
-	const { value, ...options } = parseProps(props, defaults);
+	const { value, ...options } = parseProps({ props, defaults });
 	const { disabled, required, loop, orientation } = options;
 
 	/** Lifecycle & Effects */

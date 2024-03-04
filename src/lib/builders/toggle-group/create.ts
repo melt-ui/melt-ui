@@ -29,7 +29,7 @@ type ToggleGroupParts = 'item';
 const { name, selector } = createElHelpers<ToggleGroupParts>('toggle-group');
 
 export function createToggleGroup(props?: CreateToggleGroupProps) {
-	const { value, ...options } = parseProps(props, defaults);
+	const { value, ...options } = parseProps({ props, defaults });
 	const { type, orientation, loop, rovingFocus, disabled } = options;
 
 	const root = makeElement(name(), {
