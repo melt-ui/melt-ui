@@ -18,6 +18,7 @@ import type {
 	HeadingParentsLU,
 	TableOfContentsItem,
 } from './types.js';
+import { pushState } from '$app/navigation';
 
 const defaults = {
 	exclude: ['h1'],
@@ -373,7 +374,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 					// Add items hash to URL
 					if (id) {
-						history.pushState({}, '', `#${id}`);
+						pushState(`#${id}`, {});
 					}
 				})
 			);
