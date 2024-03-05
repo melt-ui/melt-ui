@@ -8,7 +8,7 @@
 	const hideMeltUI = writable(false);
 
 	const {
-		elements: { trigger, menu, item, separator, arrow },
+		elements: { trigger, menu, item, separator, arrow, overlay },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 		states: { open },
 	} = createDropdownMenu({
@@ -59,6 +59,7 @@
 </button>
 
 {#if $open}
+	<div use:melt={$overlay} class="fixed inset-0 z-40" />
 	<div
 		class="force-dark menu"
 		use:melt={$menu}

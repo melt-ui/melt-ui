@@ -1,8 +1,8 @@
 import type { Action } from 'svelte/action';
 import { derived, type Readable, type Stores, type StoresValues } from 'svelte/store';
 import { isBrowser, isHTMLElement, noop } from './index.js';
+import { removeUndefined } from './object.js';
 import { lightable } from './store/lightable.js';
-import { removeUndefined } from '$lib/internal/helpers/index.js';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
