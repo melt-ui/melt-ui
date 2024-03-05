@@ -109,7 +109,13 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 		return false;
 	}
 
-	return node && !isOrContainsTarget(node, target);
+	return node && !isOrContainsTarget(node, target) && !isEventInsideDifferentPortal(e, node);
+}
+
+function isEventInsideDifferentPortal(e: InteractOutsideEvent, node: HTMLElement): boolean {
+	const targetPortal = isElement(e.target) && e.target.closest('[data-portal]');
+	const nodePortal = node.closest('[data-portal]');
+	return !!targetPortal && targetPortal !== nodePortal;
 }
 
 function isOrContainsTarget(node: HTMLElement, target: Element) {
