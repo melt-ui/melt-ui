@@ -154,7 +154,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: $isVisible ? undefined : styleToString({ 'pointer-events': 'none' }),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
 				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
