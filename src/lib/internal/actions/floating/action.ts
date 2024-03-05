@@ -100,6 +100,7 @@ export function useFloating(
 
 	function compute() {
 		if (!reference || !floating) return;
+		if (isHTMLElement(reference) && !document.contains(reference)) return;
 		const { placement, strategy } = options;
 
 		computePosition(reference, floating, {
