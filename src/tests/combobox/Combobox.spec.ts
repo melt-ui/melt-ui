@@ -315,6 +315,11 @@ describe('Combobox (forceVisible)', () => {
 		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest, { options });
 		const input = getByTestId('input');
 		const getMenu = () => queryByTestId('menu');
+		const getFirstItem = () => {
+			const firstItem = getMenu()?.querySelector('[data-melt-combobox-option]');
+			if (!firstItem) throw new Error('No option found');
+			return firstItem;
+		};
 
 		expect(input).not.toHaveValue(options[0].label);
 
@@ -323,10 +328,7 @@ describe('Combobox (forceVisible)', () => {
 		expect(getMenu()).not.toBeNull();
 		expect(getMenu()).toBeVisible();
 
-		const firstItem = getMenu()?.querySelector('[data-melt-combobox-option]');
-		if (!firstItem) throw new Error('No option found');
-
-		await user.click(firstItem);
+		await user.click(getFirstItem());
 
 		expect(getMenu()).toBeNull();
 		expect(input).toHaveValue(options[0].label);
@@ -334,7 +336,7 @@ describe('Combobox (forceVisible)', () => {
 		await user.click(input);
 		expect(getMenu()).not.toBeNull();
 		expect(getMenu()).toBeVisible();
-		expect(firstItem).toHaveAttribute('data-selected');
+		expect(getFirstItem()).toHaveAttribute('data-selected');
 	});
 
 	test('Applies custom ids when provided', async () => {
