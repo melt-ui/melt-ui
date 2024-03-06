@@ -24,7 +24,7 @@ export const hiddenInputAttrs = {
  */
 export function portalAttr(portal: string | HTMLElement | null | undefined) {
 	if (portal !== null) {
-		return portal;
+		return '';
 	}
 	return undefined;
 }
