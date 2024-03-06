@@ -2,7 +2,6 @@
 	import { createPopover, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
 	import { Settings2, X } from '$icons/index.js';
-	import Tooltip from '../../../tooltip/main/tailwind/index.svelte'
 
 	const {
 		elements: { trigger, content, arrow, close },
@@ -29,7 +28,6 @@
 		class="force-dark content"
 	>
 		<div use:melt={$arrow} />
-		<Tooltip />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>
 			<fieldset>
