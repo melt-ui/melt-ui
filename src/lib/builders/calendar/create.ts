@@ -514,7 +514,7 @@ export function createCalendar<
 	 * Updates the displayed months based on changes in the placeholder value,
 	 * which determines the months to show in the calendar.
 	 */
-	effect([placeholder, weekStartsOn, locale, fixedWeeks, numberOfMonths], ([$placeholder]) => {
+	effect([placeholder], ([$placeholder]) => {
 		if (!isBrowser || !$placeholder) return;
 
 		const $visibleMonths = visibleMonths.get();
