@@ -1,14 +1,14 @@
-import { testKbd as kbd } from '../utils.js';
-import { findByTestId, render } from '@testing-library/svelte';
+import type { CreateCalendarProps } from '$lib/builders/index.js';
+import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
+import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { describe } from 'vitest';
-import CalendarTest from './CalendarTest.svelte';
-import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
-import { writable } from 'svelte/store';
 import { tick } from 'svelte';
+import { writable } from 'svelte/store';
+import { describe } from 'vitest';
+import { testKbd as kbd } from '../utils.js';
 import CalendarMultiTest from './CalendarMultiTest.svelte';
-import type { CreateCalendarProps } from '$lib/builders/index.js';
+import CalendarTest from './CalendarTest.svelte';
 
 const calendarDate = new CalendarDate(1980, 1, 20);
 const calendarDateTime = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
@@ -699,7 +699,7 @@ describe('Calendar', () => {
 	test('dynamically change weekStartsOn option', async () => {
 		const { getByTestId, user } = setup();
 
-		let weekDaysCopy = [...narrowWeekdays];
+		const weekDaysCopy = [...narrowWeekdays];
 
 		let weekdayElement = getByTestId(`weekdays`);
 
@@ -709,7 +709,10 @@ describe('Calendar', () => {
 
 		const weekStartsOnButton = getByTestId('weekStartsOn');
 		await user.click(weekStartsOnButton);
-		weekDaysCopy.push(weekDaysCopy.shift()!);
+		const first = weekDaysCopy.shift();
+		if (first) {
+			weekDaysCopy.push(first);
+		}
 
 		weekdayElement = getByTestId(`weekdays`);
 		for (let i = 0; i < weekDaysCopy.length; i++) {
@@ -721,7 +724,6 @@ describe('Calendar', () => {
 		const { getByTestId, queryByTestId, user } = setup();
 
 		const nextButton = getByTestId('next-button');
-		const prevButton = getByTestId('prev-button');
 
 		while (queryByTestId('week-6') !== null) {
 			await user.click(nextButton);

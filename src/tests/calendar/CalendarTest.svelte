@@ -63,6 +63,10 @@
 		})
 	);
 
+	function cycleWeekStart() {
+		$weekStartsOnOption = (($weekStartsOnOption + 1) % 7) as typeof $weekStartsOnOption;
+	}
+
 	function cycleWeekdayFormat() {
 		weekdayFormatOption.update((prev) => {
 			switch (prev) {
@@ -146,12 +150,7 @@
 		}}>numberOfMonths</button
 	>
 	<br />
-	<button
-		data-testid="weekStartsOn"
-		on:click={() => {
-			$weekStartsOnOption = ($weekStartsOnOption + 1) % 7;
-		}}>weekStartsOn</button
-	>
+	<button data-testid="weekStartsOn" on:click={cycleWeekStart}>weekStartsOn</button>
 	<br />
 	<button
 		data-testid="fixedWeeks"
