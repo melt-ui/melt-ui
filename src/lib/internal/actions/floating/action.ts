@@ -100,6 +100,9 @@ export function useFloating(
 
 	function compute() {
 		if (!reference || !floating) return;
+		// if the reference is no longer in the document (e.g. it was removed), ignore it
+		if (isHTMLElement(reference) && !reference.ownerDocument.documentElement.contains(reference))
+			return;
 		const { placement, strategy } = options;
 
 		computePosition(reference, floating, {
