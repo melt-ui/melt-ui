@@ -35,6 +35,7 @@
 			numberOfMonths: numberOfMonthsOption,
 			fixedWeeks: fixedWeeksOption,
 			weekStartsOn: weekStartsOnOption,
+			locale: localeOption,
 		},
 	} = createCalendar(
 		removeUndefined({
@@ -157,6 +158,13 @@
 		on:click={() => {
 			$fixedWeeksOption = !$fixedWeeksOption;
 		}}>fixedWeeksOption</button
+	>
+	<br />
+	<button
+		data-testid="locale"
+		on:click={() => {
+			$localeOption = 'it';
+		}}>setLocaleToIt</button
 	>
 </main>
 

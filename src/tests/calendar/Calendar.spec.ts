@@ -735,6 +735,19 @@ describe('Calendar', () => {
 		expect(queryByTestId('week-6')).not.toBeNull();
 	});
 
+	test('dynamically changing the locale option also update weekStartsOn', async () => {
+		const { getByTestId, user } = setup();
+
+		let weekdayElement = getByTestId(`weekday-0`);
+		expect(weekdayElement).toHaveTextContent('S');
+
+		const localeButton = getByTestId('locale');
+		await user.click(localeButton);
+		weekdayElement = getByTestId(`weekday-0`);
+		// L is italian for Lunedì which is Monday (which is different from S which is Sunday)
+		expect(weekdayElement).toHaveTextContent('L');
+	});
+
 	test('custom ids are applied when provided', async () => {
 		const ids = {
 			accessibleHeading: 'id-heading',
