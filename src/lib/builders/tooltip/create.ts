@@ -18,7 +18,6 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
-	sleep,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
@@ -181,10 +180,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', async () => {
-					await sleep(0);
-					closeTooltip(true);
-				}),
+				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
 				addMeltEventListener(node, 'keydown', keydownHandler),
 				addEventListener(document, 'keydown', keydownHandler)
 			);

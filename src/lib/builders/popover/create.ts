@@ -17,7 +17,6 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	sleep,
 	portalAttr,
 	generateIds,
 } from '$lib/internal/helpers/index.js';
@@ -88,8 +87,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		activeTrigger.set(document.getElementById(ids.trigger.get()));
 	});
 
-	async function handleClose() {
-		await sleep(0);
+	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger.get());
 		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
