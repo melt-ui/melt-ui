@@ -1,5 +1,5 @@
 import { testKbd as kbd } from '../utils.js';
-import { render } from '@testing-library/svelte';
+import { findByTestId, render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
@@ -677,6 +677,60 @@ describe('Calendar', () => {
 			const weekdayElement = getByTestId(`weekday-${i}`);
 			expect(weekdayElement).toHaveTextContent(weekday);
 		}
+	});
+
+	test('dynamically change numberOfMonths option', async () => {
+		const { queryByTestId, getByTestId, user } = setup();
+
+		let grid0 = queryByTestId('grid-0');
+		let grid1 = queryByTestId('grid-1');
+		expect(grid0).toBeInTheDocument();
+		expect(grid1).toBeNull();
+
+		const numberOfMonthsButton = getByTestId('numberOfMonths');
+		await user.click(numberOfMonthsButton);
+
+		grid0 = queryByTestId('grid-0');
+		grid1 = queryByTestId('grid-1');
+		expect(grid0).toBeInTheDocument();
+		expect(grid1).toBeInTheDocument();
+	});
+
+	test('dynamically change weekStartsOn option', async () => {
+		const { getByTestId, user } = setup();
+
+		let weekDaysCopy = [...narrowWeekdays];
+
+		let weekdayElement = getByTestId(`weekdays`);
+
+		for (let i = 0; i < weekDaysCopy.length; i++) {
+			expect(weekdayElement.children[i]).toHaveTextContent(weekDaysCopy[i]);
+		}
+
+		const weekStartsOnButton = getByTestId('weekStartsOn');
+		await user.click(weekStartsOnButton);
+		weekDaysCopy.push(weekDaysCopy.shift()!);
+
+		weekdayElement = getByTestId(`weekdays`);
+		for (let i = 0; i < weekDaysCopy.length; i++) {
+			expect(weekdayElement.children[i]).toHaveTextContent(weekDaysCopy[i]);
+		}
+	});
+
+	test('dynamically change weekStartsOn option', async () => {
+		const { getByTestId, queryByTestId, user } = setup();
+
+		const nextButton = getByTestId('next-button');
+		const prevButton = getByTestId('prev-button');
+
+		while (queryByTestId('week-6') !== null) {
+			await user.click(nextButton);
+		}
+
+		const fixedWeeksButton = getByTestId('fixedWeeks');
+		await user.click(fixedWeeksButton);
+
+		expect(queryByTestId('week-6')).not.toBeNull();
 	});
 
 	test('custom ids are applied when provided', async () => {
