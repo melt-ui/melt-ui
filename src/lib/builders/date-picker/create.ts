@@ -131,6 +131,30 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		calendar.options.maxValue.set($maxValue);
 	});
 
+	if (options.numberOfMonths != undefined) {
+		effect([options.numberOfMonths], ([$numberOfMonths]) => {
+			if ($numberOfMonths != undefined) {
+				calendar.options.numberOfMonths.set($numberOfMonths);
+			}
+		});
+	}
+
+	if (options.fixedWeeks != undefined) {
+		effect([options.fixedWeeks], ([$fixedWeeks]) => {
+			if ($fixedWeeks != undefined) {
+				calendar.options.fixedWeeks.set($fixedWeeks);
+			}
+		});
+	}
+
+	if (options.weekStartsOn != undefined) {
+		effect([options.weekStartsOn], ([$weekStartsOn]) => {
+			if ($weekStartsOn != undefined) {
+				calendar.options.weekStartsOn.set($weekStartsOn);
+			}
+		});
+	}
+
 	const dateFieldOptions = omit(
 		dateField.options,
 		'locale',
@@ -139,7 +163,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		'minValue',
 		'maxValue'
 	);
-	const calendarOptions = omit(
+	let calendarOptions = omit(
 		calendar.options,
 		'locale',
 		'disabled',

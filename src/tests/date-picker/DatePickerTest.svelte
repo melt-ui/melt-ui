@@ -27,6 +27,7 @@
 	export let placeholder: CreateDatePickerProps['placeholder'] = undefined;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = undefined;
 	export let weekdayFormat: CreateDatePickerProps['weekdayFormat'] = undefined;
+	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = undefined;
 	export let onOutsideClick: CreateDatePickerProps['onOutsideClick'] = undefined;
 
 	const {
@@ -45,7 +46,13 @@
 			validation,
 		},
 		states: { value: insideValue, months, headingValue, weekdays, segmentContents },
-		options: { locale: insideLocale, weekdayFormat: weekdayFormatOption },
+		options: {
+			locale: insideLocale,
+			weekdayFormat: weekdayFormatOption,
+			numberOfMonths: numberOfMonthsOption,
+			fixedWeeks: fixedWeeksOption,
+			weekStartsOn: weekStartsOnOption,
+		},
 	} = createDatePicker(
 		removeUndefined({
 			value,
@@ -72,8 +79,13 @@
 			weekdayFormat,
 			popoverIds,
 			onOutsideClick,
+			fixedWeeks,
 		})
 	);
+
+	function cycleWeekStart() {
+		$weekStartsOnOption = ((($weekStartsOnOption ?? 0) + 1) % 7) as typeof $weekStartsOnOption;
+	}
 
 	function cycleWeekdayFormat() {
 		weekdayFormatOption.update((prev) => {
@@ -138,7 +150,7 @@
 				{@const { weeks } = month}
 				<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 					<thead aria-hidden="true">
-						<tr>
+						<tr data-testid="weekdays">
 							{#each $weekdays as day, idx}
 								<th class="text-sm font-semibold text-magnum-800">
 									<div
@@ -152,8 +164,8 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each weeks as days}
-							<tr>
+						{#each weeks as days, i}
+							<tr data-testid="week-{i + 1}">
 								{#each days as date}
 									<td role="gridcell">
 										<div
@@ -174,6 +186,24 @@
 		<button on:click={cycleWeekdayFormat} data-testid="cycle-weekday-format">
 			Cycle weekdayFormat
 		</button>
+		<button
+			data-testid="numberOfMonths"
+			on:click={() => {
+				if (!$numberOfMonthsOption) {
+					$numberOfMonthsOption = 1;
+				}
+				$numberOfMonthsOption++;
+			}}>numberOfMonths</button
+		>
+		<br />
+		<button data-testid="weekStartsOn" on:click={cycleWeekStart}>weekStartsOn</button>
+		<br />
+		<button
+			data-testid="fixedWeeks"
+			on:click={() => {
+				$fixedWeeksOption = !$fixedWeeksOption;
+			}}>fixedWeeksOption</button
+		>
 	</div>
 </main>
 
