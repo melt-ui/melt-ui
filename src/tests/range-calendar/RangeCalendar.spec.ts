@@ -542,7 +542,7 @@ describe('Range Calendar', () => {
 		}
 	});
 
-	test('dynamically change weekStartsOn option', async () => {
+	test('dynamically change fixedWeeks option', async () => {
 		const { getByTestId, queryByTestId, user } = setup();
 
 		const nextButton = getByTestId('next-button');
