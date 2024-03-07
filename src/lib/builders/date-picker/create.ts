@@ -163,7 +163,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		'minValue',
 		'maxValue'
 	);
-	let calendarOptions = omit(
+	const calendarOptions = omit(
 		calendar.options,
 		'locale',
 		'disabled',
