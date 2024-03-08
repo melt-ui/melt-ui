@@ -84,7 +84,7 @@
 	);
 
 	function cycleWeekStart() {
-		$weekStartsOnOption = ((($weekStartsOnOption ?? 0) + 1) % 7) as typeof $weekStartsOnOption;
+		$weekStartsOnOption = (($weekStartsOnOption + 1) % 7) as typeof $weekStartsOnOption;
 	}
 
 	function cycleWeekdayFormat() {
@@ -189,9 +189,6 @@
 		<button
 			data-testid="numberOfMonths"
 			on:click={() => {
-				if (!$numberOfMonthsOption) {
-					$numberOfMonthsOption = 1;
-				}
 				$numberOfMonthsOption++;
 			}}>numberOfMonths</button
 		>

@@ -16,6 +16,7 @@ import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
 import { createFormatter, dateStore, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { DatePickerEvents } from './events.js';
+import { defaults as calendarDefaults } from '../calendar/create.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -36,6 +37,18 @@ const defaults = {
 	minValue: undefined,
 	maxValue: undefined,
 	weekdayFormat: 'narrow',
+	...omit(
+		calendarDefaults,
+		'isDateDisabled',
+		'isDateUnavailable',
+		'value',
+		'locale',
+		'disabled',
+		'readonly',
+		'minValue',
+		'maxValue',
+		'weekdayFormat'
+	),
 } satisfies CreateDatePickerProps;
 
 export function createDatePicker(props?: CreateDatePickerProps) {
@@ -131,29 +144,17 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		calendar.options.maxValue.set($maxValue);
 	});
 
-	if (options.numberOfMonths != undefined) {
-		effect([options.numberOfMonths], ([$numberOfMonths]) => {
-			if ($numberOfMonths != undefined) {
-				calendar.options.numberOfMonths.set($numberOfMonths);
-			}
-		});
-	}
+	effect([options.numberOfMonths], ([$numberOfMonths]) => {
+		calendar.options.numberOfMonths.set($numberOfMonths);
+	});
 
-	if (options.fixedWeeks != undefined) {
-		effect([options.fixedWeeks], ([$fixedWeeks]) => {
-			if ($fixedWeeks != undefined) {
-				calendar.options.fixedWeeks.set($fixedWeeks);
-			}
-		});
-	}
+	effect([options.fixedWeeks], ([$fixedWeeks]) => {
+		calendar.options.fixedWeeks.set($fixedWeeks);
+	});
 
-	if (options.weekStartsOn != undefined) {
-		effect([options.weekStartsOn], ([$weekStartsOn]) => {
-			if ($weekStartsOn != undefined) {
-				calendar.options.weekStartsOn.set($weekStartsOn);
-			}
-		});
-	}
+	effect([options.weekStartsOn], ([$weekStartsOn]) => {
+		calendar.options.weekStartsOn.set($weekStartsOn);
+	});
 
 	const dateFieldOptions = omit(
 		dateField.options,
