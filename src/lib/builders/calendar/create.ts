@@ -514,20 +514,48 @@ export function createCalendar<
 	 * Updates the displayed months based on changes in the placeholder value,
 	 * which determines the months to show in the calendar.
 	 */
+	effect([placeholder], ([$placeholder]) => {
+		if (!isBrowser || !$placeholder) return;
+
+		const $visibleMonths = visibleMonths.get();
+
+		/**
+		 * If the placeholder's month is already in the visible months,
+		 * we don't need to do anything.
+		 */
+		if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
+			return;
+		}
+
+		const $weekStartsOn = weekStartsOn.get();
+		const $locale = locale.get();
+		const $fixedWeeks = fixedWeeks.get();
+		const $numberOfMonths = numberOfMonths.get();
+
+		const defaultMonthProps = {
+			weekStartsOn: $weekStartsOn,
+			locale: $locale,
+			fixedWeeks: $fixedWeeks,
+			numberOfMonths: $numberOfMonths,
+		};
+
+		months.set(
+			createMonths({
+				...defaultMonthProps,
+				dateObj: $placeholder,
+			})
+		);
+	});
+
+	/**
+	 * Updates the displayed months based on changes in the the options values,
+	 * which determines the months to show in the calendar.
+	 */
 	effect(
-		[placeholder, weekStartsOn, locale, fixedWeeks, numberOfMonths],
-		([$placeholder, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
+		[weekStartsOn, locale, fixedWeeks, numberOfMonths],
+		([$weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
+			const $placeholder = placeholder.get();
 			if (!isBrowser || !$placeholder) return;
-
-			const $visibleMonths = visibleMonths.get();
-
-			/**
-			 * If the placeholder's month is already in the visible months,
-			 * we don't need to do anything.
-			 */
-			if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
-				return;
-			}
 
 			const defaultMonthProps = {
 				weekStartsOn: $weekStartsOn,
