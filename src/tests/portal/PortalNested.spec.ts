@@ -1,73 +1,74 @@
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PortalNestedTest, { structure, type Structure } from './PortalNested.svelte';
 import { testKbd as kbd } from '../utils.js';
+import type { CreateDialogProps } from '$lib/index.js';
 
 type UserEventUser = ReturnType<typeof userEvent.setup>;
 
 // Recursive function to test the components
 const testComponent = async (component: Structure, level: number, user: UserEventUser) => {
 	// Get the elements
-	const trigger = screen.getByTestId(`${component.name}-trigger-${level}`);
-	const content = screen.getByTestId(`${component.name}-content-${level}`);
-	const outside = screen.getByTestId(`${component.name}-outside-${level}`);
+	const getTrigger = () => screen.getByTestId(`${component.name}-trigger-${level}`);
+	const getContent = () => screen.getByTestId(`${component.name}-content-${level}`);
+	const getOutside = () => screen.getByTestId(`${component.name}-outside-${level}`);
 
 	// At the root, the root trigger and outside should be visible, and the content  must not be.
-	expect(trigger).toBeVisible();
-	expect(outside).toBeVisible();
-	expect(content).not.toBeVisible();
+	waitFor(() => expect(getTrigger()).toBeVisible());
+	waitFor(() => expect(getOutside()).toBeVisible());
+	expect(getContent()).not.toBeVisible();
 
 	// Click the trigger
-	await user.click(trigger);
+	await user.click(getTrigger());
 
 	// After clicking the root trigger, all its elements must be visible.
-	expect(trigger).toBeVisible();
-	expect(content).toBeVisible();
-	expect(outside).toBeVisible();
+	waitFor(() => expect(getTrigger()).toBeVisible());
+	waitFor(() => expect(getContent()).toBeVisible());
+	waitFor(() => expect(getOutside()).toBeVisible());
 
 	// And all its immediate children triggers must be visible
-	if (component.children) {
-		for (const child of component.children) {
-			const childTrigger = screen.getByTestId(`${child.name}-trigger-${level + 1}`);
-			expect(childTrigger).toBeVisible();
+	for (const child of component.children ?? []) {
+		const childTrigger = screen.getByTestId(`${child.name}-trigger-${level + 1}`);
+		waitFor(() => expect(childTrigger).toBeVisible());
 
-			// The children of its children must all be invisible still
-			if (child.children) {
-				for (const grandChild of child.children) {
-					const grandChildTrigger = screen.getByTestId(`${grandChild.name}-trigger-${level + 2}`);
-					expect(grandChildTrigger).not.toBeVisible();
-				}
-			}
-
-			// Recursively test the child components
-			await testComponent(child, level + 1, user);
+		// The children of its children must all be invisible still
+		for (const grandChild of child.children ?? []) {
+			const grandChildTrigger = screen.getByTestId(`${grandChild.name}-trigger-${level + 2}`);
+			expect(grandChildTrigger).not.toBeVisible();
 		}
+
+		// Recursively test the child components
+		await testComponent(child, level + 1, user);
 	}
 
 	// Testing closing
 	// By clicking escape
 	await user.keyboard(kbd.ESCAPE);
-	expect(trigger).toBeVisible();
-	expect(content).not.toBeVisible();
-	expect(outside).toBeVisible();
+	waitFor(() => expect(getTrigger()).toBeVisible());
+	waitFor(() => expect(getContent()).not.toBeVisible());
+	waitFor(() => expect(getOutside()).toBeVisible());
 
 	// Reopen
-	// await userEvent.click(trigger);
-	// expect(trigger).toBeVisible();
-	// expect(content).toBeVisible();
-	// expect(outside).toBeVisible();
+	await userEvent.click(getTrigger());
+	waitFor(() => expect(getTrigger()).toBeVisible());
+	waitFor(() => expect(getContent()).toBeVisible());
+	waitFor(() => expect(getOutside()).toBeVisible());
 
 	// By clicking outside
-	// await userEvent.click(outside);
-	// await sleep(500);
-	// expect(trigger).toBeVisible();
-	// expect(content).not.toBeVisible();
-	// expect(outside).toBeVisible();
+	await userEvent.click(getOutside());
+	waitFor(() => expect(getTrigger()).toBeVisible());
+	waitFor(() => expect(getContent()).not.toBeVisible());
+	waitFor(() => expect(getOutside()).toBeVisible());
 };
 
+const portalTestOptions = [
+	{ label: 'Sibling portals', portalType: 'body' },
+	{ label: 'Single portal', portalType: undefined },
+] satisfies { label: string; portalType: CreateDialogProps['portal'] }[];
+
 // Execute the test
-test('recursive component test', async () => {
+test.each(portalTestOptions)('recursive component test - $label', async ({ portalType }) => {
 	const user = userEvent.setup();
-	render(PortalNestedTest);
+	render(PortalNestedTest, { portal: portalType });
 	await testComponent(structure, 0, user);
 });

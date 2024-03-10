@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { createPopover, createTooltip, melt } from '$lib/index.js';
+	import { createPopover, createTooltip, melt, type CreateTooltipProps } from '$lib/index.js';
 	import { Settings2 } from '$icons/index.js';
+
+	export let portal: CreateTooltipProps['portal'] = undefined;
 
 	const {
 		elements: { trigger, content, arrow, close },
-	} = createPopover();
+	} = createPopover({ portal });
 
 	const {
 		elements: { trigger: ttTrigger, content: ttContent },
 	} = createTooltip({
 		openDelay: 0,
 		closeDelay: 0,
+		portal,
 	});
 </script>
 

@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { createPopover, melt } from '$lib/index.js';
+	import { createPopover, melt, type CreatePopoverProps } from '$lib/index.js';
 	import { Settings2 } from '$icons/index.js';
 	import { initLevel } from './level.js';
 
+	export let portal: CreatePopoverProps['portal'] = undefined;
+
 	const {
 		elements: { trigger, content, arrow, close },
-	} = createPopover();
+	} = createPopover({ portal });
 
 	const level = initLevel();
 </script>

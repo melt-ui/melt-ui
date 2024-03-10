@@ -26,7 +26,7 @@
 			// },
 			{
 				name: 'popover',
-				children: [{ name: 'dialog' }, { name: 'popover' }],
+				children: [{ name: 'select' }],
 			},
 			{ name: 'select' },
 		],
@@ -34,6 +34,9 @@
 </script>
 
 <script lang="ts">
+	import type { CreateDialogProps } from '$lib/index.js';
+
+	export let portal: CreateDialogProps['portal'] = undefined;
 	export let cmp: Structure = structure;
 
 	$: resolvedCmp = components[cmp.name];
@@ -42,16 +45,16 @@
 
 {#if isRoot}
 	<main>
-		<svelte:component this={resolvedCmp}>
+		<svelte:component this={resolvedCmp} {portal}>
 			{#each cmp.children ?? [] as child}
-				<svelte:self cmp={child} isRoot={false} />
+				<svelte:self cmp={child} isRoot={false} {portal} />
 			{/each}
 		</svelte:component>
 	</main>
 {:else}
-	<svelte:component this={resolvedCmp}>
+	<svelte:component this={resolvedCmp} {portal}>
 		{#each cmp.children ?? [] as child}
-			<svelte:self cmp={child} isRoot={false} />
+			<svelte:self cmp={child} isRoot={false} {portal} />
 		{/each}
 	</svelte:component>
 {/if}

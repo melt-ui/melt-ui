@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib/index.js';
+	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
 	import { initLevel } from './level.js';
 
+	export let portal: CreateDialogProps['portal'] = undefined;
+
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
-	} = createDialog({});
+	} = createDialog({ portal });
 
 	const level = initLevel();
 </script>

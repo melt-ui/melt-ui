@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { createSelect, melt } from '$lib/index.js';
+	import { createSelect, melt, type CreateSelectProps } from '$lib/index.js';
 	import { initLevel } from './level.js';
+
+	export let portal: CreateSelectProps['portal'] = undefined;
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
 		states: { selectedLabel },
-	} = createSelect();
+	} = createSelect({ portal });
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
