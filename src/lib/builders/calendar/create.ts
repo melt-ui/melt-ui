@@ -44,7 +44,7 @@ import { derived, writable } from 'svelte/store';
 import type { CalendarEvents } from './events.js';
 import type { CalendarValue, CreateCalendarProps } from './types.js';
 
-const defaults = {
+export const defaults = {
 	isDateDisabled: undefined,
 	isDateUnavailable: undefined,
 	value: undefined,
