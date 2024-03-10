@@ -125,6 +125,7 @@ describe('DateField', () => {
 		});
 		expect(queryByTestId('dayPeriod')).not.toBeNull();
 	});
+
 	test('focuses first segment on click', async () => {
 		const { getByTestId, user } = setup();
 
@@ -671,14 +672,11 @@ describe('DateField', () => {
 	});
 });
 
-function isDaylightSavingsTime(): boolean {
+function isDaylightSavingsTime() {
 	const now = new Date();
-	const january = new Date(now.getFullYear(), 0, 1);
-	const july = new Date(now.getFullYear(), 6, 1);
-	const timezoneOffset = now.getTimezoneOffset();
-	const isDaylightSavingsTime =
-		timezoneOffset < Math.max(january.getTimezoneOffset(), july.getTimezoneOffset());
-	return isDaylightSavingsTime;
+	const januaryOffset = new Date(now.getFullYear(), 0, 1).getTimezoneOffset();
+	const julyOffset = new Date(now.getFullYear(), 6, 1).getTimezoneOffset();
+	return januaryOffset !== julyOffset;
 }
 
 function thisTimeZone(date: string): string {
