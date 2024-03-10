@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import { sleep } from '$lib/internal/helpers/sleep.js';
 import type { CreateTooltipProps } from '$lib/index.js';
+import { testKbd as kbd } from '../utils.js';
 
 function setupPopoverTooltip({ portalType }: { portalType?: CreateTooltipProps['portal'] } = {}) {
 	const user = userEvent.setup();
@@ -69,6 +70,25 @@ describe.each(portalTestOptions)(
 			expect(elements.tooltipContent).toBeVisible();
 			expect(elements.popoverContent).toBeVisible();
 			await sleep(100);
+			expect(elements.outside).toBeVisible();
+			await user.click(elements.outside);
+			await waitFor(() => expect(elements.tooltipContent).not.toBeVisible());
+			await waitFor(() => expect(elements.popoverContent).not.toBeVisible());
+		});
+
+		it('should not close the popover when escape is pressed while tooltip is open', async () => {
+			const { elements, user } = setupPopoverTooltip();
+
+			expect(elements.popoverContent).not.toBeVisible();
+			await user.click(elements.popoverTrigger);
+			expect(elements.popoverContent).toBeVisible();
+			expect(elements.tooltipContent).not.toBeVisible();
+			await user.hover(elements.tooltipTrigger);
+			expect(elements.tooltipContent).toBeVisible();
+
+			await user.keyboard(kbd.BACKSPACE);
+			waitFor(() => expect(elements.tooltipContent).not.toBeVisible());
+			expect(elements.popoverContent).toBeVisible();
 			expect(elements.outside).toBeVisible();
 			await user.click(elements.outside);
 			await waitFor(() => expect(elements.tooltipContent).not.toBeVisible());
