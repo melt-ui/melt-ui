@@ -129,32 +129,34 @@ export function createPopover(args?: CreatePopoverProps) {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
 
-					const popper = usePopper(node, {
-						anchorElement: $activeTrigger,
-						open,
-						options: {
-							floating: $positioning,
-							focusTrap: $disableFocusTrap
-								? null
-								: {
-										returnFocusOnDeactivate: false,
-										clickOutsideDeactivates: true,
-										escapeDeactivates: true,
-								  },
-							modal: {
-								shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
-								onClose: handleClose,
-								open: $isVisible,
-								closeOnInteractOutside: $closeOnOutsideClick,
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: $disableFocusTrap
+									? null
+									: {
+											returnFocusOnDeactivate: false,
+											clickOutsideDeactivates: true,
+											escapeDeactivates: true,
+									  },
+								modal: {
+									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
+									onClose: handleClose,
+									open: $isVisible,
+									closeOnInteractOutside: $closeOnOutsideClick,
+								},
+								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
+								portal: getPortalDestination(node, $portal),
 							},
-							escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
-							portal: getPortalDestination(node, $portal),
-						},
-					});
+						});
 
-					if (popper && popper.destroy) {
-						unsubPopper = popper.destroy;
-					}
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 

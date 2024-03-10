@@ -471,39 +471,41 @@ export function createListbox<
 
 						if (!$isVisible || !$activeTrigger) return;
 
-						const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
+						tick().then(() => {
+							const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
 
-						const popper = usePopper(node, {
-							anchorElement: $activeTrigger,
-							open,
-							options: {
-								floating: $positioning,
-								focusTrap: null,
-								modal: {
-									closeOnInteractOutside: $closeOnOutsideClick,
-									onClose: closeMenu,
-									open: $isVisible,
-									shouldCloseOnInteractOutside: (e) => {
-										onOutsideClick.get()?.(e);
-										if (e.defaultPrevented) return false;
-										const target = e.target;
-										if (!isElement(target)) return false;
-										if (target === $activeTrigger || $activeTrigger.contains(target)) {
-											return false;
-										}
-										// return opposite of the result of the ignoreHandler
-										if (ignoreHandler(e)) return false;
-										return true;
+							const popper = usePopper(node, {
+								anchorElement: $activeTrigger,
+								open,
+								options: {
+									floating: $positioning,
+									focusTrap: null,
+									modal: {
+										closeOnInteractOutside: $closeOnOutsideClick,
+										onClose: closeMenu,
+										open: $isVisible,
+										shouldCloseOnInteractOutside: (e) => {
+											onOutsideClick.get()?.(e);
+											if (e.defaultPrevented) return false;
+											const target = e.target;
+											if (!isElement(target)) return false;
+											if (target === $activeTrigger || $activeTrigger.contains(target)) {
+												return false;
+											}
+											// return opposite of the result of the ignoreHandler
+											if (ignoreHandler(e)) return false;
+											return true;
+										},
 									},
-								},
 
-								escapeKeydown: { handler: closeMenu, enabled: $closeOnEscape },
-								portal: getPortalDestination(node, $portal),
-							},
+									escapeKeydown: { handler: closeMenu, enabled: $closeOnEscape },
+									portal: getPortalDestination(node, $portal),
+								},
+							});
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
 						});
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
 					}
 				)
 			);

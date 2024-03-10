@@ -32,6 +32,7 @@ import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
+import { tick } from 'svelte';
 
 const defaults = {
 	positioning: {
@@ -213,31 +214,33 @@ export function createTooltip(props?: CreateTooltipProps) {
 						unsubEscapeKeydown();
 						return;
 					}
-					if ($portal === null) unsubPortal();
+					tick().then(() => {
+						if ($portal === null) unsubPortal();
 
-					const portalDest = getPortalDestination(node, $portal);
-					if (portalDest !== null) {
-						const portalReturn = usePortal(node, portalDest);
-						if (portalReturn && portalReturn.destroy) {
-							unsubPortal = portalReturn.destroy;
+						const portalDest = getPortalDestination(node, $portal);
+						if (portalDest !== null) {
+							const portalReturn = usePortal(node, portalDest);
+							if (portalReturn && portalReturn.destroy) {
+								unsubPortal = portalReturn.destroy;
+							}
 						}
-					}
 
-					unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
-					unsubInteractOutside = useInteractOutside(node, { enabled: true }).destroy;
+						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
+						unsubInteractOutside = useInteractOutside(node, { enabled: true }).destroy;
 
-					const onEscapeKeyDown = () => {
-						if (openTimeout) {
-							window.clearTimeout(openTimeout);
-							openTimeout = null;
-						}
-						open.set(false);
-					};
+						const onEscapeKeyDown = () => {
+							if (openTimeout) {
+								window.clearTimeout(openTimeout);
+								openTimeout = null;
+							}
+							open.set(false);
+						};
 
-					unsubEscapeKeydown = useEscapeKeydown(node, {
-						enabled: $closeOnEscape,
-						handler: onEscapeKeyDown,
-					}).destroy;
+						unsubEscapeKeydown = useEscapeKeydown(node, {
+							enabled: $closeOnEscape,
+							handler: onEscapeKeyDown,
+						}).destroy;
+					});
 				}
 			);
 
