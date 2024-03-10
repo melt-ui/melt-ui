@@ -141,26 +141,6 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
-			return {
-				destroy() {
-					unsubEscapeKeydown();
-				},
-			};
-		},
 	});
 
 	const content = makeElement(name('content'), {
@@ -223,11 +203,7 @@ export function createDialog(props?: CreateDialogProps) {
 				effect([closeOnEscape], ([$closeOnEscape]) => {
 					if (!$closeOnEscape) return noop;
 
-					const escapeKeydown = useEscapeKeydown(node, {
-						handler: () => {
-							handleClose();
-						},
-					});
+					const escapeKeydown = useEscapeKeydown(node, { handler: handleClose });
 					if (escapeKeydown && escapeKeydown.destroy) {
 						return escapeKeydown.destroy;
 					}

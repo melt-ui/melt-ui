@@ -6,20 +6,27 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 
+const layers = new Set<HTMLElement>();
+
 export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
-	let unsub = noop;
+	let unsubEvents = noop;
 
 	let isPointerDown = false;
 	let isPointerDownInside = false;
 	let ignoreEmulatedMouseEvents = false;
 
 	function update(config: InteractOutsideConfig) {
-		unsub();
+		unsubEvents();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
-
-		if (!enabled) return;
+		if (!enabled) {
+			layers.delete(node);
+			unsubEvents = noop;
+			return;
+		}
+		layers.add(node);
 
 		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
+			if (!isHighestLayer(node)) return;
 			if (onInteractOutside && isValidEvent(e, node)) {
 				onInteractOutsideStart?.(e);
 			}
@@ -41,18 +48,20 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		// Use pointer events if available, otherwise use mouse/touch events
 		if (typeof PointerEvent !== 'undefined') {
 			const onPointerUp = (e: PointerEvent) => {
+				if (!isHighestLayer(node)) return;
 				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
 				resetPointerState();
 			};
 
-			unsub = executeCallbacks(
+			unsubEvents = executeCallbacks(
 				addEventListener(documentObj, 'pointerdown', onPointerDown, true),
 				addEventListener(documentObj, 'pointerup', onPointerUp, true)
 			);
 		} else {
 			const onMouseUp = (e: MouseEvent) => {
+				if (!isHighestLayer(node)) return;
 				if (ignoreEmulatedMouseEvents) {
 					ignoreEmulatedMouseEvents = false;
 				} else if (shouldTriggerInteractOutside(e)) {
@@ -62,6 +71,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 			};
 
 			const onTouchEnd = (e: TouchEvent) => {
+				if (!isHighestLayer(node)) return;
 				ignoreEmulatedMouseEvents = true;
 				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
@@ -69,7 +79,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 				resetPointerState();
 			};
 
-			unsub = executeCallbacks(
+			unsubEvents = executeCallbacks(
 				addEventListener(documentObj, 'mousedown', onPointerDown, true),
 				addEventListener(documentObj, 'mouseup', onMouseUp, true),
 				addEventListener(documentObj, 'touchstart', onPointerDown, true),
@@ -94,7 +104,10 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 
 	return {
 		update,
-		destroy: unsub,
+		destroy() {
+			unsubEvents();
+			layers.delete(node);
+		},
 	};
 }
 
@@ -110,6 +123,11 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	}
 
 	return node && !isOrContainsTarget(node, target);
+}
+
+function isHighestLayer(node: HTMLElement): boolean {
+	const index = Array.from(layers).indexOf(node);
+	return index === layers.size - 1;
 }
 
 function isOrContainsTarget(node: HTMLElement, target: Element) {

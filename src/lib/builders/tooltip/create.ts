@@ -10,7 +10,6 @@ import {
 	isDocument,
 	isElement,
 	isTouch,
-	kbd,
 	makeHullFromElements,
 	noop,
 	omit,
@@ -22,7 +21,12 @@ import {
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
-import { useFloating, usePortal } from '$lib/internal/actions/index.js';
+import {
+	useEscapeKeydown,
+	useFloating,
+	useInteractOutside,
+	usePortal,
+} from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
@@ -144,17 +148,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
-			const keydownHandler = (e: KeyboardEvent) => {
-				if (closeOnEscape.get() && e.key === kbd.ESCAPE) {
-					if (openTimeout) {
-						window.clearTimeout(openTimeout);
-						openTimeout = null;
-					}
-
-					open.set(false);
-				}
-			};
-
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', () => {
 					const $closeOnPointerDown = closeOnPointerDown.get();
@@ -181,9 +174,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
-				addMeltEventListener(node, 'keydown', keydownHandler),
-				addEventListener(document, 'keydown', keydownHandler)
+				addMeltEventListener(node, 'blur', () => closeTooltip(true))
 			);
 
 			return {
@@ -208,30 +199,45 @@ export function createTooltip(props?: CreateTooltipProps) {
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
 			let unsubPortal = noop;
+			let unsubInteractOutside = noop;
+			let unsubEscapeKeydown = noop;
 
 			const unsubDerived = effect(
-				[isVisible, positioning, portal],
-				([$isVisible, $positioning, $portal]) => {
+				[isVisible, positioning, portal, closeOnEscape],
+				([$isVisible, $positioning, $portal, $closeOnEscape]) => {
 					const triggerEl = getEl('trigger');
 					if (!$isVisible || !triggerEl) {
 						unsubPortal();
 						unsubFloating();
+						unsubInteractOutside();
+						unsubEscapeKeydown();
 						return;
 					}
+					if ($portal === null) unsubPortal();
 
-					const floatingReturn = useFloating(triggerEl, node, $positioning);
-					unsubFloating = floatingReturn.destroy;
-					if ($portal === null) {
-						unsubPortal();
-						return;
-					}
 					const portalDest = getPortalDestination(node, $portal);
-					if (portalDest) {
+					if (portalDest !== null) {
 						const portalReturn = usePortal(node, portalDest);
 						if (portalReturn && portalReturn.destroy) {
 							unsubPortal = portalReturn.destroy;
 						}
 					}
+
+					unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
+					unsubInteractOutside = useInteractOutside(node, { enabled: true }).destroy;
+
+					const onEscapeKeyDown = () => {
+						if (openTimeout) {
+							window.clearTimeout(openTimeout);
+							openTimeout = null;
+						}
+						open.set(false);
+					};
+
+					unsubEscapeKeydown = useEscapeKeydown(node, {
+						enabled: $closeOnEscape,
+						handler: onEscapeKeyDown,
+					}).destroy;
 				}
 			);
 
@@ -261,6 +267,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 					unsubPortal();
 					unsubFloating();
 					unsubDerived();
+					unsubInteractOutside();
+					unsubEscapeKeydown();
 				},
 			};
 		},

@@ -1,5 +1,5 @@
 import { createSeparator } from '$lib/builders/index.js';
-import { useEscapeKeydown, usePopper, usePortal } from '$lib/internal/actions/index.js';
+import { usePopper, usePortal } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -350,21 +350,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						rootOpen.set(false);
-						const $rootActiveTrigger = rootActiveTrigger.get();
-						if ($rootActiveTrigger) $rootActiveTrigger.focus();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
@@ -372,16 +357,12 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				const portalAction = usePortal(node, portalDestination);
 				if (portalAction && portalAction.destroy) {
 					return portalAction.destroy;
-				} else {
-					return noop;
 				}
+				return noop;
 			});
 
 			return {
-				destroy() {
-					unsubEscapeKeydown();
-					unsubPortal();
-				},
+				destroy: unsubPortal,
 			};
 		},
 	});

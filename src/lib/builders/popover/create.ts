@@ -21,12 +21,7 @@ import {
 	generateIds,
 } from '$lib/internal/helpers/index.js';
 
-import {
-	useEscapeKeydown,
-	usePopper,
-	usePortal,
-	type InteractOutsideEvent,
-} from '$lib/internal/actions/index.js';
+import { usePopper, usePortal, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -152,13 +147,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								open: $isVisible,
 								closeOnInteractOutside: $closeOnOutsideClick,
 							},
-							escapeKeydown: $closeOnEscape
-								? {
-										handler: () => {
-											handleClose();
-										},
-								  }
-								: null,
+							escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
 							portal: getPortalDestination(node, $portal),
 						},
 					});
@@ -242,19 +231,6 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
@@ -262,16 +238,12 @@ export function createPopover(args?: CreatePopoverProps) {
 				const portalAction = usePortal(node, portalDestination);
 				if (portalAction && portalAction.destroy) {
 					return portalAction.destroy;
-				} else {
-					return noop;
 				}
+				return noop;
 			});
 
 			return {
-				destroy() {
-					unsubEscapeKeydown();
-					unsubPortal();
-				},
+				destroy: unsubPortal,
 			};
 		},
 	});

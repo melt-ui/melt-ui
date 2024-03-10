@@ -1,4 +1,4 @@
-import { useEscapeKeydown, usePopper } from '$lib/internal/actions/index.js';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addHighlight,
@@ -434,23 +434,8 @@ export function createListbox<
 				})
 			);
 
-			let unsubEscapeKeydown = noop;
-
-			const escape = useEscapeKeydown(node, {
-				handler: closeMenu,
-				enabled: derived([open, closeOnEscape], ([$open, $closeOnEscape]) => {
-					return $open && $closeOnEscape;
-				}),
-			});
-			if (escape && escape.destroy) {
-				unsubEscapeKeydown = escape.destroy;
-			}
-
 			return {
-				destroy() {
-					unsubscribe();
-					unsubEscapeKeydown();
-				},
+				destroy: unsubscribe,
 			};
 		},
 	});
@@ -473,8 +458,15 @@ export function createListbox<
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
-					([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
+					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger, closeOnEscape],
+					([
+						$isVisible,
+						$portal,
+						$closeOnOutsideClick,
+						$positioning,
+						$activeTrigger,
+						$closeOnEscape,
+					]) => {
 						unsubPopper();
 
 						if (!$isVisible || !$activeTrigger) return;
@@ -505,7 +497,7 @@ export function createListbox<
 									},
 								},
 
-								escapeKeydown: null,
+								escapeKeydown: { handler: closeMenu, enabled: $closeOnEscape },
 								portal: getPortalDestination(node, $portal),
 							},
 						});
