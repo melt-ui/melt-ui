@@ -1,6 +1,11 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
-import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import {
+	builderSchema,
+	elementSchema,
+	floatingSideAndAlignDataAttrs,
+	floatingSideDataAttr,
+} from '$docs/utils/index.js';
 import { tooltipIdParts } from '$lib/index.js';
 import { tooltipEvents } from '$lib/builders/tooltip/events.js';
 import type { BuilderData } from './index.js';
@@ -99,6 +104,7 @@ const content = elementSchema('content', {
 			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
+		...floatingSideAndAlignDataAttrs,
 		{
 			name: 'data-melt-tooltip-content',
 			value: ATTRS.MELT('tooltip content'),
@@ -114,6 +120,7 @@ const arrow = elementSchema('arrow', {
 			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
+		floatingSideDataAttr,
 		{
 			name: 'data-melt-tooltip-arrow',
 			value: ATTRS.MELT('tooltip arrow'),
