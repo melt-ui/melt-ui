@@ -119,7 +119,9 @@ export function useFloating(
 			const x = Math.round(data.x);
 			const y = Math.round(data.y);
 
-			const [side, align] = getSideAndAlignFromPlacement(placement);
+			// get the chosen side and align from the placement to apply as attributes
+			// to the floating element and arrow
+			const [side, align] = getSideAndAlignFromPlacement(data.placement);
 
 			floating.setAttribute('data-side', side);
 			floating.setAttribute('data-align', align);

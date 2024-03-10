@@ -1,6 +1,11 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
-import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import {
+	builderSchema,
+	elementSchema,
+	floatingSideAndAlignDataAttrs,
+	floatingSideDataAttr,
+} from '$docs/utils/index.js';
 import { popoverIdParts } from '$lib/index.js';
 import { popoverEvents } from '$lib/builders/popover/events.js';
 import type { BuilderData } from './index.js';
@@ -82,6 +87,7 @@ const trigger = elementSchema('trigger', {
 const content = elementSchema('content', {
 	description: 'The popover content.',
 	dataAttributes: [
+		...floatingSideAndAlignDataAttrs,
 		{
 			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
@@ -112,6 +118,7 @@ const arrow = elementSchema('arrow', {
 	title: 'arrow',
 	description: 'The optional arrow element.',
 	dataAttributes: [
+		floatingSideDataAttr,
 		{
 			name: 'data-arrow',
 			value: ATTRS.TRUE,
