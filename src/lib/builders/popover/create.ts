@@ -30,6 +30,7 @@ import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { writable } from 'svelte/store';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
+import { tick } from 'svelte';
 
 const defaults = {
 	positioning: {
