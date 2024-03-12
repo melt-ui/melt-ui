@@ -9,7 +9,6 @@ import {
 	handleFocus,
 	isBrowser,
 	isElement,
-	isHTMLElement,
 	kbd,
 	noop,
 	omit,
@@ -22,7 +21,6 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper, usePortal, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { writable } from 'svelte/store';
@@ -77,10 +75,6 @@ export function createPopover(args?: CreatePopoverProps) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
-
-	safeOnMount(() => {
-		activeTrigger.set(document.getElementById(ids.trigger.get()));
-	});
 
 	function handleClose() {
 		open.set(false);
@@ -169,13 +163,8 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
-	function toggleOpen(triggerEl?: HTMLElement) {
-		open.update((prev) => {
-			return !prev;
-		});
-		if (triggerEl) {
-			activeTrigger.set(triggerEl);
-		}
+	function toggleOpen() {
+		open.update((prev) => !prev);
 	}
 	function shouldCloseOnInteractOutside(e: InteractOutsideEvent) {
 		onOutsideClick.get()?.(e);
@@ -202,14 +191,13 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['trigger']> => {
+			activeTrigger.set(node);
 			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'click', () => {
-					toggleOpen(node);
-				}),
+				addMeltEventListener(node, 'click', toggleOpen),
 				addMeltEventListener(node, 'keydown', (e) => {
 					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
 					e.preventDefault();
-					toggleOpen(node);
+					toggleOpen();
 				})
 			);
 
@@ -288,26 +276,14 @@ export function createPopover(args?: CreatePopoverProps) {
 	});
 
 	effect([open, activeTrigger, preventScroll], ([$open, $activeTrigger, $preventScroll]) => {
-		if (!isBrowser) return;
+		if (!isBrowser || !$open) return;
 
 		const unsubs: Array<() => void> = [];
 
-		if ($open) {
-			if (!$activeTrigger) {
-				tick().then(() => {
-					const triggerEl = document.getElementById(ids.trigger.get());
-					if (!isHTMLElement(triggerEl)) return;
-					activeTrigger.set(triggerEl);
-				});
-			}
-
-			if ($preventScroll) {
-				unsubs.push(removeScroll());
-			}
-
-			const triggerEl = $activeTrigger ?? document.getElementById(ids.trigger.get());
-			handleFocus({ prop: openFocus.get(), defaultEl: triggerEl });
+		if ($preventScroll) {
+			unsubs.push(removeScroll());
 		}
+		handleFocus({ prop: openFocus.get(), defaultEl: $activeTrigger });
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());
