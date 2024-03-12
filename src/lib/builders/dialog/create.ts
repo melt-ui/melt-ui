@@ -164,28 +164,30 @@ export function createDialog(props?: CreateDialogProps) {
 		action: (node: HTMLElement) => {
 			let activate = noop;
 			let deactivate = noop;
+			let ubsubFocus = noop;
 
 			const destroy = executeCallbacks(
-				effect([open], ([$open]) => {
-					if (!$open) return;
+				effect(
+					[open, closeOnEscape, closeOnOutsideClick],
+					([$open, $closeOnEscape, $closeOnOutsideClick]) => {
+						ubsubFocus();
+						if (!$open) return;
 
-					const focusTrap = createFocusTrap({
-						immediate: false,
-						escapeDeactivates: true,
-						clickOutsideDeactivates: true,
-						returnFocusOnDeactivate: false,
-						fallbackFocus: node,
-					});
+						const focusTrap = createFocusTrap({
+							immediate: false,
+							escapeDeactivates: $closeOnEscape,
+							clickOutsideDeactivates: $closeOnOutsideClick,
+							returnFocusOnDeactivate: false,
+							fallbackFocus: node,
+						});
 
-					activate = focusTrap.activate;
-					deactivate = focusTrap.deactivate;
-					const ac = focusTrap.useFocusTrap(node);
-					if (ac && ac.destroy) {
-						return ac.destroy;
-					} else {
-						return focusTrap.deactivate;
+						activate = focusTrap.activate;
+						deactivate = focusTrap.deactivate;
+						const ac = focusTrap.useFocusTrap(node);
+						ubsubFocus = ac?.destroy ?? focusTrap.deactivate;
+						return ubsubFocus;
 					}
-		}),
+				),
 				effect([closeOnOutsideClick, isVisible], ([$closeOnOutsideClick, $isVisible]) => {
 					if (!$isVisible) return;
 

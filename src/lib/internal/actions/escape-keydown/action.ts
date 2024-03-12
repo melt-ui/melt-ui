@@ -19,7 +19,7 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 		) as Readable<boolean>;
 
 		const onKeyDown = (e: KeyboardEvent) => {
-			if (e.key !== kbd.ESCAPE || !isHighestLayer(node)) return;
+			if (e.key !== kbd.ESCAPE || !isHighestLayerEscapeKey(node)) return;
 			const target = e.target;
 			if (!isHTMLElement(target)) return;
 
@@ -72,7 +72,7 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 	};
 };
 
-function isHighestLayer(node: HTMLElement): boolean {
+export const isHighestLayerEscapeKey = (node: HTMLElement): boolean => {
 	const index = Array.from(layers).indexOf(node);
 	return index === layers.size - 1;
-}
+};

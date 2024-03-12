@@ -25,7 +25,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		}
 
 		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
-			if (!isHighestLayer(node)) return;
+			if (!isHighestLayerInteractOutside(node)) return;
 			if (options.onInteractOutside && isValidEvent(e, node)) {
 				options.onInteractOutsideStart?.(e);
 			}
@@ -47,7 +47,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		// Use pointer events if available, otherwise use mouse/touch events
 		if (typeof PointerEvent !== 'undefined') {
 			const onPointerUp = (e: PointerEvent) => {
-				if (!isHighestLayer(node)) return;
+				if (!isHighestLayerInteractOutside(node)) return;
 				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
@@ -60,7 +60,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 			);
 		} else {
 			const onMouseUp = (e: MouseEvent) => {
-				if (!isHighestLayer(node)) return;
+				if (!isHighestLayerInteractOutside(node)) return;
 				if (ignoreEmulatedMouseEvents) {
 					ignoreEmulatedMouseEvents = false;
 				} else if (shouldTriggerInteractOutside(e)) {
@@ -70,7 +70,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 			};
 
 			const onTouchEnd = (e: TouchEvent) => {
-				if (!isHighestLayer(node)) return;
+				if (!isHighestLayerInteractOutside(node)) return;
 				ignoreEmulatedMouseEvents = true;
 				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
@@ -124,7 +124,7 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	return node && !isOrContainsTarget(node, target);
 }
 
-function isHighestLayer(node: HTMLElement): boolean {
+export function isHighestLayerInteractOutside(node: HTMLElement): boolean {
 	const index = Array.from(layers).indexOf(node);
 	return index === layers.size - 1;
 }
