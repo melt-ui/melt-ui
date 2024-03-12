@@ -236,26 +236,32 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const portalled = makeElement(name('portalled'), {
-		stores: portal,
-		returned: ($portal) => ({
+		stores: [portal, isVisible],
+		returned: ([$portal, $isVisible]) => ({
+			hidden: $isVisible && isBrowser ? undefined : true,
 			'data-portal': portalAttr($portal),
+			style: $isVisible ? undefined : styleToString({ display: 'none' }),
 		}),
 		action: (node: HTMLElement) => {
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			let unsubPortal = noop;
+
+			const unsubDerived = effect([isVisible, portal], ([$isVisible, $portal]) => {
+				unsubPortal();
+				if (!$isVisible || $portal === null) return;
+
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
+				if (portalDestination === null) return;
+
 				const portalAction = usePortal(node, portalDestination);
 				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
+					unsubPortal = portalAction.destroy;
 				}
 			});
 
 			return {
 				destroy() {
 					unsubPortal();
+					unsubDerived();
 				},
 			};
 		},
