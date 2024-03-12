@@ -8,6 +8,8 @@ const layers = new Set<HTMLElement>();
 
 export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig = {}) => {
 	let unsub = noop;
+	layers.add(node);
+
 	function update(config: EscapeKeydownConfig = {}) {
 		unsub();
 
@@ -17,11 +19,12 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 		) as Readable<boolean>;
 
 		const onKeyDown = (e: KeyboardEvent) => {
-			if (e.key !== kbd.ESCAPE || !get(enabled) || !isHighestLayer(node)) return;
+			if (e.key !== kbd.ESCAPE || !isHighestLayer(node)) return;
 			const target = e.target;
 			if (!isHTMLElement(target)) return;
 
 			e.preventDefault();
+			if (!get(enabled)) return;
 
 			// If an ignore function is passed, check if it returns true
 			if (options.ignore) {
@@ -49,10 +52,8 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 			addEventListener(document, 'keydown', onKeyDown, { passive: false }),
 			effect(enabled, ($enabled) => {
 				if ($enabled) {
-					layers.add(node);
 					node.dataset.escapee = '';
 				} else {
-					layers.delete(node);
 					delete node.dataset.escapee;
 				}
 			})

@@ -142,7 +142,7 @@ export function createPopover(args?: CreatePopoverProps) {
 									open: $isVisible,
 									closeOnInteractOutside: $closeOnOutsideClick,
 								},
-								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
+								escapeKeydown: { handler: handleClose, enabled: $closeOnEscape },
 								portal: getPortalDestination(node, $portal),
 							},
 						});

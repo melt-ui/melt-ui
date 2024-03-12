@@ -200,14 +200,16 @@ export function createDialog(props?: CreateDialogProps) {
 						},
 					}).destroy;
 				}),
-				effect([closeOnEscape], ([$closeOnEscape]) => {
-					if (!$closeOnEscape) return noop;
+				effect([closeOnEscape, isVisible], ([$closeOnEscape, $isVisible]) => {
+					if (!$isVisible) return;
 
-					const escapeKeydown = useEscapeKeydown(node, { handler: handleClose });
+					const escapeKeydown = useEscapeKeydown(node, {
+						handler: handleClose,
+						enabled: $closeOnEscape,
+					});
 					if (escapeKeydown && escapeKeydown.destroy) {
 						return escapeKeydown.destroy;
 					}
-					return noop;
 				}),
 
 				effect([isVisible], ([$isVisible]) => {
