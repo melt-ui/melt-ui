@@ -10,6 +10,7 @@ const layers = new Set<HTMLElement>();
 
 export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
 	let unsubEvents = noop;
+	layers.add(node);
 
 	let isPointerDown = false;
 	let isPointerDownInside = false;
@@ -17,18 +18,16 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 
 	function update(config: InteractOutsideConfig) {
 		unsubEvents();
-		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
-		if (!enabled) {
-			layers.delete(node);
+		const options = { enabled: true, ...config };
+		if (!options.enabled) {
 			unsubEvents = noop;
 			return;
 		}
-		layers.add(node);
 
 		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
 			if (!isHighestLayer(node)) return;
-			if (onInteractOutside && isValidEvent(e, node)) {
-				onInteractOutsideStart?.(e);
+			if (options.onInteractOutside && isValidEvent(e, node)) {
+				options.onInteractOutsideStart?.(e);
 			}
 			const target = e.target;
 
@@ -40,7 +39,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		}
 
 		function triggerInteractOutside(e: InteractOutsideEvent) {
-			onInteractOutside?.(e);
+			options.onInteractOutside?.(e);
 		}
 
 		const documentObj = getOwnerDocument(node);

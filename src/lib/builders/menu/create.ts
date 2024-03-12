@@ -209,7 +209,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 										rootOpen.set(false);
 										$rootActiveTrigger.focus();
 									},
-									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,

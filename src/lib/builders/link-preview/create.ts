@@ -212,7 +212,6 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 											return false;
 										return true;
 									},
-									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
 								focusTrap: null,

@@ -185,10 +185,11 @@ export function createDialog(props?: CreateDialogProps) {
 					} else {
 						return focusTrap.deactivate;
 					}
-				}),
-				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
+		}),
+				effect([closeOnOutsideClick, isVisible], ([$closeOnOutsideClick, $isVisible]) => {
+					if (!$isVisible) return;
+
 					return useModal(node, {
-						open: $open,
 						closeOnInteractOutside: $closeOnOutsideClick,
 						onClose() {
 							handleClose();

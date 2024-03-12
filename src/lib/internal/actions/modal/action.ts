@@ -8,7 +8,7 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 
 	function update(config: ModalConfig) {
 		unsubInteractOutside();
-		const { open, onClose, shouldCloseOnInteractOutside, closeOnInteractOutside } = config;
+		const { onClose, shouldCloseOnInteractOutside, closeOnInteractOutside } = config;
 
 		function closeModal() {
 			onClose?.();
@@ -30,7 +30,7 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 		unsubInteractOutside = useInteractOutside(node, {
 			onInteractOutsideStart,
 			onInteractOutside: closeOnInteractOutside ? onInteractOutside : undefined,
-			enabled: open,
+			enabled: closeOnInteractOutside,
 		}).destroy;
 	}
 
