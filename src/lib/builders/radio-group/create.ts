@@ -10,13 +10,11 @@ import {
 	isHTMLElement,
 	kbd,
 	makeElement,
-	omit,
-	overridable,
-	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 import { createHiddenInput } from '../hidden-input/create.js';
 import type { RadioGroupEvents } from './events.js';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types.js';
@@ -26,7 +24,7 @@ const defaults = {
 	loop: true,
 	disabled: false,
 	required: false,
-	defaultValue: undefined,
+	value: undefined,
 } satisfies Defaults<CreateRadioGroupProps>;
 
 type RadioGroupParts = 'item' | 'hidden-input';
@@ -34,14 +32,8 @@ const prefix = 'radio-group';
 const { name, selector } = createElHelpers<RadioGroupParts>(prefix);
 
 export function createRadioGroup(props?: CreateRadioGroupProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateRadioGroupProps;
-
-	// options
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { value, ...options } = parseProps(props, defaults);
 	const { disabled, required, loop, orientation } = options;
-
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	/** Lifecycle & Effects */
 	const focusedHistory: {

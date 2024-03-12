@@ -1,40 +1,17 @@
-import type { Writable } from 'svelte/store';
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
-import type { DateFieldIdParts, createDateField } from './create.js';
-import type { DateValue } from '@internationalized/date';
 import type { Granularity, Matcher } from '$lib/index.js';
+import type { IdObj, ReadableProp } from '$lib/internal/helpers/index.js';
 import type { EditableSegmentPart } from '$lib/shared/index.js';
+import type { DateValue } from '@internationalized/date';
+import type { DateFieldIdParts, createDateField } from './create.js';
 
 export type DateFieldProps = {
 	/**
-	 * The default value for the date field. When provided,
+	 * The value for the date field. When provided,
 	 * the `placeholder` will also assume this value.
-	 *
-	 * @default undefined;
-	 */
-	defaultValue?: DateValue;
-
-	/**
-	 * A function called when the value of the date field changes.
-	 * It receives a single argument, which is an object containing
-	 * `curr` and `prev` properties, whose values are the current
-	 * and previous values of the value store. Whatever you return
-	 * from this function will be set as the new value of the value
-	 * store.
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateValue | undefined>;
-
-	/**
-	 * A writable store than can be used to control the value of the
-	 * date picker from outside the builder. This is useful if you
-	 * want to sync the value of the date field with another store
-	 * used in your app.
-	 *
-	 * @default undefined;
-	 */
-	value?: Writable<DateValue | undefined>;
+	value?: ReadableProp<DateValue>;
 
 	/**
 	 * The date that is used when the date field is empty to
@@ -42,44 +19,16 @@ export type DateFieldProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
-
-	/**
-	 * A writable store that can be used to control the placeholder
-	 * date from outside the builder. When this prop is provided,
-	 * the `defaultPlaceholder` prop is ignored, and the value
-	 * of this store is used instead.
-	 *
-	 * The `placeholder` store is not used to set the value of the
-	 * date field, it is only used to control the starting point for
-	 * the field. The `placeholder` store is used as the starting
-	 * point for cycling through the individual date segments.
-	 */
-	placeholder?: Writable<DateValue>;
-
-	/**
-	 * A function called when the placeholder value changes. It receives
-	 * a single argument, which is an object containing `curr` and
-	 * `prev` properties, whose values are the current and previous
-	 * values of the `placeholder` store. Whatever you return from this
-	 * function will be set as the new value of the `placeholder` store.
-	 *
-	 * The `placeholder` is kept in sync with the `value` store, so
-	 * ensure you know what you're doing if you intend on overriding the
-	 * value, as it may render the date field unusable.
-	 *
-	 * @default undefined
-	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	placeholder?: ReadableProp<DateValue>;
 
 	/**
 	 * Any dates that match the provided matchers will be
 	 * marked as unavailable, where if selected, the date
 	 * field will be marked as invalid.
 	 *
-	 * @default undefined;
+	 * @default undefined
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: ReadableProp<Matcher>;
 
 	/**
 	 * The minimum acceptable date. When provided, the
@@ -88,7 +37,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	minValue?: DateValue;
+	minValue?: ReadableProp<DateValue>;
 
 	/**
 	 * The maximum acceptable date. When provided, the
@@ -97,7 +46,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	maxValue?: DateValue;
+	maxValue?: ReadableProp<DateValue>;
 
 	/**
 	 * If true, the date field will be disabled and users
@@ -106,7 +55,7 @@ export type DateFieldProps = {
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: ReadableProp<boolean>;
 
 	/**
 	 * If true, the date field will be readonly, and users
@@ -115,7 +64,7 @@ export type DateFieldProps = {
 	 *
 	 * @default false
 	 */
-	readonly?: boolean;
+	readonly?: ReadableProp<boolean>;
 
 	/**
 	 *
@@ -123,7 +72,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	readonlySegments?: EditableSegmentPart[];
+	readonlySegments?: ReadableProp<EditableSegmentPart[]>;
 
 	/**
 	 * The format to use for displaying the time in the input.
@@ -133,14 +82,14 @@ export type DateFieldProps = {
 	 *
 	 * Defaults to the locale's default time format.
 	 */
-	hourCycle?: 12 | 24;
+	hourCycle?: ReadableProp<12 | 24>;
 
 	/**
 	 * The locale to use for formatting the date field.
 	 *
 	 * @default 'en'
 	 */
-	locale?: string;
+	locale?: ReadableProp<string>;
 
 	/**
 	 * The granularity of the date field. This determines which
@@ -158,23 +107,23 @@ export type DateFieldProps = {
 	 *
 	 * @default 'day'
 	 */
-	granularity?: Granularity;
+	granularity?: ReadableProp<Granularity>;
 
 	/**
 	 * Whether or not to hide the timeZoneName segment from the date field.
 	 *
-	 * @default false;
+	 * @default false
 	 */
-	hideTimeZone?: boolean;
+	hideTimeZone?: ReadableProp<boolean>;
 
 	/**
 	 * The name to use for the hidden input element of the date field,
 	 * which is used to submit the ISO string value of the date field
 	 * to a server.
 	 *
-	 * @default undefined;
+	 * @default undefined
 	 */
-	name?: string;
+	name?: ReadableProp<string>;
 
 	/**
 	 *
@@ -183,7 +132,7 @@ export type DateFieldProps = {
 	 *
 	 * @default false
 	 */
-	required?: boolean;
+	required?: ReadableProp<boolean>;
 
 	/**
 	 * Override any of the element IDs set by the builder.

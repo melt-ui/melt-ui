@@ -27,10 +27,12 @@ import {
 	styleToString,
 	toWritableStores,
 	withGet,
+	parseProps,
+	type WithGet,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { DateValue } from '@internationalized/date';
-import { derived, writable, type Updater } from 'svelte/store';
+import { derived, writable, type Updater, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import {
 	areAllSegmentsFilled,
@@ -102,9 +104,12 @@ const dateFieldIdParts = [
 export type DateFieldIdParts = typeof dateFieldIdParts;
 
 export function createDateField(props?: CreateDateFieldProps) {
-	const withDefaults = { ...defaults, ...props };
+	const {
+		value,
+		placeholder: _placeholder,
+		...options
+	} = parseProps(omit(props ?? {}, 'ids'), defaults);
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'placeholder', 'ids'));
 	const {
 		locale,
 		granularity,
@@ -121,13 +126,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 	} = options;
 
 	const defaultDate = getDefaultDate({
-		defaultPlaceholder: withDefaults.defaultPlaceholder,
-		granularity: withDefaults.granularity,
-		defaultValue: withDefaults.defaultValue,
+		defaultPlaceholder: _placeholder?.get(),
+		granularity: granularity.get(),
+		defaultValue: value.get(),
 	});
-
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const isInvalid = derived(
 		[value, isDateUnavailable, minValue, maxValue],
@@ -140,12 +142,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	);
 
-	const placeholderWritable =
-		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
-	const placeholder = dateStore(
-		overridable(placeholderWritable, withDefaults.onPlaceholderChange),
-		withDefaults.defaultPlaceholder ?? defaultDate
-	);
+	const placeholderWritable = (_placeholder ?? withGet.writable(defaultDate)) as WithGet<
+		Writable<DateValue>
+	>;
+	const placeholder = dateStore(placeholderWritable, placeholderWritable.get() ?? defaultDate);
 
 	const inferredGranularity = withGet.derived(
 		[placeholder, granularity],
@@ -175,7 +175,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		derived(readonlySegments, ($readonlySegments) => new Set<SegmentPart>($readonlySegments))
 	);
 
-	const ids = toWritableStores({ ...generateIds(dateFieldIdParts), ...withDefaults.ids });
+	const ids = toWritableStores({ ...generateIds(dateFieldIdParts), ...props?.ids });
 
 	const idValues = derived(
 		[

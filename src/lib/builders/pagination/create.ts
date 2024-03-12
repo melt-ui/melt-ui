@@ -1,22 +1,21 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	executeCallbacks,
 	isHTMLElement,
 	kbd,
-	omit,
-	overridable,
-	toWritableStores,
+	makeElement,
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
+import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, readonly, writable } from 'svelte/store';
+import { derived, readonly } from 'svelte/store';
 import type { PaginationEvents } from './events.js';
 import { getPageItems } from './helpers.js';
 import type { CreatePaginationProps, Page } from './types.js';
-import { withGet } from '$lib/internal/helpers/withGet.js';
 
 const defaults = {
+	page: 1,
 	perPage: 1,
 	siblingCount: 1,
 	defaultPage: 1,
@@ -26,13 +25,7 @@ type PaginationParts = 'page' | 'prev' | 'next';
 const { name, selector } = createElHelpers<PaginationParts>('pagination');
 
 export function createPagination(props: CreatePaginationProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreatePaginationProps;
-	const pageWritable = withDefaults.page ?? writable(withDefaults.defaultPage);
-	const page = overridable(pageWritable, withDefaults?.onPageChange);
-
-	// options
-	const options = toWritableStores(omit(withDefaults, 'page', 'onPageChange', 'defaultPage'));
-
+	const { page, ...options } = parseProps(props, defaults);
 	const { perPage, siblingCount, count } = options;
 
 	const totalPages = withGet.derived([count, perPage], ([$count, $perPage]) => {

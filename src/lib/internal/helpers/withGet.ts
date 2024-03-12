@@ -1,6 +1,5 @@
 import { get, writable, type Readable, type StoresValues, type Writable } from 'svelte/store';
-
-type ReadableValue<T> = T extends Readable<infer V> ? V : never;
+import type { ReadableValue } from '../types.js';
 
 export type WithGet<T extends Readable<unknown>> = T & {
 	get: () => ReadableValue<T>;
@@ -47,9 +46,9 @@ withGet.writable = function <T>(initial: T): WithGet<Writable<T>> {
 
 withGet.derived = function <
 	S extends
-		| WithGet<Readable<unknown>>
-		| [WithGet<Readable<unknown>>, ...Array<WithGet<Readable<unknown>>>]
-		| Array<WithGet<Readable<unknown>>>,
+	| WithGet<Readable<unknown>>
+	| [WithGet<Readable<unknown>>, ...Array<WithGet<Readable<unknown>>>]
+	| Array<WithGet<Readable<unknown>>>,
 	T
 >(stores: S, fn: (values: StoresValues<S>) => T): WithGet<Readable<T>> {
 	const subscribers: Map<(value: T) => void, Array<() => void>> = new Map();

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createToggle, melt } from '$lib/index.js';
 	import { Italic } from '$icons/index.js';
+	import { createToggle, melt } from '$lib/index.js';
 
 	const {
 		elements: { root },

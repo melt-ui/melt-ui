@@ -1,7 +1,6 @@
 import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	derivedVisible,
 	effect,
@@ -13,14 +12,15 @@ import {
 	isFocusVisible,
 	isHTMLElement,
 	isTouch,
+	makeElement,
 	noop,
-	overridable,
 	sleep,
 	styleToString,
 	toWritableStores,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { writable, type Readable } from 'svelte/store';
@@ -34,7 +34,7 @@ type LinkPreviewParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<LinkPreviewParts>('hover-card');
 
 const defaults = {
-	defaultOpen: false,
+	open: false,
 	openDelay: 1000,
 	closeDelay: 100,
 	positioning: {
@@ -52,19 +52,12 @@ export const linkPreviewIdParts = ['trigger', 'content'] as const;
 export type LinkPreviewIdParts = typeof linkPreviewIdParts;
 
 export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateLinkPreviewProps;
+	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
 
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	const hasSelection = withGet.writable(false);
 	const isPointerDownOnContent = withGet.writable(false);
 	const containSelection = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
-
-	// type OpenReason = 'pointer' | 'focus';
-	// const openReason = writable<null | OpenReason>(null);
-
-	const options = toWritableStores(omit(withDefaults, 'ids'));
 
 	const {
 		openDelay,
@@ -78,7 +71,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		onOutsideClick,
 	} = options;
 
-	const ids = toWritableStores({ ...generateIds(linkPreviewIdParts), ...withDefaults.ids });
+	const ids = toWritableStores({ ...generateIds(linkPreviewIdParts), ...props.ids });
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 

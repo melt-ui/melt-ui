@@ -1,13 +1,14 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
+	makeElement,
 	overridable,
+	parseProps,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -28,9 +29,7 @@ const defaults = {
 const { name, selector } = createElHelpers('toolbar');
 
 export const createToolbar = (props?: CreateToolbarProps) => {
-	const withDefaults = { ...defaults, ...props } satisfies CreateToolbarProps;
-
-	const options = toWritableStores(withDefaults);
+	const options = parseProps(props, defaults);
 	const { loop, orientation } = options;
 
 	const root = makeElement(name(), {

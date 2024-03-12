@@ -1,10 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { effect } from '$lib/internal/helpers/index.js';
+import { effect, isWritable } from '$lib/internal/helpers/index.js';
 import { dequal } from 'dequal';
-import type { Writable } from 'svelte/store';
-
-type WritableValue<T> = T extends Writable<infer V> ? V : never;
+import type { Readable, Writable } from 'svelte/store';
+import type { ReadableValue } from './internal/types.js';
 
 /**
  * Typed Object.keys
@@ -18,9 +17,11 @@ function keys<T extends Record<string, unknown>>(obj: T): (keyof T)[] {
 	return Object.keys(obj);
 }
 
-export function createSync<Stores extends Record<string, Writable<unknown>>>(stores: Stores) {
+export function createSync<Stores extends Record<string, Readable<unknown> | Writable<unknown>>>(
+	stores: Stores
+) {
 	let setters = {} as {
-		[K in keyof Stores]?: (value: WritableValue<Stores[K]>) => void;
+		[K in keyof Stores]?: (value: ReadableValue<Stores[K]>) => void;
 	};
 	keys(stores).forEach((key) => {
 		const store = stores[key];
@@ -34,14 +35,17 @@ export function createSync<Stores extends Record<string, Writable<unknown>>>(sto
 
 	return keys(stores).reduce(
 		(acc, key) => {
-			type Value = WritableValue<Stores[typeof key]>;
+			type Value = ReadableValue<Stores[typeof key]>;
 			return {
 				...acc,
 				[key]: function sync(value: Value, setter?: (value: Value) => void) {
-					stores[key].update((p) => {
-						if (dequal(p, value)) return p;
-						return value;
-					});
+					const store = stores[key];
+					if (isWritable(store)) {
+						store.update((p) => {
+							if (dequal(p, value)) return p;
+							return value;
+						});
+					}
 					if (setter) {
 						setters = { ...setters, [key]: setter };
 					}
@@ -50,8 +54,8 @@ export function createSync<Stores extends Record<string, Writable<unknown>>>(sto
 		},
 		{} as {
 			[K in keyof Stores]: (
-				value: WritableValue<Stores[K]>,
-				setter?: (value: WritableValue<Stores[K]>) => void
+				value: ReadableValue<Stores[K]>,
+				setter?: (value: ReadableValue<Stores[K]>) => void
 			) => void;
 		}
 	);

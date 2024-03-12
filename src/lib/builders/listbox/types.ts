@@ -1,5 +1,5 @@
 import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, IdObj, ReadableProp } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { ListboxIdParts, createListbox } from './create.js';
@@ -10,35 +10,27 @@ export type ListboxOption<Value = unknown> = {
 	label?: string;
 };
 
-export type ListboxSelected<Multiple extends boolean, Value> = WhenTrue<
-	Multiple,
-	ListboxOption<Value>[],
-	ListboxOption<Value>
->;
+export type ListboxSelected<Value> = ListboxOption<Value>[];
 
-export type CreateListboxProps<
-	Value = unknown,
-	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
-> = {
+export type CreateListboxProps<Value = unknown> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
 	 * @default  placement: 'bottom'
 	 */
-	positioning?: FloatingConfig;
+	positioning?: ReadableProp<FloatingConfig>;
 
 	/**
 	 * The size of the arrow in pixels.
 	 * @default 8
 	 */
-	arrowSize?: number;
+	arrowSize?: ReadableProp<number>;
 
 	/**
 	 * Determines behavior when scrolling items into view.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
-	scrollAlignment?: 'nearest' | 'center';
+	scrollAlignment?: ReadableProp<'nearest' | 'center'>;
 
 	/**
 	 * Whether or not the listbox should loop through the list when
@@ -46,54 +38,25 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	loop?: boolean;
+	loop?: ReadableProp<boolean>;
 
-	disabled?: boolean;
-	required?: boolean;
-	name?: string;
+	disabled?: ReadableProp<boolean>;
+	required?: ReadableProp<boolean>;
+	name?: ReadableProp<string>;
 
 	/**
-	 * Whether or not the listbox should be open by default
-	 * when the component is rendered.
-	 *
-	 * This should only be used when you are not passing a controlled `open` store.
+	 * Whether or not the listbox should be open
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
+	open?: ReadableProp<boolean>;
 
 	/**
-	 * An optional controlled store that manages the open state of the listbox.
-	 */
-	open?: Writable<boolean>;
-
-	/**
-	 * Change function that is called when the listbox's `open` state changes.
+	 * The selected options.
 	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 * @default []
 	 */
-	onOpenChange?: ChangeFn<boolean>;
-
-	/**
-	 * The default selected option.
-	 *
-	 * This will be overridden if you also pass a `selected` store prop.
-	 *
-	 * @default undefined
-	 */
-	defaultSelected?: S;
-
-	/**
-	 * An optional controlled store that manages the selected option of the listbox.
-	 */
-	selected?: Writable<S>;
-
-	/**
-	 * A change handler for the selected store called when the selected would normally change.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onSelectedChange?: ChangeFn<S | undefined>;
+	selected?: ReadableProp<ListboxSelected<Value>>;
 
 	/**
 	 * Whether or not to close the listbox menu when the user clicks
@@ -101,7 +64,7 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: ReadableProp<boolean>;
 
 	/**
 	 * Whether or not to close the listbox menu when the user presses
@@ -109,7 +72,7 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: ReadableProp<boolean>;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -117,7 +80,7 @@ export type CreateListboxProps<
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: InteractOutsideEvent) => void;
+	onOutsideClick?: ReadableProp<(event: InteractOutsideEvent) => void>;
 
 	/**
 	 * Whether or not to prevent scrolling the page when the
@@ -125,14 +88,14 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	preventScroll?: boolean;
+	preventScroll?: ReadableProp<boolean>;
 
 	/**
 	 * If not undefined, the listbox menu will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: ReadableProp<HTMLElement | string | null>;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -142,14 +105,14 @@ export type CreateListboxProps<
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: ReadableProp<boolean>;
 
-	multiple?: Multiple;
+	multiple?: ReadableProp<boolean>;
 
 	/**
 	 * The name of the builder using listbox.
 	 *
-	 * @default 'listbox
+	 * @default 'listbox'
 	 */
 	builder?: string;
 
@@ -158,14 +121,14 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	typeahead?: boolean;
+	typeahead?: ReadableProp<boolean>;
 
 	/**
 	 * IF true, whenever an option is hovered, the highlightedItem will be set to that option.
 	 *
 	 * @default true
 	 */
-	highlightOnHover?: boolean;
+	highlightOnHover?: ReadableProp<boolean>;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
@@ -180,32 +143,8 @@ export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {
 	disabled?: boolean;
 };
 
-export type Listbox<
-	Value = unknown,
-	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
-> = BuilderReturn<typeof createListbox<Value, Multiple, S>>;
-
-export type ListboxElements<
-	Value = unknown,
-	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
-> = Listbox<Value, Multiple, S>['elements'];
-
-export type ListboxOptions<
-	Value = unknown,
-	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
-> = Listbox<Value, Multiple, S>['options'];
-
-export type ListboxStates<
-	Value = unknown,
-	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
-> = Listbox<Value, Multiple, S>['states'];
-
-export type ListboxHelpers<
-	Value = unknown,
-	Multiple extends boolean = false,
-	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
-> = Listbox<Value, Multiple, S>['helpers'];
+export type Listbox<Value = unknown> = BuilderReturn<typeof createListbox<Value>>;
+export type ListboxElements<Value = unknown> = Listbox<Value>['elements'];
+export type ListboxOptions<Value = unknown> = Listbox<Value>['options'];
+export type ListboxStates<Value = unknown> = Listbox<Value>['states'];
+export type ListboxHelpers<Value = unknown> = Listbox<Value>['helpers'];

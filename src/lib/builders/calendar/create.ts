@@ -1,6 +1,5 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -9,11 +8,13 @@ import {
 	isHTMLElement,
 	isValidIndex,
 	kbd,
+	makeElement,
 	omit,
-	overridable,
+	parseProps,
 	styleToString,
 	toWritableStores,
 	withGet,
+	type WithGet,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -42,7 +43,8 @@ import {
 import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { CalendarEvents } from './events.js';
-import type { CalendarValue, CreateCalendarProps } from './types.js';
+import type { CreateCalendarProps } from './types.js';
+import type { Writable } from 'svelte/store';
 
 export const defaults = {
 	isDateDisabled: undefined,
@@ -60,6 +62,7 @@ export const defaults = {
 	disabled: false,
 	readonly: false,
 	weekdayFormat: 'narrow',
+	multiple: false,
 } satisfies CreateCalendarProps;
 
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
@@ -69,17 +72,14 @@ const { name } = createElHelpers<CalendarParts>('calendar');
 export const calendarIdParts = ['calendar', 'accessibleHeading'] as const;
 export type CalendarIdParts = typeof calendarIdParts;
 
-export function createCalendar<
-	Multiple extends boolean = false,
-	Value extends DateValue = DateValue,
-	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>
->(props?: CreateCalendarProps<Multiple, Value, S>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateCalendarProps<Multiple, Value, S>;
-
-	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'placeholder', 'multiple', 'ids'),
-		multiple: withDefaults.multiple ?? (false as Multiple),
-	});
+export function createCalendar<Value extends DateValue = DateValue>(
+	props?: CreateCalendarProps<Value>
+) {
+	const {
+		value,
+		placeholder: _placeholder,
+		...options
+	} = parseProps(omit(props ?? {}, 'ids'), defaults);
 
 	const {
 		preventDeselect,
@@ -98,23 +98,20 @@ export function createCalendar<
 		weekdayFormat,
 	} = options;
 
-	const ids = toWritableStores({ ...generateIds(calendarIdParts), ...withDefaults.ids });
+	const ids = toWritableStores({ ...generateIds(calendarIdParts), ...props?.ids });
 
 	const defaultDate = getDefaultDate({
-		defaultPlaceholder: withDefaults.defaultPlaceholder,
-		defaultValue: withDefaults.defaultValue,
+		defaultPlaceholder: _placeholder?.get(),
+		defaultValue: value.get(),
 	});
 
-	const formatter = createFormatter(withDefaults.locale);
-	const valueWritable = withDefaults.value ?? writable<S | undefined>(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults.onValueChange);
+	const formatter = createFormatter(locale.get());
 
-	const placeholderWritable =
-		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
-	const placeholder = dateStore(
-		overridable(placeholderWritable, withDefaults.onPlaceholderChange),
-		withDefaults.defaultPlaceholder ?? defaultDate
-	);
+	const placeholderWritable = (_placeholder ?? withGet.writable(defaultDate)) as WithGet<
+		Writable<DateValue>
+	>;
+
+	const placeholder = dateStore(placeholderWritable, placeholderWritable.get() ?? defaultDate);
 
 	/**
 	 * A store containing the months to display in the calendar.
@@ -123,10 +120,10 @@ export function createCalendar<
 		writable<Month<DateValue>[]>(
 			createMonths({
 				dateObj: placeholder.get(),
-				weekStartsOn: withDefaults.weekStartsOn,
-				locale: withDefaults.locale,
-				fixedWeeks: withDefaults.fixedWeeks,
-				numberOfMonths: withDefaults.numberOfMonths,
+				weekStartsOn: weekStartsOn.get(),
+				locale: locale.get(),
+				fixedWeeks: fixedWeeks.get(),
+				numberOfMonths: numberOfMonths.get(),
 			})
 		)
 	);
@@ -883,33 +880,31 @@ export function createCalendar<
 		value.update((prev) => {
 			const $multiple = multiple.get();
 			if ($multiple) {
-				return handleMultipleUpdate(prev, date) as S;
+				return handleMultipleUpdate(prev, date) as Value[];
 			} else {
 				const next = handleSingleUpdate(prev, date);
 				if (!next) {
 					announcer.announce('Selected date is now empty.', 'polite', 5000);
 				} else {
-					announcer.announce(`Selected Date: ${formatter.selectedDate(next, false)}`, 'polite');
+					announcer.announce(`Selected Date: ${formatter.selectedDate(next[0], false)}`, 'polite');
 				}
-				return next as S;
+				return next as Value[];
 			}
 		});
 	}
 
-	function handleSingleUpdate(prev: S | undefined, date: DateValue) {
-		if (Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
-		if (!prev) return date;
+	function handleSingleUpdate(prev: Value[] | undefined, date: DateValue) {
+		if (!prev) return [date];
 		const $preventDeselect = preventDeselect.get();
-		if (!$preventDeselect && isSameDay(prev, date)) {
+		if (!$preventDeselect && isSameDay(prev[0], date)) {
 			placeholder.set(date);
 			return undefined;
 		}
-		return date;
+		return [date];
 	}
 
-	function handleMultipleUpdate(prev: S | undefined, date: DateValue) {
+	function handleMultipleUpdate(prev: Value[] | undefined, date: DateValue) {
 		if (!prev) return [date];
-		if (!Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
 		const index = prev.findIndex((d) => isSameDay(d, date));
 		const $preventDeselect = preventDeselect.get();
 

@@ -18,7 +18,7 @@ export function focusInput(id: string, pos: 'default' | 'start' | 'end' = 'defau
 	}
 }
 
-export function setSelectedFromEl(el: Element | null, selected: Writable<Tag | null>) {
+export function setSelectedFromEl(el: Element | null, selected: Writable<Tag | null | undefined>) {
 	if (!el) {
 		selected.set(null);
 		return;

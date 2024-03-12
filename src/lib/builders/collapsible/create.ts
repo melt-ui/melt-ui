@@ -1,20 +1,18 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	disabledAttr,
-	omit,
-	overridable,
+	makeElement,
 	styleToString,
-	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 import type { CollapsibleEvents } from './events.js';
 import type { CreateCollapsibleProps } from './types.js';
 
 const defaults = {
-	defaultOpen: false,
+	open: false,
 	disabled: false,
 	forceVisible: false,
 } satisfies CreateCollapsibleProps;
@@ -22,13 +20,8 @@ const defaults = {
 const { name } = createElHelpers('collapsible');
 
 export function createCollapsible(props?: CreateCollapsibleProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
-
-	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen', 'onOpenChange'));
+	const { open, ...options } = parseProps(props, defaults);
 	const { disabled, forceVisible } = options;
-
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const root = makeElement(name(), {
 		stores: [open, disabled],

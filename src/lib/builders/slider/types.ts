@@ -1,6 +1,5 @@
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { createSlider } from './create.js';
 export type { SliderComponentEvents } from './events.js';
 
@@ -12,48 +11,35 @@ export type CreateSliderProps = {
 	 *
 	 * @default []
 	 */
-	defaultValue?: number[];
-
-	/**
-	 * The controlled value store for the switch.
-	 * If provided, this will override the value passed to `defaultValue`.
-	 */
-	value?: Writable<number[]>;
-
-	/**
-	 * The callback invoked when the value store of the slider changes.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onValueChange?: ChangeFn<number[]>;
+	value?: ReadableProp<number[]>;
 
 	/**
 	 * The minimum value of the slider.
 	 *
 	 * @default 0
 	 */
-	min?: number;
+	min?: ReadableProp<number>;
 
 	/**
 	 * The maximum value of the slider.
 	 *
 	 * @default 100
 	 */
-	max?: number;
+	max?: ReadableProp<number>;
 
 	/**
 	 * The amount to increment or decrement the value of the slider.
 	 *
 	 * @default 1
 	 */
-	step?: number;
+	step?: ReadableProp<number>;
 
 	/**
 	 * The orientation of the slider.
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: SliderOrientation;
+	orientation?: ReadableProp<SliderOrientation>;
 
 	/**
 	 * The direction of the slider.
@@ -63,14 +49,14 @@ export type CreateSliderProps = {
 	 *
 	 * @default 'ltr'
 	 */
-	dir?: 'ltr' | 'rtl';
+	dir?: ReadableProp<'ltr' | 'rtl'>;
 
 	/**
 	 * When `true`, prevents the user from interacting with the slider.
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: ReadableProp<boolean>;
 };
 
 export type Slider = BuilderReturn<typeof createSlider>;

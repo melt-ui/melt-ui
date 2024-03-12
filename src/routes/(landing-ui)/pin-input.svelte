@@ -6,7 +6,7 @@
 		elements: { root, input },
 	} = createPinInput({
 		placeholder: '•',
-		defaultValue: ['1', '0', '4', '5', ''],
+		value: ['1', '0', '4', '5', ''],
 	});
 
 	let className = '';

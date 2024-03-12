@@ -1,3 +1,4 @@
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
 import type { createSeparator } from './create.js';
 
@@ -7,7 +8,7 @@ export type CreateSeparatorProps = {
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: Orientation;
+	orientation?: ReadableProp<Orientation>;
 
 	/*
 	 * Whether the separator is purely decorative or not. If true,
@@ -16,7 +17,7 @@ export type CreateSeparatorProps = {
 	 *
 	 * @default false
 	 */
-	decorative?: boolean;
+	decorative?: ReadableProp<boolean>;
 };
 
 export type Separator = BuilderReturn<typeof createSeparator>;

@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Tooltip } from '$docs/components/index.js';
-	import { createCombobox, createDialog, melt } from '$lib/index.js';
 	import { CornerDownRight, LoaderIcon, Search as SearchIcon } from '$icons/index.js';
+	import {
+		createCombobox,
+		createDialog,
+		melt,
+		overridable,
+		type ComboboxSelected,
+	} from '$lib/index.js';
 	import { onMount } from 'svelte';
 	import type { Pagefind, PagefindSearchFragment, PagefindSubResult } from '../../pagefind.js';
 
@@ -28,13 +34,16 @@
 	const {
 		elements: { input, menu, option },
 		states: { open: cbOpen, inputValue },
-	} = createCombobox<PagefindSearchFragment | PagefindSubResult>({
-		onSelectedChange({ next }) {
-			if (next) {
-				gotoLink(next.value.url);
+	} = createCombobox({
+		selected: overridable(
+			[] as ComboboxSelected<PagefindSearchFragment | PagefindSubResult>,
+			({ next }) => {
+				if (next) {
+					gotoLink(next[0].value.url);
+				}
+				return [];
 			}
-			return undefined;
-		},
+		),
 		preventScroll: false,
 		highlightOnHover: false,
 	});
@@ -45,13 +54,13 @@
 		elements: { trigger, portalled, content, overlay },
 		states: { open },
 	} = createDialog({
-		onOpenChange({ next }) {
+		open: overridable(false, ({ next }) => {
 			if (!next) {
 				inputValue.set('');
 				search = new Promise((resolve) => resolve([]));
 			}
 			return next;
-		},
+		}),
 		openFocus: comboboxInput,
 	});
 

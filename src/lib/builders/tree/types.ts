@@ -1,5 +1,4 @@
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
-import type { Writable } from 'svelte/store';
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { createTreeView } from './create.js';
 
 export type CreateTreeViewProps = {
@@ -10,29 +9,14 @@ export type CreateTreeViewProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: ReadableProp<boolean>;
 
 	/**
-	 * Which tree items are expanded by default.
+	 * Which tree items are expanded.
 	 *
 	 * @default []
 	 */
-	defaultExpanded?: string[];
-
-	/**
-	 * Optionally pass a writable store to control the expanded items of the tree.
-	 * If provided, this will override the value of the `defaultTree` prop.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
-	 */
-	expanded?: Writable<string[]>;
-
-	/**
-	 * A callback called when the value of the `expanded` store should be changed.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onExpandedChange?: ChangeFn<string[]>;
+	expanded?: ReadableProp<string[]>;
 };
 
 export type TreeParts = 'label' | 'item' | 'group';

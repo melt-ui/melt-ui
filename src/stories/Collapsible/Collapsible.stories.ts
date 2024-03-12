@@ -7,7 +7,7 @@ const meta = {
 	title: 'Components/Collapsible',
 	component: Collapsible,
 	argTypes: {
-		defaultOpen: { control: 'boolean', defaultValue: false },
+		open: { control: 'boolean', defaultValue: false },
 		disabled: { control: 'boolean' },
 	},
 } satisfies Meta<Collapsible>;
@@ -19,8 +19,7 @@ export type StoryProps = Story['args'];
 // More on writing stories with args: https://storybook.js.org/docs/svelte/writing-stories/args
 export const Example: Story = {
 	args: {
-		defaultOpen: false,
+		open: false,
 		disabled: false,
-		onOpenChange: undefined,
 	},
 };

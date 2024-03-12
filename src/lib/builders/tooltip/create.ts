@@ -20,6 +20,7 @@ import {
 	toWritableStores,
 	removeUndefined,
 	portalAttr,
+	parseProps,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
@@ -35,7 +36,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
-	defaultOpen: false,
+	open: false,
 	closeOnPointerDown: true,
 	openDelay: 1000,
 	closeDelay: 0,
@@ -56,9 +57,8 @@ export const tooltipIdParts = ['trigger', 'content'] as const;
 export type TooltipIdParts = typeof tooltipIdParts;
 
 export function createTooltip(props?: CreateTooltipProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
+	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
 
-	const options = toWritableStores(omit(withDefaults, 'open', 'ids'));
 	const {
 		positioning,
 		arrowSize,
@@ -72,13 +72,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 		group,
 	} = options;
 
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-	const open = overridable(openWritable, withDefaults?.onOpenChange);
-
 	type OpenReason = 'pointer' | 'focus';
 	const openReason = writable<null | OpenReason>(null);
 
-	const ids = toWritableStores({ ...generateIds(tooltipIdParts), ...withDefaults.ids });
+	const ids = toWritableStores({ ...generateIds(tooltipIdParts), ...props?.ids });
 
 	let clickedTrigger = false;
 

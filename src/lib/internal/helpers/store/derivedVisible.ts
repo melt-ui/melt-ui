@@ -1,9 +1,9 @@
-import { derived, type Writable } from 'svelte/store';
+import { derived, type Readable } from 'svelte/store';
 
 type DerivedVisibleObj = {
-	open: Writable<boolean>;
-	forceVisible: Writable<boolean>;
-	activeTrigger: Writable<HTMLElement | null>;
+	open: Readable<boolean>;
+	forceVisible: Readable<boolean>;
+	activeTrigger: Readable<HTMLElement | null>;
 };
 
 /**

@@ -14,7 +14,7 @@
 			gutter: 8,
 		},
 		forceVisible: true,
-		defaultOpen: true,
+		open: true,
 		closeOnOutsideClick: false,
 		closeOnEscape: false,
 		disableFocusTrap: true,

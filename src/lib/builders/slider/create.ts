@@ -1,8 +1,6 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	makeElement,
-	makeElementArray,
 	createElHelpers,
 	disabledAttr,
 	effect,
@@ -12,22 +10,22 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
-	omit,
-	overridable,
+	makeElement,
+	makeElementArray,
 	snapValueToStep,
 	styleToString,
-	toWritableStores,
 	type StyleObject,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn, NonEmptyArray } from '$lib/internal/types.js';
 import { derived, writable } from 'svelte/store';
 import type { SliderEvents } from './events.js';
 
+import { parseProps } from '$lib/internal/helpers/props.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { CreateSliderProps } from './types.js';
 
 const defaults = {
-	defaultValue: [],
+	value: [],
 	min: 0,
 	max: 100,
 	step: 1,
@@ -39,13 +37,8 @@ const defaults = {
 const { name } = createElHelpers('slider');
 
 export const createSlider = (props?: CreateSliderProps) => {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
-
-	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+	const { value, ...options } = parseProps(props, defaults);
 	const { min, max, step, orientation, dir, disabled } = options;
-
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isActive = withGet(writable(false));
 	const currentThumbIndex = withGet(writable<number>(0));

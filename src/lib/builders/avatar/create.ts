@@ -1,29 +1,16 @@
-import {
-	makeElement,
-	effect,
-	isBrowser,
-	omit,
-	overridable,
-	styleToString,
-	toWritableStores,
-} from '$lib/internal/helpers/index.js';
-import { writable } from 'svelte/store';
+import { effect, isBrowser, makeElement, styleToString } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { CreateAvatarProps } from './types.js';
 
 const defaults = {
 	src: '',
 	delayMs: 0,
-	onLoadingStatusChange: undefined,
+	loadingStatus: undefined,
 } satisfies CreateAvatarProps;
 
 export const createAvatar = (props?: CreateAvatarProps) => {
-	const withDefaults = { ...defaults, ...props } satisfies CreateAvatarProps;
-
-	const options = toWritableStores(omit(withDefaults, 'loadingStatus', 'onLoadingStatusChange'));
+	const { loadingStatus, ...options } = parseProps(props, defaults);
 	const { src, delayMs } = options;
-
-	const loadingStatusWritable = withDefaults.loadingStatus ?? writable('loading');
-	const loadingStatus = overridable(loadingStatusWritable, withDefaults?.onLoadingStatusChange);
 
 	effect([src, delayMs], ([$src, $delayMs]) => {
 		if (isBrowser) {

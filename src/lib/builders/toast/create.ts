@@ -9,6 +9,7 @@ import {
 	kbd,
 	noop,
 	toWritableStores,
+	parseProps,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, readonly, writable } from 'svelte/store';
@@ -24,9 +25,7 @@ const defaults = {
 } satisfies CreateToasterProps;
 
 export function createToaster<T = object>(props?: CreateToasterProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateToasterProps;
-
-	const options = toWritableStores(withDefaults);
+	const options = parseProps(props, defaults);
 	const { closeDelay, type } = options;
 
 	const toastsMap = writable(new Map<string, Toast<T>>());
@@ -45,11 +44,11 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		};
 
 		const timeout =
-			propsWithDefaults.closeDelay === 0
+			closeDelay.get() === 0
 				? null
 				: window.setTimeout(() => {
-						removeToast(ids.content);
-				  }, propsWithDefaults.closeDelay);
+					removeToast(ids.content);
+				}, closeDelay.get());
 
 		const getPercentage = () => {
 			const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;

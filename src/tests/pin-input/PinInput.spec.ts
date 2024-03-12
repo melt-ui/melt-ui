@@ -5,6 +5,7 @@ import { describe, it } from 'vitest';
 import { testKbd as kbd } from '../utils.js';
 import PinInputTest from './PinInputTest.svelte';
 import { writable } from 'svelte/store';
+import { overridable } from '$lib/index.js';
 
 describe('PIN Input', () => {
 	it('has no accessibility violations', async () => {
@@ -57,10 +58,10 @@ describe('PIN Input', () => {
 		let newValue = undefined;
 
 		const { getByTestId } = render(PinInputTest, {
-			onValueChange: ({ next }) => {
+			value: overridable(['1', '2', '3', '4', '5'], ({ next }) => {
 				newValue = next;
 				return next;
-			},
+			}),
 		});
 
 		const user = userEvent.setup();

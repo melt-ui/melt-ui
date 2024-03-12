@@ -1,6 +1,5 @@
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	derivedVisible,
 	effect,
@@ -11,9 +10,9 @@ import {
 	isElement,
 	isHTMLElement,
 	kbd,
+	makeElement,
 	noop,
 	omit,
-	overridable,
 	removeScroll,
 	styleToString,
 	toWritableStores,
@@ -28,6 +27,7 @@ import {
 	type InteractOutsideEvent,
 } from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { writable } from 'svelte/store';
@@ -39,11 +39,10 @@ const defaults = {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
-	defaultOpen: false,
+	open: false,
 	disableFocusTrap: false,
 	closeOnEscape: true,
 	preventScroll: false,
-	onOpenChange: undefined,
 	closeOnOutsideClick: true,
 	portal: undefined,
 	forceVisible: false,
@@ -58,10 +57,8 @@ const { name } = createElHelpers<PopoverParts>('popover');
 export const popoverIdParts = ['trigger', 'content'] as const;
 export type PopoverIdParts = typeof popoverIdParts;
 
-export function createPopover(args?: CreatePopoverProps) {
-	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
-
-	const options = toWritableStores(omit(withDefaults, 'open', 'ids'));
+export function createPopover(props?: CreatePopoverProps) {
+	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
 	const {
 		positioning,
 		arrowSize,
@@ -76,12 +73,9 @@ export function createPopover(args?: CreatePopoverProps) {
 		onOutsideClick,
 	} = options;
 
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-	const open = overridable(openWritable, withDefaults?.onOpenChange);
-
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
+	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...props?.ids });
 
 	safeOnMount(() => {
 		activeTrigger.set(document.getElementById(ids.trigger.get()));

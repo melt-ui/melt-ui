@@ -5,9 +5,7 @@
 	export let name: CreatePinInputProps['name'] = undefined;
 	export let disabled: CreatePinInputProps['disabled'] = false;
 	export let type: CreatePinInputProps['type'] = 'text';
-	export let defaultValue: CreatePinInputProps['defaultValue'] = ['1', '2', '3', '4', '5'];
-	export let value: CreatePinInputProps['value'] = undefined;
-	export let onValueChange: CreatePinInputProps['onValueChange'] = undefined;
+	export let value: CreatePinInputProps['value'] = ['1', '2', '3', '4', '5'];
 
 	const {
 		elements: { root, input, hiddenInput },
@@ -16,9 +14,7 @@
 		name,
 		disabled,
 		type,
-		defaultValue,
 		value,
-		onValueChange,
 	});
 </script>
 

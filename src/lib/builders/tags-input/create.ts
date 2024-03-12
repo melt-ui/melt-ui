@@ -23,12 +23,13 @@ import { generateIds } from '../../internal/helpers/id.js';
 import type { TagsInputEvents } from './events.js';
 import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
 import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 
 const defaults = {
 	placeholder: '',
 	disabled: false,
 	editable: true,
-	defaultTags: [],
+	tags: [],
 	unique: false,
 	trim: true,
 	blur: 'nothing',
@@ -39,17 +40,15 @@ const defaults = {
 	add: undefined,
 	remove: undefined,
 	update: undefined,
+	selected: undefined,
 } satisfies Defaults<CreateTagsInputProps>;
 
 type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
 const { name, attribute, selector } = createElHelpers<TagsInputParts>('tags-input');
 
 export function createTagsInput(props?: CreateTagsInputProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateTagsInputProps;
+	const { tags, selected, ...options } = parseProps(props, defaults);
 
-	const meltIds = generateIds(['root', 'input']);
-
-	const options = toWritableStores(omit(withDefaults, 'tags'));
 	const {
 		placeholder,
 		disabled,
@@ -66,36 +65,17 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		maxTags,
 	} = options;
 
+	const meltIds = generateIds(['root', 'input']);
+
 	// A store representing the current input value. A readable version is exposed to the
 	// user
-	const inputValue = writable('');
+	const inputValue = withGet.writable('');
 
 	// True when the input is invalid
-	const inputInvalid = writable(false);
+	const inputInvalid = withGet.writable(false);
 
 	// A store representing the current edit value.
-	const editValue = writable('');
-
-	// Tags store of type Tag[]
-	//
-	// `withDefaults.tags` can be
-	//   - undefined => set empty []
-	//   - string[]  => generate Tag[] from string[]
-	//   - Tag[]     => set Tag[]
-
-	const tagsWritable =
-		withDefaults.tags ??
-		writable<Tag[]>(
-			withDefaults.defaultTags && withDefaults.defaultTags.length > 0
-				? typeof withDefaults.defaultTags[0] === 'string'
-					? (withDefaults.defaultTags as string[]).map((tag) => ({ id: generateId(), value: tag }))
-					: (withDefaults.defaultTags as Tag[])
-				: [] // if undefined)
-		);
-	const tags = overridable<Tag[]>(tagsWritable, withDefaults?.onTagsChange);
-
-	// Selected tag store. When `null`, no tag is selected
-	const selected = withGet.writable<Tag | null>(withDefaults.selected ?? null);
+	const editValue = withGet.writable('');
 
 	const editing = withGet.writable<Tag | null>(null);
 
@@ -491,11 +471,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};
@@ -632,11 +612,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};

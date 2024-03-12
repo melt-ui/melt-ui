@@ -1,3 +1,4 @@
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { createToaster } from './create.js';
 export type { ToastComponentEvents } from './events.js';
@@ -6,8 +7,8 @@ export type EmptyType = Record<never, never>;
 export type CreateToasterProps = {
 	// Time in milliseconds before the toast is automatically closed.
 	// If set to 0, the toast will not be automatically closed.
-	closeDelay?: number;
-	type?: 'foreground' | 'background';
+	closeDelay?: ReadableProp<number>;
+	type?: ReadableProp<'foreground' | 'background'>;
 };
 
 export type AddToastProps<T = object> = CreateToasterProps & {

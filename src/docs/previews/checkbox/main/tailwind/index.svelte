@@ -6,7 +6,7 @@
 		elements: { root, input },
 		helpers: { isChecked, isIndeterminate },
 	} = createCheckbox({
-		defaultChecked: 'indeterminate',
+		checked: 'indeterminate',
 	});
 </script>
 

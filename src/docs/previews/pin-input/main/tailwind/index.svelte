@@ -4,7 +4,7 @@
 	const {
 		elements: { root, input },
 	} = createPinInput({
-		defaultValue: ['1', '2', '3', '4', '5'],
+		value: ['1', '2', '3'],
 	});
 </script>
 

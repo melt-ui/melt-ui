@@ -1,7 +1,7 @@
 import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
+import { useModal } from '$lib/internal/actions/modal/action.js';
 import {
 	addMeltEventListener,
-	makeElement,
 	createElHelpers,
 	effect,
 	executeCallbacks,
@@ -11,21 +11,21 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
+	makeElement,
 	noop,
 	omit,
-	overridable,
 	removeScroll,
 	styleToString,
 	toWritableStores,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, writable } from 'svelte/store';
+import { derived } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
-import { useModal } from '$lib/internal/actions/modal/action.js';
 
 type DialogParts =
 	| 'trigger'
@@ -42,7 +42,7 @@ const defaults = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	role: 'dialog',
-	defaultOpen: false,
+	open: false,
 	portal: undefined,
 	forceVisible: false,
 	openFocus: undefined,
@@ -54,9 +54,7 @@ export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
 
 export function createDialog(props?: CreateDialogProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
-
-	const options = toWritableStores(omit(withDefaults, 'ids'));
+	const { open, ...options } = parseProps(omit(props ?? {}, 'ids'), defaults);
 
 	const {
 		preventScroll,
@@ -74,11 +72,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const ids = toWritableStores({
 		...generateIds(dialogIdParts),
-		...withDefaults.ids,
+		...props?.ids,
 	});
 
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
 		return $open || $forceVisible;
 	});
@@ -296,9 +292,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const close = makeElement(name('close'), {
 		returned: () =>
-			({
-				type: 'button',
-			} as const),
+		({
+			type: 'button',
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {

@@ -1,40 +1,34 @@
+import type { ReadableProp } from '$lib/internal/helpers/props.js';
 import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
-import type { Writable } from 'svelte/store';
 import type { createToggleGroup } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { ToggleGroupComponentEvents } from './events.js';
 export type ToggleGroupType = 'single' | 'multiple';
 
-export type CreateToggleGroupProps<T extends ToggleGroupType = 'single'> = {
-	defaultValue?: T extends 'single' ? string : string[];
-	value?: Writable<string | string[] | undefined>;
-	onValueChange?: ChangeFn<string | string[] | undefined>;
-	type?: T;
-	disabled?: boolean;
-	rovingFocus?: boolean;
-	loop?: boolean;
-	orientation?: Orientation;
+export type CreateToggleGroupProps = {
+	value?: ReadableProp<string[]>;
+	type?: ReadableProp<ToggleGroupType>;
+	disabled?: ReadableProp<boolean>;
+	rovingFocus?: ReadableProp<boolean>;
+	loop?: ReadableProp<boolean>;
+	orientation?: ReadableProp<Orientation>;
 };
 
 export type ToggleGroupItemProps =
 	| {
-			value: string;
-			disabled?: boolean;
-	  }
+		value: string;
+		disabled?: boolean;
+	}
 	| string;
 
-export type ToggleGroup<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroup = BuilderReturn<
+	typeof createToggleGroup
 >;
-export type ToggleGroupElements<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroupElements = BuilderReturn<
+	typeof createToggleGroup
 >['elements'];
-export type ToggleGroupOptions<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroupOptions = BuilderReturn<
+	typeof createToggleGroup
 >['options'];
-export type ToggleGroupStates<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
+export type ToggleGroupStates = BuilderReturn<
+	typeof createToggleGroup
 >['states'];
-export type ToggleGroupHelpers<T extends ToggleGroupType = 'single'> = BuilderReturn<
-	typeof createToggleGroup<T>
->['helpers'];

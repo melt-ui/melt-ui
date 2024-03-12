@@ -6,7 +6,7 @@
 	import Tree from './tree.svelte';
 
 	const ctx = createTreeView({
-		defaultExpanded: ['lib-0', 'tree-0'],
+		expanded: ['lib-0', 'tree-0'],
 	});
 	setContext('tree', ctx);
 

@@ -1,28 +1,21 @@
 import {
-	makeElement,
 	createElHelpers,
-	omit,
-	overridable,
-	toWritableStores,
+	makeElement
 } from '$lib/internal/helpers/index.js';
+import { parseProps } from '$lib/internal/helpers/props.js';
 import type { Defaults } from '$lib/internal/types.js';
-import { writable } from 'svelte/store';
 import type { CreateProgressProps } from './types.js';
 
 const defaults = {
-	defaultValue: 0,
+	value: 0,
 	max: 100,
 } satisfies Defaults<CreateProgressProps>;
 
 const { name } = createElHelpers('progress');
 
 export const createProgress = (props?: CreateProgressProps) => {
-	const withDefaults = { ...defaults, ...props } satisfies CreateProgressProps;
-
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { value, ...options } = parseProps(props, defaults);
 	const { max } = options;
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = makeElement(name(), {
 		stores: [value, max],
