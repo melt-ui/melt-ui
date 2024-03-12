@@ -13,7 +13,7 @@ import {
 import type { Action } from 'svelte/action';
 import type { PopperArgs, PopperConfig } from './types.js';
 import { useModal } from '../modal/action.js';
-import { get } from "svelte/store";
+import { get } from 'svelte/store';
 
 const defaultConfig = {
 	floating: {},
