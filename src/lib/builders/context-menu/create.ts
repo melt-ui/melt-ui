@@ -174,7 +174,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 									shouldCloseOnInteractOutside: handleClickOutside,
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { enabled: $closeOnEscape },
 							},
 						});
 						if (!popper || !popper.destroy) return;

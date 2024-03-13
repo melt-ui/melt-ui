@@ -211,7 +211,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									},
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { enabled: $closeOnEscape },
 							},
 						});
 
