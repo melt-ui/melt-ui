@@ -47,7 +47,6 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		const { useFocusTrap } = createFocusTrap({
 			immediate: true,
 			escapeDeactivates: false,
-			allowOutsideClick: true,
 			returnFocusOnDeactivate: false,
 			fallbackFocus: popperElement,
 

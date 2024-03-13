@@ -37,6 +37,7 @@ export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
 
 	const useFocusTrap = (node: HTMLElement) => {
 		trap = _createFocusTrap(node, {
+			allowOutsideClick: true,
 			...focusTrapOptions,
 			escapeDeactivates: (e) => {
 				if (!isHighestLayerEscapeKey(node)) return false;
