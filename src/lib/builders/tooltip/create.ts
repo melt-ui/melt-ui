@@ -215,7 +215,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 						return;
 					}
 					tick().then(() => {
-						if ($portal === null) unsubPortal();
+						unsubPortal();
+						unsubFloating();
+						unsubInteractOutside();
+						unsubEscapeKeydown();
 
 						const portalDest = getPortalDestination(node, $portal);
 						if (portalDest !== null) {
