@@ -30,7 +30,7 @@ import {
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 
@@ -184,7 +184,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		open.update((prev) => {
 			return !prev;
 		});
-		if (triggerEl) {
+		if (triggerEl && triggerEl !== get(activeTrigger)) {
 			activeTrigger.set(triggerEl);
 		}
 	}
