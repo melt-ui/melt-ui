@@ -3,6 +3,7 @@ import { isFunction, isHTMLElement, isReadable } from '$lib/internal/helpers/is.
 import { get, readable, type Readable } from 'svelte/store';
 import { effect, executeCallbacks, kbd, noop } from '../../helpers/index.js';
 import type { EscapeKeydownConfig } from './types.js';
+import type { Action } from 'svelte/action';
 
 /**
  * Creates a readable store that tracks the latest Escape Keydown that occurred on the document.
@@ -35,7 +36,7 @@ const documentEscapeKeyStore = readable<KeyboardEvent | undefined>(
 	}
 );
 
-export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig = {}) => {
+export const useEscapeKeydown = ((node, config = {}) => {
 	let unsub = noop;
 	function update(config: EscapeKeydownConfig = {}) {
 		unsub();
@@ -96,4 +97,4 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 			unsub();
 		},
 	};
-};
+}) satisfies Action<HTMLElement, EscapeKeydownConfig>;

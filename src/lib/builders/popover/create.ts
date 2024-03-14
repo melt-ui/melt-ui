@@ -135,7 +135,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					if (!$isVisible || !$activeTrigger) return;
 
 					tick().then(() => {
-						const popper = usePopper(node, {
+						unsubPopper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open,
 							options: {
@@ -162,11 +162,7 @@ export function createPopover(args?: CreatePopoverProps) {
 									: null,
 								portal: getPortalDestination(node, $portal),
 							},
-						});
-
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+						}).destroy;
 					});
 				}
 			);
@@ -261,12 +257,7 @@ export function createPopover(args?: CreatePopoverProps) {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {

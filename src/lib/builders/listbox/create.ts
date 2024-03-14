@@ -482,7 +482,7 @@ export function createListbox<
 						tick().then(() => {
 							const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
 
-							const popper = usePopper(node, {
+							unsubPopper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
 								options: {
@@ -509,10 +509,7 @@ export function createListbox<
 									escapeKeydown: null,
 									portal: getPortalDestination(node, $portal),
 								},
-							});
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+							}).destroy;
 						});
 					}
 				)

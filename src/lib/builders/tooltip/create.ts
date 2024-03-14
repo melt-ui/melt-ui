@@ -226,15 +226,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 						} else {
 							const portalDest = getPortalDestination(node, $portal);
 							if (portalDest) {
-								const portalReturn = usePortal(node, portalDest);
-								if (portalReturn && portalReturn.destroy) {
-									unsubPortal = portalReturn.destroy;
-								}
+								unsubPortal = usePortal(node, portalDest).destroy;
 							}
 						}
 
-						const floatingReturn = useFloating(triggerEl, node, $positioning);
-						unsubFloating = floatingReturn.destroy;
+						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
 					});
 				}
 			);

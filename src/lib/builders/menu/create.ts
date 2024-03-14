@@ -186,7 +186,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
-						const popper = usePopper(node, {
+						unsubPopper = usePopper(node, {
 							anchorElement: $rootActiveTrigger,
 							open: rootOpen,
 							options: {
@@ -214,11 +214,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
-						});
-
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+						}).destroy;
 					});
 				}
 			);
@@ -369,12 +365,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {
@@ -794,7 +785,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						tick().then(() => {
 							const parentMenuEl = getParentMenu(activeTrigger);
 
-							const popper = usePopper(node, {
+							unsubPopper = usePopper(node, {
 								anchorElement: activeTrigger,
 								open: subOpen,
 								options: {
@@ -804,11 +795,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									focusTrap: null,
 									escapeKeydown: null,
 								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+							}).destroy;
 						});
 					}
 				);
