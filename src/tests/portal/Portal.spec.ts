@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest';
-import { render, waitFor } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import { sleep } from '$lib/internal/helpers/sleep.js';
@@ -72,8 +72,8 @@ describe.each(portalTestOptions)(
 			await sleep(100);
 			expect(elements.outside).toBeVisible();
 			await user.click(elements.outside);
-			await waitFor(() => expect(elements.tooltipContent).not.toBeVisible());
-			await waitFor(() => expect(elements.popoverContent).not.toBeVisible());
+			expect(elements.tooltipContent).not.toBeVisible();
+			expect(elements.popoverContent).not.toBeVisible();
 		});
 
 		it('should not close the popover when escape is pressed while tooltip is open', async () => {
@@ -86,13 +86,13 @@ describe.each(portalTestOptions)(
 			await user.hover(elements.tooltipTrigger);
 			expect(elements.tooltipContent).toBeVisible();
 
-			await user.keyboard(kbd.BACKSPACE);
-			waitFor(() => expect(elements.tooltipContent).not.toBeVisible());
+			await user.keyboard(kbd.ESCAPE);
+			expect(elements.tooltipContent).not.toBeVisible();
 			expect(elements.popoverContent).toBeVisible();
 			expect(elements.outside).toBeVisible();
 			await user.click(elements.outside);
-			await waitFor(() => expect(elements.tooltipContent).not.toBeVisible());
-			await waitFor(() => expect(elements.popoverContent).not.toBeVisible());
+			expect(elements.tooltipContent).not.toBeVisible();
+			expect(elements.popoverContent).not.toBeVisible();
 		});
 	}
 );
