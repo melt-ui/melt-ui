@@ -165,6 +165,8 @@ export function createDialog(props?: CreateDialogProps) {
 			let activate = noop;
 			let deactivate = noop;
 			let unsubFocus = noop;
+			let unsubEscape = noop;
+			let unsubModal = noop;
 
 			const destroy = executeCallbacks(
 				effect(
@@ -189,9 +191,10 @@ export function createDialog(props?: CreateDialogProps) {
 					}
 				),
 				effect([closeOnOutsideClick, isVisible], ([$closeOnOutsideClick, $isVisible]) => {
+					unsubModal();
 					if (!$isVisible) return;
 
-					return useModal(node, {
+					unsubModal = useModal(node, {
 						closeOnInteractOutside: $closeOnOutsideClick,
 						onClose() {
 							handleClose();
@@ -202,17 +205,17 @@ export function createDialog(props?: CreateDialogProps) {
 							return true;
 						},
 					}).destroy;
+					return unsubModal;
 				}),
 				effect([closeOnEscape, isVisible], ([$closeOnEscape, $isVisible]) => {
+					unsubEscape();
 					if (!$isVisible) return;
 
-					const escapeKeydown = useEscapeKeydown(node, {
+					unsubEscape = useEscapeKeydown(node, {
 						handler: handleClose,
 						enabled: $closeOnEscape,
-					});
-					if (escapeKeydown && escapeKeydown.destroy) {
-						return escapeKeydown.destroy;
-					}
+					}).destroy;
+					return unsubEscape;
 				}),
 
 				effect([isVisible], ([$isVisible]) => {
