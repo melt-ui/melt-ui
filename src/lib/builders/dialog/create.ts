@@ -174,14 +174,13 @@ export function createDialog(props?: CreateDialogProps) {
 					unsubModal();
 					if (!$isVisible) return;
 
-					unsubFocus =
-						createFocusTrap({
-							immediate: true,
-							escapeDeactivates: $closeOnEscape,
-							clickOutsideDeactivates: $closeOnOutsideClick,
-							returnFocusOnDeactivate: false,
-							fallbackFocus: node,
-						}).useFocusTrap(node)?.destroy ?? noop;
+					unsubFocus = createFocusTrap({
+						immediate: true,
+						escapeDeactivates: $closeOnEscape,
+						clickOutsideDeactivates: $closeOnOutsideClick,
+						returnFocusOnDeactivate: false,
+						fallbackFocus: node,
+					}).useFocusTrap(node).destroy;
 
 					unsubModal = useModal(node, {
 						closeOnInteractOutside: $closeOnOutsideClick,

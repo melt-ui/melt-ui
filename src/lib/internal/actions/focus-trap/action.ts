@@ -9,7 +9,7 @@ import { createFocusTrap as _createFocusTrap } from 'focus-trap';
 import { isFunction } from '$lib/internal/helpers/is.js';
 import { isHighestLayerInteractOutside, isHighestLayerEscapeKey } from '../index.js';
 
-export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
+export function createFocusTrap(config: FocusTrapConfig = {}) {
 	let trap: undefined | FocusTrap;
 
 	const { immediate, ...focusTrapOptions } = config;
@@ -83,5 +83,5 @@ export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
 		deactivate,
 		pause,
 		unpause,
-	};
+	} satisfies FocusTrapReturn;
 }
