@@ -3,10 +3,11 @@ import { isFunction, isHTMLElement, isReadable } from '$lib/internal/helpers/is.
 import { get, readable, type Readable } from 'svelte/store';
 import { effect, executeCallbacks, kbd, noop } from '../../helpers/index.js';
 import type { EscapeKeydownConfig } from './types.js';
+import type { Action } from 'svelte/action';
 
 const layers = new Set<HTMLElement>();
 
-export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig = {}) => {
+export const useEscapeKeydown = ((node, config = {}) => {
 	let unsub = noop;
 	layers.add(node);
 
@@ -70,7 +71,7 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 			unsub();
 		},
 	};
-};
+}) satisfies Action<HTMLElement, EscapeKeydownConfig>;
 
 export const isHighestLayerEscapeKey = (node: HTMLElement): boolean => {
 	const index = Array.from(layers).indexOf(node);

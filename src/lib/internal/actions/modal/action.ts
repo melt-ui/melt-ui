@@ -2,8 +2,9 @@ import { isElement, noop } from '$lib/internal/helpers/index.js';
 import type { InteractOutsideEvent } from '../interact-outside/types.js';
 import { useInteractOutside } from '../index.js';
 import type { ModalConfig } from './types.js';
+import type { Action } from 'svelte/action';
 
-export function useModal(node: HTMLElement, config: ModalConfig) {
+export const useModal = ((node, config) => {
 	let unsubInteractOutside = noop;
 
 	function update(config: ModalConfig) {
@@ -42,4 +43,4 @@ export function useModal(node: HTMLElement, config: ModalConfig) {
 			unsubInteractOutside();
 		},
 	};
-}
+}) satisfies Action<HTMLElement, ModalConfig>;

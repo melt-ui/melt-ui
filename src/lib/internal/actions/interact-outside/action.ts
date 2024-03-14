@@ -4,11 +4,12 @@ import {
 	executeCallbacks,
 	noop,
 } from '$lib/internal/helpers/index.js';
+import type { Action } from 'svelte/action';
 import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 
 const layers = new Set<HTMLElement>();
 
-export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
+export const useInteractOutside = ((node, config) => {
 	let unsubEvents = noop;
 	layers.add(node);
 
@@ -108,7 +109,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 			layers.delete(node);
 		},
 	};
-}
+}) satisfies Action<HTMLElement, InteractOutsideConfig>;
 
 function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	if ('button' in e && e.button > 0) return false;

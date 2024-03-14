@@ -161,7 +161,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
 						const $virtual = virtual.get();
-						const popper = usePopper(node, {
+						unsubPopper = usePopper(node, {
 							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
 							open: rootOpen,
 							options: {
@@ -176,9 +176,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: { enabled: $closeOnEscape },
 							},
-						});
-						if (!popper || !popper.destroy) return;
-						unsubPopper = popper.destroy;
+						}).destroy;
 					});
 				}
 			);

@@ -191,7 +191,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 					if (!$isVisible || !$activeTrigger) return;
 
 					tick().then(() => {
-						const popper = usePopper(node, {
+						unsubPopper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open: open,
 							options: {
@@ -217,11 +217,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 								focusTrap: null,
 								escapeKeydown: { enabled: $closeOnEscape },
 							},
-						});
-
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+						}).destroy;
 					});
 				}
 			);

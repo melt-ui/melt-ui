@@ -23,7 +23,7 @@ const defaultConfig = {
 	portal: 'body',
 } satisfies PopperConfig;
 
-export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
+export const usePopper = ((popperElement, args) => {
 	popperElement.dataset.escapee = '';
 	const { anchorElement, open, options } = args as PopperArgs;
 	if (!anchorElement || !get(open) || !options) {
@@ -35,10 +35,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 	const callbacks: Callback[] = [];
 
 	if (opts.portal !== null) {
-		const portal = usePortal(popperElement, opts.portal);
-		if (portal?.destroy) {
-			callbacks.push(portal.destroy);
-		}
+		callbacks.push(usePortal(popperElement, opts.portal).destroy);
 	}
 
 	callbacks.push(useFloating(anchorElement, popperElement, opts.floating).destroy);
@@ -53,11 +50,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 			...opts.focusTrap,
 		});
 
-		const usedFocusTrap = useFocusTrap(popperElement);
-
-		if (usedFocusTrap?.destroy) {
-			callbacks.push(usedFocusTrap.destroy);
-		}
+		callbacks.push(useFocusTrap(popperElement).destroy);
 	}
 
 	if (opts.modal !== null) {
@@ -102,4 +95,4 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 			unsubscribe();
 		},
 	};
-};
+}) satisfies Action<HTMLElement, PopperArgs>;

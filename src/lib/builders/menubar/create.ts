@@ -163,7 +163,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
 						tick().then(() => {
-							const popper = usePopper(node, {
+							unsubPopper = usePopper(node, {
 								anchorElement: $rootActiveTrigger,
 								open: rootOpen,
 								options: {
@@ -185,11 +185,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 										},
 									},
 								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+							}).destroy;
 						});
 					}
 				);

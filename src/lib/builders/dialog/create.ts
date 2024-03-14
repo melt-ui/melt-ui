@@ -225,14 +225,9 @@ export function createDialog(props?: CreateDialogProps) {
 			const unsubDerived = effect([isVisible, portal], ([$isVisible, $portal]) => {
 				unsubPortal();
 				if (!$isVisible || $portal === null) return;
-
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return;
-
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					unsubPortal = portalAction.destroy;
-				}
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
