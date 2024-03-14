@@ -212,7 +212,7 @@ export function createListbox<
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
-		if (triggerEl !== get(activeTrigger)) activeTrigger.set(triggerEl);
+		if (triggerEl !== activeTrigger.get()) activeTrigger.set(triggerEl);
 
 		// Wait a tick for the menu to open then highlight the selected item.
 		await tick();

@@ -19,6 +19,7 @@ import {
 	toWritableStores,
 	portalAttr,
 	generateIds,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -30,7 +31,7 @@ import {
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 
@@ -79,7 +80,7 @@ export function createPopover(args?: CreatePopoverProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const activeTrigger = withGet.writable<HTMLElement | null>(null);
 
 	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
 
@@ -184,7 +185,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		open.update((prev) => {
 			return !prev;
 		});
-		if (triggerEl && triggerEl !== get(activeTrigger)) {
+		if (triggerEl && triggerEl !== activeTrigger.get()) {
 			activeTrigger.set(triggerEl);
 		}
 	}
