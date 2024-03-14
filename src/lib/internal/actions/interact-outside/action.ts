@@ -19,16 +19,16 @@ export const useInteractOutside = ((node, config) => {
 
 	function update(config: InteractOutsideConfig) {
 		unsubEvents();
-		const options = { enabled: true, ...config };
-		if (!options.enabled) {
+		const { onInteractOutside, onInteractOutsideStart, enabled } = { enabled: true, ...config };
+		if (!enabled) {
 			unsubEvents = noop;
 			return;
 		}
 
 		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
 			if (!isHighestLayerInteractOutside(node)) return;
-			if (options.onInteractOutside && isValidEvent(e, node)) {
-				options.onInteractOutsideStart?.(e);
+			if (onInteractOutside && isValidEvent(e, node)) {
+				onInteractOutsideStart?.(e);
 			}
 			const target = e.target;
 
@@ -40,7 +40,7 @@ export const useInteractOutside = ((node, config) => {
 		}
 
 		function triggerInteractOutside(e: InteractOutsideEvent) {
-			options.onInteractOutside?.(e);
+			onInteractOutside?.(e);
 		}
 
 		const documentObj = getOwnerDocument(node);
