@@ -1,28 +1,32 @@
 <script lang="ts">
 	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
-	import { fade } from 'svelte/transition';
 	import { initLevel } from './level.js';
 
-	export let portal: CreateDialogProps['portal'] = undefined;
+	export let portal: CreateDialogProps['portal'];
+	export let forceVisible: CreateDialogProps['forceVisible'];
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
-	} = createDialog({ portal });
+		states: { open },
+	} = createDialog({ portal, forceVisible });
 
 	const level = initLevel();
 </script>
 
 <button use:melt={$trigger} data-testid="dialog-trigger-{level}">Open</button>
-<div use:melt={$portalled} data-testid="dialog-portalled-{level}">
-	<div use:melt={$overlay} class="overlay" data-testid="dialog-overlay-{level}" transition:fade />
-	<div use:melt={$content} class="content" data-testid="dialog-content-{level}">
-		<h2 use:melt={$title}>Title</h2>
-		<p use:melt={$description}>Description</p>
 
-		<button use:melt={$close} data-testid="dialog-closer-{level}">Close</button>
-		<slot />
+{#if $open || !forceVisible}
+	<div use:melt={$portalled} data-testid="dialog-portalled-{level}">
+		<div use:melt={$overlay} class="overlay" data-testid="dialog-overlay-{level}" />
+		<div use:melt={$content} class="content" data-testid="dialog-content-{level}">
+			<h2 use:melt={$title}>Title</h2>
+			<p use:melt={$description}>Description</p>
+
+			<button use:melt={$close} data-testid="dialog-closer-{level}">Close</button>
+			<slot />
+		</div>
 	</div>
-</div>
+{/if}
 <div data-testid="dialog-outside-{level}" />
 
 <style>
