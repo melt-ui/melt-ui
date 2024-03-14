@@ -1,14 +1,19 @@
 import { describe, it } from 'vitest';
-import { render } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import { sleep } from '$lib/internal/helpers/sleep.js';
 import type { CreateTooltipProps } from '$lib/index.js';
 import { testKbd as kbd } from '../utils.js';
 
-function setupPopoverTooltip({ portalType }: { portalType?: CreateTooltipProps['portal'] } = {}) {
+type Props = {
+	portalType?: CreateTooltipProps['portal'];
+	tooltipCloseOnEscape?: CreateTooltipProps['closeOnEscape'];
+};
+
+function setupPopoverTooltip({ portalType, tooltipCloseOnEscape }: Props = {}) {
 	const user = userEvent.setup();
-	const returned = render(PopoverTooltip, { portal: portalType });
+	const returned = render(PopoverTooltip, { portal: portalType, tooltipCloseOnEscape });
 	const popoverTrigger = returned.getByTestId('popover-trigger');
 	const popoverContent = returned.getByTestId('popover-content');
 	const tooltipTrigger = returned.getByTestId('tooltip-trigger');
@@ -93,6 +98,21 @@ describe.each(portalTestOptions)(
 			await user.click(elements.outside);
 			expect(elements.tooltipContent).not.toBeVisible();
 			expect(elements.popoverContent).not.toBeVisible();
+		});
+
+		it('should not close the popover nor the tooltip when escape is pressed while tooltip is open and tooltip closeOnEscape is false', async () => {
+			const { elements, user } = setupPopoverTooltip({ tooltipCloseOnEscape: false });
+
+			expect(elements.popoverContent).not.toBeVisible();
+			await user.click(elements.popoverTrigger);
+			expect(elements.popoverContent).toBeVisible();
+			expect(elements.tooltipContent).not.toBeVisible();
+			await user.hover(elements.tooltipTrigger);
+			expect(elements.tooltipContent).toBeVisible();
+
+			await user.keyboard(kbd.ESCAPE);
+			expect(elements.tooltipContent).toBeVisible();
+			expect(elements.popoverContent).toBeVisible();
 		});
 	}
 );

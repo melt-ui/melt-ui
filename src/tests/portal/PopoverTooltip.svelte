@@ -3,6 +3,7 @@
 	import { Settings2 } from '$icons/index.js';
 
 	export let portal: CreateTooltipProps['portal'] = undefined;
+	export let tooltipCloseOnEscape: CreateTooltipProps['closeOnEscape'] = true;
 
 	const {
 		elements: { trigger, content, arrow, close },
@@ -14,6 +15,7 @@
 		openDelay: 0,
 		closeDelay: 0,
 		portal,
+		closeOnEscape: tooltipCloseOnEscape,
 	});
 </script>
 
