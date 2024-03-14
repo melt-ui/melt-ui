@@ -46,7 +46,7 @@ describe.each(portalTestOptions)(
 		});
 
 		it('should close the tooltip content when the popover content is clicked and tooltip is open', async () => {
-			const { elements, user } = setupPopoverTooltip();
+			const { elements, user } = setupPopoverTooltip({ portalType });
 
 			expect(elements.popoverContent).not.toBeVisible();
 			await user.click(elements.popoverTrigger);
@@ -63,7 +63,7 @@ describe.each(portalTestOptions)(
 		});
 
 		it('should close both tooltip and popover content when clicked outside of popover content', async () => {
-			const { elements, user } = setupPopoverTooltip();
+			const { elements, user } = setupPopoverTooltip({ portalType });
 
 			expect(elements.popoverContent).not.toBeVisible();
 			await user.click(elements.popoverTrigger);
@@ -82,7 +82,7 @@ describe.each(portalTestOptions)(
 		});
 
 		it('should not close the popover when escape is pressed while tooltip is open', async () => {
-			const { elements, user } = setupPopoverTooltip();
+			const { elements, user } = setupPopoverTooltip({ portalType });
 
 			expect(elements.popoverContent).not.toBeVisible();
 			await user.click(elements.popoverTrigger);
@@ -100,8 +100,8 @@ describe.each(portalTestOptions)(
 			expect(elements.popoverContent).not.toBeVisible();
 		});
 
-		it('should not close the popover nor the tooltip when escape is pressed while tooltip is open and tooltip closeOnEscape is false', async () => {
-			const { elements, user } = setupPopoverTooltip({ tooltipCloseOnEscape: false });
+		it('should not close the popover nor the tooltip when escape is pressed while tooltip is open and tooltip `closeOnEscape` is false', async () => {
+			const { elements, user } = setupPopoverTooltip({ portalType, tooltipCloseOnEscape: false });
 
 			expect(elements.popoverContent).not.toBeVisible();
 			await user.click(elements.popoverTrigger);
