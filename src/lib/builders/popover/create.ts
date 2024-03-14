@@ -130,6 +130,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					if (!$isVisible || !$activeTrigger) return;
 
 					tick().then(() => {
+						unsubPopper();
 						unsubPopper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open,
