@@ -19,6 +19,7 @@ import {
 	toWritableStores,
 	portalAttr,
 	generateIds,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -79,7 +80,7 @@ export function createPopover(args?: CreatePopoverProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const activeTrigger = withGet.writable<HTMLElement | null>(null);
 
 	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
 
@@ -185,7 +186,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		open.update((prev) => {
 			return !prev;
 		});
-		if (triggerEl) {
+		if (triggerEl && triggerEl !== activeTrigger.get()) {
 			activeTrigger.set(triggerEl);
 		}
 	}
