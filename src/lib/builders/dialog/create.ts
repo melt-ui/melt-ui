@@ -162,37 +162,26 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 
 		action: (node: HTMLElement) => {
-			let activate = noop;
-			let deactivate = noop;
 			let unsubFocus = noop;
 			let unsubEscape = noop;
 			let unsubModal = noop;
 
-			const destroy = executeCallbacks(
-				effect(
-					[open, closeOnEscape, closeOnOutsideClick],
-					([$open, $closeOnEscape, $closeOnOutsideClick]) => {
-						unsubFocus();
-						if (!$open) return;
+			const unsubDerived = effect(
+				[isVisible, closeOnEscape, closeOnOutsideClick],
+				([$isVisible, $closeOnEscape, $closeOnOutsideClick]) => {
+					unsubFocus();
+					unsubEscape();
+					unsubModal();
+					if (!$isVisible) return;
 
-						const focusTrap = createFocusTrap({
-							immediate: false,
+					unsubFocus =
+						createFocusTrap({
+							immediate: true,
 							escapeDeactivates: $closeOnEscape,
 							clickOutsideDeactivates: $closeOnOutsideClick,
 							returnFocusOnDeactivate: false,
 							fallbackFocus: node,
-						});
-
-						activate = focusTrap.activate;
-						deactivate = focusTrap.deactivate;
-						const ac = focusTrap.useFocusTrap(node);
-						unsubFocus = ac?.destroy ?? focusTrap.deactivate;
-						return unsubFocus;
-					}
-				),
-				effect([closeOnOutsideClick, isVisible], ([$closeOnOutsideClick, $isVisible]) => {
-					unsubModal();
-					if (!$isVisible) return;
+						}).useFocusTrap(node)?.destroy ?? noop;
 
 					unsubModal = useModal(node, {
 						closeOnInteractOutside: $closeOnOutsideClick,
@@ -205,34 +194,21 @@ export function createDialog(props?: CreateDialogProps) {
 							return true;
 						},
 					}).destroy;
-					return unsubModal;
-				}),
-				effect([closeOnEscape, isVisible], ([$closeOnEscape, $isVisible]) => {
-					unsubEscape();
-					if (!$isVisible) return;
 
 					unsubEscape = useEscapeKeydown(node, {
 						handler: handleClose,
 						enabled: $closeOnEscape,
 					}).destroy;
-					return unsubEscape;
-				}),
-
-				effect([isVisible], ([$isVisible]) => {
-					tick().then(() => {
-						if (!$isVisible) {
-							deactivate();
-						} else {
-							activate();
-						}
-					});
-				})
+				}
 			);
 
 			return {
 				destroy: () => {
 					unsubScroll();
-					destroy();
+					unsubFocus();
+					unsubEscape();
+					unsubModal();
+					unsubDerived();
 				},
 			};
 		},
