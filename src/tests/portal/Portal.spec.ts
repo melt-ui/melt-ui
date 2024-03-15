@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest';
-import { render, waitFor } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import { sleep } from '$lib/internal/helpers/sleep.js';
@@ -23,10 +23,12 @@ function setupPopoverTooltip({ portalType, tooltipCloseOnEscape }: Props = {}) {
 	return { user, ...returned, elements };
 }
 
+type PortalTestOption = { label: string; portalType: CreateTooltipProps['portal'] };
+
 const portalTestOptions = [
 	{ label: 'Sibling portals', portalType: 'body' },
 	{ label: 'Single portal', portalType: undefined },
-] satisfies { label: string; portalType: CreateTooltipProps['portal'] }[];
+] satisfies PortalTestOption[];
 
 describe.each(portalTestOptions)(
 	'Portal Behaviors - Popover & Tooltip - $label',
