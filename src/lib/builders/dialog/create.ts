@@ -215,7 +215,7 @@ export function createDialog(props?: CreateDialogProps) {
 	const portalled = makeElement(name('portalled'), {
 		stores: [portal, isVisible],
 		returned: ([$portal, $isVisible]) => ({
-			hidden: $isVisible && isBrowser ? undefined : true,
+			hidden: $isVisible ? undefined : true,
 			'data-portal': portalAttr($portal),
 			style: $isVisible ? undefined : styleToString({ display: 'none' }),
 		}),
