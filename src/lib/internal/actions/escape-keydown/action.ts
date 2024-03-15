@@ -1,6 +1,6 @@
 import { addEventListener } from '$lib/internal/helpers/event.js';
 import { isFunction, isHTMLElement, isReadable } from '$lib/internal/helpers/is.js';
-import { get, readable, type Readable } from 'svelte/store';
+import { get, readable } from 'svelte/store';
 import { effect, executeCallbacks, kbd, noop } from '../../helpers/index.js';
 import type { EscapeKeydownConfig } from './types.js';
 import type { Action } from 'svelte/action';
@@ -15,9 +15,7 @@ export const useEscapeKeydown = ((node, config = {}) => {
 		unsub();
 
 		const options = { enabled: true, ...config };
-		const enabled = (
-			isReadable(options.enabled) ? options.enabled : readable(options.enabled)
-		) as Readable<boolean>;
+		const enabled = isReadable(options.enabled) ? options.enabled : readable(options.enabled);
 
 		const onKeyDown = (e: KeyboardEvent) => {
 			if (e.key !== kbd.ESCAPE || !isHighestLayerEscapeKey(node)) return;
