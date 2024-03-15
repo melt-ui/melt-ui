@@ -14,6 +14,7 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	noop,
 } from '$lib/internal/helpers/index.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -23,6 +24,7 @@ import { generateIds } from '../../internal/helpers/id.js';
 import type { TagsInputEvents } from './events.js';
 import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
 import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
+import { useEscapeKeydown, useInteractOutside } from '$lib/internal/actions/index.js';
 
 const defaults = {
 	placeholder: '',
@@ -652,56 +654,72 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 
-			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'blur', () => {
-					if (node.hasAttribute('hidden')) return;
+			let unsubEscape = noop;
+			let unsubInteractOutside = noop;
+			let unsubEvents = noop;
 
-					// Stop editing, reset the value to the original and clear an invalid state
-					editing.set(null);
-					node.textContent = getElProps().value;
-					getElementByMeltId(meltIds.root)?.removeAttribute('data-invalid-edit');
-					node.removeAttribute('data-invalid-edit');
-				}),
-				addMeltEventListener(node, 'keydown', async (e) => {
-					if (node.hasAttribute('hidden')) return;
+			const unsubDerived = effect([editing, editable], ([$editing, $editable]) => {
+				unsubEscape();
+				unsubInteractOutside();
+				unsubEvents();
 
-					if (e.key === kbd.ENTER) {
-						// Capture the edit value, validate and then update
-						e.preventDefault();
+				const isEditingCurrent = $editable && $editing?.id === getElProps().id;
+				if (!isEditingCurrent) return;
 
-						// Do nothing when the value is empty
-						const value = node.textContent;
-						if (!value) return;
-
-						const t = { id: getElProps().id, value };
-
-						if (isInputValid(value) && (await updateTag(t, true))) {
-							node.textContent = t.value;
-							editValue.set('');
-							focusInput(meltIds.input);
-						} else {
-							getElementByMeltId(meltIds.root)?.setAttribute('data-invalid-edit', '');
-							node.setAttribute('data-invalid-edit', '');
-						}
-					} else if (e.key === kbd.ESCAPE) {
-						// Reset the value, clear the edit value store, set this tag as
-						// selected and focus on input
-						e.preventDefault();
+				unsubEscape = useEscapeKeydown(node).destroy;
+				unsubInteractOutside = useInteractOutside(node).destroy;
+				unsubEvents = executeCallbacks(
+					addMeltEventListener(node, 'blur', () => {
+						// Stop editing, reset the value to the original and clear an invalid state
+						editing.set(null);
 						node.textContent = getElProps().value;
-						editValue.set('');
-						setSelectedFromEl(node, selected);
-						focusInput(meltIds.input);
-					}
-				}),
-				addMeltEventListener(node, 'input', () => {
-					if (node.hasAttribute('hidden')) return;
+						getElementByMeltId(meltIds.root)?.removeAttribute('data-invalid-edit');
+						node.removeAttribute('data-invalid-edit');
+					}),
+					addMeltEventListener(node, 'keydown', async (e) => {
+						if (e.key === kbd.ENTER) {
+							// Capture the edit value, validate and then update
+							e.preventDefault();
 
-					// Update the edit value store
-					editValue.set(node.textContent || '');
-				})
-			);
+							// Do nothing when the value is empty
+							const value = node.textContent;
+							if (!value) return;
+
+							const t = { id: getElProps().id, value };
+
+							if (isInputValid(value) && (await updateTag(t, true))) {
+								node.textContent = t.value;
+								editValue.set('');
+								focusInput(meltIds.input);
+							} else {
+								getElementByMeltId(meltIds.root)?.setAttribute('data-invalid-edit', '');
+								node.setAttribute('data-invalid-edit', '');
+							}
+						} else if (e.key === kbd.ESCAPE) {
+							// Reset the value, clear the edit value store, set this tag as
+							// selected and focus on input
+							e.preventDefault();
+							e.stopImmediatePropagation();
+							node.textContent = getElProps().value;
+							editValue.set('');
+							setSelectedFromEl(node, selected);
+							focusInput(meltIds.input);
+						}
+					}),
+					addMeltEventListener(node, 'input', () => {
+						// Update the edit value store
+						editValue.set(node.textContent || '');
+					})
+				);
+			});
+
 			return {
-				destroy: unsub,
+				destroy() {
+					unsubEscape();
+					unsubInteractOutside();
+					unsubEvents();
+					unsubDerived();
+				},
 			};
 		},
 	});
