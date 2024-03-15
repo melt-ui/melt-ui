@@ -20,7 +20,11 @@
 		<div use:melt={$content} data-testid="content">
 			<h2 use:melt={$title} data-testid="title">Title</h2>
 			<p use:melt={$description} data-testid="description">Description</p>
-			<input data-testid="input-keydown-interceptor" type="text" on:keydown={(e) => e.key === kbd.ESCAPE && e.stopPropagation()} />
+			<input
+				data-testid="input-keydown-interceptor"
+				type="text"
+				on:keydown={(e) => e.key === kbd.ESCAPE && e.stopPropagation()}
+			/>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
