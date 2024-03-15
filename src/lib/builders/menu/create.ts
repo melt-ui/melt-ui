@@ -1140,14 +1140,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 		};
 
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
 		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
-		unsubs.push(addEventListener(document, 'keydown', keydownListener));
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());
@@ -1207,25 +1200,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		return () => {
 			unsubs.forEach((unsub) => unsub());
 		};
-	});
-
-	effect(rootOpen, ($rootOpen) => {
-		if (!isBrowser) return;
-
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = (e: KeyboardEvent) => {
-			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
-
-		return executeCallbacks(
-			addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'keydown', handleKeyDown, { capture: true })
-		);
 	});
 
 	function handleOpen(triggerEl: HTMLElement) {
