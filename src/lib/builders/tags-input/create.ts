@@ -658,17 +658,14 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 
-			let unsubEscape = noop;
 			let unsubInteractOutside = noop;
 			let unsubEvents = noop;
 
 			const unsubDerived = effect(isEditing, ($isEditing) => {
-				unsubEscape();
 				unsubInteractOutside();
 				unsubEvents();
 				if (!$isEditing(getElProps())) return;
 
-				unsubEscape = useEscapeKeydown(node).destroy;
 				unsubInteractOutside = useInteractOutside(node).destroy;
 				unsubEvents = executeCallbacks(
 					addMeltEventListener(node, 'blur', () => {
@@ -717,7 +714,6 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 			return {
 				destroy() {
-					unsubEscape();
 					unsubInteractOutside();
 					unsubEvents();
 					unsubDerived();
