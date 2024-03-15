@@ -2,11 +2,13 @@
 	import Dialog from './Dialog.svelte';
 	import Popover from './Popover.svelte';
 	import Select from './Select.svelte';
+	import DropdownMenu from './DropdownMenu.svelte';
 
 	const components = {
 		dialog: Dialog,
 		popover: Popover,
 		select: Select,
+		'dropdown-menu': DropdownMenu,
 	} as const;
 
 	export type Structure = {
@@ -20,7 +22,8 @@
 				name: 'dialog',
 				children: [
 					{
-						name: 'select',
+						name: 'dropdown-menu',
+						children: [{ name: 'select' }],
 					},
 				],
 			},
