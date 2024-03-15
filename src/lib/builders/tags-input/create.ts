@@ -228,6 +228,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		return true;
 	}
 
+	// Used to determine if tag is being edited
+	const isEditing = derived([editable, editing], ([$editable, $editing]) => {
+		return (tag: Tag) => $editable && $editing?.id === tag.id;
+	});
+
 	const root = makeElement(name(''), {
 		stores: [disabled],
 		returned: ([$disabled]) => {
@@ -619,11 +624,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const edit = makeElement(name('edit'), {
-		stores: [editing, editable],
-		returned: ([$editing, $editable]) => {
+		stores: isEditing,
+		returned: ($isEditing) => {
 			return (tag: Tag) => {
-				const editable = $editable;
-				const editing = editable ? $editing?.id === tag.id : undefined;
+				const editing = $isEditing(tag);
 
 				return {
 					'aria-hidden': !editing,
@@ -658,13 +662,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			let unsubInteractOutside = noop;
 			let unsubEvents = noop;
 
-			const unsubDerived = effect([editing, editable], ([$editing, $editable]) => {
+			const unsubDerived = effect(isEditing, ($isEditing) => {
 				unsubEscape();
 				unsubInteractOutside();
 				unsubEvents();
-
-				const isEditingCurrent = $editable && $editing?.id === getElProps().id;
-				if (!isEditingCurrent) return;
+				if (!$isEditing(getElProps())) return;
 
 				unsubEscape = useEscapeKeydown(node).destroy;
 				unsubInteractOutside = useInteractOutside(node).destroy;
@@ -775,6 +777,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 		helpers: {
 			isSelected,
+			isEditing,
 			isInputValid,
 			addTag,
 			updateTag,
