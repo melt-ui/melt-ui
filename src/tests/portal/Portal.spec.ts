@@ -2,6 +2,7 @@ import { describe, it } from 'vitest';
 import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
+import PopoverTagsInput from './PopoverTagsInput.svelte';
 import { sleep } from '$lib/internal/helpers/sleep.js';
 import type { CreateTooltipProps } from '$lib/index.js';
 import { testKbd as kbd } from '../utils.js';
@@ -23,6 +24,18 @@ function setupPopoverTooltip({ portalType, tooltipCloseOnEscape }: Props = {}) {
 	return { user, ...returned, elements };
 }
 
+function setupPopoverTagsInput() {
+	const user = userEvent.setup();
+	const returned = render(PopoverTagsInput);
+	const popoverTrigger = returned.getByTestId('popover-trigger');
+	const popoverContent = returned.getByTestId('popover-content');
+	const getTag = (i: number) => returned.getByTestId(`tag-${i}`);
+	const getEditTag = (i: number) => returned.getByTestId(`edit-tag-${i}`);
+	const outside = returned.getByTestId('outside');
+	const elements = { popoverTrigger, popoverContent, outside, getTag, getEditTag };
+	return { user, ...returned, elements };
+}
+
 type PortalTestOption = { label: string; portalType: CreateTooltipProps['portal'] };
 
 const portalTestOptions = [
@@ -30,9 +43,8 @@ const portalTestOptions = [
 	{ label: 'Single portal', portalType: undefined },
 ] satisfies PortalTestOption[];
 
-describe.each(portalTestOptions)(
-	'Portal Behaviors - Popover & Tooltip - $label',
-	({ portalType }) => {
+describe('Portal Behaviors', () => {
+	describe.each(portalTestOptions)('Popover & Tooltip - $label', ({ portalType }) => {
 		it('should not close the popover when the tooltip content is clicked', async () => {
 			const { elements, user } = setupPopoverTooltip({ portalType });
 
@@ -116,5 +128,37 @@ describe.each(portalTestOptions)(
 			expect(elements.tooltipContent).toBeVisible();
 			expect(elements.popoverContent).toBeVisible();
 		});
-	}
-);
+	});
+
+	describe('Popover & Tags Input', () => {
+		it('should not close popover on click outside while editing tag', async () => {
+			const {
+				user,
+				elements: { popoverTrigger, popoverContent, outside, getTag, getEditTag },
+			} = setupPopoverTagsInput();
+
+			await user.click(popoverTrigger);
+			expect(popoverContent).toBeVisible();
+			await user.dblClick(getTag(0));
+			expect(getEditTag(0)).toHaveFocus();
+			await user.click(outside);
+			expect(getEditTag(0)).not.toHaveFocus();
+			expect(popoverContent).toBeVisible();
+		});
+
+		it('should not close popover on escape while editing tag', async () => {
+			const {
+				user,
+				elements: { popoverTrigger, popoverContent, getTag, getEditTag },
+			} = setupPopoverTagsInput();
+
+			await user.click(popoverTrigger);
+			expect(popoverContent).toBeVisible();
+			await user.dblClick(getTag(0));
+			expect(getEditTag(0)).toHaveFocus();
+			await user.keyboard(kbd.ESCAPE);
+			expect(getEditTag(0)).not.toHaveFocus();
+			expect(popoverContent).toBeVisible();
+		});
+	});
+});
