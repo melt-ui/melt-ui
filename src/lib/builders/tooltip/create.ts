@@ -226,7 +226,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 						}
 
 						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
-						unsubInteractOutside = useInteractOutside(node, { enabled: true }).destroy;
+						unsubInteractOutside = useInteractOutside(node).destroy;
 
 						const onEscapeKeyDown = () => {
 							if (openTimeout) {

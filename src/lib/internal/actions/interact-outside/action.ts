@@ -9,7 +9,7 @@ import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 
 const layers = new Set<HTMLElement>();
 
-export const useInteractOutside = ((node, config) => {
+export const useInteractOutside = ((node, config = {}) => {
 	let unsubEvents = noop;
 	layers.add(node);
 
