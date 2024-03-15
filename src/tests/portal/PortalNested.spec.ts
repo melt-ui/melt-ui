@@ -44,7 +44,11 @@ const testComponent = async (component: Structure, level: number, user: UserEven
 			const grandChildTrigger = screen.queryByTestId(`${grandChild.name}-trigger-${level + 2}`);
 			assertNotVisibleOrNull(grandChildTrigger);
 		}
+
+		await testComponent(child, level + 1, user);
 	}
+
+	expect(getContent()).toBeVisible();
 
 	// Testing closing
 	// By clicking escape
