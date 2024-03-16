@@ -213,7 +213,10 @@ export function createPopover(args?: CreatePopoverProps) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					activeTrigger.set(null);
+					unsub();
+				},
 			};
 		},
 	});
