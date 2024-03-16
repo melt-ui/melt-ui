@@ -1,6 +1,6 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
-import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { builderSchema, elementSchema, floatingSideAndAlignDataAttrs } from '$docs/utils/index.js';
 import { comboboxEvents } from '$lib/builders/combobox/events.js';
 import { listboxIdParts } from '$lib/builders/listbox/create.js';
 import type { BuilderData } from './index.js';
@@ -153,6 +153,7 @@ const builder = builderSchema(BUILDER_NAME, {
 const menu = elementSchema('menu', {
 	description: 'The combobox menu element',
 	dataAttributes: [
+		...floatingSideAndAlignDataAttrs,
 		{
 			name: 'data-melt-combobox-menu',
 			value: ATTRS.MELT('menu'),

@@ -560,4 +560,66 @@ describe('DatePicker', () => {
 
 		expect(trigger).toBeDisabled();
 	});
+
+	test('dynamically change numberOfMonths option even if numberOfMonths is specified as an option', async () => {
+		const { queryByTestId, getByTestId, user } = setup({
+			numberOfMonths: 1,
+		});
+
+		let grid0 = queryByTestId('grid-0');
+		let grid1 = queryByTestId('grid-1');
+		expect(grid0).toBeInTheDocument();
+		expect(grid1).toBeNull();
+
+		const numberOfMonthsButton = getByTestId('numberOfMonths');
+		await user.click(numberOfMonthsButton);
+
+		grid0 = queryByTestId('grid-0');
+		grid1 = queryByTestId('grid-1');
+		expect(grid0).toBeInTheDocument();
+		expect(grid1).toBeInTheDocument();
+	});
+
+	test('dynamically change weekStartsOn option even if weekStartsOn option is set', async () => {
+		const { getByTestId, user } = setup({
+			weekStartsOn: 0,
+		});
+
+		const weekDaysCopy = [...narrowWeekdays];
+
+		let weekdayElement = getByTestId(`weekdays`);
+
+		for (let i = 0; i < weekDaysCopy.length; i++) {
+			expect(weekdayElement.children[i]).toHaveTextContent(weekDaysCopy[i]);
+		}
+
+		const weekStartsOnButton = getByTestId('weekStartsOn');
+		await user.click(weekStartsOnButton);
+		const first = weekDaysCopy.shift();
+		if (first) {
+			weekDaysCopy.push(first);
+		}
+
+		weekdayElement = getByTestId(`weekdays`);
+		for (let i = 0; i < weekDaysCopy.length; i++) {
+			expect(weekdayElement.children[i]).toHaveTextContent(weekDaysCopy[i]);
+		}
+	});
+
+	test('dynamically change fixedWeeks option even if fixedWeeks option is set', async () => {
+		const { getByTestId, queryByTestId, user } = setup({
+			fixedWeeks: false,
+		});
+
+		const nextButton = getByTestId('next-button');
+
+		while (queryByTestId('week-6') !== null) {
+			await user.click(nextButton);
+		}
+
+		const fixedWeeksButton = getByTestId('fixedWeeks');
+		await user.click(fixedWeeksButton);
+
+		expect(queryByTestId('week-6')).not.toBeNull();
+	});
 });

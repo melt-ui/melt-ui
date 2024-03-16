@@ -1,5 +1,29 @@
 # @melt-ui/svelte
 
+## 0.76.0
+
+### Minor Changes
+
+- fix: datepicker not syncing with calendar + add defaults from calendar to datepicker ([#1076](https://github.com/melt-ui/melt-ui/pull/1076))
+
+### Patch Changes
+
+- Fix incorrect arrow position for Tooltip, Popover, Listbox, Link Preview provided forceVisible: false (closes #1048) ([#1049](https://github.com/melt-ui/melt-ui/pull/1049))
+
+- fix: months not updating when changing options ([#1070](https://github.com/melt-ui/melt-ui/pull/1070))
+
+- Floating: `data-side` & `data-align` for floating content ([#1082](https://github.com/melt-ui/melt-ui/pull/1082))
+
+- fix: months not updating when changing options (range calendar) ([#1072](https://github.com/melt-ui/melt-ui/pull/1072))
+
+## 0.75.3
+
+### Patch Changes
+
+- fix(Tooltip, Link Preview, Menu, Popover, Listbox) fixed bug where content jumps to top left of page during external unmounting when using out transition on the content and else if block to render the content (closes #1058, #1039) ([#1059](https://github.com/melt-ui/melt-ui/pull/1059))
+
+- Portalled Elements: fixed a bug where clicking inside a nested 'portalled' element would cause the parent to close ([#1066](https://github.com/melt-ui/melt-ui/pull/1066))
+
 ## 0.75.2
 
 ### Patch Changes

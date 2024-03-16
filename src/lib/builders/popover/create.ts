@@ -17,9 +17,9 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	sleep,
 	portalAttr,
 	generateIds,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -80,7 +80,7 @@ export function createPopover(args?: CreatePopoverProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const activeTrigger = withGet.writable<HTMLElement | null>(null);
 
 	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
 
@@ -88,8 +88,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		activeTrigger.set(document.getElementById(ids.trigger.get()));
 	});
 
-	async function handleClose() {
-		await sleep(0);
+	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger.get());
 		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
@@ -136,38 +135,40 @@ export function createPopover(args?: CreatePopoverProps) {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
 
-					const popper = usePopper(node, {
-						anchorElement: $activeTrigger,
-						open,
-						options: {
-							floating: $positioning,
-							focusTrap: $disableFocusTrap
-								? null
-								: {
-										returnFocusOnDeactivate: false,
-										clickOutsideDeactivates: true,
-										escapeDeactivates: true,
-								  },
-							modal: {
-								shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
-								onClose: handleClose,
-								open: $isVisible,
-								closeOnInteractOutside: $closeOnOutsideClick,
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: $disableFocusTrap
+									? null
+									: {
+											returnFocusOnDeactivate: false,
+											clickOutsideDeactivates: true,
+											escapeDeactivates: $closeOnEscape,
+									  },
+								modal: {
+									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
+									onClose: handleClose,
+									open: $isVisible,
+									closeOnInteractOutside: $closeOnOutsideClick,
+								},
+								escapeKeydown: $closeOnEscape
+									? {
+											handler: () => {
+												handleClose();
+											},
+									  }
+									: null,
+								portal: getPortalDestination(node, $portal),
 							},
-							escapeKeydown: $closeOnEscape
-								? {
-										handler: () => {
-											handleClose();
-										},
-								  }
-								: null,
-							portal: getPortalDestination(node, $portal),
-						},
-					});
+						});
 
-					if (popper && popper.destroy) {
-						unsubPopper = popper.destroy;
-					}
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 
@@ -184,7 +185,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		open.update((prev) => {
 			return !prev;
 		});
-		if (triggerEl) {
+		if (triggerEl && triggerEl !== activeTrigger.get()) {
 			activeTrigger.set(triggerEl);
 		}
 	}
