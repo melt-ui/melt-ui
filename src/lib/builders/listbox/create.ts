@@ -444,6 +444,7 @@ export function createListbox<
 
 			return {
 				destroy() {
+					activeTrigger.set(null);
 					unsubscribe();
 					unsubEscapeKeydown();
 				},
