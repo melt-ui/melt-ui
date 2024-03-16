@@ -316,7 +316,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					rootActiveTrigger.set(null);
+				},
 			};
 		},
 	});
@@ -1033,6 +1036,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 				return {
 					destroy() {
+						subActiveTrigger.set(null);
 						unsubTimer();
 						unsubEvents();
 					},
