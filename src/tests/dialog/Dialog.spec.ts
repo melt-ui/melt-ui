@@ -278,6 +278,21 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 	});
 
+	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
+		const { getByTestId, user, trigger } = setup({
+			closeOnEscape: false,
+		});
+		const content = getByTestId('content');
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await user.keyboard(kbd.ESCAPE);
+		expect(content).toBeVisible();
+		expect(getByTestId('content')).toHaveFocus();
+		await user.tab({ shift: true });
+		expect(getByTestId('floating-closer')).not.toHaveFocus();
+	});
+
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
 		const { getByTestId, user, trigger } = setup({
 			closeOnOutsideClick: false,
