@@ -480,6 +480,7 @@ export function createListbox<
 						if (!$isVisible || !$activeTrigger) return;
 
 						tick().then(() => {
+							unsubPopper();
 							const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
 
 							const popper = usePopper(node, {

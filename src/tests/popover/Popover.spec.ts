@@ -150,4 +150,18 @@ describe('Popover (Default)', () => {
 		await user.tab({ shift: true });
 		expect(getByTestId('trigger')).not.toHaveFocus();
 	});
+
+	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
+		const { getByTestId, user, trigger } = setup({
+			closeOnOutsideClick: false,
+		});
+		const content = getByTestId('content');
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await user.click(getByTestId('outside'));
+		expect(content).toBeVisible();
+		await user.tab();
+		expect(getByTestId('closeFocus')).not.toHaveFocus();
+	});
 });
