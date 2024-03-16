@@ -4,7 +4,7 @@ import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
 
 export type PortalConfig = string | HTMLElement | undefined;
 
-export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
+export const usePortal = ((el, target = 'body') => {
 	let targetEl;
 
 	if (!isHTMLElement(target) && typeof target !== 'string') {
@@ -47,4 +47,4 @@ export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body'
 		update,
 		destroy,
 	};
-};
+}) satisfies Action<HTMLElement, PortalConfig>;

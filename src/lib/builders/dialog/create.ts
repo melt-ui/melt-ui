@@ -227,15 +227,7 @@ export function createDialog(props?: CreateDialogProps) {
 				effect([closeOnEscape], ([$closeOnEscape]) => {
 					if (!$closeOnEscape) return noop;
 
-					const escapeKeydown = useEscapeKeydown(node, {
-						handler: () => {
-							handleClose();
-						},
-					});
-					if (escapeKeydown && escapeKeydown.destroy) {
-						return escapeKeydown.destroy;
-					}
-					return noop;
+					return useEscapeKeydown(node, { handler: handleClose }).destroy;
 				}),
 
 				effect([isVisible], ([$isVisible]) => {
@@ -268,12 +260,7 @@ export function createDialog(props?: CreateDialogProps) {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {
