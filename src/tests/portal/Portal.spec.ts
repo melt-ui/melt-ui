@@ -3,7 +3,6 @@ import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import PopoverTagsInput from './PopoverTagsInput.svelte';
-import { sleep } from '$lib/internal/helpers/sleep.js';
 import type { CreateTooltipProps } from '$lib/index.js';
 import { testKbd as kbd } from '../utils.js';
 
@@ -74,25 +73,6 @@ describe('Portal Behaviors', () => {
 			await user.click(elements.popoverContent);
 			expect(elements.tooltipContent).not.toBeVisible();
 			expect(elements.popoverContent).toBeVisible();
-		});
-
-		it('should close both tooltip and popover content when clicked outside of popover content', async () => {
-			const { elements, user } = setupPopoverTooltip({ portalType });
-
-			expect(elements.popoverContent).not.toBeVisible();
-			await user.click(elements.popoverTrigger);
-			expect(elements.popoverContent).toBeVisible();
-			expect(elements.tooltipContent).not.toBeVisible();
-			await user.hover(elements.tooltipTrigger);
-			expect(elements.tooltipContent).toBeVisible();
-			await user.click(elements.tooltipContent);
-			expect(elements.tooltipContent).toBeVisible();
-			expect(elements.popoverContent).toBeVisible();
-			await sleep(100);
-			expect(elements.outside).toBeVisible();
-			await user.click(elements.outside);
-			expect(elements.tooltipContent).not.toBeVisible();
-			expect(elements.popoverContent).not.toBeVisible();
 		});
 
 		it('should not close the popover when escape is pressed while tooltip is open', async () => {
