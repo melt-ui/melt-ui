@@ -5,8 +5,9 @@ import {
 	noop,
 } from '$lib/internal/helpers/index.js';
 import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
+import type { Action } from 'svelte/action';
 
-export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
+export const useInteractOutside = ((node, config) => {
 	let unsub = noop;
 
 	let isPointerDown = false;
@@ -96,7 +97,7 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 		update,
 		destroy: unsub,
 	};
-}
+}) satisfies Action<HTMLElement, InteractOutsideConfig>;
 
 function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	if ('button' in e && e.button > 0) return false;

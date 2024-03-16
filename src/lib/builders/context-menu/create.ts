@@ -162,7 +162,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 						unsubPopper();
 						setMeltMenuAttribute(node, selector);
 						const $virtual = virtual.get();
-						const popper = usePopper(node, {
+						unsubPopper = usePopper(node, {
 							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
 							open: rootOpen,
 							options: {
@@ -178,9 +178,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
-						});
-						if (!popper || !popper.destroy) return;
-						unsubPopper = popper.destroy;
+						}).destroy;
 					});
 				}
 			);

@@ -222,15 +222,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 						unsubPortal();
 						unsubFloating();
 						const portalDest = getPortalDestination(node, $portal);
-						if (portalDest) {
-							const portalReturn = usePortal(node, portalDest);
-							if (portalReturn && portalReturn.destroy) {
-								unsubPortal = portalReturn.destroy;
-							}
-						}
-
-						const floatingReturn = useFloating(triggerEl, node, $positioning);
-						unsubFloating = floatingReturn.destroy;
+						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
+						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
 					});
 				}
 			);
