@@ -1254,7 +1254,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			if (isOpen) {
 				nextFocusable.set(getNextFocusable(triggerEl));
 				prevFocusable.set(getPreviousFocusable(triggerEl));
-				rootActiveTrigger.set(triggerEl);
 			}
 
 			return isOpen;
