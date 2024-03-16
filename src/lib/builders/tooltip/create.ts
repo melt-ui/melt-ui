@@ -221,19 +221,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
-						return;
-					}
-
-					tick().then(() => {
-						if ($portal === null) {
-							unsubPortal();
-						} else {
-							const portalDest = getPortalDestination(node, $portal);
-							if (portalDest) {
-								unsubPortal = usePortal(node, portalDest).destroy;
-							}
-						}
-
+						const portalDest = getPortalDestination(node, $portal);
+						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
 						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
 					});
 				}
