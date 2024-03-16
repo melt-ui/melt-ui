@@ -159,6 +159,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
+						unsubPopper();
 						setMeltMenuAttribute(node, selector);
 						const $virtual = virtual.get();
 						unsubPopper = usePopper(node, {

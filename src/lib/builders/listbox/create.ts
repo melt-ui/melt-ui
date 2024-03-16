@@ -212,7 +212,7 @@ export function createListbox<
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
-		activeTrigger.set(triggerEl);
+		if (triggerEl !== activeTrigger.get()) activeTrigger.set(triggerEl);
 
 		// Wait a tick for the menu to open then highlight the selected item.
 		await tick();
@@ -480,6 +480,7 @@ export function createListbox<
 						if (!$isVisible || !$activeTrigger) return;
 
 						tick().then(() => {
+							unsubPopper();
 							const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
 
 							unsubPopper = usePopper(node, {

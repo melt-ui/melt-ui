@@ -213,8 +213,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsubDerived = effect(
 				[isVisible, positioning, portal],
 				([$isVisible, $positioning, $portal]) => {
+					unsubPortal();
+					unsubFloating();
 					const triggerEl = getEl('trigger');
-					if (!$isVisible || !triggerEl) {
+					if (!$isVisible || !triggerEl) return;
+
+					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
 						return;
