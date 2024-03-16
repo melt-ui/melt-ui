@@ -191,6 +191,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 					if (!$isVisible || !$activeTrigger) return;
 
 					tick().then(() => {
+						unsubPopper();
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open: open,
