@@ -2,4 +2,4 @@
 '@melt-ui/svelte': patch
 ---
 
-Fix bug where action doesn't get cleaned up due to race conditions with promises (closes #1086)
+Fixed memory leak caused by race conditions for various components (closes #1086)
