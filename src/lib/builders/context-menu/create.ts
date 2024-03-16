@@ -294,6 +294,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 			return {
 				destroy() {
+					rootActiveTrigger.set(null);
 					unsubTimer();
 					unsub();
 				},
