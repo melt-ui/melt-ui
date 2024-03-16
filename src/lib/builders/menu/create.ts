@@ -284,10 +284,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
-			rootActiveTrigger.update((p) => {
-				if (p) return p;
-				return node;
-			});
+			rootActiveTrigger.set(node);
 
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -319,7 +316,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					rootActiveTrigger.set(null);
+				},
 			};
 		},
 	});
@@ -1146,16 +1146,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	};
 
 	safeOnMount(() => {
-		/**
-		 * We need to set the active trigger on mount to cover the
-		 * case where the user sets the `open` store to `true` without
-		 * clicking on the trigger.
-		 */
-		const triggerEl = document.getElementById(rootIds.trigger.get());
-		if (isHTMLElement(triggerEl) && rootOpen.get()) {
-			rootActiveTrigger.set(triggerEl);
-		}
-
 		const unsubs: Array<() => void> = [];
 
 		const handlePointer = () => isUsingKeyboard.set(false);
