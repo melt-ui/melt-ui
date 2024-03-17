@@ -1,4 +1,4 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type { FloatingConfig, InteractOutsideEvent, PortalConfig } from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
@@ -52,7 +52,7 @@ export type _CreateMenuProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: PortalConfig | null;
 
 	/**
 	 * Whether or not to close the menu when a click occurs outside of it.

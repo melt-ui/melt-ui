@@ -2,6 +2,7 @@ import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js'
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { DialogIdParts, createDialog } from './create.js';
+import type { PortalConfig } from "$lib/internal/actions/portal.js";
 export type { DialogComponentEvents } from './events.js';
 export type CreateDialogProps = {
 	/**
@@ -65,7 +66,7 @@ export type CreateDialogProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: PortalConfig | null;
 
 	/**
 	 * If true, the dialog will be visible regardless of the open state.
