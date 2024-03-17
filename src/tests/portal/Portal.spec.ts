@@ -3,6 +3,7 @@ import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import PopoverTagsInput from './PopoverTagsInput.svelte';
+import PopoverSelect from './PopoverSelect.svelte';
 import type { CreateTooltipProps } from '$lib/index.js';
 import { testKbd as kbd } from '../utils.js';
 
@@ -32,6 +33,18 @@ function setupPopoverTagsInput() {
 	const getEditTag = (i: number) => returned.getByTestId(`edit-tag-${i}`);
 	const outside = returned.getByTestId('outside');
 	const elements = { popoverTrigger, popoverContent, outside, getTag, getEditTag };
+	return { user, ...returned, elements };
+}
+
+function setupPopoverSelect({ portalType }: { portalType: CreateTooltipProps['portal'] }) {
+	const user = userEvent.setup();
+	const returned = render(PopoverSelect, { portal: portalType });
+	const popoverTrigger = returned.getByTestId('popover-trigger');
+	const popoverContent = returned.getByTestId('popover-content');
+	const selectTrigger = returned.getByTestId('select-trigger');
+	const selectMenu = returned.getByTestId('select-menu');
+	const outside = returned.getByTestId('outside');
+	const elements = { popoverTrigger, popoverContent, outside, selectTrigger, selectMenu };
 	return { user, ...returned, elements };
 }
 
@@ -139,6 +152,30 @@ describe('Portal Behaviors', () => {
 			await user.keyboard(kbd.ESCAPE);
 			expect(getEditTag(0)).not.toHaveFocus();
 			expect(popoverContent).toBeVisible();
+		});
+	});
+
+	describe('Popover & Select', () => {
+		it('should not deactivate popover focus trap on escape while select is open', async () => {
+			const {
+				user,
+				elements: { popoverTrigger, popoverContent, selectTrigger, selectMenu },
+			} = setupPopoverSelect({ portalType: 'body' });
+
+			expect(popoverContent).not.toBeVisible();
+			await user.click(popoverTrigger);
+			expect(popoverContent).toBeVisible();
+
+			expect(selectMenu).not.toBeVisible();
+			await user.click(selectTrigger);
+			expect(selectMenu).toBeVisible();
+
+			await user.keyboard(kbd.ESCAPE);
+			expect(selectMenu).not.toBeVisible();
+			expect(popoverContent).toBeVisible();
+
+			await user.tab({ shift: true });
+			expect(popoverTrigger).not.toHaveFocus();
 		});
 	});
 });
