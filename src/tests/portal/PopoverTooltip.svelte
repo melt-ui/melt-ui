@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { createPopover, createTooltip, melt, type CreateTooltipProps } from '$lib/index.js';
 	import { Settings2 } from '$icons/index.js';
+	import type { PortalConfig } from '$lib/internal/actions/portal.js';
 
-	export let portal: CreateTooltipProps['portal'] = undefined;
+	export let portal: PortalConfig;
 	export let tooltipCloseOnEscape: CreateTooltipProps['closeOnEscape'] = true;
 
 	const {

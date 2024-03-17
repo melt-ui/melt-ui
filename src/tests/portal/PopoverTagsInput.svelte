@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { createPopover, createTagsInput, melt } from '$lib/index.js';
+	import { createPopover, createTagsInput, melt, type CreatePopoverProps } from '$lib/index.js';
 	import { Settings2 } from '$icons/index.js';
+
+	export let portal: CreatePopoverProps['portal'];
 
 	const {
 		elements: { trigger, content, arrow, close },
-	} = createPopover();
+	} = createPopover({ portal });
 
 	export let defaultTags = ['Svelte', 'Typescript'];
 	const {
 		elements: { root, input, tag, deleteTrigger, edit },
 		states: { tags },
-	} = createTagsInput({
-		defaultTags,
-	});
+	} = createTagsInput({ defaultTags });
 </script>
 
 <button

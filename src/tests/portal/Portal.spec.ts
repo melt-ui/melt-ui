@@ -4,15 +4,16 @@ import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import PopoverTagsInput from './PopoverTagsInput.svelte';
 import PopoverSelect from './PopoverSelect.svelte';
-import type { CreateTooltipProps } from '$lib/index.js';
 import { testKbd as kbd } from '../utils.js';
+import type { PortalConfig } from '$lib/internal/actions/portal.js';
 
-type Props = {
-	portalType?: CreateTooltipProps['portal'];
-	tooltipCloseOnEscape?: CreateTooltipProps['closeOnEscape'];
-};
-
-function setupPopoverTooltip({ portalType, tooltipCloseOnEscape }: Props = {}) {
+function setupPopoverTooltip({
+	portalType,
+	tooltipCloseOnEscape,
+}: {
+	portalType: PortalConfig;
+	tooltipCloseOnEscape?: boolean;
+}) {
 	const user = userEvent.setup();
 	const returned = render(PopoverTooltip, { portal: portalType, tooltipCloseOnEscape });
 	const popoverTrigger = returned.getByTestId('popover-trigger');
@@ -24,9 +25,9 @@ function setupPopoverTooltip({ portalType, tooltipCloseOnEscape }: Props = {}) {
 	return { user, ...returned, elements };
 }
 
-function setupPopoverTagsInput() {
+function setupPopoverTagsInput({ portalType }: { portalType: PortalConfig }) {
 	const user = userEvent.setup();
-	const returned = render(PopoverTagsInput);
+	const returned = render(PopoverTagsInput, { portal: portalType });
 	const popoverTrigger = returned.getByTestId('popover-trigger');
 	const popoverContent = returned.getByTestId('popover-content');
 	const getTag = (i: number) => returned.getByTestId(`tag-${i}`);
@@ -36,7 +37,7 @@ function setupPopoverTagsInput() {
 	return { user, ...returned, elements };
 }
 
-function setupPopoverSelect({ portalType }: { portalType: CreateTooltipProps['portal'] }) {
+function setupPopoverSelect({ portalType }: { portalType: PortalConfig }) {
 	const user = userEvent.setup();
 	const returned = render(PopoverSelect, { portal: portalType });
 	const popoverTrigger = returned.getByTestId('popover-trigger');
@@ -48,15 +49,15 @@ function setupPopoverSelect({ portalType }: { portalType: CreateTooltipProps['po
 	return { user, ...returned, elements };
 }
 
-type PortalTestOption = { label: string; portalType: CreateTooltipProps['portal'] };
+type PortalTestOption = { label: string; portalType: PortalConfig };
 
 const portalTestOptions = [
 	{ label: 'Sibling portals', portalType: 'body' },
 	{ label: 'Single portal', portalType: undefined },
 ] satisfies PortalTestOption[];
 
-describe('Portal Behaviors', () => {
-	describe.each(portalTestOptions)('Popover & Tooltip - $label', ({ portalType }) => {
+describe.each(portalTestOptions)('Portal Behaviors - $label', ({ portalType }) => {
+	describe('Popover & Tooltip', () => {
 		it('should not close the popover when the tooltip content is clicked', async () => {
 			const { elements, user } = setupPopoverTooltip({ portalType });
 
@@ -125,79 +126,67 @@ describe('Portal Behaviors', () => {
 
 	describe('Popover & Tags Input', () => {
 		it('should not close popover on click outside while editing tag', async () => {
-			const {
-				user,
-				elements: { popoverTrigger, popoverContent, outside, getTag, getEditTag },
-			} = setupPopoverTagsInput();
+			const { user, elements } = setupPopoverTagsInput({ portalType });
 
-			await user.click(popoverTrigger);
-			expect(popoverContent).toBeVisible();
-			await user.dblClick(getTag(0));
-			expect(getEditTag(0)).toHaveFocus();
-			await user.click(outside);
-			expect(getEditTag(0)).not.toHaveFocus();
-			expect(popoverContent).toBeVisible();
+			await user.click(elements.popoverTrigger);
+			expect(elements.popoverContent).toBeVisible();
+			await user.dblClick(elements.getTag(0));
+			expect(elements.getEditTag(0)).toHaveFocus();
+			await user.click(elements.outside);
+			expect(elements.getEditTag(0)).not.toHaveFocus();
+			expect(elements.popoverContent).toBeVisible();
 		});
 
 		it('should not close popover on escape while editing tag', async () => {
-			const {
-				user,
-				elements: { popoverTrigger, popoverContent, getTag, getEditTag },
-			} = setupPopoverTagsInput();
+			const { user, elements } = setupPopoverTagsInput({ portalType });
 
-			await user.click(popoverTrigger);
-			expect(popoverContent).toBeVisible();
-			await user.dblClick(getTag(0));
-			expect(getEditTag(0)).toHaveFocus();
+			await user.click(elements.popoverTrigger);
+			expect(elements.popoverContent).toBeVisible();
+			await user.dblClick(elements.getTag(0));
+			expect(elements.getEditTag(0)).toHaveFocus();
 			await user.keyboard(kbd.ESCAPE);
-			expect(getEditTag(0)).not.toHaveFocus();
-			expect(popoverContent).toBeVisible();
+			expect(elements.getEditTag(0)).not.toHaveFocus();
+			expect(elements.popoverContent).toBeVisible();
 		});
 	});
 
 	describe('Popover & Select', () => {
 		it('should not deactivate popover focus trap on escape while select is open', async () => {
-			const {
-				user,
-				elements: { popoverTrigger, popoverContent, selectTrigger, selectMenu },
-			} = setupPopoverSelect({ portalType: 'body' });
+			const { user, elements } = setupPopoverSelect({ portalType });
 
-			expect(popoverContent).not.toBeVisible();
-			await user.click(popoverTrigger);
-			expect(popoverContent).toBeVisible();
+			expect(elements.popoverContent).not.toBeVisible();
+			await user.click(elements.popoverTrigger);
+			expect(elements.popoverContent).toBeVisible();
 
-			expect(selectMenu).not.toBeVisible();
-			await user.click(selectTrigger);
-			expect(selectMenu).toBeVisible();
+			expect(elements.selectMenu).not.toBeVisible();
+			await user.click(elements.selectTrigger);
+			expect(elements.selectMenu).toBeVisible();
 
 			await user.keyboard(kbd.ESCAPE);
-			expect(selectMenu).not.toBeVisible();
-			expect(popoverContent).toBeVisible();
+			expect(elements.selectMenu).not.toBeVisible();
+			expect(elements.popoverContent).toBeVisible();
 
 			await user.tab({ shift: true });
-			expect(popoverTrigger).not.toHaveFocus();
+			expect(elements.popoverTrigger).not.toHaveFocus();
 		});
 
 		it('should not deactivate popover focus trap on outside click while select is open', async () => {
-			const {
-				user,
-				elements: { popoverTrigger, popoverContent, outside, selectTrigger, selectMenu },
-			} = setupPopoverSelect({ portalType: 'body' });
+			const { user, elements } = setupPopoverSelect({ portalType });
 
-			expect(popoverContent).not.toBeVisible();
-			await user.click(popoverTrigger);
-			expect(popoverContent).toBeVisible();
+			expect(elements.popoverContent).not.toBeVisible();
+			await user.click(elements.popoverTrigger);
+			expect(elements.popoverContent).toBeVisible();
 
-			expect(selectMenu).not.toBeVisible();
-			await user.click(selectTrigger);
-			expect(selectMenu).toBeVisible();
+			expect(elements.selectMenu).not.toBeVisible();
+			await user.click(elements.selectTrigger);
+			expect(elements.selectMenu).toBeVisible();
 
-			await user.click(outside);
-			expect(selectMenu).not.toBeVisible();
-			expect(popoverContent).toBeVisible();
+			await user.click(elements.outside);
+			expect(elements.selectMenu).not.toBeVisible();
+			expect(elements.popoverContent).toBeVisible();
 
 			await user.tab({ shift: true });
-			expect(popoverTrigger).not.toHaveFocus();
+			expect(elements.popoverTrigger).not.toHaveFocus();
 		});
 	});
 });

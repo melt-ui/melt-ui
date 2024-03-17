@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { createPopover, createSelect, melt, type CreateSelectProps } from '$lib/index.js';
 	import { Settings2 } from '$icons/index.js';
+	import type { PortalConfig } from '$lib/internal/actions/portal.js';
 
-	export let portal: CreateSelectProps['portal'] = undefined;
+	export let portal: PortalConfig;
 
 	const {
 		elements: { trigger, content, arrow, close },
