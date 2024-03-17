@@ -69,7 +69,7 @@ const defaults = {
 	preventScroll: true,
 	closeOnEscape: true,
 	forceVisible: false,
-	portal: undefined,
+	portal: 'body',
 	builder: 'listbox',
 	disabled: false,
 	required: false,

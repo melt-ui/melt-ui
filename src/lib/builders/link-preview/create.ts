@@ -43,7 +43,7 @@ const defaults = {
 	arrowSize: 8,
 	closeOnOutsideClick: true,
 	forceVisible: false,
-	portal: undefined,
+	portal: 'body',
 	closeOnEscape: true,
 	onOutsideClick: undefined,
 } satisfies CreateLinkPreviewProps;
