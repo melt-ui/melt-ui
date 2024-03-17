@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent, PortalConfig } from '$lib/internal/actions/index.js';
+import type {
+	FloatingConfig,
+	InteractOutsideEvent,
+	PortalConfig,
+} from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
