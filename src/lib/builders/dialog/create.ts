@@ -186,26 +186,30 @@ export function createDialog(props?: CreateDialogProps) {
 			let deactivate = noop;
 
 			const destroy = executeCallbacks(
-				effect([open], ([$open]) => {
-					if (!$open) return;
+				effect(
+					[open, closeOnOutsideClick, closeOnEscape],
+					([$open, $closeOnOutsideClick, $closeOnEscape]) => {
+						if (!$open) return;
 
-					const focusTrap = createFocusTrap({
-						immediate: false,
-						escapeDeactivates: true,
-						clickOutsideDeactivates: true,
-						returnFocusOnDeactivate: false,
-						fallbackFocus: node,
-					});
+						const focusTrap = createFocusTrap({
+							immediate: false,
+							escapeDeactivates: $closeOnEscape,
+							clickOutsideDeactivates: $closeOnOutsideClick,
+							allowOutsideClick: true,
+							returnFocusOnDeactivate: false,
+							fallbackFocus: node,
+						});
 
-					activate = focusTrap.activate;
-					deactivate = focusTrap.deactivate;
-					const ac = focusTrap.useFocusTrap(node);
-					if (ac && ac.destroy) {
-						return ac.destroy;
-					} else {
-						return focusTrap.deactivate;
+						activate = focusTrap.activate;
+						deactivate = focusTrap.deactivate;
+						const ac = focusTrap.useFocusTrap(node);
+						if (ac && ac.destroy) {
+							return ac.destroy;
+						} else {
+							return focusTrap.deactivate;
+						}
 					}
-				}),
+				),
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
 					return useModal(node, {
 						open: $open,
@@ -223,15 +227,7 @@ export function createDialog(props?: CreateDialogProps) {
 				effect([closeOnEscape], ([$closeOnEscape]) => {
 					if (!$closeOnEscape) return noop;
 
-					const escapeKeydown = useEscapeKeydown(node, {
-						handler: () => {
-							handleClose();
-						},
-					});
-					if (escapeKeydown && escapeKeydown.destroy) {
-						return escapeKeydown.destroy;
-					}
-					return noop;
+					return useEscapeKeydown(node, { handler: handleClose }).destroy;
 				}),
 
 				effect([isVisible], ([$isVisible]) => {
@@ -264,12 +260,7 @@ export function createDialog(props?: CreateDialogProps) {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {

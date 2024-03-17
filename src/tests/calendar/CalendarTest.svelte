@@ -30,7 +30,13 @@
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value: insideValue, months, headingValue, weekdays },
-		options: { weekdayFormat: weekdayFormatOption },
+		options: {
+			weekdayFormat: weekdayFormatOption,
+			numberOfMonths: numberOfMonthsOption,
+			fixedWeeks: fixedWeeksOption,
+			weekStartsOn: weekStartsOnOption,
+			locale: localeOption,
+		},
 	} = createCalendar(
 		removeUndefined({
 			value,
@@ -57,6 +63,10 @@
 			ids,
 		})
 	);
+
+	function cycleWeekStart() {
+		$weekStartsOnOption = (($weekStartsOnOption + 1) % 7) as typeof $weekStartsOnOption;
+	}
 
 	function cycleWeekdayFormat() {
 		weekdayFormatOption.update((prev) => {
@@ -95,7 +105,7 @@
 					{#each $months as month, i}
 						<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 							<thead aria-hidden="true">
-								<tr>
+								<tr data-testid="weekdays">
 									{#each $weekdays as day, idx}
 										<th class="text-sm font-semibold text-magnum-800">
 											<div
@@ -134,6 +144,28 @@
 	<button on:click={cycleWeekdayFormat} data-testid="cycle-weekday-format">
 		Cycle weekdayFormat
 	</button>
+	<button
+		data-testid="numberOfMonths"
+		on:click={() => {
+			$numberOfMonthsOption++;
+		}}>numberOfMonths</button
+	>
+	<br />
+	<button data-testid="weekStartsOn" on:click={cycleWeekStart}>weekStartsOn</button>
+	<br />
+	<button
+		data-testid="fixedWeeks"
+		on:click={() => {
+			$fixedWeeksOption = !$fixedWeeksOption;
+		}}>fixedWeeksOption</button
+	>
+	<br />
+	<button
+		data-testid="locale"
+		on:click={() => {
+			$localeOption = 'it';
+		}}>setLocaleToIt</button
+	>
 </main>
 
 <style lang="postcss">

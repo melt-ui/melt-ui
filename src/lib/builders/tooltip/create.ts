@@ -19,7 +19,6 @@ import {
 	styleToString,
 	toWritableStores,
 	removeUndefined,
-	sleep,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
@@ -29,6 +28,7 @@ import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
+import { tick } from 'svelte';
 
 const defaults = {
 	positioning: {
@@ -182,10 +182,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', async () => {
-					await sleep(0);
-					closeTooltip(true);
-				}),
+				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
 				addMeltEventListener(node, 'keydown', keydownHandler),
 				addEventListener(document, 'keydown', keydownHandler)
 			);
@@ -216,26 +213,18 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsubDerived = effect(
 				[isVisible, positioning, portal],
 				([$isVisible, $positioning, $portal]) => {
+					unsubPortal();
+					unsubFloating();
 					const triggerEl = getEl('trigger');
-					if (!$isVisible || !triggerEl) {
+					if (!$isVisible || !triggerEl) return;
+
+					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
-						return;
-					}
-
-					const floatingReturn = useFloating(triggerEl, node, $positioning);
-					unsubFloating = floatingReturn.destroy;
-					if ($portal === null) {
-						unsubPortal();
-						return;
-					}
-					const portalDest = getPortalDestination(node, $portal);
-					if (portalDest) {
-						const portalReturn = usePortal(node, portalDest);
-						if (portalReturn && portalReturn.destroy) {
-							unsubPortal = portalReturn.destroy;
-						}
-					}
+						const portalDest = getPortalDestination(node, $portal);
+						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
+						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
+					});
 				}
 			);
 

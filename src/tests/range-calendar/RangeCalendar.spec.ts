@@ -501,6 +501,75 @@ describe('Range Calendar', () => {
 		}
 	});
 
+	test('dynamically change numberOfMonths option', async () => {
+		const { queryByTestId, getByTestId, user } = setup();
+
+		let grid0 = queryByTestId('grid-0');
+		let grid1 = queryByTestId('grid-1');
+		expect(grid0).toBeInTheDocument();
+		expect(grid1).toBeNull();
+
+		const numberOfMonthsButton = getByTestId('numberOfMonths');
+		await user.click(numberOfMonthsButton);
+
+		grid0 = queryByTestId('grid-0');
+		grid1 = queryByTestId('grid-1');
+		expect(grid0).toBeInTheDocument();
+		expect(grid1).toBeInTheDocument();
+	});
+
+	test('dynamically change weekStartsOn option', async () => {
+		const { getByTestId, user } = setup();
+
+		const weekDaysCopy = [...narrowWeekdays];
+
+		let weekdayElement = getByTestId(`weekdays`);
+
+		for (let i = 0; i < weekDaysCopy.length; i++) {
+			expect(weekdayElement.children[i]).toHaveTextContent(weekDaysCopy[i]);
+		}
+
+		const weekStartsOnButton = getByTestId('weekStartsOn');
+		await user.click(weekStartsOnButton);
+		const first = weekDaysCopy.shift();
+		if (first) {
+			weekDaysCopy.push(first);
+		}
+
+		weekdayElement = getByTestId(`weekdays`);
+		for (let i = 0; i < weekDaysCopy.length; i++) {
+			expect(weekdayElement.children[i]).toHaveTextContent(weekDaysCopy[i]);
+		}
+	});
+
+	test('dynamically change fixedWeeks option', async () => {
+		const { getByTestId, queryByTestId, user } = setup();
+
+		const nextButton = getByTestId('next-button');
+
+		while (queryByTestId('week-6') !== null) {
+			await user.click(nextButton);
+		}
+
+		const fixedWeeksButton = getByTestId('fixedWeeks');
+		await user.click(fixedWeeksButton);
+
+		expect(queryByTestId('week-6')).not.toBeNull();
+	});
+
+	test('dynamically changing the locale option also update weekStartsOn', async () => {
+		const { getByTestId, user } = setup();
+
+		let weekdayElement = getByTestId(`weekday-0`);
+		expect(weekdayElement).toHaveTextContent('S');
+
+		const localeButton = getByTestId('locale');
+		await user.click(localeButton);
+		weekdayElement = getByTestId(`weekday-0`);
+		// L is italian for Lunedì which is Monday (which is different from S which is Sunday)
+		expect(weekdayElement).toHaveTextContent('L');
+	});
+
 	test('custom ids are applied when provided', async () => {
 		const ids = {
 			accessibleHeading: 'id-heading',
