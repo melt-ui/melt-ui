@@ -7,7 +7,7 @@ import type {
 import type { VirtualElement } from '@floating-ui/core';
 import type { Writable } from 'svelte/store';
 import type { ModalConfig } from '../modal/types.js';
-import type { WithGet } from "$lib/internal/helpers/withGet.js";
+import type { WithGet } from '$lib/internal/helpers/withGet.js';
 
 export type PopperConfig = {
 	floating?: FloatingConfig;
