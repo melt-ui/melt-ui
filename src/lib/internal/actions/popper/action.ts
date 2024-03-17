@@ -13,7 +13,6 @@ import {
 import type { Action } from 'svelte/action';
 import type { PopperArgs, PopperConfig } from './types.js';
 import { useModal } from '../modal/action.js';
-import { get } from 'svelte/store';
 
 const defaultConfig = {
 	floating: {},
@@ -26,7 +25,7 @@ const defaultConfig = {
 export const usePopper = ((popperElement, args) => {
 	popperElement.dataset.escapee = '';
 	const { anchorElement, open, options } = args as PopperArgs;
-	if (!anchorElement || !get(open) || !options) {
+	if (!anchorElement || !open.get() || !options) {
 		return { destroy: noop };
 	}
 
