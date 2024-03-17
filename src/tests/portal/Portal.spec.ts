@@ -177,5 +177,27 @@ describe('Portal Behaviors', () => {
 			await user.tab({ shift: true });
 			expect(popoverTrigger).not.toHaveFocus();
 		});
+
+		it('should not deactivate popover focus trap on outside click while select is open', async () => {
+			const {
+				user,
+				elements: { popoverTrigger, popoverContent, outside, selectTrigger, selectMenu },
+			} = setupPopoverSelect({ portalType: 'body' });
+
+			expect(popoverContent).not.toBeVisible();
+			await user.click(popoverTrigger);
+			expect(popoverContent).toBeVisible();
+
+			expect(selectMenu).not.toBeVisible();
+			await user.click(selectTrigger);
+			expect(selectMenu).toBeVisible();
+
+			await user.click(outside);
+			expect(selectMenu).not.toBeVisible();
+			expect(popoverContent).toBeVisible();
+
+			await user.tab({ shift: true });
+			expect(popoverTrigger).not.toHaveFocus();
+		});
 	});
 });
