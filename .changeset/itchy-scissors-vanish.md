@@ -1,5 +1,5 @@
 ---
-'@melt-ui/svelte': patch
+'@melt-ui/svelte': minor
 ---
 
-Mounting each floating element into their own portal by default.
+Mount each floating element into their own portal by default now that stack handling has been improved
