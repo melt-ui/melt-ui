@@ -206,10 +206,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 										}
 										return true;
 									},
-									onClose: () => {
-										rootOpen.set(false);
-										$rootActiveTrigger.focus();
-									},
+									onClose: () => rootOpen.set(false),
 									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
@@ -351,11 +348,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 			if (closeOnEscape.get()) {
 				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						rootOpen.set(false);
-						const $rootActiveTrigger = rootActiveTrigger.get();
-						if ($rootActiveTrigger) $rootActiveTrigger.focus();
-					},
+					handler: () => rootOpen.set(false),
 				});
 				if (escapeKeydown && escapeKeydown.destroy) {
 					unsubEscapeKeydown = escapeKeydown.destroy;
@@ -1183,18 +1176,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}
 	});
 
-	effect([rootOpen], ([$rootOpen]) => {
-		if (!isBrowser) return;
-		if (!$rootOpen) {
-			const $rootActiveTrigger = rootActiveTrigger.get();
-			if (!$rootActiveTrigger) return;
-			const $closeFocus = closeFocus.get();
-
-			if (!$rootOpen && $rootActiveTrigger) {
-				handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
-			}
-		}
-	});
+	effect(
+		[rootOpen],
+		([$rootOpen]) => {
+			if (!isBrowser || $rootOpen) return;
+			handleFocus({ prop: closeFocus.get(), defaultEl: rootActiveTrigger.get() });
+		},
+		true
+	);
 
 	effect([rootOpen, preventScroll], ([$rootOpen, $preventScroll]) => {
 		if (!isBrowser) return;
