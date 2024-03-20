@@ -10,18 +10,25 @@ import { safeOnDestroy } from '../lifecycle.js';
  * @template S - The type of the stores object
  * @param stores - The stores object to derive from
  * @param fn - The function to run when the stores change
+ * @param skipFirstRun - Whether to skip the first run
  * @returns A function that can be used to unsubscribe the effect
  */
 export function effect<S extends Stores>(
 	stores: S,
-	fn: (values: StoresValues<S>) => (() => void) | void
+	fn: (values: StoresValues<S>) => (() => void) | void,
+	skipFirstRun?: boolean
 ): () => void {
 	let cb: (() => void) | void = undefined;
+	let isFirstRun = true;
 
 	// Create a derived store that contains the stores object and an onUnsubscribe function
 	const destroy = derived(stores, (stores) => {
 		cb?.();
-		cb = fn(stores);
+		if (isFirstRun && skipFirstRun) {
+			isFirstRun = false;
+		} else {
+			cb = fn(stores);
+		}
 	}).subscribe(noop);
 
 	const unsub = () => {
