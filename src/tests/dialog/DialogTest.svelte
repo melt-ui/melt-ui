@@ -19,6 +19,7 @@
 		<div use:melt={$content} data-testid="content">
 			<h2 use:melt={$title} data-testid="title">Title</h2>
 			<p use:melt={$description} data-testid="description">Description</p>
+			<button on:click={() => open.update((p) => !p)} data-testid="toggle-open">toggle open</button>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
