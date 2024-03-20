@@ -90,8 +90,6 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger.get());
-		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
 	}
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
@@ -335,6 +333,16 @@ export function createPopover(args?: CreatePopoverProps) {
 			unsubs.forEach((unsub) => unsub());
 		};
 	});
+
+	effect(
+		open,
+		($open) => {
+			if (!isBrowser || $open) return;
+			const triggerEl = document.getElementById(ids.trigger.get());
+			handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
+		},
+		true
+	);
 
 	return {
 		ids,
