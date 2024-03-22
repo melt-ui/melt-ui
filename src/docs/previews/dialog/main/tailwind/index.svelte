@@ -4,6 +4,7 @@
 	import { flyAndScale } from '$docs/utils/index.js';
 	import { X } from '$icons/index.js';
 	import { fade } from 'svelte/transition';
+	import { usePortal } from '$lib/internal/actions/portal.js';
 
 	const {
 		elements: {
@@ -102,3 +103,53 @@
 		</div>
 	{/if}
 </div>
+
+{#if $open}
+	<div
+		use:usePortal
+		class="fixed left-0 top-4 z-50 flex w-full flex-wrap items-center justify-center gap-4 px-4"
+	>
+		<button
+			on:click|stopPropagation
+			class="rounded-xl bg-white px-4 py-2 text-magnum-700"
+		>
+			click interceptor
+		</button>
+		<button
+			on:pointerdown|stopPropagation
+			class="rounded-xl bg-white px-4 py-2 text-magnum-700"
+		>
+			pointerdown interceptor
+		</button>
+		<button
+			on:pointerup|stopPropagation
+			class="rounded-xl bg-white px-4 py-2 text-magnum-700"
+		>
+			pointerup interceptor
+		</button>
+		<button
+			on:mousedown|stopPropagation
+			class="rounded-xl bg-white px-4 py-2 text-magnum-700"
+		>
+			mousedown interceptor
+		</button>
+		<button
+			on:mouseup|stopPropagation
+			class="rounded-xl bg-white px-4 py-2 text-magnum-700"
+		>
+			mouseup interceptor
+		</button>
+		<button
+			on:touchstart|stopPropagation
+			class="rounded-xl bg-white px-4 py-2 text-magnum-700"
+		>
+			touchstart interceptor
+		</button>
+		<button
+			on:touchend|stopPropagation
+			class="rounded-xl bg-white px-4 py-2 text-magnum-700"
+		>
+			touchend interceptor
+		</button>
+	</div>
+{/if}
