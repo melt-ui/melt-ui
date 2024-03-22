@@ -341,7 +341,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			const triggerEl = document.getElementById(ids.trigger.get());
 			handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
 		},
-		true
+		{ skipFirstRun: true }
 	);
 
 	return {

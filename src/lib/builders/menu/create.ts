@@ -1182,7 +1182,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			if (!isBrowser || $rootOpen) return;
 			handleFocus({ prop: closeFocus.get(), defaultEl: rootActiveTrigger.get() });
 		},
-		true
+		{ skipFirstRun: true }
 	);
 
 	effect([rootOpen, preventScroll], ([$rootOpen, $preventScroll]) => {

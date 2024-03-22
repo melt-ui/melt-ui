@@ -332,7 +332,7 @@ export function createDialog(props?: CreateDialogProps) {
 				defaultEl: activeTrigger.get(),
 			});
 		},
-		true
+		{ skipFirstRun: true }
 	);
 
 	return {
