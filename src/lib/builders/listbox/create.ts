@@ -366,7 +366,10 @@ export function createListbox<
 						return;
 					}
 					// Pressing enter with a highlighted item should select it.
-					if (e.key === kbd.ENTER || (e.key === kbd.SPACE && isHTMLButtonElement(node))) {
+					if (
+						(e.key === kbd.ENTER && !e.isComposing) ||
+						(e.key === kbd.SPACE && isHTMLButtonElement(node))
+					) {
 						e.preventDefault();
 						const $highlightedItem = highlightedItem.get();
 						if ($highlightedItem) {
