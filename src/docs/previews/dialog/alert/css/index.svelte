@@ -22,8 +22,8 @@
 </script>
 
 <button use:melt={$trigger} class="trigger"> Delete Item </button>
-<div use:melt={$portalled}>
-	{#if $open}
+{#if $open}
+	<div use:melt={$portalled}>
 		<div use:melt={$overlay} class="overlay" />
 		<div
 			class="content"
@@ -51,8 +51,8 @@
 				<X class="size-4" />
 			</button>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.trigger {
