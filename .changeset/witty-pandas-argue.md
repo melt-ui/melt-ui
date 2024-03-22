@@ -2,4 +2,4 @@
 '@melt-ui/svelte': patch
 ---
 
-Fix(popover) overlay memory leak
+Popover: fixed a bug that has the potential to introduce a memory leak via the overlay
