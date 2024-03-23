@@ -54,7 +54,8 @@ export const useInteractOutside = ((node, config) => {
 			 * until the interaction end event occurs.
 			 */
 			if (interactionEnd) {
-				sleep(5).then(resetInterceptedEvents);
+				clearTimeout(resetInterceptedEventsTimeout);
+				resetInterceptedEventsTimeout = setTimeout(resetInterceptedEvents, 10);
 			}
 		};
 		return addEventListener(documentObj, eventType, handler, true);
@@ -67,35 +68,42 @@ export const useInteractOutside = ((node, config) => {
 	 */
 	const createBubblingHandler = <E extends InteractOutsideInterceptEventType>(
 		eventType: E,
-		handler?: InteractOutsideInterceptHandler<E>
+		handler?: InteractOutsideInterceptHandler<E>,
+		options?: boolean | AddEventListenerOptions
 	) => {
-		return addEventListener(documentObj, eventType, (e: HTMLElementEventMap[E]) => {
-			/**
-			 * We get here only if the user did not
-			 * intercept this event during the bubbling phase.
-			 */
-			interceptedEvents[eventType] = false;
-
-			/**
-			 * Wait for all other events that were not intercepted
-			 * to update `interceptedEvents[e] = false` before
-			 * we check if an event was intercepted.
-			 */
-			sleep(0).then(() => {
+		return addEventListener(
+			documentObj,
+			eventType,
+			(e: HTMLElementEventMap[E]) => {
 				/**
-				 * If user intercepted a different interaction event,
-				 * we should not call the handler.
+				 * We get here only if the user did not
+				 * intercept this event during the bubbling phase.
 				 */
-				for (const isIntercepted of Object.values(interceptedEvents)) {
-					if (isIntercepted) return;
-				}
-				handler?.(e);
-			});
-		});
+				interceptedEvents[eventType] = false;
+
+				/**
+				 * Wait for all other events that were not intercepted
+				 * to update `interceptedEvents[e] = false` before
+				 * we check if an event was intercepted.
+				 */
+				sleep(10).then(() => {
+					/**
+					 * If user intercepted a different interaction event,
+					 * we should not call the handler.
+					 */
+					for (const isIntercepted of Object.values(interceptedEvents)) {
+						if (isIntercepted) return;
+					}
+					handler?.(e);
+				});
+			},
+			options
+		);
 	};
 
 	function update(config: InteractOutsideConfig) {
 		unsub();
+		clearTimeout(resetInterceptedEventsTimeout);
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 
 		if (!enabled) return;
@@ -170,7 +178,7 @@ export const useInteractOutside = ((node, config) => {
 			/** Bubbling Events For Interaction Start */
 			createBubblingHandler('pointerdown', onPointerDown),
 			createBubblingHandler('mousedown', onPointerDown),
-			createBubblingHandler('touchstart', onPointerDown),
+			createBubblingHandler('touchstart', onPointerDown, { passive: false }),
 			/** Bubbling Events For Interaction End */
 			createBubblingHandler('pointerup', onPointerUp),
 			createBubblingHandler('mouseup', onMouseUp),
@@ -191,6 +199,7 @@ export const useInteractOutside = ((node, config) => {
 		isPointerDownInside = false;
 	}
 
+	let resetInterceptedEventsTimeout: NodeJS.Timeout;
 	function resetInterceptedEvents() {
 		for (const eventType in interceptedEvents) {
 			interceptedEvents[eventType as InteractOutsideInterceptEventType] = false;
@@ -201,7 +210,10 @@ export const useInteractOutside = ((node, config) => {
 
 	return {
 		update,
-		destroy: unsub,
+		destroy() {
+			unsub();
+			clearTimeout(resetInterceptedEventsTimeout);
+		},
 	};
 }) satisfies Action<HTMLElement, InteractOutsideConfig>;
 
