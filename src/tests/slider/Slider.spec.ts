@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/index.js';
+import { testKbd as kbd } from '../utils.js';
 import { act, render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -89,7 +89,7 @@ describe('Slider (Default)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 
 		expectPercentage({ percentage: 31, thumb, range });
 	});
@@ -102,7 +102,7 @@ describe('Slider (Default)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 
 		expectPercentage({ percentage: 29, thumb, range });
 	});
@@ -115,7 +115,7 @@ describe('Slider (Default)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${kbd.HOME}}`);
+		await user.keyboard(kbd.HOME);
 
 		expectPercentage({ percentage: 0, thumb, range });
 	});
@@ -127,7 +127,7 @@ describe('Slider (Default)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${kbd.END}}`);
+		await user.keyboard(kbd.END);
 
 		expectPercentage({ percentage: 100, thumb, range });
 	});
@@ -172,7 +172,7 @@ describe('Slider (Range)', () => {
 			const range = getByTestId('range');
 
 			await act(() => thumb0.focus());
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
 
 			expectPercentages({ percentages: [21, 80], thumbs: [thumb0, thumb1], range });
 		}
@@ -189,7 +189,7 @@ describe('Slider (Range)', () => {
 			const range = getByTestId('range');
 
 			await act(() => thumb1.focus());
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
 
 			expectPercentages({ percentages: [20, 81], thumbs: [thumb0, thumb1], range });
 		}
@@ -206,7 +206,7 @@ describe('Slider (Range)', () => {
 			const range = getByTestId('range');
 
 			await act(() => thumb0.focus());
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
 
 			expectPercentages({ percentages: [19, 80], thumbs: [thumb0, thumb1], range });
 		}
@@ -223,7 +223,7 @@ describe('Slider (Range)', () => {
 			const range = getByTestId('range');
 
 			await act(() => thumb1.focus());
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
 
 			expectPercentages({ percentages: [20, 79], thumbs: [thumb0, thumb1], range });
 		}
@@ -242,9 +242,9 @@ describe('Slider (Range)', () => {
 			const range = getByTestId('range');
 
 			await act(() => thumb0.focus());
-			await user.keyboard(`{${key}}`);
-			await user.keyboard(`{${key}}`);
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
+			await user.keyboard(key);
+			await user.keyboard(key);
 
 			expectPercentages({ percentages: [51, 52], thumbs: [thumb0, thumb1], range });
 			expect(thumb1).toHaveFocus();
@@ -264,9 +264,9 @@ describe('Slider (Range)', () => {
 			const range = getByTestId('range');
 
 			await act(() => thumb1.focus());
-			await user.keyboard(`{${key}}`);
-			await user.keyboard(`{${key}}`);
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
+			await user.keyboard(key);
+			await user.keyboard(key);
 
 			expectPercentages({ percentages: [48, 49], thumbs: [thumb0, thumb1], range });
 			expect(thumb0).toHaveFocus();
@@ -282,7 +282,7 @@ describe('Slider (Range)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb0.focus());
-		await user.keyboard(`{${kbd.HOME}}`);
+		await user.keyboard(kbd.HOME);
 
 		expectPercentages({ percentages: [0, 80], thumbs: [thumb0, thumb1], range });
 	});
@@ -296,7 +296,7 @@ describe('Slider (Range)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb1.focus());
-		await user.keyboard(`{${kbd.END}}`);
+		await user.keyboard(kbd.END);
 
 		expectPercentages({ percentages: [20, 100], thumbs: [thumb0, thumb1], range });
 	});
@@ -310,7 +310,7 @@ describe('Slider (Range)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb1.focus());
-		await user.keyboard(`{${kbd.HOME}}`);
+		await user.keyboard(kbd.HOME);
 
 		expectPercentages({ percentages: [0, 20], thumbs: [thumb0, thumb1], range });
 		expect(thumb0).toHaveFocus();
@@ -325,7 +325,7 @@ describe('Slider (Range)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb0.focus());
-		await user.keyboard(`{${kbd.END}}`);
+		await user.keyboard(kbd.END);
 
 		expectPercentages({ percentages: [80, 100], thumbs: [thumb0, thumb1], range });
 		expect(thumb1).toHaveFocus();
@@ -361,7 +361,7 @@ describe('Slider (Small min, max, step)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 
 		expectPercentage({ percentage: 51, thumb, range });
 	});
@@ -379,7 +379,7 @@ describe('Slider (Small min, max, step)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 
 		expectPercentage({ percentage: 49, thumb, range });
 	});
@@ -414,7 +414,7 @@ describe('Slider (negative min)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 
 		expectPercentage({ percentage: 51, thumb, range });
 	});
@@ -432,7 +432,7 @@ describe('Slider (negative min)', () => {
 		const range = getByTestId('range');
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 
 		expectPercentage({ percentage: 49, thumb, range });
 	});
@@ -581,10 +581,10 @@ describe('Slider (min=0, max=100, step=30)', () => {
 		expect(thumb).toBeInTheDocument();
 
 		await act(() => thumb.focus());
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
+		await user.keyboard(kbd.ARROW_RIGHT);
+		await user.keyboard(kbd.ARROW_RIGHT);
+		await user.keyboard(kbd.ARROW_RIGHT);
 
 		expectPercentage({ percentage: 90, thumb, range: getByTestId('range') });
 	});
