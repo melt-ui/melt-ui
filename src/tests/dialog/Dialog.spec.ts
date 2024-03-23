@@ -230,6 +230,30 @@ describe('Dialog', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
+	it('Respects the `closeOnEscape` prop', async () => {
+		const { getByTestId, user, trigger } = setup({
+			closeOnEscape: false,
+		});
+		expect(trigger).toBeVisible();
+		const content = getByTestId('content');
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await user.keyboard(kbd.ESCAPE);
+		expect(content).toBeVisible();
+	});
+
+	it("Doesn't close on escape if child intercepts event", async () => {
+		const { getByTestId, user, trigger } = setup();
+		await user.click(trigger);
+		const content = getByTestId('content');
+		expect(content).toBeVisible();
+		const input = getByTestId('input-keydown-interceptor');
+		input.focus();
+		await user.keyboard(kbd.ESCAPE);
+		expect(content).toBeVisible();
+	});
+
 	it('Applies custom ids when provided', async () => {
 		const ids = {
 			content: 'id-content',

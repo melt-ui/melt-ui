@@ -25,8 +25,8 @@
 	<Menu class="size-6" />
 	<span class="sr-only">Toggle Menu</span>
 </button>
-<div use:melt={$portalled} class="md:hidden">
-	{#if $open}
+{#if $open}
+	<div use:melt={$portalled} class="md:hidden">
 		<div
 			use:melt={$overlay}
 			class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
@@ -86,8 +86,8 @@
 				</div>
 			</div>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style lang="postcss">
 	.menu,
