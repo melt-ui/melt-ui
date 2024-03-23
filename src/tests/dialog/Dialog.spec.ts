@@ -4,7 +4,7 @@ import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import { userEvent } from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers/index.js';
-import { testKbd as kbd } from '../utils.js';
+import { testKbd as kbd, touch } from '../utils.js';
 import type { CreateDialogProps } from '$lib/index.js';
 
 function setup(props: CreateDialogProps = {}) {
@@ -332,73 +332,186 @@ describe('Dialog', () => {
 		expect(getByTestId('floating-closer')).not.toHaveFocus();
 	});
 
-	it("Doesn't close when interacting outside with click interceptor", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
-		await user.click(trigger);
-		expect(content).toBeVisible();
-		await user.click(getByTestId('click-interceptor'));
-		expect(content).toBeVisible();
+	describe('Mouse Device', () => {
+		it("Doesn't close when interacting outside with click interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const clickInterceptor = getByTestId('click-interceptor');
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await user.click(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await user.click(clickInterceptor);
+			expect(content).toBeVisible();
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
+
+		it("Doesn't close when interacting outside with pointerdown interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await user.click(trigger);
+			await sleep(100);
+			expect(content).toBeVisible();
+			await user.click(getByTestId('pointerdown-interceptor'));
+			expect(content).toBeVisible();
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
+
+		it("Doesn't close when interacting outside with pointerup interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await user.click(trigger);
+			await sleep(100);
+			expect(content).toBeVisible();
+			await user.click(getByTestId('pointerup-interceptor'));
+			expect(content).toBeVisible();
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
+
+		it("Doesn't close when interacting outside with mousedown interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await user.click(trigger);
+			await sleep(100);
+			expect(content).toBeVisible();
+			await user.click(getByTestId('mousedown-interceptor'));
+			expect(content).toBeVisible();
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
+
+		it("Doesn't close when interacting outside with mouseup interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await user.click(trigger);
+			await sleep(100);
+			expect(content).toBeVisible();
+			await user.click(getByTestId('mouseup-interceptor'));
+			expect(content).toBeVisible();
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 	});
 
-	it("Doesn't close when interacting outside with pointerdown interceptor", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
-		await user.click(trigger);
-		expect(content).toBeVisible();
-		await user.click(getByTestId('pointerdown-interceptor'));
-		expect(content).toBeVisible();
-	});
+	describe('Touch Device', () => {
+		it("Doesn't close when interacting outside with click interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const clickInterceptor = getByTestId('click-interceptor');
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await touch(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await touch(clickInterceptor);
+			expect(content).toBeVisible();
+			await sleep(10);
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 
-	it("Doesn't close when interacting outside with pointerup interceptor", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
-		await user.click(trigger);
-		expect(content).toBeVisible();
-		await user.click(getByTestId('pointerup-interceptor'));
-		expect(content).toBeVisible();
-	});
+		it("Doesn't close when interacting outside with pointerdown interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await touch(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await touch(getByTestId('pointerdown-interceptor'));
+			expect(content).toBeVisible();
+			await sleep(10);
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 
-	it("Doesn't close when interacting outside with mousedown interceptor", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
-		await user.click(trigger);
-		expect(content).toBeVisible();
-		await user.click(getByTestId('mousedown-interceptor'));
-		expect(content).toBeVisible();
-	});
+		it("Doesn't close when interacting outside with pointerup interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await touch(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await touch(getByTestId('pointerup-interceptor'));
+			expect(content).toBeVisible();
+			await sleep(10);
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 
-	it("Doesn't close when interacting outside with mouseup interceptor", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
-		await user.click(trigger);
-		expect(content).toBeVisible();
-		await user.click(getByTestId('mouseup-interceptor'));
-		expect(content).toBeVisible();
-	});
+		it("Doesn't close when interacting outside with mousedown interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await touch(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await touch(getByTestId('mousedown-interceptor'));
+			expect(content).toBeVisible();
+			await sleep(10);
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 
-	it("Doesn't close when interacting outside with touchstart interceptor", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
-		await user.click(trigger);
-		expect(content).toBeVisible();
-		await user.click(getByTestId('touchstart-interceptor'));
-		expect(content).toBeVisible();
-	});
+		it("Doesn't close when interacting outside with mouseup interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await touch(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await touch(getByTestId('mouseup-interceptor'));
+			expect(content).toBeVisible();
+			await sleep(10);
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 
-	it("Doesn't close when interacting outside with touchend interceptor", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		expect(content).not.toBeVisible();
-		await user.click(trigger);
-		expect(content).toBeVisible();
-		await user.click(getByTestId('touchend-interceptor'));
-		expect(content).toBeVisible();
+		it("Doesn't close when interacting outside with touchstart interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const touchstartInterceptor = getByTestId('touchstart-interceptor');
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await touch(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await touch(touchstartInterceptor);
+			expect(content).toBeVisible();
+			await sleep(10);
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
+
+		it("Doesn't close when interacting outside with touchend interceptor", async () => {
+			const { getByTestId, user, trigger } = setup();
+			const touchendInterceptor = getByTestId('touchend-interceptor');
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			expect(content).not.toBeVisible();
+			await touch(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await touch(touchendInterceptor);
+			expect(content).toBeVisible();
+			await sleep(10);
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 	});
 });
