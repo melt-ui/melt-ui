@@ -351,6 +351,7 @@ describe('Dialog', () => {
 		await user.click(getByTestId('pointerdown-interceptor'));
 		expect(content).toBeVisible();
 	});
+
 	it("Doesn't close when interacting outside with pointerup interceptor", async () => {
 		const { getByTestId, user, trigger } = setup();
 		const content = getByTestId('content');
