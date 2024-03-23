@@ -230,15 +230,22 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			let unsubDerived = noop;
+			let unsubPortal = noop;
+
+			unsubDerived = effect([portal], ([$portal]) => {
+				unsubPortal();
+				if ($portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
-				return usePortal(node, portalDestination).destroy;
+				if (portalDestination === null) return;
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
-				destroy: unsubPortal,
+				destroy() {
+					unsubDerived();
+					unsubPortal();
+				},
 			};
 		},
 	});

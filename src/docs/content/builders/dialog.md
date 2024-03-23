@@ -28,16 +28,16 @@ At a high level, the anatomy of a dialog looks like this:
 
 <button use:melt={$trigger}> Open Dialog </button>
 
-<div use:melt={$portalled}>
-	{#if $open}
+{#if $open}
+	<div use:melt={$portalled}>
 		<div use:melt={$overlay} />
 		<div use:melt={$content}>
 			<h2 use:melt={$title}>Dialog Title</h2>
 			<p use:melt={$description}>Dialog description</p>
 			<button use:melt={$close}> Close Dialog </button>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}
 ```
 
 - **Trigger**: The button(s) that open the dialog
