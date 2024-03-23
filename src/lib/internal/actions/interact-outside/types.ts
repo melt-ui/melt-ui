@@ -9,7 +9,7 @@ export type InteractOutsideInterceptEventType =
 	| 'touchend'
 	| 'click';
 
-export type InteractOutsideInterceptHandler<E extends keyof HTMLElementEventMap> = (
+export type InteractOutsideInterceptHandler<E extends InteractOutsideInterceptEventType> = (
 	ev: HTMLElementEventMap[E]
 ) => void;
 
