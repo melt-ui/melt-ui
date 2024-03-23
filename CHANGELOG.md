@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.76.1
+
+### Patch Changes
+
+- Fixed bug where focus trap deactivates in dialog and popover when clicking outside provided `closeOnOutsideClick: false` (closes #1084) ([#1094](https://github.com/melt-ui/melt-ui/pull/1094))
+
+- Combobox: menu no longer closes when composing (Closes: #1106) ([#1107](https://github.com/melt-ui/melt-ui/pull/1107))
+
+- Fixed bug where focus trap deactivates in dialog and popover when pressing escape provided `closeOnEscape: false` (closes #1091) ([#1095](https://github.com/melt-ui/melt-ui/pull/1095))
+
+- Fixed memory leak caused by race conditions for various components (closes #1086) ([#1087](https://github.com/melt-ui/melt-ui/pull/1087))
+
+- performance: avoid effect multiple runs ([#1089](https://github.com/melt-ui/melt-ui/pull/1089))
+
+- Listbox: correct `arrowSize` JSDoc defaultValue ([#1050](https://github.com/melt-ui/melt-ui/pull/1050))
+
+- Popover: fixed a bug that has the potential to introduce a memory leak via the overlay ([#1112](https://github.com/melt-ui/melt-ui/pull/1112))
+
 ## 0.76.0
 
 ### Minor Changes
