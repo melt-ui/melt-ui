@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
+	import { kbd } from '$lib/internal/helpers/keyboard.js';
 
 	type $$Props = CreateDialogProps;
 
@@ -20,6 +21,11 @@
 			<h2 use:melt={$title} data-testid="title">Title</h2>
 			<p use:melt={$description} data-testid="description">Description</p>
 			<button on:click={() => open.update((p) => !p)} data-testid="toggle-open">toggle open</button>
+			<input
+				data-testid="input-keydown-interceptor"
+				type="text"
+				on:keydown={(e) => e.key === kbd.ESCAPE && e.stopPropagation()}
+			/>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
