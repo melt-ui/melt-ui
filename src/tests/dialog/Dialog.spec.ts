@@ -3,7 +3,6 @@ import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import { userEvent } from '@testing-library/user-event';
-import { sleep } from '$lib/internal/helpers/index.js';
 import { testKbd as kbd } from '../utils.js';
 import type { CreateDialogProps } from '$lib/index.js';
 
@@ -71,7 +70,6 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 		await user.click(trigger);
 		expect(content).toBeVisible();
-		await sleep(100);
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).not.toBeVisible();
@@ -90,7 +88,6 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 		await user.click(trigger);
 		expect(content).toBeVisible();
-		await sleep(100);
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).toBeVisible();
@@ -207,7 +204,6 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 		await user.click(trigger);
 		expect(content).toBeVisible();
-		await sleep(100);
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).toBeVisible();
@@ -223,7 +219,6 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 		await user.click(trigger);
 		expect(content).toBeVisible();
-		await sleep(100);
 		const closer = getByTestId('floating-closer');
 		await waitFor(() => expect(closer).toBeVisible());
 		await user.click(closer);
@@ -280,7 +275,6 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 		await user.click(trigger);
 		expect(content).toBeVisible();
-		await sleep(100);
 		expect(overlay).toBeVisible();
 		await user.pointer({ target: content, offset: 2, keys: '[MouseLeft>]' });
 		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
@@ -295,7 +289,6 @@ describe('Dialog', () => {
 		expect(content).not.toBeVisible();
 		await user.click(trigger);
 		expect(content).toBeVisible();
-		await sleep(100);
 		expect(overlay).toBeVisible();
 		await user.pointer({ target: overlay, offset: 2, keys: '[MouseLeft>]' });
 		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
