@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/index.js';
+import { testKbd as kbd } from '../utils.js';
 import { queryByText, render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -33,7 +33,7 @@ describe('TagsInput', () => {
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
 		const newTag = 'new tag';
-		await user.type(input, `${newTag}{${kbd.ENTER}}`);
+		await user.type(input, `${newTag}${kbd.ENTER}`);
 		expect(input).not.toHaveValue();
 		expect(queryByText(newTag)).toBeInTheDocument();
 	});
@@ -49,7 +49,7 @@ describe('TagsInput', () => {
 
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
-		await user.type(input, `${newTag}{${kbd.ENTER}}`);
+		await user.type(input, `${newTag}${kbd.ENTER}`);
 		expect(input).toHaveValue();
 	});
 
@@ -68,7 +68,7 @@ describe('TagsInput', () => {
 
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
-		await user.type(input, `${newTag}   {${kbd.ENTER}}`);
+		await user.type(input, `${newTag}   ${kbd.ENTER}`);
 		expect(input).toHaveValue();
 	});
 
@@ -82,7 +82,7 @@ describe('TagsInput', () => {
 
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
-		await user.type(input, `${newTag}   {${kbd.ENTER}}`);
+		await user.type(input, `${newTag}   ${kbd.ENTER}`);
 		expect(input).not.toHaveValue();
 		expect(queryByText(newTag)).toBeInTheDocument();
 	});
@@ -99,7 +99,7 @@ describe('TagsInput', () => {
 
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
-		await user.type(input, `${newTag}   {${kbd.ENTER}}`);
+		await user.type(input, `${newTag}   ${kbd.ENTER}`);
 		expect(input).toHaveValue();
 	});
 
@@ -115,10 +115,10 @@ describe('TagsInput', () => {
 
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
-		await user.type(input, `${newTag}{${kbd.ENTER}}`);
+		await user.type(input, `${newTag}${kbd.ENTER}`);
 		expect(input).toHaveValue();
 		user.clear(input);
-		await user.type(input, `${allowedTag}{${kbd.ENTER}}`);
+		await user.type(input, `${allowedTag}${kbd.ENTER}`);
 		expect(input).not.toHaveValue();
 		expect(queryByText(allowedTag)).toBeInTheDocument();
 	});
@@ -135,10 +135,10 @@ describe('TagsInput', () => {
 
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
-		await user.type(input, `${newTag}   {${kbd.ENTER}}`);
+		await user.type(input, `${newTag}   ${kbd.ENTER}`);
 		expect(input).toHaveValue();
 		user.clear(input);
-		await user.type(input, `${allowedTag}    {${kbd.ENTER}}`);
+		await user.type(input, `${allowedTag}    ${kbd.ENTER}`);
 		expect(input).not.toHaveValue();
 		expect(queryByText(allowedTag)).toBeInTheDocument();
 	});
@@ -157,10 +157,10 @@ describe('TagsInput', () => {
 
 		const input = await findByRole('textbox');
 		const user = userEvent.setup();
-		await user.type(input, `${newTag}   {${kbd.ENTER}}`);
+		await user.type(input, `${newTag}   ${kbd.ENTER}`);
 		expect(input).toHaveValue();
 		user.clear(input);
-		await user.type(input, `${allowedTag}    {${kbd.ENTER}}`);
+		await user.type(input, `${allowedTag}    ${kbd.ENTER}`);
 		expect(input).not.toHaveValue();
 		expect(queryByText(allowedTag)).toBeInTheDocument();
 	});
