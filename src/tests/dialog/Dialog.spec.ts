@@ -74,7 +74,7 @@ describe('Dialog', () => {
 		await sleep(100);
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
-		expect(content).not.toBeVisible();
+		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
 	it('Prevents closing on outside click if `defaultPrevented` in `onOutsideClick` callback', async () => {
@@ -297,9 +297,9 @@ describe('Dialog', () => {
 		expect(content).toBeVisible();
 		await sleep(100);
 		expect(overlay).toBeVisible();
-		await user.pointer({ target: overlay, offset: 2, keys: '[MouseLeft>]' });
-		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
-		expect(content).not.toBeVisible();
+		await user.pointer({ target: overlay, keys: '[MouseLeft>]' });
+		await user.pointer({ target: overlay, keys: '[/MouseLeft]' });
+		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
 	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
