@@ -21,6 +21,7 @@ const createHighestLayerEventHandlerFactory = (node: HTMLElement) => {
 
 export const useInteractOutside = ((node, config = {}) => {
 	let unsubEvents = noop;
+	let unsubClick = noop;
 	layers.add(node);
 	const createHighestLayerEventHandler = createHighestLayerEventHandlerFactory(node);
 
@@ -30,11 +31,9 @@ export const useInteractOutside = ((node, config = {}) => {
 
 	function update(config: InteractOutsideConfig) {
 		unsubEvents();
+		unsubClick();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = { enabled: true, ...config };
-		if (!enabled) {
-			unsubEvents = noop;
-			return;
-		}
+		if (!enabled) return;
 
 		const onPointerDown = createHighestLayerEventHandler(
 			(e: PointerEvent | MouseEvent | TouchEvent) => {
@@ -60,10 +59,29 @@ export const useInteractOutside = ((node, config = {}) => {
 		// Use pointer events if available, otherwise use mouse/touch events
 		if (typeof PointerEvent !== 'undefined') {
 			const onPointerUp = createHighestLayerEventHandler((e: PointerEvent) => {
-				if (shouldTriggerInteractOutside(e)) {
-					triggerInteractOutside(e);
+				unsubClick();
+
+				const handler = (e: InteractOutsideEvent) => {
+					if (shouldTriggerInteractOutside(e)) {
+						triggerInteractOutside(e);
+					}
+					resetPointerState();
+				};
+
+				/**
+				 * On touch devices, we need to wait for a click event because browsers implement
+				 * a delay between the time the user stops touching the display and when the
+				 * browser executes the click event. Without waiting for the click event, the
+				 * browser may execute events on other elements that should have been prevented.
+				 */
+				if (e.pointerType === 'touch') {
+					unsubClick = addEventListener(documentObj, 'click', handler, {
+						capture: true,
+						once: true,
+					});
+					return;
 				}
-				resetPointerState();
+				handler(e);
 			});
 
 			unsubEvents = executeCallbacks(
@@ -115,6 +133,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		update,
 		destroy() {
 			unsubEvents();
+			unsubClick();
 			layers.delete(node);
 		},
 	};
