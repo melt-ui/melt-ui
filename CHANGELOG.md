@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.76.2
+
+### Patch Changes
+
+- Fixed a bug on touch devices where an outside interaction leaked click events to other dom elements (closes #1115) ([#1118](https://github.com/melt-ui/melt-ui/pull/1118))
+
 ## 0.76.1
 
 ### Patch Changes
