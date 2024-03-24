@@ -9,6 +9,7 @@ import type { Action } from 'svelte/action';
 
 export const useInteractOutside = ((node, config) => {
 	let unsub = noop;
+	let unsubClick = noop;
 
 	let isPointerDown = false;
 	let isPointerDownInside = false;
@@ -16,6 +17,7 @@ export const useInteractOutside = ((node, config) => {
 
 	function update(config: InteractOutsideConfig) {
 		unsub();
+		unsubClick();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 
 		if (!enabled) return;
@@ -42,10 +44,29 @@ export const useInteractOutside = ((node, config) => {
 		// Use pointer events if available, otherwise use mouse/touch events
 		if (typeof PointerEvent !== 'undefined') {
 			const onPointerUp = (e: PointerEvent) => {
-				if (shouldTriggerInteractOutside(e)) {
-					triggerInteractOutside(e);
+				unsubClick();
+
+				const handler = (e: InteractOutsideEvent) => {
+					if (shouldTriggerInteractOutside(e)) {
+						triggerInteractOutside(e);
+					}
+					resetPointerState();
+				};
+
+				/**
+				 * On touch devices, we need to wait for a click event because browsers implement
+				 * a delay between the time the user stops touching the display and when the
+				 * browser executes the click event. Without waiting for the click event, the
+				 * browser may execute events on other elements that should have been prevented.
+				 */
+				if (e.pointerType === 'touch') {
+					unsubClick = addEventListener(documentObj, 'click', handler, {
+						capture: true,
+						once: true,
+					});
+					return;
 				}
-				resetPointerState();
+				handler(e);
 			};
 
 			unsub = executeCallbacks(
@@ -95,7 +116,10 @@ export const useInteractOutside = ((node, config) => {
 
 	return {
 		update,
-		destroy: unsub,
+		destroy() {
+			unsub();
+			unsubClick();
+		},
 	};
 }) satisfies Action<HTMLElement, InteractOutsideConfig>;
 
