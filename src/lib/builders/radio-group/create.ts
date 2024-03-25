@@ -5,8 +5,6 @@ import {
 	disabledAttr,
 	effect,
 	executeCallbacks,
-	getDirectionalKeys,
-	getElemDirection,
 	isHTMLElement,
 	kbd,
 	makeElement,
@@ -133,12 +131,13 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					);
 					const currentIndex = items.indexOf(el);
 
-					const dir = getElemDirection(root);
-					const { nextKey, prevKey } = getDirectionalKeys(dir, orientation.get());
+					const nextKeys = [kbd.ARROW_RIGHT, kbd.ARROW_DOWN];
+					const prevKeys = [kbd.ARROW_LEFT, kbd.ARROW_UP];
+
 					const $loop = loop.get();
 
 					let itemToFocus: HTMLElement | null = null;
-					if (e.key === nextKey) {
+					if (nextKeys.includes(e.key)) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
 						if (nextIndex >= items.length && $loop) {
@@ -146,7 +145,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 						} else {
 							itemToFocus = items[nextIndex];
 						}
-					} else if (e.key === prevKey) {
+					} else if (prevKeys.includes(e.key)) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
 						if (prevIndex < 0 && $loop) {
