@@ -12,7 +12,7 @@ async function nav(page: Page) {
 	await jsAvailable(page);
 }
 
-test.describe.configure({ mode: 'parallel', retries: 0 });
+test.describe.configure({ mode: 'parallel' });
 
 test.describe('dialog', () => {
 	test.beforeEach(async ({ page }) => {
