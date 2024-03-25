@@ -21,15 +21,9 @@ test.describe('dialog', () => {
 
 	test.describe('touch device', () => {
 		test("doesn't leak events when tapping overlay", async ({ page }) => {
-			const getViewCodeButton = async () => {
-				const viewCodeLabel = page.getByText('View code').first();
-				const viewCodeButtonId = await viewCodeLabel.getAttribute('for');
-				return page.locator(`[id="${viewCodeButtonId}"]`).first();
-			};
-
 			const trigger = page.locator(locators.trigger).first();
 			const content = page.locator(locators.content).first();
-			const viewCodeButton = await getViewCodeButton();
+			const viewCodeButton = page.getByLabel('View code').first();
 
 			await trigger.click();
 			await expect(content).toBeVisible();
@@ -37,11 +31,11 @@ test.describe('dialog', () => {
 			const [centerX, centerY] = await getElementCenterPosition(viewCodeButton);
 
 			// Make sure "View Code" Button is not under the dialog, but under the overlay.
-			const isViewCodeButtonUnderDialog = await isPositionInsideElement(content, centerX, centerY);
-			expect(isViewCodeButtonUnderDialog).toBe(false);
+			const isButtonUnderneathContent = await isPositionInsideElement(content, centerX, centerY);
+			expect(isButtonUnderneathContent).toBe(false);
 
 			// Tap the overlay at the position of the "View code" button
-			await page.touchscreen.tap(centerX, centerY);
+			await page.tap(locators.overlay, { position: { x: centerX, y: centerY } });
 
 			await expect(content).not.toBeVisible();
 
