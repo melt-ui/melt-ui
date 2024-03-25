@@ -47,3 +47,14 @@ jobs:
           run_install: true
       - run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} && pnpm run test
       
+  Playwright-Tests:
+    name: Playwright Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.3
+          run_install: true
+      - run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} && pnpm run pw
+      
