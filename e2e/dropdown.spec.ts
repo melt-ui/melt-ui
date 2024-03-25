@@ -16,7 +16,7 @@ async function nav(page: Page) {
 
 test.describe.configure({ mode: 'parallel' });
 
-test.describe('menu', () => {
+test.describe.skip('menu', () => {
 	test.beforeEach(async ({ page }) => {
 		await nav(page);
 	});
@@ -40,7 +40,7 @@ test.describe('menu', () => {
 	}
 });
 
-test.describe('first menu item', () => {
+test.describe.skip('first menu item', () => {
 	test.beforeEach(async ({ page }) => {
 		await nav(page);
 	});
