@@ -34,6 +34,7 @@ const defaults = {
 	orientation: 'horizontal',
 	dir: 'ltr',
 	disabled: false,
+	enableSwap: false
 } satisfies CreateSliderProps;
 
 const { name } = createElHelpers('slider');
@@ -42,7 +43,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
-	const { min, max, step, orientation, dir, disabled } = options;
+	const { min, max, step, orientation, dir, disabled, enableSwap } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -61,6 +62,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const newValue = [...prev];
 
 			const direction = newValue[index] > val ? -1 : +1;
+
 			function swap() {
 				newValue[index] = newValue[index + direction];
 				newValue[index + direction] = val;
@@ -70,13 +72,14 @@ export const createSlider = (props?: CreateSliderProps) => {
 					activeThumb.set({ thumb: thumbs[index + direction], index: index + direction });
 				}
 			}
-			if (direction === -1 && val < newValue[index - 1]) {
-				swap();
-				return newValue;
-			} else if (direction === 1 && val > newValue[index + 1]) {
+
+			if (enableSwap.get() && 
+				((direction === -1 && val < newValue[index - 1]) || 
+				 (direction === 1 && val > newValue[index + 1]))) {
 				swap();
 				return newValue;
 			}
+			
 			const $min = min.get();
 			const $max = max.get();
 			const $step = step.get();
