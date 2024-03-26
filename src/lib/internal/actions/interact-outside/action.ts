@@ -34,6 +34,12 @@ export const useInteractOutside = ((node, config) => {
 		click: false,
 	};
 
+	const resetInterceptedEvents = () => {
+		for (const eventType in interceptedEvents) {
+			interceptedEvents[eventType as InteractOutsideInterceptEventType] = false;
+		}
+	};
+
 	const isAnyEventIntercepted = () => {
 		for (const isIntercepted of Object.values(interceptedEvents)) {
 			if (isIntercepted) return true;
@@ -92,15 +98,12 @@ export const useInteractOutside = ((node, config) => {
 		unsubPointerDown();
 		unsubPointerUp();
 		unsubResetInterceptedEvents();
+		resetInterceptedEvents();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 		if (!enabled) return;
 
-		const resetInterceptedEvents = debounce(() => {
-			for (const eventType in interceptedEvents) {
-				interceptedEvents[eventType as InteractOutsideInterceptEventType] = false;
-			}
-		}, 10);
-		unsubResetInterceptedEvents = resetInterceptedEvents.destroy;
+		const resetInterceptedEventsDebounced = debounce(resetInterceptedEvents, 10);
+		unsubResetInterceptedEvents = resetInterceptedEventsDebounced.destroy;
 
 		/**
 		 * We debounce onPointerDown to allow other events to be marked
@@ -139,10 +142,10 @@ export const useInteractOutside = ((node, config) => {
 			 * to allow the user to intercept the beginning of an interaction
 			 * while still intercepting the entire interaction.
 			 */
-			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerup', resetInterceptedEvents),
-			setupCapturePhaseHandlerAndMarkAsIntercepted('mouseup', resetInterceptedEvents),
-			setupCapturePhaseHandlerAndMarkAsIntercepted('touchend', resetInterceptedEvents),
-			setupCapturePhaseHandlerAndMarkAsIntercepted('click', resetInterceptedEvents),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerup', resetInterceptedEventsDebounced),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('mouseup', resetInterceptedEventsDebounced),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('touchend', resetInterceptedEventsDebounced),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('click', resetInterceptedEventsDebounced),
 			/** Bubbling Events For Interaction Start */
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerdown', onPointerDown),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mousedown', onPointerDown),
