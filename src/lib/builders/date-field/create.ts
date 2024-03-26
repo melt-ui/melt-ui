@@ -274,7 +274,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				id: $labelId,
 				'data-invalid': $isInvalid ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
@@ -307,7 +307,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				id: $validationId,
 				'data-invalid': $isInvalid ? '' : undefined,
 				style: $isInvalid ? undefined : validStyle,
-			};
+			} as const;
 		},
 	});
 
@@ -346,11 +346,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 				id: $ids.field,
 				'aria-labelledby': $ids.label,
 				'aria-describedby': describedBy,
-				'aria-disabled': $disabled ? ('true' as const) : undefined,
-				'aria-readonly': $readonly ? ('true' as const) : undefined,
+				'aria-disabled': $disabled ? 'true' : undefined,
+				'aria-readonly': $readonly ? 'true' : undefined,
 				'data-invalid': $isInvalid ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
-			};
+			} as const;
 		},
 		// even if we don't need the element we need to specify it
 		// or TS will complain when svelte tries to pass it
@@ -443,9 +443,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 				const inReadonlySegments = $readonlySegmentsSet.has(part);
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
-					'aria-invalid': $isInvalid ? ('true' as const) : undefined,
-					'aria-disabled': $disabled ? ('true' as const) : undefined,
-					'aria-readonly': $readonly || inReadonlySegments ? ('true' as const) : undefined,
+					'aria-invalid': $isInvalid ? 'true' : undefined,
+					'aria-disabled': $disabled ? 'true' : undefined,
+					'aria-readonly': $readonly || inReadonlySegments ? 'true' : undefined,
 					'data-invalid': $isInvalid ? '' : undefined,
 					'data-disabled': $disabled ? '' : undefined,
 					'data-segment': `${part}`,
@@ -466,7 +466,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					contenteditable: $readonly || inReadonlySegments || $disabled ? false : true,
 					'aria-describedby': describedBy,
 					tabindex: $disabled ? undefined : 0,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<DateFieldEvents['segment']> =>

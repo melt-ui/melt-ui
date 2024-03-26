@@ -539,7 +539,7 @@ export function createListbox<
 			return {
 				id: $labelId,
 				for: $triggerId,
-			};
+			} as const;
 		},
 		action: labelAction,
 	});
@@ -597,18 +597,20 @@ export function createListbox<
 
 	const group = makeElement(name('group'), {
 		returned: () => {
-			return (groupId: string) => ({
-				role: 'group',
-				'aria-labelledby': groupId,
-			});
+			return (groupId: string) =>
+				({
+					role: 'group',
+					'aria-labelledby': groupId,
+				} as const);
 		},
 	});
 
 	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
-			return (groupId: string) => ({
-				id: groupId,
-			});
+			return (groupId: string) =>
+				({
+					id: groupId,
+				} as const);
 		},
 	});
 
@@ -624,14 +626,15 @@ export function createListbox<
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	/* ------------------- */
