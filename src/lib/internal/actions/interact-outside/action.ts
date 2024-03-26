@@ -149,9 +149,7 @@ export const useInteractOutside = ((node, config) => {
 			/** Bubbling Events For Interaction Start */
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerdown', onPointerDown),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mousedown', onPointerDown),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchstart', onPointerDown, {
-				passive: false,
-			}),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchstart', onPointerDown),
 			/**
 			 * Bubbling Events For Interaction End
 			 * We must listen to all interaction end events vs. only `click` events
