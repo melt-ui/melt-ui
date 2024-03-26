@@ -128,9 +128,9 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 					role: 'alert',
 					'aria-describedby': toast.ids.description,
 					'aria-labelledby': toast.ids.title,
-					'aria-live': toast.type === 'foreground' ? ('assertive' as const) : ('polite' as const),
+					'aria-live': toast.type === 'foreground' ? 'assertive' : 'polite',
 					tabindex: -1,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<ToastEvents['content']> => {
@@ -188,7 +188,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				if (!toast) return null;
 				return {
 					id: toast.ids.title,
-				};
+				} as const;
 			};
 		},
 	});
@@ -202,17 +202,18 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 
 				return {
 					id: toast.ids.description,
-				};
+				} as const;
 			};
 		},
 	});
 
 	const close = makeElement(name('close'), {
 		returned: () => {
-			return (id: string) => ({
-				type: 'button' as const,
-				'data-id': id,
-			});
+			return (id: string) =>
+				({
+					type: 'button',
+					'data-id': id,
+				} as const);
 		},
 		action: (node: HTMLElement): MeltActionReturn<ToastEvents['close']> => {
 			function handleClose() {
