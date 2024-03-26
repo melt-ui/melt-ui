@@ -25,11 +25,11 @@ export function exists(get: (id: string) => HTMLElement, testId: string) {
  * same event sequence as in the browser.
  */
 export async function touch(node: HTMLElement) {
-	await fireEvent(node, new Event('pointerdown'));
-	await fireEvent(node, new TouchEvent('touchstart'));
-	await fireEvent(node, new Event('pointerup'));
-	await fireEvent(node, new TouchEvent('touchend'));
-	await fireEvent(node, new MouseEvent('mousedown'));
-	await fireEvent(node, new MouseEvent('mouseup'));
-	await fireEvent(node, new MouseEvent('click'));
+	await fireEvent(node, new Event('pointerdown', { bubbles: true }));
+	await fireEvent(node, new TouchEvent('touchstart', { bubbles: true }));
+	await fireEvent(node, new Event('pointerup', { bubbles: true }));
+	await fireEvent(node, new TouchEvent('touchend', { bubbles: true }));
+	await fireEvent(node, new MouseEvent('mousedown', { bubbles: true }));
+	await fireEvent(node, new MouseEvent('mouseup', { bubbles: true }));
+	await fireEvent(node, new MouseEvent('click', { bubbles: true }));
 }
