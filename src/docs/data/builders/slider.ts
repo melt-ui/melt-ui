@@ -42,8 +42,9 @@ const OPTION_PROPS = [
 	{
 		name: 'disableSwap',
 		type: 'boolean',
-		default: "false",
-		description: 'Whether to disable automatically sorting the values array when using multiple thumbs.'
+		default: 'false',
+		description:
+			'Whether to disable automatically sorting the values array when using multiple thumbs.',
 	},
 	PROPS.DISABLED,
 ];

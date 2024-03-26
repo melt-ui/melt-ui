@@ -74,7 +74,7 @@ export type CreateSliderProps = {
 
 	/**
 	 * When `true`, disables automatically sorting the value array when moving thumbs past each other.
-	 * 
+	 *
 	 * @default false
 	 */
 	disableSwap?: boolean;

@@ -34,7 +34,7 @@ const defaults = {
 	orientation: 'horizontal',
 	dir: 'ltr',
 	disabled: false,
-	disableSwap: false
+	disableSwap: false,
 } satisfies CreateSliderProps;
 
 const { name } = createElHelpers('slider');
@@ -73,13 +73,15 @@ export const createSlider = (props?: CreateSliderProps) => {
 				}
 			}
 
-			if (!disableSwap.get() && 
-				((direction === -1 && val < newValue[index - 1]) || 
-				 (direction === 1 && val > newValue[index + 1]))) {
+			if (
+				!disableSwap.get() &&
+				((direction === -1 && val < newValue[index - 1]) ||
+					(direction === 1 && val > newValue[index + 1]))
+			) {
 				swap();
 				return newValue;
 			}
-			
+
 			const $min = min.get();
 			const $max = max.get();
 			const $step = step.get();
