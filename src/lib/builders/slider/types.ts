@@ -73,11 +73,11 @@ export type CreateSliderProps = {
 	disabled?: boolean;
 
 	/**
-	 * When `true`, automatically sorts the value array when moving thumbs past each other.
+	 * When `true`, disables automatically sorting the value array when moving thumbs past each other.
 	 * 
 	 * @default false
 	 */
-	enableSwap?: boolean;
+	disableSwap?: boolean;
 };
 
 export type Slider = BuilderReturn<typeof createSlider>;

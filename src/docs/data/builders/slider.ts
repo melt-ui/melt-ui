@@ -40,10 +40,10 @@ const OPTION_PROPS = [
 		description: 'The direction of the slider.',
 	},
 	{
-		name: 'enableSwap',
+		name: 'disableSwap',
 		type: 'boolean',
 		default: "false",
-		description: 'Whether to automatically sort the value array when using multiple thumbs.'
+		description: 'Whether to disable automatically sorting the values array when using multiple thumbs.'
 	},
 	PROPS.DISABLED,
 ];

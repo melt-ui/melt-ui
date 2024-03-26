@@ -34,7 +34,7 @@ const defaults = {
 	orientation: 'horizontal',
 	dir: 'ltr',
 	disabled: false,
-	enableSwap: false
+	disableSwap: false
 } satisfies CreateSliderProps;
 
 const { name } = createElHelpers('slider');
@@ -43,7 +43,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
-	const { min, max, step, orientation, dir, disabled, enableSwap } = options;
+	const { min, max, step, orientation, dir, disabled, disableSwap } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -73,7 +73,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				}
 			}
 
-			if (enableSwap.get() && 
+			if (!disableSwap.get() && 
 				((direction === -1 && val < newValue[index - 1]) || 
 				 (direction === 1 && val > newValue[index + 1]))) {
 				swap();

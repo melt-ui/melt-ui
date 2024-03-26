@@ -8,11 +8,11 @@
 
 <div class="flex flex-col gap-8">
 	<div class="flex flex-col gap-4 text-center">
-		<code>enableSwap: false; value: {$value1}</code>
-		<Slider value={value1} />
+		<code>disableSwap: true; value: {$value1}</code>
+		<Slider value={value1} disableSwap={true} />
 	</div>
 	<div class="flex flex-col gap-4 text-center">
-		<code>enableSwap: true; value: {$value2}</code>
-		<Slider value={value2} enableSwap={true} />
+		<code>disableSwap: false; value: {$value2}</code>
+		<Slider value={value2} />
 	</div>
 </div>
