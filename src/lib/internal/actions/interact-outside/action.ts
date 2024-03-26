@@ -152,7 +152,12 @@ export const useInteractOutside = ((node, config) => {
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchstart', onPointerDown, {
 				passive: false,
 			}),
-			/** Bubbling Events For Interaction End */
+			/**
+			 * Bubbling Events For Interaction End
+			 * We must listen to all interaction end events vs. only `click` events
+			 * because on a touch device, if you press on the screen, move your finger
+			 * and lift it, the `click` event won't trigger but we should still call `onPointerUp`.
+			 */
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerup', onPointerUp),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mouseup', onPointerUp),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchend', onPointerUp),
