@@ -102,7 +102,7 @@ export const useInteractOutside = ((node, config) => {
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 		if (!enabled) return;
 
-		const resetInterceptedEventsDebounced = debounce(resetInterceptedEvents, 10);
+		const resetInterceptedEventsDebounced = debounce(resetInterceptedEvents, 20);
 		unsubResetInterceptedEvents = resetInterceptedEventsDebounced.destroy;
 
 		/**
