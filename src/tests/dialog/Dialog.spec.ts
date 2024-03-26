@@ -282,8 +282,8 @@ describe('Dialog', () => {
 		expect(content).toBeVisible();
 		await sleep(100);
 		expect(overlay).toBeVisible();
-		await user.pointer({ target: content, offset: 2, keys: '[MouseLeft>]' });
-		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
+		await user.pointer({ target: content, keys: '[MouseLeft>]' });
+		await user.pointer({ target: overlay, keys: '[/MouseLeft]' });
 		expect(content).toBeVisible();
 	});
 
@@ -297,8 +297,8 @@ describe('Dialog', () => {
 		expect(content).toBeVisible();
 		await sleep(100);
 		expect(overlay).toBeVisible();
-		await user.pointer({ target: overlay, offset: 2, keys: '[MouseLeft>]' });
-		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
+		await user.pointer({ target: overlay, keys: '[MouseLeft>]' });
+		await user.pointer({ target: overlay, keys: '[/MouseLeft]' });
 		expect(content).not.toBeVisible();
 	});
 
