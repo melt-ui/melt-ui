@@ -159,7 +159,7 @@ export const useInteractOutside = ((node, config) => {
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerup', onPointerUp),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mouseup', onPointerUp),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchend', onPointerUp),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('click')
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('click', onPointerUp)
 		);
 	}
 
