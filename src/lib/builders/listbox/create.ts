@@ -38,7 +38,6 @@ import {
 	toggle,
 	withGet,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { tick } from 'svelte';
@@ -208,12 +207,6 @@ export function createListbox<
 	async function openMenu() {
 		open.set(true);
 
-		const triggerEl = document.getElementById(ids.trigger.get());
-		if (!triggerEl) return;
-
-		// The active trigger is used to anchor the menu to the input element.
-		if (triggerEl !== activeTrigger.get()) activeTrigger.set(triggerEl);
-
 		// Wait a tick for the menu to open then highlight the selected item.
 		await tick();
 
@@ -290,6 +283,7 @@ export function createListbox<
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['trigger']> => {
+			activeTrigger.set(node);
 			const isInput = isHTMLInputElement(node);
 
 			const unsubscribe = executeCallbacks(
@@ -451,6 +445,7 @@ export function createListbox<
 
 			return {
 				destroy() {
+					activeTrigger.set(null);
 					unsubscribe();
 					unsubEscapeKeydown();
 				},
@@ -641,20 +636,6 @@ export function createListbox<
 	/* LIFECYCLE & EFFECTS */
 	/* ------------------- */
 
-	safeOnMount(() => {
-		if (!isBrowser) return;
-		const menuEl = document.getElementById(ids.menu.get());
-
-		const triggerEl = document.getElementById(ids.trigger.get());
-		if (triggerEl) {
-			activeTrigger.set(triggerEl);
-		}
-
-		if (!menuEl) return;
-		const selectedEl = menuEl.querySelector('[data-selected]');
-		if (!isHTMLElement(selectedEl)) return;
-	});
-
 	/**
 	 * Handles moving the `data-highlighted` attribute between items when
 	 * the user moves their pointer or navigates with their keyboard.
@@ -672,18 +653,9 @@ export function createListbox<
 		});
 	});
 
-	effect([open], ([$open]) => {
-		if (!isBrowser) return;
-
-		let unsubScroll = noop;
-
-		if (preventScroll.get() && $open) {
-			unsubScroll = removeScroll();
-		}
-
-		return () => {
-			unsubScroll();
-		};
+	effect([open, preventScroll], ([$open, $preventScroll]) => {
+		if (!isBrowser || !$open || !$preventScroll) return;
+		return removeScroll();
 	});
 
 	return {
