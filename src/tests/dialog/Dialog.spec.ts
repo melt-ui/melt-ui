@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/svelte';
+import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
@@ -417,7 +417,7 @@ describe('Dialog', () => {
 			await sleep(100);
 			await touch(clickInterceptor);
 			expect(content).toBeVisible();
-			await sleep(10);
+			await sleep(20);
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
@@ -432,7 +432,7 @@ describe('Dialog', () => {
 			await sleep(100);
 			await touch(getByTestId('pointerdown-interceptor'));
 			expect(content).toBeVisible();
-			await sleep(10);
+			await sleep(20);
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
@@ -447,7 +447,7 @@ describe('Dialog', () => {
 			await sleep(100);
 			await touch(getByTestId('pointerup-interceptor'));
 			expect(content).toBeVisible();
-			await sleep(10);
+			await sleep(20);
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
@@ -462,7 +462,7 @@ describe('Dialog', () => {
 			await sleep(100);
 			await touch(getByTestId('mousedown-interceptor'));
 			expect(content).toBeVisible();
-			await sleep(10);
+			await sleep(20);
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
@@ -477,7 +477,7 @@ describe('Dialog', () => {
 			await sleep(100);
 			await touch(getByTestId('mouseup-interceptor'));
 			expect(content).toBeVisible();
-			await sleep(10);
+			await sleep(20);
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
@@ -493,7 +493,7 @@ describe('Dialog', () => {
 			await sleep(100);
 			await touch(touchstartInterceptor);
 			expect(content).toBeVisible();
-			await sleep(10);
+			await sleep(20);
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
@@ -509,7 +509,7 @@ describe('Dialog', () => {
 			await sleep(100);
 			await touch(touchendInterceptor);
 			expect(content).toBeVisible();
-			await sleep(10);
+			await sleep(20);
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
