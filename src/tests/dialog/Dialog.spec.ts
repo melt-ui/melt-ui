@@ -513,5 +513,23 @@ describe('Dialog', () => {
 			await user.click(overlay);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
+
+		it('Closes on touchend if the previous touchstart occurred outside the dialog', async () => {
+			const { getByTestId, user, trigger } = setup();
+			const overlay = getByTestId('overlay');
+			const content = getByTestId('content');
+
+			expect(content).not.toBeVisible();
+			await user.click(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			expect(overlay).toBeVisible();
+			await fireEvent(overlay, new TouchEvent('pointerdown', { bubbles: true }));
+			await fireEvent(overlay, new TouchEvent('touchstart', { bubbles: true }));
+			await fireEvent(overlay, new TouchEvent('pointerup', { bubbles: true }));
+			await fireEvent(overlay, new TouchEvent('touchend', { bubbles: true }));
+			await sleep(20);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 	});
 });
