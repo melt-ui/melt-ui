@@ -9,20 +9,17 @@ import type { Action } from 'svelte/action';
 
 export const useInteractOutside = ((node, config) => {
 	let unsub = noop;
-	let unsubClick = noop;
 
 	let isPointerDown = false;
 	let isPointerDownInside = false;
-	let ignoreEmulatedMouseEvents = false;
 
 	function update(config: InteractOutsideConfig) {
 		unsub();
-		unsubClick();
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 
 		if (!enabled) return;
 
-		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
+		function onPointerDown(e: InteractOutsideEvent) {
 			if (onInteractOutside && isValidEvent(e, node)) {
 				onInteractOutsideStart?.(e);
 			}
@@ -35,69 +32,21 @@ export const useInteractOutside = ((node, config) => {
 			isPointerDown = true;
 		}
 
-		function triggerInteractOutside(e: InteractOutsideEvent) {
-			onInteractOutside?.(e);
-		}
+		const onPointerUp = (e: MouseEvent) => {
+			if (shouldTriggerInteractOutside(e)) {
+				onInteractOutside?.(e);
+			}
+			resetPointerState();
+		};
 
 		const documentObj = getOwnerDocument(node);
 
-		// Use pointer events if available, otherwise use mouse/touch events
-		if (typeof PointerEvent !== 'undefined') {
-			const onPointerUp = (e: PointerEvent) => {
-				unsubClick();
-
-				const handler = (e: InteractOutsideEvent) => {
-					if (shouldTriggerInteractOutside(e)) {
-						triggerInteractOutside(e);
-					}
-					resetPointerState();
-				};
-
-				/**
-				 * On touch devices, we need to wait for a click event because browsers implement
-				 * a delay between the time the user stops touching the display and when the
-				 * browser executes the click event. Without waiting for the click event, the
-				 * browser may execute events on other elements that should have been prevented.
-				 */
-				if (e.pointerType === 'touch') {
-					unsubClick = addEventListener(documentObj, 'click', handler, {
-						capture: true,
-						once: true,
-					});
-					return;
-				}
-				handler(e);
-			};
-
-			unsub = executeCallbacks(
-				addEventListener(documentObj, 'pointerdown', onPointerDown, true),
-				addEventListener(documentObj, 'pointerup', onPointerUp, true)
-			);
-		} else {
-			const onMouseUp = (e: MouseEvent) => {
-				if (ignoreEmulatedMouseEvents) {
-					ignoreEmulatedMouseEvents = false;
-				} else if (shouldTriggerInteractOutside(e)) {
-					triggerInteractOutside(e);
-				}
-				resetPointerState();
-			};
-
-			const onTouchEnd = (e: TouchEvent) => {
-				ignoreEmulatedMouseEvents = true;
-				if (shouldTriggerInteractOutside(e)) {
-					triggerInteractOutside(e);
-				}
-				resetPointerState();
-			};
-
-			unsub = executeCallbacks(
-				addEventListener(documentObj, 'mousedown', onPointerDown, true),
-				addEventListener(documentObj, 'mouseup', onMouseUp, true),
-				addEventListener(documentObj, 'touchstart', onPointerDown, true),
-				addEventListener(documentObj, 'touchend', onTouchEnd, true)
-			);
-		}
+		unsub = executeCallbacks(
+			addEventListener(documentObj, 'pointerdown', onPointerDown, true),
+			addEventListener(documentObj, 'mousedown', onPointerDown, true),
+			addEventListener(documentObj, 'touchstart', onPointerDown, true),
+			addEventListener(documentObj, 'click', onPointerUp, true)
+		);
 	}
 
 	function shouldTriggerInteractOutside(e: InteractOutsideEvent) {
@@ -118,7 +67,6 @@ export const useInteractOutside = ((node, config) => {
 		update,
 		destroy() {
 			unsub();
-			unsubClick();
 		},
 	};
 }) satisfies Action<HTMLElement, InteractOutsideConfig>;
