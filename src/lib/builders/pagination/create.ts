@@ -46,9 +46,10 @@ export function createPagination(props: CreatePaginationProps) {
 	});
 
 	const root = makeElement(name(), {
-		returned: () => ({
-			'data-scope': 'pagination',
-		}),
+		returned: () =>
+			({
+				'data-scope': 'pagination',
+			} as const),
 	});
 
 	const pages = derived([page, totalPages, siblingCount], ([$page, $totalPages, $siblingCount]) => {
@@ -99,7 +100,7 @@ export function createPagination(props: CreatePaginationProps) {
 					'aria-label': `Page ${pageItem.value}`,
 					'data-value': pageItem.value,
 					'data-selected': pageItem.value === $page ? '' : undefined,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<PaginationEvents['pageTrigger']> => {

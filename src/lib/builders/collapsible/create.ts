@@ -32,10 +32,11 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 
 	const root = makeElement(name(), {
 		stores: [open, disabled],
-		returned: ([$open, $disabled]) => ({
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': disabledAttr($disabled),
-		}),
+		returned: ([$open, $disabled]) =>
+			({
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': disabledAttr($disabled),
+			} as const),
 	});
 
 	const trigger = makeElement(name('trigger'), {
@@ -72,7 +73,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 			hidden: $isVisible ? undefined : true,
 			style: styleToString({
 				display: $isVisible ? undefined : 'none',
-			}),
+			} as const),
 		}),
 	});
 
