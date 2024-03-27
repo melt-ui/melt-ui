@@ -61,10 +61,10 @@ You can add slider ticks using the `ticks` state and the `tick` element returned
     <svelte:component this={previews.ticks} />
 </Preview>
 
-### Disable Index Swapping
+### Auto Sorting
 
 By default, the `value` array is always automatically sorted. You can disable this behavior by
-setting `disableSwap` to `true`, which will keep values in their original spot when thumbs are moved
+setting `autoSort` to `false`, which will keep values in their original spot when thumbs are moved
 past each other.
 
 <Preview code={snippets.multiple}>

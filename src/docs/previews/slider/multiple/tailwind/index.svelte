@@ -8,11 +8,11 @@
 
 <div class="flex flex-col gap-8">
 	<div class="flex flex-col gap-4 text-center">
-		<code>disableSwap: true; value: {$value1}</code>
-		<Slider value={value1} disableSwap={true} />
+		<code>autoSort: false; value: [{$value1}]</code>
+		<Slider value={value1} autoSort={false} />
 	</div>
 	<div class="flex flex-col gap-4 text-center">
-		<code>disableSwap: false; value: {$value2}</code>
+		<code>autoSort: true; value: [{$value2}]</code>
 		<Slider value={value2} />
 	</div>
 </div>

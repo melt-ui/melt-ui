@@ -3,14 +3,14 @@
 	import type { Writable } from 'svelte/store';
 
 	export let value: Writable<number[]>;
-	export let disableSwap = false;
+	export let autoSort = true;
 
 	const {
 		elements: { root, range, thumbs },
 	} = createSlider({
 		value,
 		max: 100,
-		disableSwap,
+		autoSort,
 	});
 </script>
 
