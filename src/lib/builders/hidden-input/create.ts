@@ -29,7 +29,7 @@ export function createHiddenInput(props: CreateHiddenInputProps) {
 			return {
 				name: $name,
 				value: $value?.toString(),
-				'aria-hidden': 'true' as const,
+				'aria-hidden': 'true',
 				hidden: true,
 				disabled: $disabled,
 				required: $required,
@@ -41,7 +41,7 @@ export function createHiddenInput(props: CreateHiddenInputProps) {
 					margin: 0,
 					transform: 'translateX(-100%)',
 				}),
-			};
+			} as const;
 		},
 		action: (node: HTMLInputElement) => {
 			// When value changes, emit a change event
