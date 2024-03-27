@@ -37,7 +37,7 @@ export const createProgress = (props?: CreateProgressProps) => {
 				'data-value': $value,
 				'data-state': $value === null ? 'indeterminate' : $value === $max ? 'complete' : 'loading',
 				'data-max': $max,
-			};
+			} as const;
 		},
 	});
 

@@ -1,6 +1,11 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
-import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import {
+	builderSchema,
+	elementSchema,
+	floatingSideAndAlignDataAttrs,
+	floatingSideDataAttr,
+} from '$docs/utils/index.js';
 import { listboxIdParts } from '$lib/builders/listbox/create.js';
 import { selectEvents } from '$lib/builders/select/events.js';
 import type { BuilderData } from './index.js';
@@ -154,6 +159,7 @@ const trigger = elementSchema('trigger', {
 const menu = elementSchema('menu', {
 	description: 'The menu element',
 	dataAttributes: [
+		...floatingSideAndAlignDataAttrs,
 		{
 			name: 'data-melt-select-menu',
 			value: ATTRS.MELT('menu'),
@@ -216,6 +222,7 @@ const label = elementSchema('label', {
 const arrow = elementSchema('arrow', {
 	description: 'The optional arrow element',
 	dataAttributes: [
+		floatingSideDataAttr,
 		{
 			name: 'data-arrow',
 			value: ATTRS.TRUE,

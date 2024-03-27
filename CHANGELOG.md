@@ -1,5 +1,45 @@
 # @melt-ui/svelte
 
+## 0.76.2
+
+### Patch Changes
+
+- Fixed a bug on touch devices where an outside interaction leaked click events to other dom elements (closes #1115) ([#1118](https://github.com/melt-ui/melt-ui/pull/1118))
+
+## 0.76.1
+
+### Patch Changes
+
+- Fixed bug where focus trap deactivates in dialog and popover when clicking outside provided `closeOnOutsideClick: false` (closes #1084) ([#1094](https://github.com/melt-ui/melt-ui/pull/1094))
+
+- Combobox: menu no longer closes when composing (Closes: #1106) ([#1107](https://github.com/melt-ui/melt-ui/pull/1107))
+
+- Fixed bug where focus trap deactivates in dialog and popover when pressing escape provided `closeOnEscape: false` (closes #1091) ([#1095](https://github.com/melt-ui/melt-ui/pull/1095))
+
+- Fixed memory leak caused by race conditions for various components (closes #1086) ([#1087](https://github.com/melt-ui/melt-ui/pull/1087))
+
+- performance: avoid effect multiple runs ([#1089](https://github.com/melt-ui/melt-ui/pull/1089))
+
+- Listbox: correct `arrowSize` JSDoc defaultValue ([#1050](https://github.com/melt-ui/melt-ui/pull/1050))
+
+- Popover: fixed a bug that has the potential to introduce a memory leak via the overlay ([#1112](https://github.com/melt-ui/melt-ui/pull/1112))
+
+## 0.76.0
+
+### Minor Changes
+
+- fix: datepicker not syncing with calendar + add defaults from calendar to datepicker ([#1076](https://github.com/melt-ui/melt-ui/pull/1076))
+
+### Patch Changes
+
+- Fix incorrect arrow position for Tooltip, Popover, Listbox, Link Preview provided forceVisible: false (closes #1048) ([#1049](https://github.com/melt-ui/melt-ui/pull/1049))
+
+- fix: months not updating when changing options ([#1070](https://github.com/melt-ui/melt-ui/pull/1070))
+
+- Floating: `data-side` & `data-align` for floating content ([#1082](https://github.com/melt-ui/melt-ui/pull/1082))
+
+- fix: months not updating when changing options (range calendar) ([#1072](https://github.com/melt-ui/melt-ui/pull/1072))
+
 ## 0.75.3
 
 ### Patch Changes

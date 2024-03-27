@@ -169,12 +169,12 @@ export function createDialog(props?: CreateDialogProps) {
 				role: role.get(),
 				'aria-describedby': $descriptionId,
 				'aria-labelledby': $titleId,
-				'aria-modal': $isVisible ? ('true' as const) : undefined,
+				'aria-modal': $isVisible ? 'true' : undefined,
 				'data-state': $open ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
 				style: $isVisible ? undefined : styleToString({ display: 'none' }),
-			};
+			} as const;
 		},
 
 		action: (node: HTMLElement) => {
@@ -182,26 +182,30 @@ export function createDialog(props?: CreateDialogProps) {
 			let deactivate = noop;
 
 			const destroy = executeCallbacks(
-				effect([open], ([$open]) => {
-					if (!$open) return;
+				effect(
+					[open, closeOnOutsideClick, closeOnEscape],
+					([$open, $closeOnOutsideClick, $closeOnEscape]) => {
+						if (!$open) return;
 
-					const focusTrap = createFocusTrap({
-						immediate: false,
-						escapeDeactivates: true,
-						clickOutsideDeactivates: true,
-						returnFocusOnDeactivate: false,
-						fallbackFocus: node,
-					});
+						const focusTrap = createFocusTrap({
+							immediate: false,
+							escapeDeactivates: $closeOnEscape,
+							clickOutsideDeactivates: $closeOnOutsideClick,
+							allowOutsideClick: true,
+							returnFocusOnDeactivate: false,
+							fallbackFocus: node,
+						});
 
-					activate = focusTrap.activate;
-					deactivate = focusTrap.deactivate;
-					const ac = focusTrap.useFocusTrap(node);
-					if (ac && ac.destroy) {
-						return ac.destroy;
-					} else {
-						return focusTrap.deactivate;
+						activate = focusTrap.activate;
+						deactivate = focusTrap.deactivate;
+						const ac = focusTrap.useFocusTrap(node);
+						if (ac && ac.destroy) {
+							return ac.destroy;
+						} else {
+							return focusTrap.deactivate;
+						}
 					}
-				}),
+				),
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
 					return useModal(node, {
 						open: $open,
@@ -219,15 +223,7 @@ export function createDialog(props?: CreateDialogProps) {
 				effect([closeOnEscape], ([$closeOnEscape]) => {
 					if (!$closeOnEscape) return noop;
 
-					const escapeKeydown = useEscapeKeydown(node, {
-						handler: () => {
-							handleClose();
-						},
-					});
-					if (escapeKeydown && escapeKeydown.destroy) {
-						return escapeKeydown.destroy;
-					}
-					return noop;
+					return useEscapeKeydown(node, { handler: handleClose }).destroy;
 				}),
 
 				effect([isVisible], ([$isVisible]) => {
@@ -252,20 +248,16 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const portalled = makeElement(name('portalled'), {
 		stores: portal,
-		returned: ($portal) => ({
-			'data-portal': portalAttr($portal),
-		}),
+		returned: ($portal) =>
+			({
+				'data-portal': portalAttr($portal),
+			} as const),
 		action: (node: HTMLElement) => {
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {
@@ -278,16 +270,18 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const title = makeElement(name('title'), {
 		stores: [ids.title],
-		returned: ([$titleId]) => ({
-			id: $titleId,
-		}),
+		returned: ([$titleId]) =>
+			({
+				id: $titleId,
+			} as const),
 	});
 
 	const description = makeElement(name('description'), {
 		stores: [ids.description],
-		returned: ([$descriptionId]) => ({
-			id: $descriptionId,
-		}),
+		returned: ([$descriptionId]) =>
+			({
+				id: $descriptionId,
+			} as const),
 	});
 
 	const close = makeElement(name('close'), {

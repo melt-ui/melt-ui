@@ -20,7 +20,6 @@ import {
 	toWritableStores,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { writable, type Readable } from 'svelte/store';
@@ -116,15 +115,16 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		stores: [open, ids.trigger, ids.content],
 		returned: ([$open, $triggerId, $contentId]) => {
 			return {
-				role: 'button' as const,
-				'aria-haspopup': 'dialog' as const,
+				role: 'button',
+				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': $contentId,
 				id: $triggerId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['trigger']> => {
+			activeTrigger.set(node);
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
@@ -159,7 +159,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				id: $contentId,
 				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {
 			let unsub = noop;
@@ -186,7 +186,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 					if (!$isVisible || !$activeTrigger) return;
 
 					tick().then(() => {
-						const popper = usePopper(node, {
+						unsubPopper();
+						unsubPopper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open: open,
 							options: {
@@ -213,11 +214,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 								focusTrap: null,
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
-						});
-
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+						}).destroy;
 					});
 				}
 			);
@@ -261,14 +258,15 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	effect([containSelection], ([$containSelection]) => {
@@ -291,12 +289,6 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			contentElement.style.userSelect = originalContentUserSelect;
 			contentElement.style.webkitUserSelect = originalContentUserSelect;
 		};
-	});
-
-	safeOnMount(() => {
-		const triggerEl = document.getElementById(ids.trigger.get());
-		if (!triggerEl) return;
-		activeTrigger.set(triggerEl);
 	});
 
 	effect([open], ([$open]) => {

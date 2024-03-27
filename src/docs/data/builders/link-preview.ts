@@ -1,5 +1,5 @@
 import { ATTRS, PROPS } from '$docs/constants.js';
-import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { builderSchema, elementSchema, floatingSideAndAlignDataAttrs } from '$docs/utils/index.js';
 import { linkPreviewIdParts } from '$lib/index.js';
 import { linkPreviewEvents } from '$lib/builders/link-preview/events.js';
 import type { BuilderData } from './index.js';
@@ -77,6 +77,7 @@ const trigger = elementSchema('trigger', {
 const content = elementSchema('content', {
 	description: 'The content displayed in the linkpreview',
 	dataAttributes: [
+		...floatingSideAndAlignDataAttrs,
 		{
 			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,

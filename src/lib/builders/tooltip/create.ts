@@ -141,7 +141,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'aria-describedby': $contentId,
 				id: $triggerId,
 				'data-state': $open ? 'open' : 'closed',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
 			const keydownHandler = (e: KeyboardEvent) => {
@@ -203,7 +203,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				id: $contentId,
 				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
@@ -212,28 +212,17 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsubDerived = effect(
 				[isVisible, positioning, portal],
 				([$isVisible, $positioning, $portal]) => {
+					unsubPortal();
+					unsubFloating();
 					const triggerEl = getEl('trigger');
-					if (!$isVisible || !triggerEl) {
-						unsubPortal();
-						unsubFloating();
-						return;
-					}
+					if (!$isVisible || !triggerEl) return;
 
 					tick().then(() => {
-						if ($portal === null) {
-							unsubPortal();
-						} else {
-							const portalDest = getPortalDestination(node, $portal);
-							if (portalDest) {
-								const portalReturn = usePortal(node, portalDest);
-								if (portalReturn && portalReturn.destroy) {
-									unsubPortal = portalReturn.destroy;
-								}
-							}
-						}
-
-						const floatingReturn = useFloating(triggerEl, node, $positioning);
-						unsubFloating = floatingReturn.destroy;
+						unsubPortal();
+						unsubFloating();
+						const portalDest = getPortalDestination(node, $portal);
+						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
+						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
 					});
 				}
 			);
@@ -271,14 +260,15 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	let isMouseInTooltipArea = false;
