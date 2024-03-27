@@ -43,8 +43,7 @@ const OPTION_PROPS = [
 		name: 'autoSort',
 		type: 'boolean',
 		default: 'true',
-		description:
-			'Whether to automatically sort the values array when using multiple thumbs.',
+		description: 'Whether to automatically sort the values array when using multiple thumbs.',
 	},
 	PROPS.DISABLED,
 ];
