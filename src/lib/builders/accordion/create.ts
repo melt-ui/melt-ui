@@ -174,15 +174,14 @@ export const createAccordion = <Multiple extends boolean = false>(
 		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue } = parseItemProps(props);
-				const isVisible = isSelected(itemValue, $value) || $forceVisible;
+				const selected = isSelected(itemValue, $value);
+				const isVisible = selected || $forceVisible;
 				return {
-					'data-state': isVisible ? 'open' : 'closed',
+					'data-state': selected ? 'open' : 'closed',
 					'data-disabled': disabledAttr($disabled),
 					'data-value': itemValue,
 					hidden: isVisible ? undefined : true,
-					style: styleToString({
-						display: isVisible ? undefined : 'none',
-					}),
+					style: isVisible ? undefined : styleToString({ display: 'none' }),
 				} as const;
 			};
 		},

@@ -134,9 +134,7 @@ export function createDialog(props?: CreateDialogProps) {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				'aria-hidden': true,
 				'data-state': $open ? 'open' : 'closed',
 			} as const;
@@ -175,9 +173,7 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 			} as const;
 		},
 
