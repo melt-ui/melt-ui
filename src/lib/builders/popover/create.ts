@@ -103,7 +103,7 @@ export function createPopover(args?: CreatePopoverProps) {
 				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
@@ -252,14 +252,15 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const close = makeElement(name('close'), {

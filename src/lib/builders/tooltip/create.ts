@@ -146,7 +146,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'aria-describedby': $contentId,
 				id: $triggerId,
 				'data-state': $open ? 'open' : 'closed',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
 			const unsub = executeCallbacks(
@@ -195,7 +195,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				id: $contentId,
 				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
-			});
+			} as const);
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
@@ -279,14 +279,15 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	let isMouseInTooltipArea = false;

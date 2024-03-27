@@ -150,14 +150,14 @@ export function createDialog(props?: CreateDialogProps) {
 				role: role.get(),
 				'aria-describedby': $descriptionId,
 				'aria-labelledby': $titleId,
-				'aria-modal': $isVisible ? ('true' as const) : undefined,
+				'aria-modal': $isVisible ? 'true' : undefined,
 				'data-state': $open ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-			};
+			} as const;
 		},
 
 		action: (node: HTMLElement) => {
@@ -214,11 +214,13 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const portalled = makeElement(name('portalled'), {
 		stores: [portal, isVisible],
-		returned: ([$portal, $isVisible]) => ({
-			hidden: $isVisible ? undefined : true,
-			'data-portal': portalAttr($portal),
-			style: $isVisible ? undefined : styleToString({ display: 'none' }),
-		}),
+		returned: ([$portal, $isVisible]) =>
+			({
+				hidden: $isVisible ? undefined : true,
+				'data-portal': portalAttr($portal),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
+			} as const),
+
 		action: (node: HTMLElement) => {
 			let unsubPortal = noop;
 
@@ -241,16 +243,18 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const title = makeElement(name('title'), {
 		stores: [ids.title],
-		returned: ([$titleId]) => ({
-			id: $titleId,
-		}),
+		returned: ([$titleId]) =>
+			({
+				id: $titleId,
+			} as const),
 	});
 
 	const description = makeElement(name('description'), {
 		stores: [ids.description],
-		returned: ([$descriptionId]) => ({
-			id: $descriptionId,
-		}),
+		returned: ([$descriptionId]) =>
+			({
+				id: $descriptionId,
+			} as const),
 	});
 
 	const close = makeElement(name('close'), {

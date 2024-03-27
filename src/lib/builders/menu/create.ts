@@ -322,14 +322,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const rootArrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const overlay = makeElement(name('overlay'), {
@@ -365,7 +366,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				role: 'menuitem',
 				tabindex: -1,
 				'data-orientation': 'vertical',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
@@ -425,18 +426,20 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const group = makeElement(name('group'), {
 		returned: () => {
-			return (groupId: string) => ({
-				role: 'group',
-				'aria-labelledby': groupId,
-			});
+			return (groupId: string) =>
+				({
+					role: 'group',
+					'aria-labelledby': groupId,
+				} as const);
 		},
 	});
 
 	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
-			return (groupId: string) => ({
-				id: groupId,
-			});
+			return (groupId: string) =>
+				({
+					id: groupId,
+				} as const);
 		},
 	});
 
@@ -559,9 +562,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const value = overridable(valueWritable, args.onValueChange);
 
 		const radioGroup = makeElement(name('radio-group'), {
-			returned: () => ({
-				role: 'group',
-			}),
+			returned: () =>
+				({
+					role: 'group',
+				} as const),
 		});
 
 		const radioItemDefaults = {
@@ -584,7 +588,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
-					};
+					} as const;
 				};
 			},
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['radioItem']> => {
@@ -1045,14 +1049,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subArrow = makeElement(name('subarrow'), {
 			stores: arrowSize,
-			returned: ($arrowSize) => ({
-				'data-arrow': true,
-				style: styleToString({
-					position: 'absolute',
-					width: `var(--arrow-size, ${$arrowSize}px)`,
-					height: `var(--arrow-size, ${$arrowSize}px)`,
-				}),
-			}),
+			returned: ($arrowSize) =>
+				({
+					'data-arrow': true,
+					style: styleToString({
+						position: 'absolute',
+						width: `var(--arrow-size, ${$arrowSize}px)`,
+						height: `var(--arrow-size, ${$arrowSize}px)`,
+					}),
+				} as const),
 		});
 
 		/* -------------------------------------------------------------------------------------------------
