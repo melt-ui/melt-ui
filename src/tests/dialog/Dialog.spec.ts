@@ -532,6 +532,11 @@ describe('Dialog', () => {
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
 
+		/**
+		 * This makes sure we reset `interceptedEvents` not only after a click event.
+		 * On touch devices, actions like pressing, moving the finger, and lifting it off
+		 * the screen may not trigger a `click` event.
+		 */
 		it('Resets `interceptedEvents` when calling `preventDefault()` on touch event', async () => {
 			const { getByTestId, user, trigger } = setup();
 			const content = getByTestId('content');
