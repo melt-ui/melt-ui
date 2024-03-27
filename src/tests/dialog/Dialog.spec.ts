@@ -531,5 +531,29 @@ describe('Dialog', () => {
 			await sleep(20);
 			await waitFor(() => expect(content).not.toBeVisible());
 		});
+
+		it('Resets `interceptedEvents` when calling `preventDefault()` on touch event', async () => {
+			const { getByTestId, user, trigger } = setup();
+			const content = getByTestId('content');
+			const overlay = getByTestId('overlay');
+			const touchendPreventDefault = getByTestId('touchend-prevent-default-interceptor');
+
+			expect(content).not.toBeVisible();
+			await user.click(trigger);
+			expect(content).toBeVisible();
+			await sleep(100);
+			await fireEvent(touchendPreventDefault, new TouchEvent('touchstart', { bubbles: true }));
+			await fireEvent(touchendPreventDefault, new TouchEvent('touchend', { bubbles: true }));
+			await sleep(20);
+			expect(content).toBeVisible();
+
+			/**
+			 * Clicking the overlay and the dialog getting closed
+			 * will be possible only if we reset `interceptedEvents`
+			 * from the previous interaction.
+			 */
+			await user.click(overlay);
+			await waitFor(() => expect(content).not.toBeVisible());
+		});
 	});
 });

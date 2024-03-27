@@ -51,6 +51,12 @@
 <button on:touchend|stopPropagation data-testid="touchend-interceptor">
 	touchend interceptor
 </button>
+<button
+	on:touchend|preventDefault|stopPropagation
+	data-testid="touchend-prevent-default-interceptor"
+>
+	touchend prevent default interceptor
+</button>
 
 {#if $open}
 	<!-- Floating close -->
