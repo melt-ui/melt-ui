@@ -72,7 +72,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 		stores: [checked, name, value, required, disabled],
 		returned: ([$checked, $name, $value, $required, $disabled]) => {
 			return {
-				type: 'checkbox' as const,
+				type: 'checkbox',
 				'aria-hidden': true,
 				hidden: true,
 				tabindex: -1,

@@ -68,7 +68,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 			return {
 				id: $rootId,
 				'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
-			};
+			} as const;
 		},
 	});
 
@@ -98,7 +98,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 					disabled: disabledAttr($disabled),
 					type: $type,
 					value: currValue,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<PinInputEvents['input']> => {

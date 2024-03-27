@@ -74,7 +74,7 @@ export function createSwitch(props?: CreateSwitchProps) {
 		stores: [checked, nameStore, required, disabled, value],
 		returned: ([$checked, $name, $required, $disabled, $value]) => {
 			return {
-				type: 'checkbox' as const,
+				type: 'checkbox',
 				'aria-hidden': true,
 				hidden: true,
 				tabindex: -1,

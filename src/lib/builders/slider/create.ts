@@ -125,7 +125,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					: `touch-action: ${$orientation === 'horizontal' ? 'pan-y' : 'pan-x'}`,
 
 				'data-melt-id': meltIds.root,
-			};
+			} as const;
 		},
 	});
 
@@ -164,7 +164,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 			return {
 				style: styleToString(style),
-			};
+			} as const;
 		},
 	});
 
@@ -394,7 +394,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					'data-bounded': bounded ? true : undefined,
 					'data-value': tickValue,
 					style: styleToString(style),
-				};
+				} as const;
 			});
 		},
 	});

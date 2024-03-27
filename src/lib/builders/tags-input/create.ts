@@ -262,7 +262,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				'data-disabled': disabledAttr($disabled),
 				disabled: disabledAttr($disabled),
 				placeholder: $placeholder,
-			};
+			} as const;
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<TagsInputEvents['input']> => {
 			const getTagsInfo = (id: string) => {
@@ -497,7 +497,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 								margin: 0,
 						  })
 						: undefined,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLDivElement): MeltActionReturn<TagsInputEvents['tag']> => {
@@ -583,7 +583,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'data-disabled': disabledAttr(disabled),
 					disabled: disabledAttr(disabled),
 					tabindex: -1,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['deleteTrigger']> => {
@@ -638,7 +638,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 								margin: 0,
 						  })
 						: undefined,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['edit']> => {

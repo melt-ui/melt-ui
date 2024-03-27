@@ -154,17 +154,22 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	});
 
 	const rootMenu = makeElement(name(), {
-		stores: [isVisible, portal, rootIds.menu, rootIds.trigger],
-		returned: ([$isVisible, $portal, $rootMenuId, $rootTriggerId]) => {
+		stores: [isVisible, rootOpen, rootActiveTrigger, portal, rootIds.menu, rootIds.trigger],
+		returned: ([
+			$isVisible,
+			$rootOpen,
+			$rootActiveTrigger,
+			$portal,
+			$rootMenuId,
+			$rootTriggerId,
+		]) => {
 			return {
 				role: 'menu',
 				hidden: $isVisible ? undefined : true,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $rootMenuId,
 				'aria-labelledby': $rootTriggerId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $rootOpen && $rootActiveTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
 				tabindex: -1,
 			} as const;
@@ -323,14 +328,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const rootArrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const overlay = makeElement(name('overlay'), {
@@ -384,7 +390,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				role: 'menuitem',
 				tabindex: -1,
 				'data-orientation': 'vertical',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
@@ -444,18 +450,20 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const group = makeElement(name('group'), {
 		returned: () => {
-			return (groupId: string) => ({
-				role: 'group',
-				'aria-labelledby': groupId,
-			});
+			return (groupId: string) =>
+				({
+					role: 'group',
+					'aria-labelledby': groupId,
+				} as const);
 		},
 	});
 
 	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
-			return (groupId: string) => ({
-				id: groupId,
-			});
+			return (groupId: string) =>
+				({
+					id: groupId,
+				} as const);
 		},
 	});
 
@@ -578,9 +586,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const value = overridable(valueWritable, args.onValueChange);
 
 		const radioGroup = makeElement(name('radio-group'), {
-			returned: () => ({
-				role: 'group',
-			}),
+			returned: () =>
+				({
+					role: 'group',
+				} as const),
 		});
 
 		const radioItemDefaults = {
@@ -603,7 +612,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
-					};
+					} as const;
 				};
 			},
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['radioItem']> => {
@@ -756,17 +765,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		});
 
 		const subMenu = makeElement(name('submenu'), {
-			stores: [subIsVisible, subIds.menu, subIds.trigger],
-			returned: ([$subIsVisible, $subMenuId, $subTriggerId]) => {
+			stores: [subIsVisible, subOpen, subActiveTrigger, subIds.menu, subIds.trigger],
+			returned: ([$subIsVisible, $subOpen, $subActiveTrigger, $subMenuId, $subTriggerId]) => {
 				return {
 					role: 'menu',
 					hidden: $subIsVisible ? undefined : true,
-					style: styleToString({
-						display: $subIsVisible ? undefined : 'none',
-					}),
+					style: $subIsVisible ? undefined : styleToString({ display: 'none' }),
 					id: $subMenuId,
 					'aria-labelledby': $subTriggerId,
-					'data-state': $subIsVisible ? 'open' : 'closed',
+					'data-state': $subOpen && $subActiveTrigger ? 'open' : 'closed',
 					// unit tests fail on `.closest` if the id starts with a number
 					// so using a data attribute
 					'data-id': $subMenuId,
@@ -1064,14 +1071,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subArrow = makeElement(name('subarrow'), {
 			stores: arrowSize,
-			returned: ($arrowSize) => ({
-				'data-arrow': true,
-				style: styleToString({
-					position: 'absolute',
-					width: `var(--arrow-size, ${$arrowSize}px)`,
-					height: `var(--arrow-size, ${$arrowSize}px)`,
-				}),
-			}),
+			returned: ($arrowSize) =>
+				({
+					'data-arrow': true,
+					style: styleToString({
+						position: 'absolute',
+						width: `var(--arrow-size, ${$arrowSize}px)`,
+						height: `var(--arrow-size, ${$arrowSize}px)`,
+					}),
+				} as const),
 		});
 
 		/* -------------------------------------------------------------------------------------------------
