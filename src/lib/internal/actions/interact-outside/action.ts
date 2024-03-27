@@ -75,18 +75,12 @@ export const useInteractOutside = ((node, config) => {
 		E extends InteractOutsideInterceptEventType
 	>(
 		eventType: E,
-		handler?: InteractOutsideInterceptHandler<E>,
-		options?: boolean | AddEventListenerOptions
+		handler?: InteractOutsideInterceptHandler<E>
 	) => {
-		return addEventListener(
-			documentObj,
-			eventType,
-			(e: HTMLElementEventMap[E]) => {
-				interceptedEvents[eventType] = false;
-				handler?.(e);
-			},
-			options
-		);
+		return addEventListener(documentObj, eventType, (e: HTMLElementEventMap[E]) => {
+			interceptedEvents[eventType] = false;
+			handler?.(e);
+		});
 	};
 
 	function update(config: InteractOutsideConfig) {
