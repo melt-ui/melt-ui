@@ -48,11 +48,8 @@ export const useInteractOutside = ((node, config) => {
 	};
 
 	/**
-	 * In order to know if an event was intercepted,
-	 * we initially mark the event as intercepted during
-	 * the capturing phase. Then if the event is not called
-	 * again during the bubbling phase, we know it was
-	 * intercepted by the user.
+	 * To determine event interception, events are marked as intercepted in the capture phase.
+	 * If they are not invoked again in the bubbling phase, it indicates user interception.
 	 */
 	const setupCapturePhaseHandlerAndMarkAsIntercepted = <
 		E extends InteractOutsideInterceptEventType
@@ -72,8 +69,7 @@ export const useInteractOutside = ((node, config) => {
 	};
 
 	/**
-	 * We create an event listener for the bubbling phase
-	 * which marks the event as not intercepted.
+	 * An event listener for the bubbling phase marks events as not intercepted.
 	 */
 	const setupBubblePhaseHandlerAndMarkAsNotIntercepted = <
 		E extends InteractOutsideInterceptEventType
@@ -102,14 +98,11 @@ export const useInteractOutside = ((node, config) => {
 		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
 		if (!enabled) return;
 
-		const resetInterceptedEventsDebounced = debounce(resetInterceptedEvents, 20);
-		unsubResetInterceptedEvents = resetInterceptedEventsDebounced.destroy;
-
 		/**
-		 * We debounce onPointerDown to allow other events to be marked
-		 * as not intercepted before we check if any events were intercepted.
+		 * Debouncing `onPointerDown` ensures that other events can be flagged as not intercepted,
+		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
-		const onPointerDown = debounce((e: InteractOutsideEvent) => {
+		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
 			if (isAnyEventIntercepted()) return;
 			if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
 			const target = e.target;
@@ -118,48 +111,56 @@ export const useInteractOutside = ((node, config) => {
 			}
 			isPointerDown = true;
 		}, 10);
-		unsubPointerDown = onPointerDown.destroy;
+		unsubPointerDown = onPointerDownDebounced.destroy;
 
 		/**
-		 * We debounce onPointerUp to allow other events to be marked
-		 * as not intercepted before we check if any events were intercepted.
+		 * Debouncing `onPointerUp` ensures that other events can be flagged as not intercepted,
+		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
-		const onPointerUp = debounce((e: InteractOutsideEvent) => {
+		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
 			if (isAnyEventIntercepted()) return;
 			if (shouldTriggerInteractOutside(e)) onInteractOutside?.(e);
 			resetPointerState();
 		}, 10);
-		unsubPointerUp = onPointerUp.destroy;
+		unsubPointerUp = onPointerUpDebounced.destroy;
+
+		/**
+		 * Debounces `resetInterceptedEvents` to avoid premature resetting while events are still firing. The debounce
+		 * delay is intentionally set longer than `onPointerUp`'s to ensure `onPointerUp` events are fully processed
+		 * during the bubbling phase before `resetInterceptedEventsDebounced` executes in the capture phase.
+		 */
+		const resetInterceptedEventsDebounced = debounce(resetInterceptedEvents, 20);
+		unsubResetInterceptedEvents = resetInterceptedEventsDebounced.destroy;
 
 		unsubEvents = executeCallbacks(
-			/** Capture Events at Interaction Start */
+			/** Capture Events For Interaction Start */
 			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerdown'),
 			setupCapturePhaseHandlerAndMarkAsIntercepted('mousedown'),
 			setupCapturePhaseHandlerAndMarkAsIntercepted('touchstart'),
 			/**
-			 * Capture Events at Interaction End
-			 * We reset the intercepted events only at the end of an interaction
-			 * to allow the user to intercept the beginning of an interaction
-			 * while still intercepting the entire interaction.
+			 * Intercepted events are reset only at the end of an interaction, allowing
+			 * interception at the start while still capturing the entire interaction.
+			 * Additionally, intercepted events are reset in the capture phase with `resetInterceptedEventsDebounced`,
+			 * accommodating events not invoked in the bubbling phase due to user interception.
 			 */
 			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerup', resetInterceptedEventsDebounced),
 			setupCapturePhaseHandlerAndMarkAsIntercepted('mouseup', resetInterceptedEventsDebounced),
 			setupCapturePhaseHandlerAndMarkAsIntercepted('touchend', resetInterceptedEventsDebounced),
 			setupCapturePhaseHandlerAndMarkAsIntercepted('click', resetInterceptedEventsDebounced),
 			/** Bubbling Events For Interaction Start */
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerdown', onPointerDown),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mousedown', onPointerDown),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchstart', onPointerDown),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerdown', onPointerDownDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mousedown', onPointerDownDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchstart', onPointerDownDebounced),
 			/**
-			 * Bubbling Events For Interaction End
-			 * We must listen to all interaction end events vs. only `click` events
-			 * because on a touch device, if you press on the screen, move your finger
-			 * and lift it, the `click` event won't trigger but we should still call `onPointerUp`.
+			 * To effectively detect an end of an interaction, we must monitor all relevant events,
+			 * not just `click` events. This is because on touch devices, actions like pressing,
+			 * moving the finger, and lifting it off the screen may not trigger a `click` event,
+			 * but should still invoke `onPointerUp` to properly handle the interaction.
 			 */
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerup', onPointerUp),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mouseup', onPointerUp),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchend', onPointerUp),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('click', onPointerUp)
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerup', onPointerUpDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mouseup', onPointerUpDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchend', onPointerUpDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('click', onPointerUpDebounced)
 		);
 	}
 
