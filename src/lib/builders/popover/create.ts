@@ -92,16 +92,14 @@ export function createPopover(args?: CreatePopoverProps) {
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, portal, ids.content],
-		returned: ([$isVisible, $portal, $contentId]) => {
+		stores: [isVisible, open, activeTrigger, portal, ids.content],
+		returned: ([$isVisible, $open, $activeTrigger, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible && isBrowser ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
 			} as const;
 		},
