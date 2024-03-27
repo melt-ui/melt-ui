@@ -141,6 +141,7 @@ export const useInteractOutside = ((node, config) => {
 			setupCapturePhaseHandlerAndMarkAsIntercepted('mouseup', resetInterceptedEventsDebounced),
 			setupCapturePhaseHandlerAndMarkAsIntercepted('touchend', resetInterceptedEventsDebounced),
 			setupCapturePhaseHandlerAndMarkAsIntercepted('click', resetInterceptedEventsDebounced),
+
 			/** Bubbling Events For Interaction Start */
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerdown', onPointerDownDebounced),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mousedown', onPointerDownDebounced),
