@@ -18,7 +18,6 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
-	removeUndefined,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
@@ -196,7 +195,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const content = makeElement(name('content'), {
 		stores: [isVisible, open, portal, ids.content],
 		returned: ([$isVisible, $open, $portal, $contentId]) => {
-			return removeUndefined({
+			return {
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
@@ -204,7 +203,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				id: $contentId,
 				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
-			} as const);
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;

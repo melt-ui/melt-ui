@@ -150,19 +150,14 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, portal, ids.content],
-		returned: ([$isVisible, $portal, $contentId]) => {
+		stores: [isVisible, open, activeTrigger, portal, ids.content],
+		returned: ([$isVisible, $open, $activeTrigger, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					'pointer-events': $isVisible ? undefined : 'none',
-					opacity: $isVisible ? 1 : 0,
-					userSelect: 'text',
-					WebkitUserSelect: 'text',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
 			} as const;
 		},
