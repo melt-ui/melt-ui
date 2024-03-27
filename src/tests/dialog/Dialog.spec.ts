@@ -69,7 +69,7 @@ describe('Dialog', () => {
 	});
 
 	it('Prevents closing on outside click if `defaultPrevented` in `onOutsideClick` callback', async () => {
-		const { getByTestId, user, overlay, content } = await open({
+		const { user, overlay, content } = await open({
 			onOutsideClick: (e) => {
 				e.preventDefault();
 			},
@@ -81,8 +81,7 @@ describe('Dialog', () => {
 	});
 
 	it('Portalled el attaches dialog to body', async () => {
-		const { getByTestId, portalled } = await open();
-
+		const { portalled } = await open();
 		expect(portalled.parentElement).toEqual(document.body);
 	});
 
