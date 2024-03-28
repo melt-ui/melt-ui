@@ -1,5 +1,19 @@
 # @melt-ui/svelte
 
+## 0.76.3
+
+### Patch Changes
+
+- fix(link preview): Fixed bug where content shows up at top left of the page after remounting trigger (fixes [#1060](https://github.com/melt-ui/melt-ui/issues/1060)) ([#1053](https://github.com/melt-ui/melt-ui/pull/1053))
+
+- Enhanced type accuracy by implementing as const for builder props, ensuring more precise type inference. ([#1015](https://github.com/melt-ui/melt-ui/pull/1015))
+
+- fix data-state consistency to be based on `$open` and avoid overriding floating-ui styles #1041 ([#1042](https://github.com/melt-ui/melt-ui/pull/1042))
+
+- Fix link preview: reset activeTrigger on trigger unmount ([#1129](https://github.com/melt-ui/melt-ui/pull/1129))
+
+- Fixed a bug where manually closing a dialog or popover would not restore focus to the trigger (closes #1109) ([#1110](https://github.com/melt-ui/melt-ui/pull/1110))
+
 ## 0.76.2
 
 ### Patch Changes
