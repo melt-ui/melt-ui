@@ -78,7 +78,6 @@ describe('Dialog', () => {
 
 	it('Portalled el attaches dialog to body', async () => {
 		const { portalled } = await open();
-
 		expect(portalled.parentElement).toEqual(document.body);
 	});
 

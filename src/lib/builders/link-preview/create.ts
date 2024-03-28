@@ -142,7 +142,10 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					activeTrigger.set(null);
+				},
 			};
 		},
 	});
