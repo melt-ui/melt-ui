@@ -11,9 +11,10 @@ import {
 	kbd,
 	noop,
 	omit,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { createListbox } from '../listbox/create.js';
 import type { ComboboxEvents } from './events.js';
 import type { ComboboxSelected, CreateComboboxProps } from './types.js';
@@ -94,6 +95,41 @@ export function createCombobox<
 		},
 	});
 
+	const trigger = makeElement(name('trigger'), {
+		stores: [listbox.elements.trigger],
+		returned: ([$trigger]) => {
+			return {
+				...omit($trigger, 'action', 'id'),
+			};
+		},
+		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['trigger']> => {
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					listbox.states.open.update((curr) => {
+						if (!curr) {
+							// we're opening so focus the input
+							const inputEl = document.getElementById(get(listbox.elements.trigger).id);
+							inputEl?.focus();
+						} else {
+							// by default, when the menu closes it focuses the input
+							// but we want to focus the trigger here since it was just clicked
+							sleep(1).then(() => {
+								node.focus();
+							});
+						}
+						return !curr;
+					});
+				})
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
+
 	effect(listbox.states.open, ($open) => {
 		if (!$open) {
 			touchedInput.set(false);
@@ -104,6 +140,7 @@ export function createCombobox<
 		...listbox,
 		elements: {
 			...omit(listbox.elements, 'trigger'),
+			trigger,
 			input,
 		},
 		states: {
