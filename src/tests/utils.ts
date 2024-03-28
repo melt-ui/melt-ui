@@ -1,4 +1,5 @@
 import { kbd, removeUndefined } from '$lib/internal/helpers/index.js';
+import { fireEvent } from '@testing-library/svelte';
 export { removeUndefined };
 type KbdKeys = keyof typeof kbd;
 /**
@@ -17,4 +18,18 @@ export function exists(get: (id: string) => HTMLElement, testId: string) {
 	} catch {
 		return false;
 	}
+}
+
+/**
+ * Simulates a touch interaction while triggering the
+ * same event sequence as in the browser.
+ */
+export async function touch(node: HTMLElement) {
+	await fireEvent(node, new Event('pointerdown', { bubbles: true }));
+	await fireEvent(node, new TouchEvent('touchstart', { bubbles: true }));
+	await fireEvent(node, new Event('pointerup', { bubbles: true }));
+	await fireEvent(node, new TouchEvent('touchend', { bubbles: true }));
+	await fireEvent(node, new MouseEvent('mousedown', { bubbles: true }));
+	await fireEvent(node, new MouseEvent('mouseup', { bubbles: true }));
+	await fireEvent(node, new MouseEvent('click', { bubbles: true }));
 }
