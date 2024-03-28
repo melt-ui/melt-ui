@@ -20,6 +20,7 @@
 		<div use:melt={$content} data-testid="content">
 			<h2 use:melt={$title} data-testid="title">Title</h2>
 			<p use:melt={$description} data-testid="description">Description</p>
+			<button on:click={() => open.update((p) => !p)} data-testid="toggle-open">toggle open</button>
 			<input
 				data-testid="input-keydown-interceptor"
 				type="text"
