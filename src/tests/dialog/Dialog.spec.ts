@@ -254,4 +254,18 @@ describe('Dialog', () => {
 		await user.tab({ shift: true });
 		expect(closer).not.toHaveFocus();
 	});
+
+	it('Returns focus to trigger when manually setting `open` state to false', async () => {
+		const { getByTestId, user, trigger } = await open();
+		await user.click(getByTestId('toggle-open'));
+		expect(trigger).toHaveFocus();
+	});
+
+	it('Respects the `closeFocus` prop when manually setting `open` state to false', async () => {
+		const { getByTestId, user } = await open({
+			closeFocus: () => document.getElementById('closeFocus'),
+		});
+		await user.click(getByTestId('toggle-open'));
+		expect(getByTestId('closeFocus')).toHaveFocus();
+	});
 });
