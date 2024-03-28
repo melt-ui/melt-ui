@@ -8,6 +8,7 @@
 
 	const {
 		elements: { trigger, content, arrow, close },
+		states: { open },
 	} = createPopover({
 		openFocus,
 		closeFocus,
@@ -48,6 +49,7 @@
 			<label for="weight">Weight</label>
 			<input type="number" id="weight" class="input" placeholder="Weight" data-testid="input4" />
 		</fieldset>
+		<button on:click={() => open.update((p) => !p)} data-testid="toggle-open">toggle open</button>
 	</div>
 	<button class="close" use:melt={$close} data-testid="close">
 		<X class="h-4 w-4 " />
