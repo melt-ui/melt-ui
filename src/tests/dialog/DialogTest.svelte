@@ -35,6 +35,30 @@
 </main>
 <div id="portal-target" data-testid="portal-target" />
 
+<button on:click|stopPropagation data-testid="click-interceptor">click interceptor</button>
+<button on:pointerdown|stopPropagation data-testid="pointerdown-interceptor">
+	pointerdown interceptor
+</button>
+<button on:pointerup|stopPropagation data-testid="pointerup-interceptor">
+	pointerup interceptor
+</button>
+<button on:mousedown|stopPropagation data-testid="mousedown-interceptor">
+	mousedown interceptor
+</button>
+<button on:mouseup|stopPropagation data-testid="mouseup-interceptor">mouseup interceptor</button>
+<button on:touchstart|stopPropagation data-testid="touchstart-interceptor">
+	touchstart interceptor
+</button>
+<button on:touchend|stopPropagation data-testid="touchend-interceptor">
+	touchend interceptor
+</button>
+<button
+	on:touchend|preventDefault|stopPropagation
+	data-testid="touchend-prevent-default-interceptor"
+>
+	touchend prevent default interceptor
+</button>
+
 {#if $open}
 	<!-- Floating close -->
 	<button use:melt={$close} data-testid="floating-closer">Close</button>

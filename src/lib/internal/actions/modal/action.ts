@@ -40,15 +40,11 @@ export const useModal = ((node, config) => {
 			const target = e.target;
 			if (!isElement(target)) return;
 			if (target && isLastModal()) {
-				e.preventDefault();
-				e.stopPropagation();
 				e.stopImmediatePropagation();
 			}
 		}
 		function onInteractOutside(e: InteractOutsideEvent) {
 			if (shouldCloseOnInteractOutside?.(e) && isLastModal()) {
-				e.preventDefault();
-				e.stopPropagation();
 				e.stopImmediatePropagation();
 				closeModal();
 			}
