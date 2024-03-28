@@ -21,7 +21,6 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
@@ -139,26 +138,6 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
-			return {
-				destroy() {
-					unsubEscapeKeydown();
-				},
-			};
-		},
 	});
 
 	const content = makeElement(name('content'), {
@@ -178,37 +157,27 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 
 		action: (node: HTMLElement) => {
-			let activate = noop;
-			let deactivate = noop;
+			let unsubFocus = noop;
+			let unsubEscape = noop;
+			let unsubModal = noop;
 
-			const destroy = executeCallbacks(
-				effect(
-					[open, closeOnOutsideClick, closeOnEscape],
-					([$open, $closeOnOutsideClick, $closeOnEscape]) => {
-						if (!$open) return;
+			const unsubDerived = effect(
+				[isVisible, closeOnEscape, closeOnOutsideClick],
+				([$isVisible, $closeOnEscape, $closeOnOutsideClick]) => {
+					unsubFocus();
+					unsubEscape();
+					unsubModal();
+					if (!$isVisible) return;
 
-						const focusTrap = createFocusTrap({
-							immediate: false,
-							escapeDeactivates: $closeOnEscape,
-							clickOutsideDeactivates: $closeOnOutsideClick,
-							allowOutsideClick: true,
-							returnFocusOnDeactivate: false,
-							fallbackFocus: node,
-						});
+					unsubFocus = createFocusTrap({
+						immediate: true,
+						escapeDeactivates: $closeOnEscape,
+						clickOutsideDeactivates: $closeOnOutsideClick,
+						returnFocusOnDeactivate: false,
+						fallbackFocus: node,
+					}).useFocusTrap(node).destroy;
 
-						activate = focusTrap.activate;
-						deactivate = focusTrap.deactivate;
-						const ac = focusTrap.useFocusTrap(node);
-						if (ac && ac.destroy) {
-							return ac.destroy;
-						} else {
-							return focusTrap.deactivate;
-						}
-					}
-				),
-				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
-					return useModal(node, {
-						open: $open,
+					unsubModal = useModal(node, {
 						closeOnInteractOutside: $closeOnOutsideClick,
 						onClose() {
 							handleClose();
@@ -219,50 +188,50 @@ export function createDialog(props?: CreateDialogProps) {
 							return true;
 						},
 					}).destroy;
-				}),
-				effect([closeOnEscape], ([$closeOnEscape]) => {
-					if (!$closeOnEscape) return noop;
 
-					return useEscapeKeydown(node, { handler: handleClose }).destroy;
-				}),
-
-				effect([isVisible], ([$isVisible]) => {
-					tick().then(() => {
-						if (!$isVisible) {
-							deactivate();
-						} else {
-							activate();
-						}
-					});
-				})
+					unsubEscape = useEscapeKeydown(node, {
+						handler: handleClose,
+						enabled: $closeOnEscape,
+					}).destroy;
+				}
 			);
 
 			return {
 				destroy: () => {
 					unsubScroll();
-					destroy();
+					unsubFocus();
+					unsubEscape();
+					unsubModal();
+					unsubDerived();
 				},
 			};
 		},
 	});
 
 	const portalled = makeElement(name('portalled'), {
-		stores: portal,
-		returned: ($portal) =>
+		stores: [portal, isVisible],
+		returned: ([$portal, $isVisible]) =>
 			({
+				hidden: $isVisible ? undefined : true,
 				'data-portal': portalAttr($portal),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 			} as const),
+
 		action: (node: HTMLElement) => {
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			let unsubPortal = noop;
+
+			const unsubDerived = effect([isVisible, portal], ([$isVisible, $portal]) => {
+				unsubPortal();
+				if (!$isVisible || $portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
-				return usePortal(node, portalDestination).destroy;
+				if (portalDestination === null) return;
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
 					unsubPortal();
+					unsubDerived();
 				},
 			};
 		},

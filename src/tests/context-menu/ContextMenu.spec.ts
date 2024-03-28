@@ -148,7 +148,6 @@ describe('Context Menu', () => {
 	test('Should close on outside click by default', async () => {
 		const { user, getByTestId, queryByTestId } = await open();
 		const outsideClick = getByTestId('outside-click');
-		await sleep(100);
 		expect(outsideClick).toBeVisible();
 		await user.click(outsideClick);
 		await waitFor(() => expect(queryByTestId('menu')).toBeNull());

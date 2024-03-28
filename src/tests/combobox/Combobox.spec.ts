@@ -207,7 +207,6 @@ describe('Combobox', () => {
 
 		expect(menu).not.toBeVisible();
 		await user.click(toggleBtn);
-		await sleep(100);
 		expect(menu).toBeVisible();
 	});
 
@@ -375,7 +374,6 @@ describe('Combobox (forceVisible)', () => {
 
 		const outsideClick = getByTestId('outside-click');
 		await user.click(outsideClick);
-		await sleep(100);
 		expect(getMenu()).not.toBeNull();
 	});
 
@@ -435,7 +433,6 @@ describe('Combobox (forceVisible)', () => {
 
 		expect(getMenu()).toBeNull();
 		await user.click(toggleBtn);
-		await sleep(100);
 		expect(getMenu()).not.toBeNull();
 	});
 

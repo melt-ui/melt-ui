@@ -1,5 +1,5 @@
 import { createSeparator } from '$lib/builders/index.js';
-import { useEscapeKeydown, usePopper, usePortal } from '$lib/internal/actions/index.js';
+import { usePopper, usePortal } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -215,10 +215,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 										rootOpen.set(false);
 										$rootActiveTrigger.focus();
 									},
-									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { enabled: $closeOnEscape },
 							},
 						}).destroy;
 					});
@@ -353,21 +352,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						rootOpen.set(false);
-						const $rootActiveTrigger = rootActiveTrigger.get();
-						if ($rootActiveTrigger) $rootActiveTrigger.focus();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
@@ -376,10 +360,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			});
 
 			return {
-				destroy() {
-					unsubEscapeKeydown();
-					unsubPortal();
-				},
+				destroy: unsubPortal,
 			};
 		},
 	});
@@ -1167,14 +1148,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 		};
 
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
 		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
-		unsubs.push(addEventListener(document, 'keydown', keydownListener));
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());
@@ -1234,25 +1208,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		return () => {
 			unsubs.forEach((unsub) => unsub());
 		};
-	});
-
-	effect(rootOpen, ($rootOpen) => {
-		if (!isBrowser) return;
-
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = (e: KeyboardEvent) => {
-			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
-
-		return executeCallbacks(
-			addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'keydown', handleKeyDown, { capture: true })
-		);
 	});
 
 	function handleOpen(triggerEl: HTMLElement) {

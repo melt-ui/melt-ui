@@ -25,7 +25,7 @@ const defaultConfig = {
 export const usePopper = ((popperElement, args) => {
 	popperElement.dataset.escapee = '';
 	const { anchorElement, open, options } = args as PopperArgs;
-	if (!anchorElement || !open || !options) {
+	if (!anchorElement || !open.get() || !options) {
 		return { destroy: noop };
 	}
 
@@ -43,7 +43,6 @@ export const usePopper = ((popperElement, args) => {
 		const { useFocusTrap } = createFocusTrap({
 			immediate: true,
 			escapeDeactivates: false,
-			allowOutsideClick: true,
 			returnFocusOnDeactivate: false,
 			fallbackFocus: popperElement,
 
@@ -79,7 +78,6 @@ export const usePopper = ((popperElement, args) => {
 	if (opts.escapeKeydown !== null) {
 		callbacks.push(
 			useEscapeKeydown(popperElement, {
-				enabled: open,
 				handler: () => {
 					open.set(false);
 				},

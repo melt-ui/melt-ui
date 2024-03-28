@@ -22,12 +22,7 @@ import {
 	withGet,
 } from '$lib/internal/helpers/index.js';
 
-import {
-	useEscapeKeydown,
-	usePopper,
-	usePortal,
-	type InteractOutsideEvent,
-} from '$lib/internal/actions/index.js';
+import { usePopper, usePortal, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -145,22 +140,14 @@ export function createPopover(args?: CreatePopoverProps) {
 									: {
 											returnFocusOnDeactivate: false,
 											clickOutsideDeactivates: $closeOnOutsideClick,
-											allowOutsideClick: true,
 											escapeDeactivates: $closeOnEscape,
 									  },
 								modal: {
 									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
 									onClose: handleClose,
-									open: $isVisible,
 									closeOnInteractOutside: $closeOnOutsideClick,
 								},
-								escapeKeydown: $closeOnEscape
-									? {
-											handler: () => {
-												handleClose();
-											},
-									  }
-									: null,
+								escapeKeydown: { handler: handleClose, enabled: $closeOnEscape },
 								portal: getPortalDestination(node, $portal),
 							},
 						}).destroy;
@@ -241,20 +228,8 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
 			let unsubDerived = noop;
 			let unsubPortal = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
 
 			unsubDerived = effect([portal], ([$portal]) => {
 				unsubPortal();
@@ -266,7 +241,6 @@ export function createPopover(args?: CreatePopoverProps) {
 
 			return {
 				destroy() {
-					unsubEscapeKeydown();
 					unsubDerived();
 					unsubPortal();
 				},

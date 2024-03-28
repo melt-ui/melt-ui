@@ -66,7 +66,6 @@ describe('Dialog with Transitions', () => {
 
 	it('Closes when overlay is clicked', async () => {
 		const { user, queryByTestId, getByTestId } = await open();
-		await sleep(100);
 		await waitFor(() => expect(queryByTestId('content')).not.toBeNull());
 		await waitFor(() => expect(queryByTestId('overlay')).not.toBeNull());
 		await user.click(getByTestId('overlay'));

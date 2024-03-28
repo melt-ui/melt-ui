@@ -2,11 +2,6 @@ import type { InteractOutsideEvent } from '$lib/internal/actions/index.js';
 
 export type ModalConfig = {
 	/**
-	 * Whether the modal is currently open.
-	 */
-	open?: boolean;
-
-	/**
 	 * Handler called when the overlay closes.
 	 */
 	onClose?: () => void;

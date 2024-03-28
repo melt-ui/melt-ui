@@ -3,7 +3,6 @@ import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import { userEvent } from '@testing-library/user-event';
-import { sleep } from '$lib/internal/helpers/index.js';
 import { testKbd as kbd } from '../utils.js';
 import type { CreateDialogProps } from '$lib/index.js';
 
@@ -29,7 +28,6 @@ async function open(props: CreateDialogProps = {}) {
 	const { user, trigger, content } = returned;
 	expect(content).not.toBeVisible();
 	await user.click(trigger);
-	await sleep(100);
 	expect(content).toBeVisible();
 	return returned;
 }
@@ -62,7 +60,6 @@ describe('Dialog', () => {
 
 	it('Closes when overlay is clicked', async () => {
 		const { user, overlay, content } = await open();
-
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).not.toBeVisible();
@@ -74,7 +71,6 @@ describe('Dialog', () => {
 				e.preventDefault();
 			},
 		});
-
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).toBeVisible();
@@ -159,7 +155,6 @@ describe('Dialog', () => {
 		const { user, content, overlay } = await open({
 			closeOnOutsideClick: false,
 		});
-
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).toBeVisible();
@@ -213,7 +208,6 @@ describe('Dialog', () => {
 
 	it("Doesn't close on pointerup if the previous pointerdown didn't occur inside the dialog", async () => {
 		const { user, overlay, content } = await open();
-
 		expect(overlay).toBeVisible();
 		await user.pointer({ target: content, offset: 2, keys: '[MouseLeft>]' });
 		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
@@ -222,7 +216,6 @@ describe('Dialog', () => {
 
 	it('Closes on pointerup if the previous pointerdown occurred outside the dialog', async () => {
 		const { user, overlay, content } = await open();
-
 		expect(overlay).toBeVisible();
 		await user.pointer({ target: overlay, offset: 2, keys: '[MouseLeft>]' });
 		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });

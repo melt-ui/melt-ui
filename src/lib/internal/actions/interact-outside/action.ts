@@ -4,36 +4,51 @@ import {
 	executeCallbacks,
 	noop,
 } from '$lib/internal/helpers/index.js';
-import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 import type { Action } from 'svelte/action';
+import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
 
-export const useInteractOutside = ((node, config) => {
-	let unsub = noop;
+const layers = new Set<HTMLElement>();
+
+const createHighestLayerEventHandlerFactory = (node: HTMLElement) => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return <T extends (...args: any[]) => any>(handler: T) => {
+		return (...args: Parameters<T>) => {
+			if (!isHighestLayerInteractOutside(node)) return;
+			handler(...args);
+		};
+	};
+};
+
+export const useInteractOutside = ((node, config = {}) => {
+	let unsubEvents = noop;
 	let unsubClick = noop;
+	layers.add(node);
+	const createHighestLayerEventHandler = createHighestLayerEventHandlerFactory(node);
 
 	let isPointerDown = false;
 	let isPointerDownInside = false;
 	let ignoreEmulatedMouseEvents = false;
 
 	function update(config: InteractOutsideConfig) {
-		unsub();
+		unsubEvents();
 		unsubClick();
-		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
-
+		const { onInteractOutside, onInteractOutsideStart, enabled } = { enabled: true, ...config };
 		if (!enabled) return;
 
-		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
-			if (onInteractOutside && isValidEvent(e, node)) {
-				onInteractOutsideStart?.(e);
-			}
-			const target = e.target;
+		const onPointerDown = createHighestLayerEventHandler(
+			(e: PointerEvent | MouseEvent | TouchEvent) => {
+				if (onInteractOutside && isValidEvent(e, node)) {
+					onInteractOutsideStart?.(e);
+				}
+				const target = e.target;
 
-			if (isElement(target) && isOrContainsTarget(node, target)) {
-				isPointerDownInside = true;
-			}
+				if (isElement(target) && isOrContainsTarget(node, target)) {
+					isPointerDownInside = true;
+				}
 
-			isPointerDown = true;
-		}
+				isPointerDown = true;
+			}
+		);
 
 		function triggerInteractOutside(e: InteractOutsideEvent) {
 			onInteractOutside?.(e);
@@ -43,7 +58,7 @@ export const useInteractOutside = ((node, config) => {
 
 		// Use pointer events if available, otherwise use mouse/touch events
 		if (typeof PointerEvent !== 'undefined') {
-			const onPointerUp = (e: PointerEvent) => {
+			const onPointerUp = createHighestLayerEventHandler((e: PointerEvent) => {
 				unsubClick();
 
 				const handler = (e: InteractOutsideEvent) => {
@@ -67,31 +82,31 @@ export const useInteractOutside = ((node, config) => {
 					return;
 				}
 				handler(e);
-			};
+			});
 
-			unsub = executeCallbacks(
+			unsubEvents = executeCallbacks(
 				addEventListener(documentObj, 'pointerdown', onPointerDown, true),
 				addEventListener(documentObj, 'pointerup', onPointerUp, true)
 			);
 		} else {
-			const onMouseUp = (e: MouseEvent) => {
+			const onMouseUp = createHighestLayerEventHandler((e: MouseEvent) => {
 				if (ignoreEmulatedMouseEvents) {
 					ignoreEmulatedMouseEvents = false;
 				} else if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
 				resetPointerState();
-			};
+			});
 
-			const onTouchEnd = (e: TouchEvent) => {
+			const onTouchEnd = createHighestLayerEventHandler((e: TouchEvent) => {
 				ignoreEmulatedMouseEvents = true;
 				if (shouldTriggerInteractOutside(e)) {
 					triggerInteractOutside(e);
 				}
 				resetPointerState();
-			};
+			});
 
-			unsub = executeCallbacks(
+			unsubEvents = executeCallbacks(
 				addEventListener(documentObj, 'mousedown', onPointerDown, true),
 				addEventListener(documentObj, 'mouseup', onMouseUp, true),
 				addEventListener(documentObj, 'touchstart', onPointerDown, true),
@@ -117,8 +132,9 @@ export const useInteractOutside = ((node, config) => {
 	return {
 		update,
 		destroy() {
-			unsub();
+			unsubEvents();
 			unsubClick();
+			layers.delete(node);
 		},
 	};
 }) satisfies Action<HTMLElement, InteractOutsideConfig>;
@@ -135,6 +151,11 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	}
 
 	return node && !isOrContainsTarget(node, target);
+}
+
+export function isHighestLayerInteractOutside(node: HTMLElement): boolean {
+	const index = Array.from(layers).indexOf(node);
+	return index === layers.size - 1;
 }
 
 function isOrContainsTarget(node: HTMLElement, target: Element) {
