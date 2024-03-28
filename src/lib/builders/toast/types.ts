@@ -8,6 +8,7 @@ export type CreateToasterProps = {
 	// If set to 0, the toast will not be automatically closed.
 	closeDelay?: number;
 	type?: 'foreground' | 'background';
+	pauseAllOnHover?: boolean;
 };
 
 export type AddToastProps<T = object> = CreateToasterProps & {

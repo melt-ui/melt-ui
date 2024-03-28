@@ -21,13 +21,14 @@ const { name } = createElHelpers<ToastParts>('toast');
 const defaults = {
 	closeDelay: 5000,
 	type: 'foreground',
+	pauseAllOnHover: false,
 } satisfies CreateToasterProps;
 
 export function createToaster<T = object>(props?: CreateToasterProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateToasterProps;
 
 	const options = toWritableStores(withDefaults);
-	const { closeDelay, type } = options;
+	const { closeDelay, type, pauseAllOnHover } = options;
 
 	const toastsMap = writable(new Map<string, Toast<T>>());
 
@@ -58,8 +59,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			if (pausedAt) {
 				return (100 * (pausedAt - createdAt - pauseDuration)) / closeDelay;
 			} else {
-				const now = performance.now();
-				return (100 * (now - createdAt - pauseDuration)) / closeDelay;
+				return (100 * (performance.now() - createdAt - pauseDuration)) / closeDelay;
 			}
 		};
 
@@ -98,6 +98,23 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		});
 	};
 
+	const pauseToastTimer = (currentToast: Toast<T>) => {
+		if (currentToast.closeDelay !== 0 && currentToast.timeout !== null) {
+			window.clearTimeout(currentToast.timeout);
+		}
+		currentToast.pausedAt = performance.now();
+	};
+	const restartToastTimer = (currentToast: Toast<T>) => {
+		const pausedAt = currentToast.pausedAt ?? currentToast.createdAt;
+		const elapsed = pausedAt - currentToast.createdAt - currentToast.pauseDuration;
+		const remaining = currentToast.closeDelay - elapsed;
+		currentToast.timeout = window.setTimeout(() => {
+			removeToast(currentToast.id);
+		}, remaining);
+		currentToast.pauseDuration += performance.now() - pausedAt;
+		currentToast.pausedAt = undefined;
+	};
+
 	const content = makeElement(name('content'), {
 		stores: toastsMap,
 		returned: ($toasts) => {
@@ -123,31 +140,32 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					toastsMap.update((currentMap) => {
-						const currentToast = currentMap.get(node.id);
-						if (!currentToast || currentToast.closeDelay === 0) return currentMap;
-
-						if (currentToast.timeout !== null) {
-							window.clearTimeout(currentToast.timeout);
+						if (pauseAllOnHover.get()) {
+							for (const [, currentToast] of currentMap) {
+								pauseToastTimer(currentToast);
+							}
+						} else {
+							const currentToast = currentMap.get(node.id);
+							if (!currentToast || currentToast.closeDelay === 0) return currentMap;
+							pauseToastTimer(currentToast);
 						}
-						currentToast.pausedAt = performance.now();
 						return new Map(currentMap);
 					});
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					toastsMap.update((currentMap) => {
-						const currentToast = currentMap.get(node.id);
-						if (!currentToast || currentToast.closeDelay === 0) return currentMap;
+						if (pauseAllOnHover.get()) {
+							for (const [, currentToast] of currentMap) {
+								if (currentToast.closeDelay === 0) continue;
+								restartToastTimer(currentToast);
+							}
+						} else {
+							const currentToast = currentMap.get(node.id);
+							if (!currentToast || currentToast.closeDelay === 0) return currentMap;
+							restartToastTimer(currentToast);
+						}
 
-						const pausedAt = currentToast.pausedAt ?? currentToast.createdAt;
-						const elapsed = pausedAt - currentToast.createdAt - currentToast.pauseDuration;
-						const remaining = currentToast.closeDelay - elapsed;
-						currentToast.timeout = window.setTimeout(() => {
-							removeToast(node.id);
-						}, remaining);
-
-						currentToast.pauseDuration += performance.now() - pausedAt;
-						currentToast.pausedAt = undefined;
 						return new Map(currentMap);
 					});
 				}),
