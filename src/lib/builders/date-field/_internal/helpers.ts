@@ -123,7 +123,7 @@ function createContentArr(props: CreateContentArrProps) {
 	const parts = formatter.toParts(dateRef, getOptsByGranularity(granularity, hourCycle));
 	const segmentContentArr = parts
 		.map((part) => {
-			const defaultParts = ['literal', 'dayPeriod', 'timeZoneName', null];
+			const defaultParts = ['literal', 'timeZoneName', null];
 
 			if (defaultParts.includes(part.type) || !isSegmentPart(part.type)) {
 				return {

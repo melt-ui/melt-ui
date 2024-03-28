@@ -14,7 +14,7 @@ import {
 import type { CreateDateFieldProps } from '$lib/index.js';
 
 const calendarDateOther = new CalendarDate(1980, 1, 20);
-const calendarDateTimeOther = new CalendarDateTime(1980, 1, 20, 12, 30, 30, 0);
+const calendarDateTimeOther = new CalendarDateTime(1980, 1, 20, 10, 30, 0, 0);
 const zonedDateTimeOther = toZoned(calendarDateTimeOther, 'America/New_York');
 
 function setup(props: CreateDateFieldProps = {}) {
@@ -317,7 +317,7 @@ describe('DateField', () => {
 
 	test('hourcycle prop changes the hour cycle', async () => {
 		const { getByTestId, queryByTestId, user } = setup({
-			defaultValue: calendarDateTimeOther,
+			defaultValue: calendarDateTimeOther.set({ hour: 12 }),
 			hourCycle: 24,
 		});
 		expect(queryByTestId('dayPeriod')).toBeNull();
@@ -370,21 +370,93 @@ describe('DateField', () => {
 		}
 	});
 
-	test('changing the dayperiod segment changes the value', async () => {
-		const { getByTestId, user } = setup({
-			defaultValue: calendarDateTimeOther,
+	describe('dayPeriod', async () => {
+		test('toggling the dayPeriod segment update the hour value', async () => {
+			const { getByTestId, user } = setup({
+				defaultValue: calendarDateTimeOther,
+			});
+
+			const dayPeriodSegment = getByTestId('dayPeriod');
+			const insideValue = getByTestId('inside-value');
+
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+
+			await user.click(dayPeriodSegment);
+			expect(dayPeriodSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+			expect(insideValue).toHaveTextContent('1980-01-20T22:30');
+
+			await user.keyboard(kbd.ARROW_DOWN);
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+			expect(insideValue).toHaveTextContent('1980-01-20T10:30');
+
+			await user.keyboard(kbd.P);
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+			expect(insideValue).toHaveTextContent('1980-01-20T22:30');
 		});
 
-		const dayPeriodSegment = getByTestId('dayPeriod');
-		const insideValue = getByTestId('inside-value');
+		test('when hour segment is not filled, changing the dayPeriod segment does not update hour value', async () => {
+			const { getByTestId, user } = setup({
+				defaultValue: undefined,
+				granularity: 'minute',
+			});
 
-		expect(dayPeriodSegment).toHaveTextContent('PM');
+			const dayPeriodSegment = getByTestId('dayPeriod');
+			const hourSegment = getByTestId('hour');
 
-		await user.click(dayPeriodSegment);
-		expect(dayPeriodSegment).toHaveFocus();
-		await user.keyboard(kbd.ARROW_UP);
-		expect(dayPeriodSegment).toHaveTextContent('AM');
-		expect(insideValue).toHaveTextContent('1980-01-20T00:30');
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+
+			await user.click(dayPeriodSegment);
+			expect(dayPeriodSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+			expect(hourSegment).toHaveTextContent('––');
+		});
+
+		test('when time segments are filled, changing the dayPeriod segment changes the dayPeriod value', async () => {
+			const { getByTestId, user } = setup({
+				defaultValue: calendarDateTimeOther,
+			});
+
+			const dayPeriodSegment = getByTestId('dayPeriod');
+			const insideValue = getByTestId('inside-value');
+
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+
+			await user.click(dayPeriodSegment);
+			expect(dayPeriodSegment).toHaveFocus();
+			await user.keyboard(kbd.ARROW_UP);
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+			expect(insideValue).toHaveTextContent('1980-01-20T22:30');
+		});
+
+		test('when time segments are not filled, changing the dayPeriod segment changes the value', async () => {
+			const { getByTestId, user } = setup({
+				defaultPlaceholder: calendarDateOther,
+				granularity: 'second',
+			});
+
+			const dayPeriodSegment = getByTestId('dayPeriod');
+			await user.click(dayPeriodSegment);
+
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+			await user.keyboard(kbd.ARROW_UP);
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+			await user.keyboard(kbd.ARROW_UP);
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+
+			await user.keyboard(kbd.ARROW_DOWN);
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+			await user.keyboard(kbd.ARROW_DOWN);
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+
+			await user.keyboard('p');
+			expect(dayPeriodSegment).toHaveTextContent('PM');
+
+			await user.keyboard('a');
+			expect(dayPeriodSegment).toHaveTextContent('AM');
+		});
 	});
 
 	test('spamming 3 takes you all the way through the segment', async () => {
@@ -474,7 +546,7 @@ describe('DateField', () => {
 		const hourSegment = getByTestId('hour');
 		await user.click(hourSegment);
 		expect(hourSegment).toHaveFocus();
-		expect(hourSegment).toHaveTextContent('12');
+		expect(hourSegment).toHaveTextContent('10');
 		await user.keyboard(`{1}`);
 		expect(hourSegment).toHaveTextContent('1');
 	});

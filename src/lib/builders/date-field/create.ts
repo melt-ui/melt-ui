@@ -503,16 +503,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 				} else if (part === 'dayPeriod') {
 					const next = castCb(pVal) as DateAndTimeSegmentObj['dayPeriod'];
 					updatingDayPeriod.set(next);
-					const date = placeholder.get();
-					if ('hour' in date) {
-						const trueHour = date.hour;
-						if (next === 'AM') {
-							if (trueHour >= 12) {
-								prev.hour = trueHour - 12;
+					const date = get(placeholder);
+
+					let nextHour = prev.hour;
+					if (nextHour !== null && 'hour' in date) {
+						if (next === 'AM' && prev.dayPeriod !== 'AM') {
+							if (nextHour >= 12) {
+								nextHour -= 12;
 							}
-						} else if (next === 'PM') {
-							if (trueHour < 12) {
-								prev.hour = trueHour + 12;
+						} else if (next === 'PM' && prev.dayPeriod !== 'PM') {
+							if (nextHour < 12) {
+								nextHour += 12;
 							}
 						}
 					}
@@ -520,6 +521,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					return {
 						...prev,
 						[part]: next,
+						['hour']: nextHour,
 					};
 				} else if (part === 'hour') {
 					const next = castCb(pVal) as DateAndTimeSegmentObj['hour'];
