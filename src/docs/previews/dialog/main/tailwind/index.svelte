@@ -4,7 +4,6 @@
 	import { flyAndScale } from '$docs/utils/index.js';
 	import { X } from '$icons/index.js';
 	import { fade } from 'svelte/transition';
-	import { usePortal } from '$lib/internal/actions/portal.js';
 
 	const {
 		elements: {
@@ -101,55 +100,5 @@
 				<X class="size-4" />
 			</button>
 		</div>
-	</div>
-{/if}
-
-{#if $open}
-	<div
-		use:usePortal
-		class="fixed left-0 top-4 z-50 flex w-full flex-wrap items-center justify-center gap-2 px-1 md:gap-4 md:px-4"
-	>
-		<button
-			on:click|stopPropagation
-			class="rounded-xl bg-white px-2 py-1 text-magnum-700 sm:text-sm md:px-4 md:py-2"
-		>
-			click interceptor
-		</button>
-		<button
-			on:pointerdown|stopPropagation
-			class="rounded-xl bg-white px-2 py-1 text-magnum-700 sm:text-sm md:px-4 md:py-2"
-		>
-			pointerdown interceptor
-		</button>
-		<button
-			on:pointerup|stopPropagation
-			class="rounded-xl bg-white px-2 py-1 text-magnum-700 sm:text-sm md:px-4 md:py-2"
-		>
-			pointerup interceptor
-		</button>
-		<button
-			on:mousedown|stopPropagation
-			class="rounded-xl bg-white px-2 py-1 text-magnum-700 sm:text-sm md:px-4 md:py-2"
-		>
-			mousedown interceptor
-		</button>
-		<button
-			on:mouseup|stopPropagation
-			class="rounded-xl bg-white px-2 py-1 text-magnum-700 sm:text-sm md:px-4 md:py-2"
-		>
-			mouseup interceptor
-		</button>
-		<button
-			on:touchstart|stopPropagation
-			class="rounded-xl bg-white px-2 py-1 text-magnum-700 sm:text-sm md:px-4 md:py-2"
-		>
-			touchstart interceptor
-		</button>
-		<button
-			on:touchend|stopPropagation
-			class="rounded-xl bg-white px-2 py-1 text-magnum-700 sm:text-sm md:px-4 md:py-2"
-		>
-			touchend interceptor
-		</button>
 	</div>
 {/if}
