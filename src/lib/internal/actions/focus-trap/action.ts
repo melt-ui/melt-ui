@@ -38,6 +38,7 @@ export function createFocusTrap(config: FocusTrapConfig = {}) {
 	const useFocusTrap = (node: HTMLElement) => {
 		trap = _createFocusTrap(node, {
 			allowOutsideClick: true,
+			clickOutsideDeactivates: false,
 			...focusTrapOptions,
 			escapeDeactivates: (e) => {
 				if (!isHighestLayerEscapeKey(node)) return false;
@@ -45,13 +46,6 @@ export function createFocusTrap(config: FocusTrapConfig = {}) {
 					return focusTrapOptions.escapeDeactivates(e);
 				}
 				return focusTrapOptions.escapeDeactivates ?? true;
-			},
-			clickOutsideDeactivates: (e) => {
-				if (!isHighestLayerInteractOutside(node)) return false;
-				if (isFunction(focusTrapOptions.clickOutsideDeactivates)) {
-					return focusTrapOptions.clickOutsideDeactivates(e);
-				}
-				return focusTrapOptions.clickOutsideDeactivates ?? false;
 			},
 			onActivate() {
 				hasFocus.set(true);
