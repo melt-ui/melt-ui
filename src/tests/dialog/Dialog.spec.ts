@@ -4,7 +4,7 @@ import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import { userEvent } from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers/index.js';
-import { testKbd as kbd, touch } from '../utils.js';
+import { assertActiveFocusTrap, testKbd as kbd, touch } from '../utils.js';
 import type { CreateDialogProps } from '$lib/index.js';
 
 function setup(props: CreateDialogProps = {}) {
@@ -185,10 +185,8 @@ describe('Dialog', () => {
 	});
 
 	it("Doesn't close on escape if child intercepts event", async () => {
-		const { getByTestId, user, content } = await open();
-
-		const input = getByTestId('input-keydown-interceptor');
-		input.focus();
+		const { getByTestId, content, user } = await open();
+		getByTestId('escape-interceptor').focus();
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 	});
@@ -228,16 +226,10 @@ describe('Dialog', () => {
 	});
 
 	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
-		const { getByTestId, user, content } = await open({
-			closeOnEscape: false,
-		});
-		const closer = getByTestId('floating-closer');
-
+		const { user, content } = await open({ closeOnEscape: false });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
-		expect(content).toHaveFocus();
-		await user.tab({ shift: true });
-		expect(closer).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
@@ -267,11 +259,18 @@ describe('Dialog', () => {
 		expect(getByTestId('closeFocus')).toHaveFocus();
 	});
 
+	it("Doesn't deactivate focus trap on escape that is intercepted", async () => {
+		const { getByTestId, user, content } = await open();
+		getByTestId('escape-interceptor').focus();
+		await user.keyboard(kbd.ESCAPE);
+		expect(content).toBeVisible();
+		await assertActiveFocusTrap(user, content);
+	});
+
 	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
-		const { getByTestId, user, trigger } = await open();
+		const { getByTestId, user, content } = await open();
 		await user.click(getByTestId('click-interceptor'));
-		await user.tab({ shift: true });
-		expect(trigger).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	describe('Mouse Device', () => {
