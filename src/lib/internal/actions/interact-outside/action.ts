@@ -25,7 +25,7 @@ const createHighestLayerEventHandlerFactory = (node: HTMLElement) => {
 	};
 };
 
-export const useInteractOutside = ((node, config) => {
+export const useInteractOutside = ((node, config = {}) => {
 	let unsubEvents = noop;
 	let unsubPointerDown = noop;
 	let unsubPointerUp = noop;
