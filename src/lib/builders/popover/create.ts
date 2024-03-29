@@ -144,7 +144,6 @@ export function createPopover(args?: CreatePopoverProps) {
 											returnFocusOnDeactivate: false,
 											clickOutsideDeactivates: $closeOnOutsideClick,
 											allowOutsideClick: true,
-											escapeDeactivates: $closeOnEscape,
 									  },
 								modal: {
 									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
