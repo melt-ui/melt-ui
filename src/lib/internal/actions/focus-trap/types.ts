@@ -9,6 +9,7 @@ import type { Readable } from 'svelte/store';
 export type FocusTrapConfig = FocusTrapOptions & {
 	/**
 	 * Immediately activate the trap
+	 * @default true
 	 */
 	immediate?: boolean;
 };

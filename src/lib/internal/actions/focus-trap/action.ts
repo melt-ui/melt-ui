@@ -10,7 +10,7 @@ import { createFocusTrap as _createFocusTrap } from 'focus-trap';
 export function createFocusTrap(config: FocusTrapConfig = {}) {
 	let trap: undefined | FocusTrap;
 
-	const { immediate, ...focusTrapOptions } = config;
+	const { immediate, ...focusTrapOptions } = { immediate: true, ...config };
 	const hasFocus = writable(false);
 	const isPaused = writable(false);
 
@@ -35,6 +35,10 @@ export function createFocusTrap(config: FocusTrapConfig = {}) {
 
 	const useFocusTrap = (node: HTMLElement) => {
 		trap = _createFocusTrap(node, {
+			returnFocusOnDeactivate: false,
+			allowOutsideClick: true,
+			escapeDeactivates: false,
+			clickOutsideDeactivates: false,
 			...focusTrapOptions,
 			onActivate() {
 				hasFocus.set(true);

@@ -41,12 +41,7 @@ export const usePopper = ((popperElement, args) => {
 
 	if (opts.focusTrap !== null) {
 		const { useFocusTrap } = createFocusTrap({
-			immediate: true,
-			escapeDeactivates: false,
-			allowOutsideClick: true,
-			returnFocusOnDeactivate: false,
 			fallbackFocus: popperElement,
-
 			...opts.focusTrap,
 		});
 
