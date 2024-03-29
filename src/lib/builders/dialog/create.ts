@@ -188,12 +188,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 					activate = focusTrap.activate;
 					deactivate = focusTrap.deactivate;
-					const ac = focusTrap.useFocusTrap(node);
-					if (ac && ac.destroy) {
-						return ac.destroy;
-					} else {
-						return focusTrap.deactivate;
-					}
+					return focusTrap.useFocusTrap(node).destroy;
 				}),
 				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
 					return useModal(node, {
