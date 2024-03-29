@@ -188,4 +188,21 @@ describe('Popover (Default)', () => {
 		await user.click(getByTestId('toggle-open'));
 		expect(getByTestId('closeFocus')).toHaveFocus();
 	});
+
+	it("Doesn't deactivate focus trap on escape that is intercepted", async () => {
+		const { getByTestId, user, trigger } = setup();
+		const content = getByTestId('content');
+		expect(trigger).not.toHaveFocus();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		getByTestId('escape-interceptor').focus();
+		await user.keyboard(kbd.ESCAPE);
+		expect(content).toBeVisible();
+		for (let i = 0; i < 10; i++) {
+			await user.tab();
+			if (content !== document.activeElement) {
+				expect(content).toContainElement(document.activeElement as HTMLElement);
+			}
+		}
+	});
 });

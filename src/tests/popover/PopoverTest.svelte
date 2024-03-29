@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createPopover, melt, type CreatePopoverProps } from '$lib/index.js';
 	import { Settings2, X } from '$icons/index.js';
+	import { kbd } from '$lib/internal/helpers/keyboard.js';
 
 	export let openFocus: CreatePopoverProps['openFocus'] = undefined;
 	export let closeFocus: CreatePopoverProps['closeFocus'] = undefined;
@@ -49,6 +50,12 @@
 			<label for="weight">Weight</label>
 			<input type="number" id="weight" class="input" placeholder="Weight" data-testid="input4" />
 		</fieldset>
+		<button
+			on:keydown={(e) => e.key === kbd.ESCAPE && e.stopPropagation()}
+			data-testid="escape-interceptor"
+		>
+			escape interceptor
+		</button>
 		<button on:click={() => open.update((p) => !p)} data-testid="toggle-open">toggle open</button>
 	</div>
 	<button class="close" use:melt={$close} data-testid="close">
