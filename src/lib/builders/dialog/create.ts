@@ -94,10 +94,6 @@ export function createDialog(props?: CreateDialogProps) {
 
 	function handleClose() {
 		open.set(false);
-		handleFocus({
-			prop: closeFocus.get(),
-			defaultEl: activeTrigger.get(),
-		});
 	}
 
 	const trigger = makeElement(name('trigger'), {
@@ -294,6 +290,18 @@ export function createDialog(props?: CreateDialogProps) {
 			}
 		};
 	});
+
+	effect(
+		open,
+		($open) => {
+			if (!isBrowser || $open) return;
+			handleFocus({
+				prop: closeFocus.get(),
+				defaultEl: activeTrigger.get(),
+			});
+		},
+		{ skipFirstRun: true }
+	);
 
 	return {
 		ids,

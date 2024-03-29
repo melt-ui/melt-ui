@@ -3,6 +3,14 @@ import { derived } from 'svelte/store';
 import { noop } from '../index.js';
 import { safeOnDestroy } from '../lifecycle.js';
 
+type EffectOptions = {
+	/**
+	 * Whether to skip the first run
+	 * @default undefined
+	 */
+	skipFirstRun?: boolean;
+};
+
 /**
  * A utility function that creates an effect from a set of stores and a function.
  * The effect is automatically cleaned up when the component is destroyed.
@@ -10,18 +18,26 @@ import { safeOnDestroy } from '../lifecycle.js';
  * @template S - The type of the stores object
  * @param stores - The stores object to derive from
  * @param fn - The function to run when the stores change
+ * @param opts {@link EffectOptions}
  * @returns A function that can be used to unsubscribe the effect
  */
 export function effect<S extends Stores>(
 	stores: S,
-	fn: (values: StoresValues<S>) => (() => void) | void
+	fn: (values: StoresValues<S>) => (() => void) | void,
+	opts: EffectOptions = {}
 ): () => void {
+	const { skipFirstRun } = opts;
+	let isFirstRun = true;
 	let cb: (() => void) | void = undefined;
 
 	// Create a derived store that contains the stores object and an onUnsubscribe function
 	const destroy = derived(stores, (stores) => {
 		cb?.();
-		cb = fn(stores);
+		if (isFirstRun && skipFirstRun) {
+			isFirstRun = false;
+		} else {
+			cb = fn(stores);
+		}
 	}).subscribe(noop);
 
 	const unsub = () => {

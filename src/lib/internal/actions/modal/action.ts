@@ -17,14 +17,10 @@ export const useModal = ((node, config) => {
 		function onInteractOutsideStart(e: InteractOutsideEvent) {
 			const target = e.target;
 			if (!isElement(target)) return;
-			e.preventDefault();
-			e.stopPropagation();
 			e.stopImmediatePropagation();
 		}
 		function onInteractOutside(e: InteractOutsideEvent) {
 			if (!shouldCloseOnInteractOutside?.(e)) return;
-			e.preventDefault();
-			e.stopPropagation();
 			e.stopImmediatePropagation();
 			closeModal();
 		}

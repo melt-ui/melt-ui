@@ -211,10 +211,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 										}
 										return true;
 									},
-									onClose: () => {
-										rootOpen.set(false);
-										$rootActiveTrigger.focus();
-									},
+									onClose: () => rootOpen.set(false),
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: { enabled: $closeOnEscape },
@@ -1165,18 +1162,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}
 	});
 
-	effect([rootOpen], ([$rootOpen]) => {
-		if (!isBrowser) return;
-		if (!$rootOpen) {
-			const $rootActiveTrigger = rootActiveTrigger.get();
-			if (!$rootActiveTrigger) return;
-			const $closeFocus = closeFocus.get();
-
-			if (!$rootOpen && $rootActiveTrigger) {
-				handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
-			}
-		}
-	});
+	effect(
+		[rootOpen],
+		([$rootOpen]) => {
+			if (!isBrowser || $rootOpen) return;
+			handleFocus({ prop: closeFocus.get(), defaultEl: rootActiveTrigger.get() });
+		},
+		{ skipFirstRun: true }
+	);
 
 	effect([rootOpen, preventScroll], ([$rootOpen, $preventScroll]) => {
 		if (!isBrowser) return;
