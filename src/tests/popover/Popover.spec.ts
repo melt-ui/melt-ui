@@ -188,4 +188,15 @@ describe('Popover (Default)', () => {
 		await user.click(getByTestId('toggle-open'));
 		expect(getByTestId('closeFocus')).toHaveFocus();
 	});
+
+	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
+		const { getByTestId, user, trigger } = setup();
+		const content = getByTestId('content');
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await user.click(getByTestId('click-interceptor'));
+		await user.tab({ shift: true });
+		expect(content).toBeVisible();
+		expect(trigger).not.toHaveFocus();
+	});
 });

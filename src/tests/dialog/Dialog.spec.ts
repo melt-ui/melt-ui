@@ -269,6 +269,13 @@ describe('Dialog', () => {
 		expect(getByTestId('closeFocus')).toHaveFocus();
 	});
 
+	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
+		const { getByTestId, user, trigger } = await open();
+		await user.click(getByTestId('click-interceptor'));
+		await user.tab({ shift: true });
+		expect(trigger).not.toHaveFocus();
+	});
+
 	describe('Mouse Device', () => {
 		it("Doesn't close when interacting outside with click interceptor", async () => {
 			const { getByTestId, user, content, overlay } = await open();
