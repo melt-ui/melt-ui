@@ -3,7 +3,7 @@ import { axe } from 'jest-axe';
 import PopoverTest from './PopoverTest.svelte';
 import { userEvent } from '@testing-library/user-event';
 import type { CreatePopoverProps } from '$lib/index.js';
-import { testKbd as kbd } from '../utils.js';
+import { assertActiveFocusTrap, testKbd as kbd } from '../utils.js';
 import { sleep } from '$lib/internal/helpers/index.js';
 
 function setup(props: CreatePopoverProps = {}) {
@@ -198,11 +198,6 @@ describe('Popover (Default)', () => {
 		getByTestId('escape-interceptor').focus();
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
-		for (let i = 0; i < 10; i++) {
-			await user.tab();
-			if (content !== document.activeElement) {
-				expect(content).toContainElement(document.activeElement as HTMLElement);
-			}
-		}
+		await assertActiveFocusTrap(user, content);
 	});
 });

@@ -4,7 +4,7 @@ import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import { userEvent } from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers/index.js';
-import { testKbd as kbd, touch } from '../utils.js';
+import { assertActiveFocusTrap, testKbd as kbd, touch } from '../utils.js';
 import type { CreateDialogProps } from '$lib/index.js';
 
 function setup(props: CreateDialogProps = {}) {
@@ -231,12 +231,7 @@ describe('Dialog', () => {
 		const { user, content } = await open({ closeOnEscape: false });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
-		for (let i = 0; i < 10; i++) {
-			await user.tab();
-			if (content !== document.activeElement) {
-				expect(content).toContainElement(document.activeElement as HTMLElement);
-			}
-		}
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
@@ -271,12 +266,7 @@ describe('Dialog', () => {
 		getByTestId('escape-interceptor').focus();
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
-		for (let i = 0; i < 10; i++) {
-			await user.tab();
-			if (content !== document.activeElement) {
-				expect(content).toContainElement(document.activeElement as HTMLElement);
-			}
-		}
+		await assertActiveFocusTrap(user, content);
 	});
 
 	describe('Mouse Device', () => {
