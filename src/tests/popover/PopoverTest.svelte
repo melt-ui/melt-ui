@@ -64,6 +64,7 @@
 	<button data-testid="openFocus" id="openFocus"> focus me on open </button>
 </div>
 <div data-testid="outside" />
+<button on:click|stopPropagation data-testid="click-interceptor">click interceptor</button>
 
 <style lang="postcss">
 	fieldset {

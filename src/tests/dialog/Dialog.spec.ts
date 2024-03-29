@@ -209,9 +209,8 @@ describe('Dialog', () => {
 		expect(description.id).toBe(ids.description);
 	});
 
-	it("Doesn't close on pointerup if the previous pointerdown didn't occur inside the dialog", async () => {
+	it("Doesn't close on pointerup if the previous pointerdown occurred inside the dialog", async () => {
 		const { user, overlay, content } = await open();
-
 		expect(overlay).toBeVisible();
 		await user.pointer({ target: content, offset: 2, keys: '[MouseLeft>]' });
 		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
@@ -266,6 +265,12 @@ describe('Dialog', () => {
 		getByTestId('escape-interceptor').focus();
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
+		await assertActiveFocusTrap(user, content);
+	});
+
+	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
+		const { getByTestId, user, content } = await open();
+		await user.click(getByTestId('click-interceptor'));
 		await assertActiveFocusTrap(user, content);
 	});
 

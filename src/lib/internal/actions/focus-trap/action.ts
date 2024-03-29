@@ -36,6 +36,7 @@ export function createFocusTrap(config: FocusTrapConfig = {}) {
 	const useFocusTrap = (node: HTMLElement) => {
 		trap = _createFocusTrap(node, {
 			escapeDeactivates: false,
+			clickOutsideDeactivates: false,
 			...focusTrapOptions,
 			onActivate() {
 				hasFocus.set(true);
