@@ -210,9 +210,8 @@ describe('Dialog', () => {
 		expect(description.id).toBe(ids.description);
 	});
 
-	it("Doesn't close on pointerup if the previous pointerdown didn't occur inside the dialog", async () => {
+	it("Doesn't close on pointerup if the previous pointerdown occurred inside the dialog", async () => {
 		const { user, overlay, content } = await open();
-
 		expect(overlay).toBeVisible();
 		await user.pointer({ target: content, offset: 2, keys: '[MouseLeft>]' });
 		await user.pointer({ target: overlay, offset: 2, keys: '[/MouseLeft]' });
@@ -266,6 +265,13 @@ describe('Dialog', () => {
 		});
 		await user.click(getByTestId('toggle-open'));
 		expect(getByTestId('closeFocus')).toHaveFocus();
+	});
+
+	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
+		const { getByTestId, user, trigger } = await open();
+		await user.click(getByTestId('click-interceptor'));
+		await user.tab({ shift: true });
+		expect(trigger).not.toHaveFocus();
 	});
 
 	describe('Mouse Device', () => {
