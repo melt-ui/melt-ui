@@ -1,4 +1,4 @@
-import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
+import { useFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	makeElement,
@@ -174,57 +174,44 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 
 		action: (node: HTMLElement) => {
-			let activate = noop;
-			let deactivate = noop;
+			let unsubModal = noop;
+			let unsubEscape = noop;
+			let unsubFocusTrap = noop;
 
-			const destroy = executeCallbacks(
-				effect([open], ([$open]) => {
-					if (!$open) return;
+			const unsubDerived = effect(
+				[isVisible, closeOnOutsideClick, closeOnEscape],
+				([$isVisible, $closeOnOutsideClick, $closeOnEscape]) => {
+					unsubModal();
+					unsubEscape();
+					unsubFocusTrap();
+					if (!$isVisible) return;
 
-					const focusTrap = createFocusTrap({
-						immediate: false,
-						fallbackFocus: node,
-					});
-
-					activate = focusTrap.activate;
-					deactivate = focusTrap.deactivate;
-					return focusTrap.useFocusTrap(node).destroy;
-				}),
-				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
-					return useModal(node, {
-						open: $open,
+					unsubModal = useModal(node, {
 						closeOnInteractOutside: $closeOnOutsideClick,
-						onClose() {
-							handleClose();
-						},
+						onClose: handleClose,
 						shouldCloseOnInteractOutside(e) {
 							onOutsideClick.get()?.(e);
 							if (e.defaultPrevented) return false;
 							return true;
 						},
 					}).destroy;
-				}),
-				effect([closeOnEscape], ([$closeOnEscape]) => {
-					if (!$closeOnEscape) return noop;
 
-					return useEscapeKeydown(node, { handler: handleClose }).destroy;
-				}),
+					unsubEscape = useEscapeKeydown(node, {
+						handler: handleClose,
+						enabled: $closeOnEscape,
+					}).destroy;
 
-				effect([isVisible], ([$isVisible]) => {
-					tick().then(() => {
-						if (!$isVisible) {
-							deactivate();
-						} else {
-							activate();
-						}
-					});
-				})
+					unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
+				}
 			);
 
 			return {
 				destroy: () => {
 					unsubScroll();
-					destroy();
+					unsubDerived();
+					unsubModal();
+					unsubEscape();
+					unsubFocusTrap();
 				},
 			};
 		},

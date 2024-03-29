@@ -1,74 +1,25 @@
-// Modified from Grail UI v0.9.6 (2023-06-10)
-// Source: https://github.com/grail-ui/grail-ui
-// https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/focusTrap/focusTrap.ts
-
-import type { ActivateOptions, DeactivateOptions, FocusTrap } from 'focus-trap';
-import type { FocusTrapConfig, FocusTrapReturn } from './types.js';
-import { writable, readonly } from 'svelte/store';
+import type { FocusTrapConfig } from './types.js';
 import { createFocusTrap as _createFocusTrap } from 'focus-trap';
+import { noop } from '$lib/internal/helpers/callbacks.js';
+import type { Action } from 'svelte/action';
 
-export function createFocusTrap(config: FocusTrapConfig = {}) {
-	let trap: undefined | FocusTrap;
+export const useFocusTrap = ((node, config = {}) => {
+	let unsub = noop;
 
-	const { immediate, ...focusTrapOptions } = { immediate: true, ...config };
-	const hasFocus = writable(false);
-	const isPaused = writable(false);
-
-	const activate = (opts?: ActivateOptions) => trap?.activate(opts);
-	const deactivate = (opts?: DeactivateOptions) => {
-		trap?.deactivate(opts);
-	};
-
-	const pause = () => {
-		if (trap) {
-			trap.pause();
-			isPaused.set(true);
-		}
-	};
-
-	const unpause = () => {
-		if (trap) {
-			trap.unpause();
-			isPaused.set(false);
-		}
-	};
-
-	const useFocusTrap = (node: HTMLElement) => {
-		trap = _createFocusTrap(node, {
+	const update = (config: FocusTrapConfig) => {
+		unsub();
+		const trap = _createFocusTrap(node, {
 			returnFocusOnDeactivate: false,
 			allowOutsideClick: true,
 			escapeDeactivates: false,
 			clickOutsideDeactivates: false,
-			...focusTrapOptions,
-			onActivate() {
-				hasFocus.set(true);
-				config.onActivate?.();
-			},
-			onDeactivate() {
-				hasFocus.set(false);
-				config.onDeactivate?.();
-			},
+			...config,
 		});
-
-		if (immediate) {
-			activate();
-		}
-
-		return {
-			destroy() {
-				deactivate();
-				trap = undefined;
-			},
-		};
+		unsub = trap.deactivate;
+		trap.activate();
 	};
 
-	return {
-		useFocusTrap,
-		hasFocus: readonly(hasFocus),
-		isPaused: readonly(isPaused),
-		activate,
-		deactivate,
-		pause,
-		unpause,
-	} satisfies FocusTrapReturn;
-}
+	update(config);
+
+	return { destroy: unsub, update };
+}) satisfies Action<HTMLElement, FocusTrapConfig>;

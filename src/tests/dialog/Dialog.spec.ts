@@ -29,7 +29,6 @@ async function open(props: CreateDialogProps = {}) {
 	const { user, trigger, content } = returned;
 	expect(content).not.toBeVisible();
 	await user.click(trigger);
-	await sleep(100);
 	expect(content).toBeVisible();
 	return returned;
 }
