@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PortalNestedTest, { structure, type Structure } from './PortalNested.svelte';
 import { testKbd as kbd } from '../utils.js';
@@ -8,9 +8,9 @@ type UserEventUser = ReturnType<typeof userEvent.setup>;
 
 const assertNotVisibleOrNull = async (element: HTMLElement | null) => {
 	if (element !== null) {
-		expect(element).not.toBeVisible();
+		await waitFor(() => expect(element).not.toBeVisible());
 	} else {
-		expect(element).toBeNull();
+		await waitFor(() => expect(element).toBeNull());
 	}
 };
 
@@ -24,7 +24,7 @@ const testComponent = async (component: Structure, level: number, user: UserEven
 	// At the root, the root trigger and outside should be visible, and the content  must not be.
 	expect(getTrigger()).toBeVisible();
 	expect(getOutside()).toBeVisible();
-	assertNotVisibleOrNull(getContent());
+	await assertNotVisibleOrNull(getContent());
 
 	// Click the trigger
 	await user.click(getTrigger());
@@ -42,7 +42,7 @@ const testComponent = async (component: Structure, level: number, user: UserEven
 		// The children of its children must all be invisible still
 		for (const grandChild of child.children ?? []) {
 			const grandChildTrigger = screen.queryByTestId(`${grandChild.name}-trigger-${level + 2}`);
-			assertNotVisibleOrNull(grandChildTrigger);
+			await assertNotVisibleOrNull(grandChildTrigger);
 		}
 
 		await testComponent(child, level + 1, user);
@@ -54,7 +54,7 @@ const testComponent = async (component: Structure, level: number, user: UserEven
 	// By clicking escape
 	await user.keyboard(kbd.ESCAPE);
 	expect(getTrigger()).toBeVisible();
-	assertNotVisibleOrNull(getContent());
+	await assertNotVisibleOrNull(getContent());
 	expect(getOutside()).toBeVisible();
 
 	// Reopen
@@ -66,7 +66,7 @@ const testComponent = async (component: Structure, level: number, user: UserEven
 	// By clicking outside
 	await userEvent.click(getOutside());
 	expect(getTrigger()).toBeVisible();
-	assertNotVisibleOrNull(getContent());
+	await assertNotVisibleOrNull(getContent());
 	expect(getOutside()).toBeVisible();
 };
 

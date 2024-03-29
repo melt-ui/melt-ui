@@ -71,7 +71,7 @@ export const useEscapeKeydown = ((node, config = {}) => {
 	};
 }) satisfies Action<HTMLElement, EscapeKeydownConfig>;
 
-export const isHighestLayerEscapeKey = (node: HTMLElement): boolean => {
+const isHighestLayerEscapeKey = (node: HTMLElement): boolean => {
 	const index = Array.from(layers).indexOf(node);
 	return index === layers.size - 1;
 };

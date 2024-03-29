@@ -1,10 +1,10 @@
 import { describe, it } from 'vitest';
-import { render } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
 import PopoverTagsInput from './PopoverTagsInput.svelte';
 import PopoverSelect from './PopoverSelect.svelte';
-import { testKbd as kbd } from '../utils.js';
+import { assertActiveFocusTrap, testKbd as kbd } from '../utils.js';
 import type { PortalConfig } from '$lib/internal/actions/portal.js';
 
 function setupPopoverTooltip({
@@ -105,7 +105,7 @@ describe.each(portalTestOptions)('Portal Behaviors - $label', ({ portalType }) =
 			expect(elements.outside).toBeVisible();
 			await user.click(elements.outside);
 			expect(elements.tooltipContent).not.toBeVisible();
-			expect(elements.popoverContent).not.toBeVisible();
+			await waitFor(() => expect(elements.popoverContent).not.toBeVisible());
 		});
 
 		it('should not close the popover nor the tooltip when escape is pressed while tooltip is open and tooltip `closeOnEscape` is false', async () => {
@@ -166,8 +166,7 @@ describe.each(portalTestOptions)('Portal Behaviors - $label', ({ portalType }) =
 			expect(elements.selectMenu).not.toBeVisible();
 			expect(elements.popoverContent).toBeVisible();
 
-			await user.tab({ shift: true });
-			expect(elements.popoverTrigger).not.toHaveFocus();
+			await assertActiveFocusTrap(user, elements.popoverContent);
 		});
 
 		it('should not deactivate popover focus trap on outside click while select is open', async () => {
@@ -182,11 +181,9 @@ describe.each(portalTestOptions)('Portal Behaviors - $label', ({ portalType }) =
 			expect(elements.selectMenu).toBeVisible();
 
 			await user.click(elements.outside);
-			expect(elements.selectMenu).not.toBeVisible();
+			await waitFor(() => expect(elements.selectMenu).not.toBeVisible());
 			expect(elements.popoverContent).toBeVisible();
-
-			await user.tab({ shift: true });
-			expect(elements.popoverTrigger).not.toHaveFocus();
+			await assertActiveFocusTrap(user, elements.popoverContent);
 		});
 	});
 });

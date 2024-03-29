@@ -6,8 +6,6 @@ import type { ActivateOptions, DeactivateOptions, FocusTrap } from 'focus-trap';
 import type { FocusTrapConfig, FocusTrapReturn } from './types.js';
 import { writable, readonly } from 'svelte/store';
 import { createFocusTrap as _createFocusTrap } from 'focus-trap';
-import { isFunction } from '$lib/internal/helpers/is.js';
-import { isHighestLayerInteractOutside, isHighestLayerEscapeKey } from '../index.js';
 
 export function createFocusTrap(config: FocusTrapConfig = {}) {
 	let trap: undefined | FocusTrap;
@@ -39,14 +37,9 @@ export function createFocusTrap(config: FocusTrapConfig = {}) {
 		trap = _createFocusTrap(node, {
 			allowOutsideClick: true,
 			clickOutsideDeactivates: false,
+			escapeDeactivates: false,
+			returnFocusOnDeactivate: false,
 			...focusTrapOptions,
-			escapeDeactivates: (e) => {
-				if (!isHighestLayerEscapeKey(node)) return false;
-				if (isFunction(focusTrapOptions.escapeDeactivates)) {
-					return focusTrapOptions.escapeDeactivates(e);
-				}
-				return focusTrapOptions.escapeDeactivates ?? true;
-			},
 			onActivate() {
 				hasFocus.set(true);
 				config.onActivate?.();

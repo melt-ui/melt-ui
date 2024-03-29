@@ -3,7 +3,7 @@ import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import { userEvent } from '@testing-library/user-event';
-import { testKbd as kbd, touch } from '../utils.js';
+import { assertActiveFocusTrap, testKbd as kbd, touch } from '../utils.js';
 import { sleep } from '$lib/internal/helpers/index.js';
 import type { CreateDialogProps } from '$lib/index.js';
 
@@ -224,29 +224,19 @@ describe('Dialog', () => {
 	});
 
 	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
-		const { getByTestId, user, content } = await open({
-			closeOnEscape: false,
-		});
-		const closer = getByTestId('floating-closer');
-
+		const { user, content } = await open({ closeOnEscape: false });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 		expect(content).toHaveFocus();
-		await user.tab({ shift: true });
-		expect(closer).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
-		const { getByTestId, user, overlay, content } = await open({
-			closeOnOutsideClick: false,
-		});
-		const closer = getByTestId('floating-closer');
-
+		const { user, overlay, content } = await open({ closeOnOutsideClick: false });
 		await user.click(overlay);
 		expect(content).toBeVisible();
 		expect(content).toHaveFocus();
-		await user.tab({ shift: true });
-		expect(closer).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it('Returns focus to trigger when manually setting `open` state to false', async () => {
@@ -264,10 +254,9 @@ describe('Dialog', () => {
 	});
 
 	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
-		const { getByTestId, user, trigger } = await open();
+		const { getByTestId, user, content } = await open();
 		await user.click(getByTestId('click-interceptor'));
-		await user.tab({ shift: true });
-		expect(trigger).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	describe('Mouse Device', () => {

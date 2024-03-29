@@ -1,4 +1,3 @@
-import { sleep } from '$lib/internal/helpers/index.js';
 import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import DialogNestedTest from './DialogNestedTest.svelte';
@@ -108,8 +107,8 @@ describe('Nested Dialogs', () => {
 		await waitFor(() => expect(getByTestId('content')).not.toBeNull());
 		// Testing focus-trap is a bit flaky. So the focusable element is
 		// always content here.
-		await waitFor(() => expect(document.activeElement).toBe(getByTestId('content')));
+		expect(document.activeElement).toBe(getByTestId('content'));
 		await user.tab();
-		await waitFor(() => expect(document.activeElement).toBe(getByTestId('content')));
+		expect(document.activeElement).toBe(getByTestId('content'));
 	});
 });
