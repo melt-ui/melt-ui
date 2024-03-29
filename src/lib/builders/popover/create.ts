@@ -142,7 +142,6 @@ export function createPopover(args?: CreatePopoverProps) {
 								modal: {
 									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
 									onClose: handleClose,
-									open: $isVisible,
 									closeOnInteractOutside: $closeOnOutsideClick,
 								},
 								escapeKeydown: $closeOnEscape
