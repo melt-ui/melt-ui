@@ -178,12 +178,11 @@ export function createDialog(props?: CreateDialogProps) {
 			let deactivate = noop;
 
 			const destroy = executeCallbacks(
-				effect([open, closeOnEscape], ([$open, $closeOnEscape]) => {
+				effect([open], ([$open]) => {
 					if (!$open) return;
 
 					const focusTrap = createFocusTrap({
 						immediate: false,
-						escapeDeactivates: $closeOnEscape,
 						allowOutsideClick: true,
 						returnFocusOnDeactivate: false,
 						fallbackFocus: node,

@@ -21,11 +21,12 @@
 			<h2 use:melt={$title} data-testid="title">Title</h2>
 			<p use:melt={$description} data-testid="description">Description</p>
 			<button on:click={() => open.update((p) => !p)} data-testid="toggle-open">toggle open</button>
-			<input
-				data-testid="input-keydown-interceptor"
-				type="text"
+			<button
+				data-testid="escape-interceptor"
 				on:keydown={(e) => e.key === kbd.ESCAPE && e.stopPropagation()}
-			/>
+			>
+				escape interceptor
+			</button>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
