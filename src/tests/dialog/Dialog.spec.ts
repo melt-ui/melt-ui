@@ -272,7 +272,7 @@ describe('Dialog', () => {
 		expect(description.id).toBe(ids.description);
 	});
 
-	it("Doesn't close on pointerup if the previous pointerdown didn't occur inside the dialog", async () => {
+	it("Doesn't close on pointerup if the previous pointerdown occurred inside the dialog", async () => {
 		const { getByTestId, user, trigger } = setup();
 		const overlay = getByTestId('overlay');
 		const content = getByTestId('content');
