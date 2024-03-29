@@ -90,25 +90,21 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger.get());
-		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
 	}
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, portal, ids.content],
-		returned: ([$isVisible, $portal, $contentId]) => {
+		stores: [isVisible, open, activeTrigger, portal, ids.content],
+		returned: ([$isVisible, $open, $activeTrigger, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible && isBrowser ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
@@ -278,14 +274,15 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const close = makeElement(name('close'), {
@@ -339,6 +336,16 @@ export function createPopover(args?: CreatePopoverProps) {
 			unsubs.forEach((unsub) => unsub());
 		};
 	});
+
+	effect(
+		open,
+		($open) => {
+			if (!isBrowser || $open) return;
+			const triggerEl = document.getElementById(ids.trigger.get());
+			handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
+		},
+		{ skipFirstRun: true }
+	);
 
 	return {
 		ids,
