@@ -14,7 +14,7 @@ export type CreateTooltipProps = {
 	openDelay?: number;
 	closeDelay?: number;
 	forceVisible?: boolean;
-	closeOnEscape?: boolean;
+	closeOnEscape?: boolean | null;
 	disableHoverableContent?: boolean;
 	/**
 	 * If set to `true`, whenever you open this tooltip, all other tooltips

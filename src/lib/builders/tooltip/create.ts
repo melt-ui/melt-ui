@@ -10,7 +10,6 @@ import {
 	isDocument,
 	isElement,
 	isTouch,
-	kbd,
 	makeHullFromElements,
 	noop,
 	omit,
@@ -21,7 +20,7 @@ import {
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
-import { useFloating, usePortal } from '$lib/internal/actions/index.js';
+import { useEscapeKeydown, useFloating, usePortal } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
@@ -144,17 +143,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
-			const keydownHandler = (e: KeyboardEvent) => {
-				if (closeOnEscape.get() && e.key === kbd.ESCAPE) {
-					if (openTimeout) {
-						window.clearTimeout(openTimeout);
-						openTimeout = null;
-					}
-
-					open.set(false);
-				}
-			};
-
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', () => {
 					const $closeOnPointerDown = closeOnPointerDown.get();
@@ -181,9 +169,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
-				addMeltEventListener(node, 'keydown', keydownHandler),
-				addEventListener(document, 'keydown', keydownHandler)
+				addMeltEventListener(node, 'blur', () => closeTooltip(true))
 			);
 
 			return {
@@ -208,21 +194,39 @@ export function createTooltip(props?: CreateTooltipProps) {
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
 			let unsubPortal = noop;
+			let unsubEscapeKeydown = noop;
 
 			const unsubDerived = effect(
-				[isVisible, positioning, portal],
-				([$isVisible, $positioning, $portal]) => {
+				[isVisible, positioning, portal, closeOnEscape],
+				([$isVisible, $positioning, $portal, $closeOnEscape]) => {
 					unsubPortal();
 					unsubFloating();
+					unsubEscapeKeydown();
 					const triggerEl = getEl('trigger');
 					if (!$isVisible || !triggerEl) return;
 
 					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
+						unsubEscapeKeydown();
 						const portalDest = getPortalDestination(node, $portal);
 						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
 						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
+
+						const onEscapeKeyDown = () => {
+							if (openTimeout) {
+								window.clearTimeout(openTimeout);
+								openTimeout = null;
+							}
+							open.set(false);
+						};
+
+						if ($closeOnEscape !== null) {
+							unsubEscapeKeydown = useEscapeKeydown(node, {
+								enabled: $closeOnEscape,
+								handler: onEscapeKeyDown,
+							}).destroy;
+						}
 					});
 				}
 			);

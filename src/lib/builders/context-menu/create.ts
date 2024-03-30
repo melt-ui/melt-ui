@@ -174,7 +174,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: $closeOnEscape === null ? null : { enabled: $closeOnEscape },
 							},
 						}).destroy;
 					});

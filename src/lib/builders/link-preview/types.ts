@@ -71,7 +71,7 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: boolean | null;
 
 	/**
 	 * The size of the optional arrow element in pixels

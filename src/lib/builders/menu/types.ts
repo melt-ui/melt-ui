@@ -38,7 +38,7 @@ export type _CreateMenuProps = {
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: boolean | null;
 
 	/**
 	 * Whether or not to close the menu when an internal item is clicked.
@@ -182,7 +182,7 @@ export type _MenuBuilderOptions = {
 		preventScroll: WithGet<Writable<boolean | undefined>>;
 		loop: WithGet<Writable<boolean | undefined>>;
 		dir: WithGet<Writable<TextDirection>>;
-		closeOnEscape: WithGet<Writable<boolean>>;
+		closeOnEscape: WithGet<Writable<boolean | null>>;
 		closeOnOutsideClick: WithGet<Writable<boolean>>;
 		portal: WithGet<Writable<string | HTMLElement | undefined | null>>;
 		forceVisible: WithGet<Writable<boolean>>;

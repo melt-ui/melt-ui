@@ -19,7 +19,7 @@ export type CreateMenubarProps = {
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: boolean | null;
 
 	/**
 	 * Whether to prevent scrolling the body when any menu within

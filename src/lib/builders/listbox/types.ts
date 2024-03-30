@@ -109,7 +109,7 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: boolean | null;
 
 	/**
 	 * A custom event handler for the "outside click" event, which

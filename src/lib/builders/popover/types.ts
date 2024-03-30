@@ -51,7 +51,7 @@ export type CreatePopoverProps = {
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: boolean | null;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.

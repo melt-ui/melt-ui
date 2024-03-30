@@ -17,7 +17,7 @@ export type CreateDialogProps = {
 	 *
 	 * @default true
 	 */
-	closeOnEscape?: boolean;
+	closeOnEscape?: boolean | null;
 
 	/**
 	 * If true, the dialog will close when the user clicks outside of it.

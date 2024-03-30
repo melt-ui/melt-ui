@@ -2,7 +2,6 @@ import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
-	addEventListener,
 	addHighlight,
 	addMeltEventListener,
 	makeElement,
@@ -171,8 +170,15 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick],
-					([$rootOpen, $rootActiveTrigger, $positioning, $portal, $closeOnOutsideClick]) => {
+					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick, closeOnEscape],
+					([
+						$rootOpen,
+						$rootActiveTrigger,
+						$positioning,
+						$portal,
+						$closeOnOutsideClick,
+						$closeOnEscape,
+					]) => {
 						unsubPopper();
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
@@ -200,6 +206,13 @@ export function createMenubar(props?: CreateMenubarProps) {
 										},
 										open: $rootOpen,
 									},
+									escapeKeydown:
+										$closeOnEscape === null
+											? null
+											: {
+													enabled: $closeOnEscape,
+													handler: () => activeMenu.set(''),
+											  },
 								},
 							}).destroy;
 						});
@@ -576,12 +589,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 				if (MENUBAR_NAV_KEYS.includes(e.key)) {
 					handleMenubarNavigation(e);
-				}
-			}),
-			addEventListener(document, 'keydown', (e) => {
-				if (closeOnEscape.get() && e.key === kbd.ESCAPE) {
-					window.clearTimeout(closeTimer.get());
-					activeMenu.set('');
 				}
 			})
 		);

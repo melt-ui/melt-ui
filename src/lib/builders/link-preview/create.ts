@@ -215,7 +215,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 								},
 								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: $closeOnEscape === null ? null : { enabled: $closeOnEscape },
 							},
 						}).destroy;
 					});
