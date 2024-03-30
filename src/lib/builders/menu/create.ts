@@ -350,6 +350,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
+			let unsubPortal = noop;
 			let unsubEscapeKeydown = noop;
 
 			if (closeOnEscape.get()) {
@@ -361,17 +362,19 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				}
 			}
 
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			const unsubDerived = effect([portal], ([$portal]) => {
+				unsubPortal();
+				if ($portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
-				return usePortal(node, portalDestination).destroy;
+				if (portalDestination === null) return;
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
-					unsubEscapeKeydown();
+					unsubDerived();
 					unsubPortal();
+					unsubEscapeKeydown();
 				},
 			};
 		},
