@@ -2,7 +2,6 @@ import { describe, it } from 'vitest';
 import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import PopoverTooltip from './PopoverTooltip.svelte';
-import { sleep } from '$lib/internal/helpers/sleep.js';
 
 function setupPopoverTooltip() {
 	const user = userEvent.setup();
@@ -60,7 +59,6 @@ describe('Portal Behaviors - Popover & Tooltip', () => {
 		await user.click(elements.tooltipContent);
 		expect(elements.tooltipContent).toBeVisible();
 		expect(elements.popoverContent).toBeVisible();
-		await sleep(100);
 		expect(elements.outside).toBeVisible();
 		await user.click(elements.outside);
 		await waitFor(() => expect(elements.tooltipContent).not.toBeVisible());

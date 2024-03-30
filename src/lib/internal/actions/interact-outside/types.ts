@@ -34,6 +34,7 @@ export type InteractOutsideConfig = {
 
 	/**
 	 * Whether or not outside interactions should be handled.
+	 * @default true
 	 */
 	enabled?: boolean;
 };

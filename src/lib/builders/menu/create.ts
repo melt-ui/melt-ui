@@ -212,7 +212,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 										return true;
 									},
 									onClose: () => rootOpen.set(false),
-									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
