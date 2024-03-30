@@ -194,7 +194,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 									onClose: () => {
 										activeMenu.set('');
 									},
-									open: $rootOpen,
 								},
 							},
 						}).destroy;

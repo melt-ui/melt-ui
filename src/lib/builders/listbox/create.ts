@@ -485,7 +485,6 @@ export function createListbox<
 								modal: {
 									closeOnInteractOutside: $closeOnOutsideClick,
 									onClose: closeMenu,
-									open: $isVisible,
 									shouldCloseOnInteractOutside: (e) => {
 										onOutsideClick.get()?.(e);
 										if (e.defaultPrevented) return false;
