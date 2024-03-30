@@ -21,7 +21,6 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
@@ -224,15 +223,18 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-portal': portalAttr($portal),
 			} as const),
 		action: (node: HTMLElement) => {
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			let unsubPortal = noop;
+			const unsubDerived = effect([portal, isVisible], ([$portal, $isVisible]) => {
+				unsubPortal();
+				if (!$isVisible || $portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
-				return usePortal(node, portalDestination).destroy;
+				if (portalDestination === null) return;
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
+					unsubDerived();
 					unsubPortal();
 				},
 			};

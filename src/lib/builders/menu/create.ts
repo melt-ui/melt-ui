@@ -350,6 +350,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 		action: (node: HTMLElement) => {
 			let unsubEscapeKeydown = noop;
+			let unsubPortal = noop;
 
 			if (closeOnEscape.get()) {
 				const escapeKeydown = useEscapeKeydown(node, {
@@ -360,15 +361,17 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				}
 			}
 
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			const unsubDerived = effect([portal, isVisible], ([$portal, $isVisible]) => {
+				unsubPortal();
+				if (!$isVisible || $portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
-				return usePortal(node, portalDestination).destroy;
+				if (portalDestination === null) return;
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
+					unsubDerived();
 					unsubEscapeKeydown();
 					unsubPortal();
 				},

@@ -217,16 +217,13 @@ export function createPopover(args?: CreatePopoverProps) {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				'aria-hidden': 'true',
 				'data-state': stateAttr($isVisible),
 			} as const;
 		},
 		action: (node: HTMLElement) => {
 			let unsubEscapeKeydown = noop;
-			let unsubDerived = noop;
 			let unsubPortal = noop;
 
 			if (closeOnEscape.get()) {
@@ -240,9 +237,9 @@ export function createPopover(args?: CreatePopoverProps) {
 				}
 			}
 
-			unsubDerived = effect([portal], ([$portal]) => {
+			const unsubDerived = effect([portal, isVisible], ([$portal, $isVisible]) => {
 				unsubPortal();
-				if ($portal === null) return;
+				if (!$isVisible || $portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return;
 				unsubPortal = usePortal(node, portalDestination).destroy;
