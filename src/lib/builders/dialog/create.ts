@@ -154,33 +154,27 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 
 		action: (node: HTMLElement) => {
-			let activate = noop;
-			let deactivate = noop;
 			let unsubEscape = noop;
+			let unsubModal = noop;
+			let unsubFocusTrap = noop;
 
-			const destroy = executeCallbacks(
-				effect([open], ([$open]) => {
-					if (!$open) return;
+			const ubsubDerived = effect(
+				[isVisible, closeOnOutsideClick, closeOnEscape],
+				([$isVisible, $closeOnOutsideClick, $closeOnEscape]) => {
+					unsubEscape();
+					unsubModal();
+					unsubFocusTrap();
+					if (!$isVisible) return;
 
-					const focusTrap = createFocusTrap({
-						immediate: false,
+					unsubFocusTrap = createFocusTrap({
+						immediate: true,
 						allowOutsideClick: true,
 						returnFocusOnDeactivate: false,
 						fallbackFocus: node,
-					});
+					}).useFocusTrap(node).destroy;
 
-					activate = focusTrap.activate;
-					deactivate = focusTrap.deactivate;
-					const ac = focusTrap.useFocusTrap(node);
-					if (ac && ac.destroy) {
-						return ac.destroy;
-					} else {
-						return focusTrap.deactivate;
-					}
-				}),
-				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
-					return useModal(node, {
-						open: $open,
+					unsubModal = useModal(node, {
+						open: true,
 						closeOnInteractOutside: $closeOnOutsideClick,
 						onClose() {
 							handleClose();
@@ -191,32 +185,21 @@ export function createDialog(props?: CreateDialogProps) {
 							return true;
 						},
 					}).destroy;
-				}),
-				effect([closeOnEscape], ([$closeOnEscape]) => {
-					unsubEscape();
-					if ($closeOnEscape === null) return;
-					unsubEscape = useEscapeKeydown(node, {
-						handler: handleClose,
-						enabled: $closeOnEscape,
-					}).destroy;
-				}),
 
-				effect([isVisible], ([$isVisible]) => {
-					tick().then(() => {
-						if (!$isVisible) {
-							deactivate();
-						} else {
-							activate();
-						}
-					});
-				})
+					if ($closeOnEscape !== null) {
+						unsubEscape = useEscapeKeydown(node, {
+							handler: handleClose,
+							enabled: $closeOnEscape,
+						}).destroy;
+					}
+				}
 			);
 
 			return {
 				destroy: () => {
 					unsubScroll();
-					destroy();
 					unsubEscape();
+					ubsubDerived();
 				},
 			};
 		},
