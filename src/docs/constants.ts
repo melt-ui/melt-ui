@@ -23,7 +23,7 @@ export const DESCRIPTIONS = {
 		'A callback which is called when the item is selected. To prevent the default behavior, call `e.preventDefault()` in the callback.',
 	LOOP: 'Whether or not the focus should loop back to the first item when the last item is reached.',
 	CLOSE_ON_ESCAPE: (name = 'element') =>
-		`Whether or not to close the ${name} when the escape key is pressed.`,
+		`Whether or not to close the ${name} when the escape key is pressed. Pass in \`null\` to let the parent floating element determine its own response. This differs from passing \`false\`, where the child specifies that it should not close when the escape key is pressed, thus preventing the parent from closing as well.`,
 	CLOSE_ON_CLICK_OUTSIDE: (name = 'element') =>
 		`Whether or not to close the ${name} when the user clicks outside of it.`,
 	BUILDER: (name: string) => `The builder function used to create the ${name} component.`,
@@ -83,7 +83,7 @@ export const PROPS = {
 	}),
 	CLOSE_ON_ESCAPE: (args: PropArgs = {}): Prop => ({
 		name: 'closeOnEscape',
-		type: 'boolean',
+		type: 'boolean | null',
 		description: DESCRIPTIONS.CLOSE_ON_ESCAPE(args.name ?? 'floating element'),
 		default: args.default ?? 'true',
 	}),
