@@ -27,7 +27,6 @@ import { generateIds } from '../../internal/helpers/id.js';
 import { omit } from '../../internal/helpers/object.js';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
-import { tick } from 'svelte';
 
 type LinkPreviewParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<LinkPreviewParts>('hover-card');
@@ -187,39 +186,33 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
-
-					tick().then(() => {
-						unsubPopper();
-						unsubPopper = usePopper(node, {
-							anchorElement: $activeTrigger,
-							open: open,
-							options: {
-								floating: $positioning,
-								modal: {
-									closeOnInteractOutside: $closeOnOutsideClick,
-									onClose: () => {
-										open.set(false);
-										$activeTrigger.focus();
-									},
-									shouldCloseOnInteractOutside: (e) => {
-										onOutsideClick.get()?.(e);
-										if (e.defaultPrevented) return false;
-										if (
-											isHTMLElement($activeTrigger) &&
-											$activeTrigger.contains(e.target as Element)
-										)
-											return false;
-										return true;
-									},
-									open: $isVisible,
+					unsubPopper = usePopper(node, {
+						anchorElement: $activeTrigger,
+						open: open,
+						options: {
+							floating: $positioning,
+							modal: {
+								closeOnInteractOutside: $closeOnOutsideClick,
+								onClose: () => {
+									open.set(false);
+									$activeTrigger.focus();
 								},
-								portal: getPortalDestination(node, $portal),
-								focusTrap: null,
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								shouldCloseOnInteractOutside: (e) => {
+									onOutsideClick.get()?.(e);
+									if (e.defaultPrevented) return false;
+									if (isHTMLElement($activeTrigger) && $activeTrigger.contains(e.target as Element))
+										return false;
+									return true;
+								},
+								open: $isVisible,
 							},
-						}).destroy;
-					});
-				}
+							portal: getPortalDestination(node, $portal),
+							focusTrap: null,
+							escapeKeydown: $closeOnEscape ? undefined : null,
+						},
+					}).destroy;
+				},
+				{ runAfterTick: true }
 			);
 
 			unsub = executeCallbacks(

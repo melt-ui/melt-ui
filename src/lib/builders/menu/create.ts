@@ -189,37 +189,35 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
-					tick().then(() => {
-						unsubPopper();
-						setMeltMenuAttribute(node, selector);
-						unsubPopper = usePopper(node, {
-							anchorElement: $rootActiveTrigger,
-							open: rootOpen,
-							options: {
-								floating: $positioning,
-								modal: {
-									closeOnInteractOutside: $closeOnOutsideClick,
-									shouldCloseOnInteractOutside: (e) => {
-										onOutsideClick.get()?.(e);
-										if (e.defaultPrevented) return false;
+					setMeltMenuAttribute(node, selector);
+					unsubPopper = usePopper(node, {
+						anchorElement: $rootActiveTrigger,
+						open: rootOpen,
+						options: {
+							floating: $positioning,
+							modal: {
+								closeOnInteractOutside: $closeOnOutsideClick,
+								shouldCloseOnInteractOutside: (e) => {
+									onOutsideClick.get()?.(e);
+									if (e.defaultPrevented) return false;
 
-										if (
-											isHTMLElement($rootActiveTrigger) &&
-											$rootActiveTrigger.contains(e.target as Element)
-										) {
-											return false;
-										}
-										return true;
-									},
-									onClose: () => rootOpen.set(false),
-									open: $isVisible,
+									if (
+										isHTMLElement($rootActiveTrigger) &&
+										$rootActiveTrigger.contains(e.target as Element)
+									) {
+										return false;
+									}
+									return true;
 								},
-								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								onClose: () => rootOpen.set(false),
+								open: $isVisible,
 							},
-						}).destroy;
-					});
-				}
+							portal: getPortalDestination(node, $portal),
+							escapeKeydown: $closeOnEscape ? undefined : null,
+						},
+					}).destroy;
+				},
+				{ runAfterTick: true }
 			);
 
 			const unsubEvents = executeCallbacks(
@@ -783,23 +781,21 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (!$subIsVisible) return;
 						const activeTrigger = subActiveTrigger.get();
 						if (!activeTrigger) return;
-						tick().then(() => {
-							unsubPopper();
-							const parentMenuEl = getParentMenu(activeTrigger);
+						const parentMenuEl = getParentMenu(activeTrigger);
 
-							unsubPopper = usePopper(node, {
-								anchorElement: activeTrigger,
-								open: subOpen,
-								options: {
-									floating: $positioning,
-									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
-									modal: null,
-									focusTrap: null,
-									escapeKeydown: null,
-								},
-							}).destroy;
-						});
-					}
+						unsubPopper = usePopper(node, {
+							anchorElement: activeTrigger,
+							open: subOpen,
+							options: {
+								floating: $positioning,
+								portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
+								modal: null,
+								focusTrap: null,
+								escapeKeydown: null,
+							},
+						}).destroy;
+					},
+					{ runAfterTick: true }
 				);
 
 				const unsubEvents = executeCallbacks(

@@ -474,43 +474,38 @@ export function createListbox<
 					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
 					([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
 						unsubPopper();
-
 						if (!$isVisible || !$activeTrigger) return;
-
-						tick().then(() => {
-							unsubPopper();
-							const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
-
-							unsubPopper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-									focusTrap: null,
-									modal: {
-										closeOnInteractOutside: $closeOnOutsideClick,
-										onClose: closeMenu,
-										open: $isVisible,
-										shouldCloseOnInteractOutside: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return false;
-											const target = e.target;
-											if (!isElement(target)) return false;
-											if (target === $activeTrigger || $activeTrigger.contains(target)) {
-												return false;
-											}
-											// return opposite of the result of the ignoreHandler
-											if (ignoreHandler(e)) return false;
-											return true;
-										},
+						const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
+						unsubPopper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: null,
+								modal: {
+									closeOnInteractOutside: $closeOnOutsideClick,
+									onClose: closeMenu,
+									open: $isVisible,
+									shouldCloseOnInteractOutside: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return false;
+										const target = e.target;
+										if (!isElement(target)) return false;
+										if (target === $activeTrigger || $activeTrigger.contains(target)) {
+											return false;
+										}
+										// return opposite of the result of the ignoreHandler
+										if (ignoreHandler(e)) return false;
+										return true;
 									},
-
-									escapeKeydown: null,
-									portal: getPortalDestination(node, $portal),
 								},
-							}).destroy;
-						});
-					}
+
+								escapeKeydown: null,
+								portal: getPortalDestination(node, $portal),
+							},
+						}).destroy;
+					},
+					{ runAfterTick: true }
 				)
 			);
 			return {

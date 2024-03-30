@@ -23,7 +23,6 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
-import { tick } from 'svelte';
 import { derived, writable, type Readable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
@@ -156,29 +155,27 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
-					tick().then(() => {
-						unsubPopper();
-						setMeltMenuAttribute(node, selector);
-						const $virtual = virtual.get();
-						unsubPopper = usePopper(node, {
-							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
-							open: rootOpen,
-							options: {
-								floating: $positioning,
-								modal: {
-									closeOnInteractOutside: $closeOnOutsideClick,
-									onClose: () => {
-										rootOpen.set(false);
-									},
-									shouldCloseOnInteractOutside: handleClickOutside,
-									open: $isVisible,
+					setMeltMenuAttribute(node, selector);
+					const $virtual = virtual.get();
+					unsubPopper = usePopper(node, {
+						anchorElement: $virtual ? $virtual : $rootActiveTrigger,
+						open: rootOpen,
+						options: {
+							floating: $positioning,
+							modal: {
+								closeOnInteractOutside: $closeOnOutsideClick,
+								onClose: () => {
+									rootOpen.set(false);
 								},
-								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								shouldCloseOnInteractOutside: handleClickOutside,
+								open: $isVisible,
 							},
-						}).destroy;
-					});
-				}
+							portal: getPortalDestination(node, $portal),
+							escapeKeydown: $closeOnEscape ? undefined : null,
+						},
+					}).destroy;
+				},
+				{ runAfterTick: true }
 			);
 
 			const unsubEvents = executeCallbacks(
