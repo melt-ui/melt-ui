@@ -138,11 +138,16 @@ describe('Popover (Default)', () => {
 		expect(getByTestId('closeFocus')).toHaveFocus();
 	});
 
-	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
-		const { getByTestId, user, trigger } = setup();
-		const content = getByTestId('content');
-		await user.click(trigger);
+	it("Doesn't deactivate focus trap on escape that is intercepted", async () => {
+		const { getByTestId, user, content } = await open();
+		getByTestId('escape-interceptor').focus();
+		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
+		await assertActiveFocusTrap(user, content);
+	});
+
+	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
+		const { getByTestId, user, content } = await open();
 		await user.click(getByTestId('click-interceptor'));
 		expect(content).toBeVisible();
 		await assertActiveFocusTrap(user, content);

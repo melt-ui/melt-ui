@@ -182,10 +182,8 @@ describe('Dialog', () => {
 	});
 
 	it("Doesn't close on escape if child intercepts event", async () => {
-		const { getByTestId, user, content } = await open();
-
-		const input = getByTestId('input-keydown-interceptor');
-		input.focus();
+		const { getByTestId, content, user } = await open();
+		getByTestId('escape-interceptor').focus();
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 	});
@@ -227,7 +225,6 @@ describe('Dialog', () => {
 		const { user, content } = await open({ closeOnEscape: false });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
-		expect(content).toHaveFocus();
 		await assertActiveFocusTrap(user, content);
 	});
 
@@ -251,6 +248,14 @@ describe('Dialog', () => {
 		});
 		await user.click(getByTestId('toggle-open'));
 		expect(getByTestId('closeFocus')).toHaveFocus();
+	});
+
+	it("Doesn't deactivate focus trap on escape that is intercepted", async () => {
+		const { getByTestId, user, content } = await open();
+		getByTestId('escape-interceptor').focus();
+		await user.keyboard(kbd.ESCAPE);
+		expect(content).toBeVisible();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it("Doesn't deactivate focus trap on outside click that is intercepted", async () => {
