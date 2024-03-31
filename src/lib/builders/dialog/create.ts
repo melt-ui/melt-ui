@@ -217,10 +217,12 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const portalled = makeElement(name('portalled'), {
-		stores: portal,
-		returned: ($portal) =>
+		stores: [portal, isVisible],
+		returned: ([$portal, $isVisible]) =>
 			({
+				hidden: $isVisible ? undefined : true,
 				'data-portal': portalAttr($portal),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 			} as const),
 		action: (node: HTMLElement) => {
 			let unsubPortal = noop;
