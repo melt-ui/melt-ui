@@ -21,6 +21,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
@@ -134,6 +135,26 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 			} as const;
 		},
+		action: (node: HTMLElement) => {
+			let unsubEscapeKeydown = noop;
+
+			if (closeOnEscape.get()) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						handleClose();
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
+				}
+			}
+
+			return {
+				destroy() {
+					unsubEscapeKeydown();
+				},
+			};
+		},
 	});
 
 	const content = makeElement(name('content'), {
@@ -197,29 +218,22 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const portalled = makeElement(name('portalled'), {
-		stores: [portal, isVisible],
-		returned: ([$portal, $isVisible]) =>
+		stores: portal,
+		returned: ($portal) =>
 			({
-				hidden: $isVisible ? undefined : true,
 				'data-portal': portalAttr($portal),
-				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 			} as const),
-
 		action: (node: HTMLElement) => {
-			let unsubPortal = noop;
-
-			const unsubDerived = effect([isVisible, portal], ([$isVisible, $portal]) => {
-				unsubPortal();
-				if (!$isVisible || $portal === null) return;
+			const unsubPortal = effect([portal], ([$portal]) => {
+				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return;
-				unsubPortal = usePortal(node, portalDestination).destroy;
+				if (portalDestination === null) return noop;
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
 					unsubPortal();
-					unsubDerived();
 				},
 			};
 		},

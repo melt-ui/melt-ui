@@ -1,3 +1,4 @@
+import { useEscapeKeydown } from '$lib/internal/actions/index.js';
 import {
 	addEventListener,
 	addMeltEventListener,
@@ -8,6 +9,7 @@ import {
 	isContentEditable,
 	isHTMLInputElement,
 	kbd,
+	noop,
 	omit,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
@@ -69,12 +71,24 @@ export function createCombobox<
 				})
 			);
 
+			let unsubEscapeKeydown = noop;
+
+			const escape = useEscapeKeydown(node, {
+				handler: () => {
+					listbox.helpers.closeMenu();
+				},
+			});
+			if (escape && escape.destroy) {
+				unsubEscapeKeydown = escape.destroy;
+			}
+
 			const { destroy } = listbox.elements.trigger(node);
 
 			return {
 				destroy() {
 					destroy?.();
 					unsubscribe();
+					unsubEscapeKeydown();
 				},
 			};
 		},

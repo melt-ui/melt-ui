@@ -173,7 +173,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 									shouldCloseOnInteractOutside: handleClickOutside,
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: { enabled: $closeOnEscape },
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						}).destroy;
 					});
