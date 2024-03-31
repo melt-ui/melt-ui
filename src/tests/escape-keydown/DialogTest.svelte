@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
 
+	type $$Props = CreateDialogProps;
+
 	export let closeOnEscape: CreateDialogProps['closeOnEscape'] = true;
 
 	const {

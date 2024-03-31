@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { createMenubar, melt, type CreateMenubarProps } from '$lib/index.js';
+	import { createMenubar, melt, type CreateMenubarMenuProps } from '$lib/index.js';
 
-	type $$Props = CreateMenubarProps;
+	type $$Props = CreateMenubarMenuProps;
 
 	const {
 		elements: { menubar },
 		builders: { createMenu },
-	} = createMenubar($$restProps);
+	} = createMenubar();
 
 	const {
 		elements: { trigger, menu },
