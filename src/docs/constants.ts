@@ -25,7 +25,7 @@ export const DESCRIPTIONS = {
 	CLOSE_ON_ESCAPE: (name = 'element') =>
 		`Whether or not to close the ${name} when the escape key is pressed.`,
 	CLOSE_ON_CLICK_OUTSIDE: (name = 'element') =>
-		`Whether or not to close the ${name} when the user clicks outside of it.`,
+		`Whether or not to close the ${name} when the user clicks outside of it. Pass in \`null\` to let the parent floating element determine its own response. This differs from passing \`false\`, where the child specifies that it should not close on outside click, thus preventing the parent from closing as well.`,
 	BUILDER: (name: string) => `The builder function used to create the ${name} component.`,
 	PORTAL: (name = 'floating element') =>
 		`The element or selector to render the ${name} into. Nested floating elements are automatically rendered into their parent if not specified. Pass in \`null\` to disable portalling.`,
