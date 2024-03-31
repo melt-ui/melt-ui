@@ -213,23 +213,19 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsubDerived = effect(
 				[isVisible, positioning, portal],
 				([$isVisible, $positioning, $portal]) => {
+					unsubPortal();
+					unsubFloating();
+					unsubInteractOutside();
 					const triggerEl = getEl('trigger');
-					if (!$isVisible || !triggerEl) {
-						unsubPortal();
-						unsubFloating();
-						unsubInteractOutside();
-						return;
-					}
+					if (!$isVisible || !triggerEl) return;
 					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
 						unsubInteractOutside();
-
 						const portalDest = getPortalDestination(node, $portal);
 						if (portalDest !== null) {
 							unsubPortal = usePortal(node, portalDest).destroy;
 						}
-
 						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
 						unsubInteractOutside = useInteractOutside(node).destroy;
 					});
