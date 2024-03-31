@@ -14,6 +14,7 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	noop,
 } from '$lib/internal/helpers/index.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -225,6 +226,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 		return true;
 	}
+
+	// Used to determine if tag is being edited
+	const isEditing = derived([editable, editing], ([$editable, $editing]) => {
+		return (tag: Tag) => $editable && $editing?.id === tag.id;
+	});
 
 	const root = makeElement(name(''), {
 		stores: [disabled],
@@ -617,11 +623,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const edit = makeElement(name('edit'), {
-		stores: [editing, editable],
-		returned: ([$editing, $editable]) => {
+		stores: isEditing,
+		returned: ($isEditing) => {
 			return (tag: Tag) => {
-				const editable = $editable;
-				const editing = editable ? $editing?.id === tag.id : undefined;
+				const editing = $isEditing(tag);
 
 				return {
 					'aria-hidden': !editing,
@@ -652,56 +657,62 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 
-			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'blur', () => {
-					if (node.hasAttribute('hidden')) return;
+			let unsubEvents = noop;
 
-					// Stop editing, reset the value to the original and clear an invalid state
-					editing.set(null);
-					node.textContent = getElProps().value;
-					getElementByMeltId(meltIds.root)?.removeAttribute('data-invalid-edit');
-					node.removeAttribute('data-invalid-edit');
-				}),
-				addMeltEventListener(node, 'keydown', async (e) => {
-					if (node.hasAttribute('hidden')) return;
+			const unsubDerived = effect(isEditing, ($isEditing) => {
+				unsubEvents();
+				if (!$isEditing(getElProps())) return;
 
-					if (e.key === kbd.ENTER) {
-						// Capture the edit value, validate and then update
-						e.preventDefault();
-
-						// Do nothing when the value is empty
-						const value = node.textContent;
-						if (!value) return;
-
-						const t = { id: getElProps().id, value };
-
-						if (isInputValid(value) && (await updateTag(t, true))) {
-							node.textContent = t.value;
-							editValue.set('');
-							focusInput(meltIds.input);
-						} else {
-							getElementByMeltId(meltIds.root)?.setAttribute('data-invalid-edit', '');
-							node.setAttribute('data-invalid-edit', '');
-						}
-					} else if (e.key === kbd.ESCAPE) {
-						// Reset the value, clear the edit value store, set this tag as
-						// selected and focus on input
-						e.preventDefault();
+				unsubEvents = executeCallbacks(
+					addMeltEventListener(node, 'blur', () => {
+						// Stop editing, reset the value to the original and clear an invalid state
+						editing.set(null);
 						node.textContent = getElProps().value;
-						editValue.set('');
-						setSelectedFromEl(node, selected);
-						focusInput(meltIds.input);
-					}
-				}),
-				addMeltEventListener(node, 'input', () => {
-					if (node.hasAttribute('hidden')) return;
+						getElementByMeltId(meltIds.root)?.removeAttribute('data-invalid-edit');
+						node.removeAttribute('data-invalid-edit');
+					}),
+					addMeltEventListener(node, 'keydown', async (e) => {
+						if (e.key === kbd.ENTER) {
+							// Capture the edit value, validate and then update
+							e.preventDefault();
 
-					// Update the edit value store
-					editValue.set(node.textContent || '');
-				})
-			);
+							// Do nothing when the value is empty
+							const value = node.textContent;
+							if (!value) return;
+
+							const t = { id: getElProps().id, value };
+
+							if (isInputValid(value) && (await updateTag(t, true))) {
+								node.textContent = t.value;
+								editValue.set('');
+								focusInput(meltIds.input);
+							} else {
+								getElementByMeltId(meltIds.root)?.setAttribute('data-invalid-edit', '');
+								node.setAttribute('data-invalid-edit', '');
+							}
+						} else if (e.key === kbd.ESCAPE) {
+							// Reset the value, clear the edit value store, set this tag as
+							// selected and focus on input
+							e.preventDefault();
+							e.stopImmediatePropagation();
+							node.textContent = getElProps().value;
+							editValue.set('');
+							setSelectedFromEl(node, selected);
+							focusInput(meltIds.input);
+						}
+					}),
+					addMeltEventListener(node, 'input', () => {
+						// Update the edit value store
+						editValue.set(node.textContent || '');
+					})
+				);
+			});
+
 			return {
-				destroy: unsub,
+				destroy() {
+					unsubEvents();
+					unsubDerived();
+				},
 			};
 		},
 	});
@@ -757,6 +768,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 		helpers: {
 			isSelected,
+			isEditing,
 			isInputValid,
 			addTag,
 			updateTag,
