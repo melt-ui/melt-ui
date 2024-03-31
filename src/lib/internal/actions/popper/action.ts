@@ -25,7 +25,7 @@ const defaultConfig = {
 export const usePopper = ((popperElement, args) => {
 	popperElement.dataset.escapee = '';
 	const { anchorElement, open, options } = args as PopperArgs;
-	if (!anchorElement || !open.get() || !options) {
+	if (!anchorElement || !open || !options) {
 		return { destroy: noop };
 	}
 
@@ -74,6 +74,7 @@ export const usePopper = ((popperElement, args) => {
 	if (opts.escapeKeydown !== null) {
 		callbacks.push(
 			useEscapeKeydown(popperElement, {
+				enabled: open,
 				handler: () => {
 					open.set(false);
 				},

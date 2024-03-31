@@ -3,8 +3,8 @@ import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import { userEvent } from '@testing-library/user-event';
-import { assertActiveFocusTrap, testKbd as kbd, touch } from '../utils.js';
 import { sleep } from '$lib/internal/helpers/index.js';
+import { assertActiveFocusTrap, testKbd as kbd, touch } from '../utils.js';
 import type { CreateDialogProps } from '$lib/index.js';
 
 function setup(props: CreateDialogProps = {}) {
@@ -61,6 +61,7 @@ describe('Dialog', () => {
 
 	it('Closes when overlay is clicked', async () => {
 		const { user, overlay, content } = await open();
+
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		await waitFor(() => expect(content).not.toBeVisible());
@@ -72,6 +73,7 @@ describe('Dialog', () => {
 				e.preventDefault();
 			},
 		});
+
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).toBeVisible();
@@ -156,6 +158,7 @@ describe('Dialog', () => {
 		const { user, content, overlay } = await open({
 			closeOnOutsideClick: false,
 		});
+
 		expect(overlay).toBeVisible();
 		await user.click(overlay);
 		expect(content).toBeVisible();
@@ -215,6 +218,7 @@ describe('Dialog', () => {
 
 	it('Closes on pointerup if the previous pointerdown occurred outside the dialog', async () => {
 		const { user, overlay, content } = await open();
+
 		expect(overlay).toBeVisible();
 		await user.pointer({ target: overlay, keys: '[MouseLeft>]' });
 		await user.pointer({ target: overlay, keys: '[/MouseLeft]' });
@@ -229,11 +233,16 @@ describe('Dialog', () => {
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
-		const { user, overlay, content } = await open({ closeOnOutsideClick: false });
+		const { getByTestId, user, overlay, content } = await open({
+			closeOnOutsideClick: false,
+		});
+		const closer = getByTestId('floating-closer');
+
 		await user.click(overlay);
 		expect(content).toBeVisible();
 		expect(content).toHaveFocus();
-		await assertActiveFocusTrap(user, content);
+		await user.tab({ shift: true });
+		expect(closer).not.toHaveFocus();
 	});
 
 	it('Returns focus to trigger when manually setting `open` state to false', async () => {

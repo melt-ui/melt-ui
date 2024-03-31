@@ -7,7 +7,6 @@ import type {
 import type { VirtualElement } from '@floating-ui/core';
 import type { Writable } from 'svelte/store';
 import type { ModalConfig } from '../modal/types.js';
-import type { WithGet } from '$lib/internal/helpers/withGet.js';
 
 export type PopperConfig = {
 	floating?: FloatingConfig;
@@ -19,6 +18,6 @@ export type PopperConfig = {
 
 export type PopperArgs = {
 	anchorElement: Element | VirtualElement;
-	open: WithGet<Writable<boolean>>;
+	open: Writable<boolean>;
 	options?: PopperConfig;
 };
