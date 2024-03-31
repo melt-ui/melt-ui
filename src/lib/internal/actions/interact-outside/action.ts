@@ -15,14 +15,8 @@ import type { Action } from 'svelte/action';
 
 const layers = new Set<HTMLElement>();
 
-const createHighestLayerEventHandlerFactory = (node: HTMLElement) => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return <T extends (...args: any[]) => any>(handler: T) => {
-		return (...args: Parameters<T>) => {
-			if (!isHighestLayerInteractOutside(node)) return;
-			handler(...args);
-		};
-	};
+const createIsHighestLayerFactory = (node: HTMLElement) => {
+	return () => isHighestLayerInteractOutside(node);
 };
 
 export const useInteractOutside = ((node, config = {}) => {
@@ -32,7 +26,7 @@ export const useInteractOutside = ((node, config = {}) => {
 	let unsubResetInterceptedEvents = noop;
 
 	layers.add(node);
-	const createHighestLayerEventHandler = createHighestLayerEventHandlerFactory(node);
+	const isHighestLayer = createIsHighestLayerFactory(node);
 
 	const documentObj = getOwnerDocument(node);
 
@@ -75,10 +69,10 @@ export const useInteractOutside = ((node, config = {}) => {
 		return addEventListener(
 			documentObj,
 			eventType,
-			createHighestLayerEventHandler((e: HTMLElementEventMap[E]) => {
+			(e: HTMLElementEventMap[E]) => {
 				interceptedEvents[eventType] = true;
 				handler?.(e);
-			}),
+			},
 			true
 		);
 	};
@@ -92,14 +86,10 @@ export const useInteractOutside = ((node, config = {}) => {
 		eventType: E,
 		handler?: InteractOutsideInterceptHandler<E>
 	) => {
-		return addEventListener(
-			documentObj,
-			eventType,
-			createHighestLayerEventHandler((e: HTMLElementEventMap[E]) => {
-				interceptedEvents[eventType] = false;
-				handler?.(e);
-			})
-		);
+		return addEventListener(documentObj, eventType, (e: HTMLElementEventMap[E]) => {
+			interceptedEvents[eventType] = false;
+			handler?.(e);
+		});
 	};
 
 	function update(config: InteractOutsideConfig) {
@@ -116,7 +106,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
-			if (isAnyEventIntercepted()) return;
+			if (!isHighestLayer() || isAnyEventIntercepted()) return;
 			if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
 			const target = e.target;
 			if (isElement(target) && isOrContainsTarget(node, target)) {
@@ -131,8 +121,9 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
-			if (isAnyEventIntercepted()) return;
-			if (shouldTriggerInteractOutside(e)) onInteractOutside?.(e);
+			if (isHighestLayer() && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
+				onInteractOutside?.(e);
+			}
 			resetPointerState();
 		}, 10);
 		unsubPointerUp = onPointerUpDebounced.destroy;
