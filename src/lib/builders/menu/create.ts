@@ -341,9 +341,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				'aria-hidden': 'true',
 				'data-state': stateAttr($isVisible),
 			} as const;
