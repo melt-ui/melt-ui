@@ -1,4 +1,4 @@
-import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
+import { useFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	makeElement,
@@ -155,26 +155,19 @@ export function createDialog(props?: CreateDialogProps) {
 		action: (node: HTMLElement) => {
 			let unsubModal = noop;
 			let unsubEscape = noop;
-			let unsubFocus = noop;
+			let unsubFocusTrap = noop;
 
 			const unsubDerived = effect(
-				[isVisible, closeOnEscape, closeOnOutsideClick],
-				([$isVisible, $closeOnEscape, $closeOnOutsideClick]) => {
+				[isVisible, closeOnOutsideClick, closeOnEscape],
+				([$isVisible, $closeOnOutsideClick, $closeOnEscape]) => {
 					unsubModal();
 					unsubEscape();
-					unsubFocus();
+					unsubFocusTrap();
 					if (!$isVisible) return;
-
-					unsubFocus = createFocusTrap({
-						fallbackFocus: node,
-						immediate: true,
-					}).useFocusTrap(node).destroy;
 
 					unsubModal = useModal(node, {
 						closeOnInteractOutside: $closeOnOutsideClick,
-						onClose() {
-							handleClose();
-						},
+						onClose: handleClose,
 						shouldCloseOnInteractOutside(e) {
 							onOutsideClick.get()?.(e);
 							if (e.defaultPrevented) return false;
@@ -186,6 +179,8 @@ export function createDialog(props?: CreateDialogProps) {
 						handler: handleClose,
 						enabled: $closeOnEscape,
 					}).destroy;
+
+					unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
 				}
 			);
 
@@ -195,7 +190,7 @@ export function createDialog(props?: CreateDialogProps) {
 					unsubDerived();
 					unsubModal();
 					unsubEscape();
-					unsubFocus();
+					unsubFocusTrap();
 				},
 			};
 		},

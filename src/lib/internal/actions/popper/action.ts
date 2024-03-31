@@ -1,5 +1,5 @@
 import {
-	createFocusTrap,
+	useFocusTrap,
 	useEscapeKeydown,
 	useFloating,
 	usePortal,
@@ -40,13 +40,12 @@ export const usePopper = ((popperElement, args) => {
 	callbacks.push(useFloating(anchorElement, popperElement, opts.floating).destroy);
 
 	if (opts.focusTrap !== null) {
-		const { useFocusTrap } = createFocusTrap({
-			immediate: true,
-			fallbackFocus: popperElement,
-			...opts.focusTrap,
-		});
-
-		callbacks.push(useFocusTrap(popperElement).destroy);
+		callbacks.push(
+			useFocusTrap(popperElement, {
+				fallbackFocus: popperElement,
+				...opts.focusTrap,
+			}).destroy
+		);
 	}
 
 	if (opts.modal !== null) {

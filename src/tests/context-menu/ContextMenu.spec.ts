@@ -5,7 +5,6 @@ import { userEvent } from '@testing-library/user-event';
 import { testKbd as kbd } from '../utils.js';
 import ContextMenuTest from './ContextMenuTest.svelte';
 import type { CreateContextMenuProps } from '$lib/index.js';
-import { sleep } from '$lib/internal/helpers/sleep.js';
 
 function setup(props: CreateContextMenuProps = {}) {
 	const user = userEvent.setup();

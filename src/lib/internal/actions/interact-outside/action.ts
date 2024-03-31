@@ -108,7 +108,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		unsubPointerUp();
 		unsubResetInterceptedEvents();
 		resetInterceptedEvents();
-		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
+		const { onInteractOutside, onInteractOutsideStart, enabled } = { enabled: true, ...config };
 		if (!enabled) return;
 
 		/**

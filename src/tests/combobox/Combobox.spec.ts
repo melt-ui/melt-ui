@@ -5,7 +5,6 @@ import { describe } from 'vitest';
 import { testKbd as kbd } from '../utils.js';
 import ComboboxTest from './ComboboxTest.svelte';
 import type { ComboboxOptionProps } from '$lib/index.js';
-import { sleep } from '$lib/internal/helpers/sleep.js';
 import ComboboxForceVisibleTest from './ComboboxForceVisibleTest.svelte';
 
 const options: ComboboxOptionProps[] = [
