@@ -4,12 +4,7 @@ import {
 	useFloating,
 	usePortal,
 } from '$lib/internal/actions/index.js';
-import {
-	executeCallbacks,
-	type Callback,
-	noop,
-	isHTMLElement,
-} from '$lib/internal/helpers/index.js';
+import { executeCallbacks, type Callback, isHTMLElement } from '$lib/internal/helpers/index.js';
 import type { Action } from 'svelte/action';
 import type { PopperArgs, PopperConfig } from './types.js';
 import { useModal } from '../modal/action.js';
@@ -24,12 +19,8 @@ const defaultConfig = {
 
 export const usePopper = ((popperElement, args) => {
 	popperElement.dataset.escapee = '';
-	const { anchorElement, open, options } = args as PopperArgs;
-	if (!anchorElement || !open || !options) {
-		return { destroy: noop };
-	}
-
-	const opts = { ...defaultConfig, ...options } as PopperConfig;
+	const { anchorElement, open, options } = args;
+	const opts = { ...defaultConfig, ...options } satisfies PopperConfig;
 
 	const callbacks: Callback[] = [];
 
@@ -52,10 +43,9 @@ export const usePopper = ((popperElement, args) => {
 		callbacks.push(
 			useModal(popperElement, {
 				onClose: () => {
-					if (isHTMLElement(anchorElement)) {
-						open.set(false);
-						anchorElement.focus();
-					}
+					if (!isHTMLElement(anchorElement)) return;
+					open.set(false);
+					anchorElement.focus();
 				},
 				shouldCloseOnInteractOutside: (e) => {
 					if (e.defaultPrevented) return false;
@@ -74,10 +64,7 @@ export const usePopper = ((popperElement, args) => {
 	if (opts.escapeKeydown !== null) {
 		callbacks.push(
 			useEscapeKeydown(popperElement, {
-				enabled: open,
-				handler: () => {
-					open.set(false);
-				},
+				handler: () => open.set(false),
 				...opts.escapeKeydown,
 			}).destroy
 		);
