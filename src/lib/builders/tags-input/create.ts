@@ -24,7 +24,7 @@ import { generateIds } from '../../internal/helpers/id.js';
 import type { TagsInputEvents } from './events.js';
 import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
 import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
-import { useEscapeKeydown, useInteractOutside } from '$lib/internal/actions/index.js';
+import { useInteractOutside } from '$lib/internal/actions/index.js';
 
 const defaults = {
 	placeholder: '',
