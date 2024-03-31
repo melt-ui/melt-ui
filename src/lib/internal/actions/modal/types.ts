@@ -12,7 +12,7 @@ export type ModalConfig = {
 	 *
 	 * @default true
 	 */
-	closeOnInteractOutside?: boolean;
+	closeOnInteractOutside?: boolean | null;
 
 	/**
 	 * If `closeOnInteractOutside` is `true` and this function is provided,

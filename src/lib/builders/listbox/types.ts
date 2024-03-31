@@ -101,7 +101,7 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: boolean | null;
 
 	/**
 	 * Whether or not to close the listbox menu when the user presses

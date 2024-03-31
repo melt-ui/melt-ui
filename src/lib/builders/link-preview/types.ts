@@ -55,7 +55,7 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: boolean | null;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
