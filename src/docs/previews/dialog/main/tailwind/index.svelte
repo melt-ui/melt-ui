@@ -37,8 +37,8 @@
 			transition:fade={{ duration: 150 }}
 		/>
 		<div
-			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
-            max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-xl bg-white
+			class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw]
+            max-w-[450px] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white
             p-6 shadow-lg"
 			transition:flyAndScale={{
 				duration: 150,

@@ -21,10 +21,10 @@
 				<table class="w-full min-w-[540px] text-left sm:min-w-full">
 					<tbody class="divide-y divide-neutral-700">
 						<tr class="w-full text-neutral-300">
-							<td class="w-[50%] whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
+							<td class="w-1/2 whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
 								Data Attribute
 							</td>
-							<td class="w-[50%] whitespace-nowrap py-2 text-sm font-medium">Value</td>
+							<td class="w-1/2 whitespace-nowrap py-2 text-sm font-medium">Value</td>
 						</tr>
 						{#each data as { name, value }}
 							<tr>

@@ -26,11 +26,9 @@
 				<table class="w-full min-w-[540px] text-left sm:min-w-full">
 					<tbody class="divide-y divide-neutral-700">
 						<tr class="w-1/4 text-neutral-300">
-							<td class="w-[25%] whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
-								Prop
-							</td>
-							<td class="w-[25%] whitespace-nowrap py-2 text-sm font-medium">Default</td>
-							<td class="w-[50%] whitespace-nowrap py-2 text-sm font-medium">Type / Description</td>
+							<td class="w-1/4 whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0"> Prop </td>
+							<td class="w-1/4 whitespace-nowrap py-2 text-sm font-medium">Default</td>
+							<td class="w-1/2 whitespace-nowrap py-2 text-sm font-medium">Type / Description</td>
 						</tr>
 						{#each data as prop}
 							<tr>
