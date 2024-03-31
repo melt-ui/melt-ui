@@ -171,7 +171,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 										rootOpen.set(false);
 									},
 									shouldCloseOnInteractOutside: handleClickOutside,
-									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape === null ? null : { enabled: $closeOnEscape },

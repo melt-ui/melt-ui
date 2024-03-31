@@ -2,7 +2,6 @@ import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe, vi, it, beforeEach, afterEach } from 'vitest';
-import { sleep } from '$lib/internal/helpers/index.js';
 import { testKbd as kbd } from '../utils.js';
 import DialogTransitionTest from './DialogTransitionTest.svelte';
 import type { CreateDialogProps } from '$lib/index.js';
@@ -66,7 +65,6 @@ describe('Dialog with Transitions', () => {
 
 	it('Closes when overlay is clicked', async () => {
 		const { user, queryByTestId, getByTestId } = await open();
-		await sleep(100);
 		await waitFor(() => expect(queryByTestId('content')).not.toBeNull());
 		await waitFor(() => expect(queryByTestId('overlay')).not.toBeNull());
 		await user.click(getByTestId('overlay'));

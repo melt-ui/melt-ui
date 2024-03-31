@@ -5,7 +5,6 @@ import {
 	getAnnouncer,
 	getDefaultDate,
 	getFirstSegment,
-	isBefore,
 	isBeforeOrSame,
 } from '$lib/internal/helpers/date/index.js';
 import {
