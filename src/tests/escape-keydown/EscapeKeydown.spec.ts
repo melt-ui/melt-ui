@@ -25,9 +25,9 @@ const components = [
 	'popover',
 	'select',
 	'tooltip',
-];
+] as const;
 
-const componentsToHover = new Set(['tooltip', 'link-preview']);
+const componentsToHover = new Set<(typeof components)[number]>(['tooltip', 'link-preview']);
 
 describe('Nested Escape Keydown Behaviors', () => {
 	describe.each(components)('dialog + %s', (componentName) => {
