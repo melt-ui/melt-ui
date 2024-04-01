@@ -7,8 +7,6 @@
 	} from '$lib/index.js';
 	import { removeUndefined } from '../utils.js';
 
-	type $$Props = CreateComboboxProps;
-
 	export let options: ComboboxOptionProps[] = [
 		{ label: '1234', value: { id: 1234, station: undefined, lastTransmission: '2023-01-01' } },
 		{ label: '4321', value: { id: 4321, station: undefined, lastTransmission: '2023-01-01' } },
