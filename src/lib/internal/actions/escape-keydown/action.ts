@@ -52,11 +52,10 @@ export const useEscapeKeydown = ((node, config = {}) => {
 	};
 }) satisfies Action<HTMLElement, EscapeKeydownConfig>;
 
-
 const isHighestLayerEscapeKey = (node: HTMLElement): boolean => {
 	const topMostLayer = [...layers].findLast(([_, behaviorType]) => behaviorType.get() !== 'defer');
 	return !!topMostLayer && topMostLayer[0] === node;
-}
+};
 
 const shouldIgnoreEvent = (e: KeyboardEvent, ignore: EscapeKeydownConfig['ignore']): boolean => {
 	if (!ignore) return false;
