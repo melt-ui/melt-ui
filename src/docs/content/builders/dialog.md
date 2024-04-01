@@ -99,11 +99,11 @@ const {
 ### Disable Close on Escape
 
 By default, pressing the escape key will close the dialog. You can disable this behavior by setting
-the `closeOnEscape` builder prop to `false`.
+the `escapeBehavior` builder prop to `ignore`.
 
 ```ts {2}
 const dialog = createDialog({
-	closeOnEscape: false
+	escapeBehavior: 'ignore'
 })
 ```
 

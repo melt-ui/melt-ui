@@ -10,7 +10,7 @@
 	import Tooltip from './TooltipTest.svelte';
 
 	type $$Props = CreateDialogProps;
-	export let closeOnEscape: CreateDialogProps['closeOnEscape'] = true;
+	export let escapeBehavior: CreateDialogProps['escapeBehavior'] = 'close';
 
 	const {
 		elements: { trigger, content, portalled },
@@ -22,14 +22,14 @@
 {#if $open}
 	<div use:melt={$portalled}>
 		<div use:melt={$content} data-testid="root-dialog-content">
-			<Dialog {closeOnEscape} />
-			<Combobox {closeOnEscape} />
-			<LinkPreview {closeOnEscape} />
-			<Menubar {closeOnEscape} />
-			<Menu {closeOnEscape} />
-			<Popover {closeOnEscape} />
-			<Select {closeOnEscape} />
-			<Tooltip {closeOnEscape} />
+			<Dialog {escapeBehavior} />
+			<Combobox {escapeBehavior} />
+			<LinkPreview {escapeBehavior} />
+			<Menubar {escapeBehavior} />
+			<Menu {escapeBehavior} />
+			<Popover {escapeBehavior} />
+			<Select {escapeBehavior} />
+			<Tooltip {escapeBehavior} />
 		</div>
 	</div>
 {/if}

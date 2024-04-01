@@ -66,7 +66,7 @@ const defaults = {
 	defaultOpen: false,
 	closeOnOutsideClick: true,
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	forceVisible: false,
 	portal: undefined,
 	builder: 'listbox',
@@ -133,7 +133,7 @@ export function createListbox<
 		scrollAlignment,
 		loop,
 		closeOnOutsideClick,
-		closeOnEscape,
+		escapeBehavior,
 		preventScroll,
 		portal,
 		forceVisible,
@@ -458,14 +458,14 @@ export function createListbox<
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger, closeOnEscape],
+					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger, escapeBehavior],
 					([
 						$isVisible,
 						$portal,
 						$closeOnOutsideClick,
 						$positioning,
 						$activeTrigger,
-						$closeOnEscape,
+						$escapeBehavior,
 					]) => {
 						unsubPopper();
 
@@ -498,10 +498,7 @@ export function createListbox<
 										},
 									},
 
-									escapeKeydown:
-										$closeOnEscape === null
-											? null
-											: { handler: closeMenu, enabled: $closeOnEscape },
+									escapeKeydown: { handler: closeMenu, behaviorType: $escapeBehavior },
 									portal: getPortalDestination(node, $portal),
 								},
 							}).destroy;

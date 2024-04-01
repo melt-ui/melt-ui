@@ -74,7 +74,6 @@ export const usePopper = ((popperElement, args) => {
 	if (opts.escapeKeydown !== null) {
 		callbacks.push(
 			useEscapeKeydown(popperElement, {
-				enabled: open,
 				handler: () => {
 					open.set(false);
 				},

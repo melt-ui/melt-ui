@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	EscapeBehaviorType,
+	FloatingConfig,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -66,12 +70,14 @@ export type CreateLinkPreviewProps = {
 	onOutsideClick?: (event: InteractOutsideEvent) => void;
 
 	/**
-	 * Whether or not to close the linkpreview when the escape key is pressed
-	 * while it is open.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean | null;
+	escapeBehavior?: EscapeBehaviorType;
 
 	/**
 	 * The size of the optional arrow element in pixels

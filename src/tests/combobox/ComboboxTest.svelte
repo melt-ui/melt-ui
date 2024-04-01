@@ -7,6 +7,8 @@
 	} from '$lib/index.js';
 	import { removeUndefined } from '../utils.js';
 
+	type $$Props = CreateComboboxProps;
+
 	export let options: ComboboxOptionProps[] = [
 		{ label: '1234', value: { id: 1234, station: undefined, lastTransmission: '2023-01-01' } },
 		{ label: '4321', value: { id: 4321, station: undefined, lastTransmission: '2023-01-01' } },
@@ -18,7 +20,7 @@
 	export let defaultValue: string | undefined = undefined;
 	export let ids: CreateComboboxProps<unknown>['ids'] = undefined;
 	export let onOutsideClick: CreateComboboxProps<unknown>['onOutsideClick'] = undefined;
-	export let closeOnEscape: CreateComboboxProps<unknown>['closeOnEscape'] = undefined;
+	export let escapeBehavior: CreateComboboxProps<unknown>['escapeBehavior'] = undefined;
 
 	const {
 		elements: { menu, input, option, label },
@@ -34,7 +36,7 @@
 				: undefined,
 			ids,
 			onOutsideClick,
-			closeOnEscape,
+			escapeBehavior,
 		})
 	);
 

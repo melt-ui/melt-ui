@@ -109,8 +109,8 @@ describe('Popover (Default)', () => {
 		expect(content.id).toBe(ids.content);
 	});
 
-	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
-		const { getByTestId, user, content } = await open({ closeOnEscape: false });
+	it("Doesn't deactivate focus trap on escape provided `escapeBehavior` false", async () => {
+		const { getByTestId, user, content } = await open({ escapeBehavior: 'ignore' });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 		expect(getByTestId('content')).toHaveFocus();

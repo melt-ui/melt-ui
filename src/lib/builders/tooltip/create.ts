@@ -39,7 +39,7 @@ const defaults = {
 	closeDelay: 0,
 	forceVisible: false,
 	portal: undefined,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	disableHoverableContent: false,
 	group: undefined,
 } satisfies CreateTooltipProps;
@@ -65,7 +65,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		closeDelay,
 		forceVisible,
 		portal,
-		closeOnEscape,
+		escapeBehavior,
 		disableHoverableContent,
 		group,
 	} = options;
@@ -197,8 +197,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 			let unsubEscapeKeydown = noop;
 
 			const unsubDerived = effect(
-				[isVisible, positioning, portal, closeOnEscape],
-				([$isVisible, $positioning, $portal, $closeOnEscape]) => {
+				[isVisible, positioning, portal, escapeBehavior],
+				([$isVisible, $positioning, $portal, $escapeBehavior]) => {
 					unsubPortal();
 					unsubFloating();
 					unsubEscapeKeydown();
@@ -221,12 +221,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 							open.set(false);
 						};
 
-						if ($closeOnEscape !== null) {
-							unsubEscapeKeydown = useEscapeKeydown(node, {
-								enabled: $closeOnEscape,
-								handler: onEscapeKeyDown,
-							}).destroy;
-						}
+						unsubEscapeKeydown = useEscapeKeydown(node, {
+							behaviorType: $escapeBehavior,
+							handler: onEscapeKeyDown,
+						}).destroy;
 					});
 				}
 			);

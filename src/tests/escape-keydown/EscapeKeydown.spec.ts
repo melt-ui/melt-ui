@@ -31,9 +31,9 @@ const componentsToHover = new Set<(typeof components)[number]>(['tooltip', 'link
 
 describe('Nested Escape Keydown Behaviors', () => {
 	describe.each(components)('dialog + %s', (componentName) => {
-		it('`closeOnEscape: true` on child should only close child', async () => {
+		it('`escapeBehavior: close` on child should only close child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent } = await setup({
-				closeOnEscape: true,
+				escapeBehavior: 'close',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -50,9 +50,9 @@ describe('Nested Escape Keydown Behaviors', () => {
 			expect(getRootContent()).toBeVisible();
 		});
 
-		it('`closeOnEscape: false` on child should neither close child nor parent', async () => {
+		it('`escapeBehavior: ignore` on child should neither close child nor parent', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent } = await setup({
-				closeOnEscape: false,
+				escapeBehavior: 'ignore',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -69,9 +69,9 @@ describe('Nested Escape Keydown Behaviors', () => {
 			expect(getRootContent()).toBeVisible();
 		});
 
-		it('`closeOnEscape: null` on child should close both parent and child', async () => {
+		it('`escapeBehavior: defer` on child should close both parent and child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent } = await setup({
-				closeOnEscape: null,
+				escapeBehavior: 'defer',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);

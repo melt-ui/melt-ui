@@ -69,7 +69,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
 	portal: undefined,
 	loop: false,
@@ -87,7 +87,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		preventScroll,
 		arrowSize,
 		positioning,
-		closeOnEscape,
+		escapeBehavior,
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
@@ -178,14 +178,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, escapeBehavior],
 				([
 					$isVisible,
 					$rootActiveTrigger,
 					$positioning,
 					$closeOnOutsideClick,
 					$portal,
-					$closeOnEscape,
+					$escapeBehavior,
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
@@ -214,7 +214,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									onClose: () => rootOpen.set(false),
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape === null ? null : { enabled: $closeOnEscape },
+								escapeKeydown: { behaviorType: $escapeBehavior },
 							},
 						}).destroy;
 					});

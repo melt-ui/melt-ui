@@ -2,17 +2,17 @@
 	import { createMenubar, melt, type CreateMenubarMenuProps } from '$lib/index.js';
 
 	type $$Props = CreateMenubarMenuProps;
-	export let closeOnEscape: CreateMenubarMenuProps['closeOnEscape'] = true;
+	export let escapeBehavior: CreateMenubarMenuProps['escapeBehavior'] = 'close';
 
 	const {
 		elements: { menubar },
 		builders: { createMenu },
-	} = createMenubar({ closeOnEscape });
+	} = createMenubar({ escapeBehavior });
 
 	const {
 		elements: { trigger, menu },
 		states: { open },
-	} = createMenu({ ...$$restProps, closeOnEscape, forceVisible: true });
+	} = createMenu({ ...$$restProps, escapeBehavior, forceVisible: true });
 </script>
 
 <div use:melt={$menubar}>

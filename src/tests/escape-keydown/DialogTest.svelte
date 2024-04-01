@@ -3,12 +3,12 @@
 
 	type $$Props = CreateDialogProps;
 
-	export let closeOnEscape: CreateDialogProps['closeOnEscape'] = true;
+	export let escapeBehavior: CreateDialogProps['escapeBehavior'] = 'close';
 
 	const {
 		elements: { trigger, content, portalled },
 		states: { open },
-	} = createDialog({ closeOnEscape, forceVisible: true });
+	} = createDialog({ escapeBehavior, forceVisible: true });
 </script>
 
 <button use:melt={$trigger} data-testid="dialog-trigger">Open</button>

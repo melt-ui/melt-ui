@@ -48,7 +48,7 @@ const { name } = createElHelpers<_MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	preventScroll: false,
 } satisfies CreateMenubarProps;
 
@@ -59,7 +59,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
 
 	const options = toWritableStores(omit(withDefaults, 'ids'));
-	const { loop, closeOnEscape, preventScroll } = options;
+	const { loop, escapeBehavior, preventScroll } = options;
 	const activeMenu = withGet(writable<string>(''));
 
 	const nextFocusable = withGet(writable<HTMLElement | null>(null));
@@ -98,7 +98,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		arrowSize: 8,
 		dir: 'ltr',
 		loop: false,
-		closeOnEscape: true,
+		escapeBehavior: 'close',
 		closeOnOutsideClick: true,
 		portal: undefined,
 		forceVisible: false,
@@ -170,14 +170,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick, closeOnEscape],
+					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick, escapeBehavior],
 					([
 						$rootOpen,
 						$rootActiveTrigger,
 						$positioning,
 						$portal,
 						$closeOnOutsideClick,
-						$closeOnEscape,
+						$escapeBehavior,
 					]) => {
 						unsubPopper();
 						if (!($rootOpen && $rootActiveTrigger)) return;
@@ -205,13 +205,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 											activeMenu.set('');
 										},
 									},
-									escapeKeydown:
-										$closeOnEscape === null
-											? null
-											: {
-													enabled: $closeOnEscape,
-													handler: () => activeMenu.set(''),
-											  },
+									escapeKeydown: {
+										behaviorType: $escapeBehavior,
+										handler: () => activeMenu.set(''),
+									},
 								},
 							}).destroy;
 						});

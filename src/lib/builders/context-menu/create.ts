@@ -45,7 +45,7 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
 	portal: undefined,
 	loop: false,
@@ -65,7 +65,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
-	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape, loop } =
+	const { positioning, closeOnOutsideClick, portal, forceVisible, escapeBehavior, loop } =
 		rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -145,14 +145,14 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, escapeBehavior],
 				([
 					$isVisible,
 					$rootActiveTrigger,
 					$positioning,
 					$closeOnOutsideClick,
 					$portal,
-					$closeOnEscape,
+					$escapeBehavior,
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
@@ -173,7 +173,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 									shouldCloseOnInteractOutside: handleClickOutside,
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape === null ? null : { enabled: $closeOnEscape },
+								escapeKeydown: { behaviorType: $escapeBehavior },
 							},
 						}).destroy;
 					});

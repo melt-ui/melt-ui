@@ -43,7 +43,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	forceVisible: false,
 	portal: undefined,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	onOutsideClick: undefined,
 } satisfies CreateLinkPreviewProps;
 
@@ -73,7 +73,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		closeOnOutsideClick,
 		forceVisible,
 		portal,
-		closeOnEscape,
+		escapeBehavior,
 		onOutsideClick,
 	} = options;
 
@@ -176,14 +176,14 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal, escapeBehavior],
 				([
 					$isVisible,
 					$activeTrigger,
 					$positioning,
 					$closeOnOutsideClick,
 					$portal,
-					$closeOnEscape,
+					$escapeBehavior,
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
@@ -214,7 +214,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 								},
 								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
-								escapeKeydown: $closeOnEscape === null ? null : { enabled: $closeOnEscape },
+								escapeKeydown: { behaviorType: $escapeBehavior },
 							},
 						}).destroy;
 					});

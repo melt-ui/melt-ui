@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { EscapeBehaviorType, FloatingConfig } from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -14,7 +14,16 @@ export type CreateTooltipProps = {
 	openDelay?: number;
 	closeDelay?: number;
 	forceVisible?: boolean;
-	closeOnEscape?: boolean | null;
+	/**
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
+	 *
+	 * @defaultValue `close`
+	 */
+	escapeBehavior?: EscapeBehaviorType;
+
 	disableHoverableContent?: boolean;
 	/**
 	 * If set to `true`, whenever you open this tooltip, all other tooltips

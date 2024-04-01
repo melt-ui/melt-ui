@@ -25,7 +25,7 @@ const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
 	preventScroll: false,
 	forceVisible: false,
@@ -61,7 +61,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		defaultOpen: withDefaults.defaultOpen,
 		open: withDefaults.open,
 		disableFocusTrap: withDefaults.disableFocusTrap,
-		closeOnEscape: withDefaults.closeOnEscape,
+		escapeBehavior: withDefaults.escapeBehavior,
 		preventScroll: withDefaults.preventScroll,
 		onOpenChange: withDefaults.onOpenChange,
 		closeOnOutsideClick: withDefaults.closeOnOutsideClick,
