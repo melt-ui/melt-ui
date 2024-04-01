@@ -187,7 +187,7 @@ export function createDialog(props?: CreateDialogProps) {
 					if (!$isVisible) return;
 
 					unsubModal = useModal(node, {
-						closeOnInteractOutside: $clickOutsideBehavior,
+						clickOutsideBehavior: $clickOutsideBehavior,
 						onClose: handleClose,
 						shouldCloseOnInteractOutside(e) {
 							onOutsideClick.get()?.(e);

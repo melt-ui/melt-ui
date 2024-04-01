@@ -185,7 +185,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
 									modal: {
-										closeOnInteractOutside: $clickOutsideBehavior,
+										clickOutsideBehavior: $clickOutsideBehavior,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return false;

@@ -9,7 +9,11 @@ export const useModal = ((node, config) => {
 
 	function update(config: ModalConfig) {
 		unsubInteractOutside();
-		const { onClose, shouldCloseOnInteractOutside, closeOnInteractOutside } = config;
+		const {
+			onClose,
+			shouldCloseOnInteractOutside,
+			clickOutsideBehavior: closeOnInteractOutside,
+		} = config;
 
 		function closeModal() {
 			onClose?.();

@@ -198,7 +198,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							options: {
 								floating: $positioning,
 								modal: {
-									closeOnInteractOutside: $clickOutsideBehavior,
+									clickOutsideBehavior: $clickOutsideBehavior,
 									shouldCloseOnInteractOutside: (e) => {
 										onOutsideClick.get()?.(e);
 										if (e.defaultPrevented) return false;

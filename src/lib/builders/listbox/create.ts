@@ -488,7 +488,7 @@ export function createListbox<
 									floating: $positioning,
 									focusTrap: null,
 									modal: {
-										closeOnInteractOutside: $clickOutsideBehavior,
+										clickOutsideBehavior: $clickOutsideBehavior,
 										onClose: closeMenu,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);

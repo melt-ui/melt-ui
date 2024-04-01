@@ -166,7 +166,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 							options: {
 								floating: $positioning,
 								modal: {
-									closeOnInteractOutside: $clickOutsideBehavior,
+									clickOutsideBehavior: $clickOutsideBehavior,
 									onClose: () => {
 										rootOpen.set(false);
 									},
