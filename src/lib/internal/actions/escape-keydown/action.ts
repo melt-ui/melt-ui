@@ -1,29 +1,32 @@
 import { addEventListener } from '$lib/internal/helpers/event.js';
 import { isFunction, isHTMLElement, isReadable } from '$lib/internal/helpers/is.js';
-import { get, readable } from 'svelte/store';
-import { effect, executeCallbacks, kbd, noop } from '../../helpers/index.js';
-import type { EscapeKeydownConfig } from './types.js';
+import { readable, type Readable } from 'svelte/store';
+import { effect, executeCallbacks, kbd, noop, withGet, type WithGet } from '../../helpers/index.js';
+import type { EscapeBehaviorType, EscapeKeydownConfig } from './types.js';
 import type { Action } from 'svelte/action';
 
-const layers = new Set<HTMLElement>();
+const layers = new Map<HTMLElement, WithGet<Readable<EscapeBehaviorType>>>();
 
 export const useEscapeKeydown = ((node, config = {}) => {
 	let unsub = noop;
-	layers.add(node);
 
 	function update(config: EscapeKeydownConfig = {}) {
 		unsub();
+		const options = { behaviorType: 'close', ...config } satisfies EscapeKeydownConfig;
+		const behaviorType = isReadable(options.behaviorType)
+			? options.behaviorType
+			: withGet(readable(options.behaviorType));
 
-		const options = { enabled: true, ...config };
-		const enabled = isReadable(options.enabled) ? options.enabled : readable(options.enabled);
+		layers.set(node, behaviorType);
 
 		const onKeyDown = (e: KeyboardEvent) => {
 			if (e.key !== kbd.ESCAPE || !isHighestLayerEscapeKey(node)) return;
 			const target = e.target;
 			if (!isHTMLElement(target)) return;
 
+			const $behaviorType = behaviorType.get();
 			e.preventDefault();
-			if (!get(enabled)) return;
+			if ($behaviorType !== 'close') return;
 
 			// If an ignore function is passed, check if it returns true
 			if (options.ignore) {
@@ -47,15 +50,12 @@ export const useEscapeKeydown = ((node, config = {}) => {
 		};
 
 		unsub = executeCallbacks(
-			// Handle escape keydowns
 			addEventListener(document, 'keydown', onKeyDown, { passive: false }),
-			effect(enabled, ($enabled) => {
-				if ($enabled) {
-					node.dataset.escapee = '';
-				} else {
-					delete node.dataset.escapee;
-				}
-			})
+			effect(behaviorType, ($behaviorType) => {
+				if ($behaviorType === 'close') node.dataset.escapee = '';
+				else delete node.dataset.escapee;
+			}),
+			behaviorType.destroy || noop
 		);
 	}
 
@@ -65,13 +65,13 @@ export const useEscapeKeydown = ((node, config = {}) => {
 		update,
 		destroy() {
 			layers.delete(node);
-			node.removeAttribute('data-escapee');
+			delete node.dataset.escapee;
 			unsub();
 		},
 	};
 }) satisfies Action<HTMLElement, EscapeKeydownConfig>;
 
 const isHighestLayerEscapeKey = (node: HTMLElement): boolean => {
-	const index = Array.from(layers).indexOf(node);
-	return index === layers.size - 1;
+	const topMostLayer = [...layers].findLast(([_, behaviorType]) => behaviorType.get() !== 'defer');
+	return !!topMostLayer && topMostLayer[0] === node;
 };
