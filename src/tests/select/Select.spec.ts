@@ -186,7 +186,7 @@ describe('Select', () => {
 
 	test('Respects the `clickOutsideBehavior` prop', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(SelectTest, { clickOutsideBehavior: false });
+		const { getByTestId } = render(SelectTest, { clickOutsideBehavior: 'ignore' });
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
 

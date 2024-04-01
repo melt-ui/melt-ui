@@ -119,7 +119,7 @@ describe('Popover (Default)', () => {
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `clickOutsideBehavior` false", async () => {
-		const { getByTestId, user, content } = await open({ clickOutsideBehavior: false });
+		const { getByTestId, user, content } = await open({ clickOutsideBehavior: 'ignore' });
 		await user.click(getByTestId('outside'));
 		expect(content).toBeVisible();
 		await user.tab();
