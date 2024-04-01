@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	ClickOutsideBehaviorType,
+	FloatingConfig,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -54,11 +58,14 @@ export type CreatePopoverProps = {
 	closeOnEscape?: boolean;
 
 	/**
-	 * Whether or not to close the popover when the escape key is pressed.
+	 * Click outside behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to an outside click.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnOutsideClick?: boolean;
+	clickOutsideBehavior?: ClickOutsideBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which

@@ -217,7 +217,7 @@ describe('Dropdown Menu (Default)', () => {
 
 	test('respects close on outside click prop', async () => {
 		const { user, trigger, getByTestId } = setup({
-			closeOnOutsideClick: false,
+			clickOutsideBehavior: 'ignore',
 		});
 		const menu = getByTestId('menu');
 		await user.click(trigger);

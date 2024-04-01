@@ -20,9 +20,9 @@ const components = ['combobox', 'menubar', 'menu', 'popover', 'select'] as const
 
 describe('Nested Interact Outside Behaviors', () => {
 	describe.each(components)('dialog + %s', (componentName) => {
-		it('`closeOnOutsideClick: true` on child should only close child', async () => {
+		it('`clickOutsideBehavior: close` on child should only close child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				closeOnOutsideClick: true,
+				clickOutsideBehavior: 'close',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -36,9 +36,9 @@ describe('Nested Interact Outside Behaviors', () => {
 			await waitFor(() => expect(getRootContent()).toBeNull());
 		});
 
-		it('`closeOnOutsideClick: false` on child should neither close child nor parent', async () => {
+		it('`clickOutsideBehavior: ignore` on child should neither close child nor parent', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				closeOnOutsideClick: false,
+				clickOutsideBehavior: 'ignore',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -50,9 +50,9 @@ describe('Nested Interact Outside Behaviors', () => {
 			expect(getRootContent()).toBeVisible();
 		});
 
-		it('`closeOnOutsideClick: null` on child should close both parent and child', async () => {
+		it('`clickOutsideBehavior: defer` on child should close both parent and child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				closeOnOutsideClick: null,
+				clickOutsideBehavior: 'defer',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);

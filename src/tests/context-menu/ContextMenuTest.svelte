@@ -13,7 +13,7 @@
 	export let loop = false;
 	export let closeFocus: CreateContextMenuProps['closeFocus'] = undefined;
 	export let closeOnEscape: CreateContextMenuProps['closeOnEscape'] = true;
-	export let closeOnOutsideClick: CreateContextMenuProps['closeOnOutsideClick'] = true;
+	export let clickOutsideBehavior: CreateContextMenuProps['clickOutsideBehavior'] = 'close';
 	export let submenuIds: CreateContextMenuProps['ids'] = undefined;
 
 	const {
@@ -24,7 +24,7 @@
 		loop,
 		closeFocus,
 		closeOnEscape,
-		closeOnOutsideClick,
+		clickOutsideBehavior,
 		...$$restProps,
 		forceVisible: true,
 	});

@@ -64,7 +64,7 @@ const defaults = {
 	scrollAlignment: 'nearest',
 	loop: true,
 	defaultOpen: false,
-	closeOnOutsideClick: true,
+	clickOutsideBehavior: 'close',
 	preventScroll: true,
 	closeOnEscape: true,
 	forceVisible: false,
@@ -132,7 +132,7 @@ export function createListbox<
 	const {
 		scrollAlignment,
 		loop,
-		closeOnOutsideClick,
+		clickOutsideBehavior,
 		closeOnEscape,
 		preventScroll,
 		portal,
@@ -471,8 +471,8 @@ export function createListbox<
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
-					([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
+					[isVisible, portal, clickOutsideBehavior, positioning, activeTrigger],
+					([$isVisible, $portal, $clickOutsideBehavior, $positioning, $activeTrigger]) => {
 						unsubPopper();
 
 						if (!$isVisible || !$activeTrigger) return;
@@ -488,7 +488,7 @@ export function createListbox<
 									floating: $positioning,
 									focusTrap: null,
 									modal: {
-										closeOnInteractOutside: $closeOnOutsideClick,
+										closeOnInteractOutside: $clickOutsideBehavior,
 										onClose: closeMenu,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);

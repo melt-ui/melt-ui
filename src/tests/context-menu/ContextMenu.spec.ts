@@ -169,7 +169,7 @@ describe('Context Menu', () => {
 
 	test('respects close on outside click prop', async () => {
 		const { user, menu, getByTestId } = await open({
-			closeOnOutsideClick: false,
+			clickOutsideBehavior: 'ignore',
 		});
 		expect(menu).toBeVisible();
 		const outsideClick = getByTestId('outside-click');

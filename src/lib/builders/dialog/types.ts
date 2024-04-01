@@ -2,6 +2,7 @@ import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js'
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { DialogIdParts, createDialog } from './create.js';
+import type { ClickOutsideBehaviorType } from '$lib/internal/actions/index.js';
 export type { DialogComponentEvents } from './events.js';
 export type CreateDialogProps = {
 	/**
@@ -20,11 +21,14 @@ export type CreateDialogProps = {
 	closeOnEscape?: boolean;
 
 	/**
-	 * If true, the dialog will close when the user clicks outside of it.
+	 * Click outside behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to an outside click.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnOutsideClick?: boolean;
+	clickOutsideBehavior?: ClickOutsideBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which

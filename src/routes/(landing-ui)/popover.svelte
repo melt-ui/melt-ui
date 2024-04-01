@@ -15,7 +15,7 @@
 		},
 		forceVisible: true,
 		defaultOpen: true,
-		closeOnOutsideClick: false,
+		clickOutsideBehavior: 'ignore',
 		closeOnEscape: false,
 		disableFocusTrap: true,
 	});

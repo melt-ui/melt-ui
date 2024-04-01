@@ -7,7 +7,7 @@
 	export let multiple = false;
 	export let defaultValue: string | undefined = undefined;
 	export let closeOnEscape = true;
-	export let closeOnOutsideClick = true;
+	export let clickOutsideBehavior: CreateSelectProps['clickOutsideBehavior'] = 'close';
 	export let ids: CreateSelectProps['ids'] = undefined;
 	export let onOutsideClick: CreateSelectProps['onOutsideClick'] = undefined;
 	const {
@@ -25,7 +25,7 @@
 				  }
 				: undefined,
 			closeOnEscape,
-			closeOnOutsideClick,
+			clickOutsideBehavior,
 			ids,
 			onOutsideClick,
 		})

@@ -100,7 +100,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		dir: 'ltr',
 		loop: false,
 		closeOnEscape: true,
-		closeOnOutsideClick: true,
+		clickOutsideBehavior: 'close',
 		portal: undefined,
 		forceVisible: false,
 		defaultOpen: false,
@@ -118,7 +118,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// options
 		const options = toWritableStores(withDefaults);
-		const { positioning, portal, forceVisible, closeOnOutsideClick, onOutsideClick } = options;
+		const { positioning, portal, forceVisible, clickOutsideBehavior, onOutsideClick } = options;
 
 		const m = createMenuBuilder({
 			rootOptions: { ...options, preventScroll },
@@ -171,8 +171,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick],
-					([$rootOpen, $rootActiveTrigger, $positioning, $portal, $closeOnOutsideClick]) => {
+					[rootOpen, rootActiveTrigger, positioning, portal, clickOutsideBehavior],
+					([$rootOpen, $rootActiveTrigger, $positioning, $portal, $clickOutsideBehavior]) => {
 						unsubPopper();
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
@@ -185,7 +185,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
 									modal: {
-										closeOnInteractOutside: $closeOnOutsideClick,
+										closeOnInteractOutside: $clickOutsideBehavior,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return false;

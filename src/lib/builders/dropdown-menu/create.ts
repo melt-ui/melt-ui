@@ -12,7 +12,7 @@ const defaults = {
 	},
 	preventScroll: true,
 	closeOnEscape: true,
-	closeOnOutsideClick: true,
+	clickOutsideBehavior: 'close',
 	portal: undefined,
 	loop: false,
 	dir: 'ltr',

@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	ClickOutsideBehaviorType,
+	FloatingConfig,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
@@ -55,11 +59,14 @@ export type _CreateMenuProps = {
 	portal?: HTMLElement | string | null;
 
 	/**
-	 * Whether or not to close the menu when a click occurs outside of it.
+	 * Click outside behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to an outside click.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnOutsideClick?: boolean;
+	clickOutsideBehavior?: ClickOutsideBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -183,7 +190,7 @@ export type _MenuBuilderOptions = {
 		loop: WithGet<Writable<boolean | undefined>>;
 		dir: WithGet<Writable<TextDirection>>;
 		closeOnEscape: WithGet<Writable<boolean>>;
-		closeOnOutsideClick: WithGet<Writable<boolean>>;
+		clickOutsideBehavior: WithGet<Writable<ClickOutsideBehaviorType>>;
 		portal: WithGet<Writable<string | HTMLElement | undefined | null>>;
 		forceVisible: WithGet<Writable<boolean>>;
 		typeahead: WithGet<Writable<boolean>>;

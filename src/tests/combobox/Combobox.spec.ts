@@ -212,7 +212,7 @@ describe('Combobox', () => {
 	test.todo('Selects multiple items when `multiple` is true');
 	test.todo('Manually setting the value updates the label');
 	test.todo('Updating options and setting the value updates the label');
-	test.todo('Respects the `closeOnOutsideClick` prop');
+	test.todo('Respects the `clickOutsideBehavior` prop');
 	test.todo('Disabled combobox cannot be opened');
 	test.todo('Options loop when loop prop is set');
 });

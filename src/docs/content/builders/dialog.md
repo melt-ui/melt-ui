@@ -86,13 +86,13 @@ const dialog = createDialog({
 ### Disable Close on Outside Click
 
 By default, clicking outside of the dialog will close it. You can disable this behavior by setting
-the `closeOnOutsideClick` builder prop to `false`.
+the `clickOutsideBehavior` builder prop to `'ignore'`.
 
 ```ts {2}
 const {
 	/* ... */
 } = createDialog({
-	closeOnOutsideClick: false
+	clickOutsideBehavior: 'ignore'
 })
 ```
 

@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	ClickOutsideBehaviorType,
+	FloatingConfig,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -96,12 +100,14 @@ export type CreateListboxProps<
 	onSelectedChange?: ChangeFn<S | undefined>;
 
 	/**
-	 * Whether or not to close the listbox menu when the user clicks
-	 * outside of the listbox.
+	 * Click outside behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to an outside click.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnOutsideClick?: boolean;
+	clickOutsideBehavior?: ClickOutsideBehaviorType;
 
 	/**
 	 * Whether or not to close the listbox menu when the user presses

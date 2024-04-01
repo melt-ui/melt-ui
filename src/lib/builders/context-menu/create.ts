@@ -46,7 +46,7 @@ const defaults = {
 	},
 	preventScroll: true,
 	closeOnEscape: true,
-	closeOnOutsideClick: true,
+	clickOutsideBehavior: 'close',
 	portal: undefined,
 	loop: false,
 	dir: 'ltr',
@@ -65,7 +65,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
-	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape, loop } =
+	const { positioning, clickOutsideBehavior, portal, forceVisible, closeOnEscape, loop } =
 		rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -145,12 +145,12 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				[isVisible, rootActiveTrigger, positioning, clickOutsideBehavior, portal, closeOnEscape],
 				([
 					$isVisible,
 					$rootActiveTrigger,
 					$positioning,
-					$closeOnOutsideClick,
+					$clickOutsideBehavior,
 					$portal,
 					$closeOnEscape,
 				]) => {
@@ -166,7 +166,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 							options: {
 								floating: $positioning,
 								modal: {
-									closeOnInteractOutside: $closeOnOutsideClick,
+									closeOnInteractOutside: $clickOutsideBehavior,
 									onClose: () => {
 										rootOpen.set(false);
 									},

@@ -45,7 +45,7 @@ const defaults = {
 	closeOnEscape: true,
 	preventScroll: false,
 	onOpenChange: undefined,
-	closeOnOutsideClick: true,
+	clickOutsideBehavior: 'close',
 	portal: undefined,
 	forceVisible: false,
 	openFocus: undefined,
@@ -69,7 +69,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		disableFocusTrap,
 		preventScroll,
 		closeOnEscape,
-		closeOnOutsideClick,
+		clickOutsideBehavior,
 		portal,
 		forceVisible,
 		openFocus,
@@ -116,7 +116,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					positioning,
 					disableFocusTrap,
 					closeOnEscape,
-					closeOnOutsideClick,
+					clickOutsideBehavior,
 					portal,
 				],
 				([
@@ -125,7 +125,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					$positioning,
 					$disableFocusTrap,
 					$closeOnEscape,
-					$closeOnOutsideClick,
+					$clickOutsideBehavior,
 					$portal,
 				]) => {
 					unsubPopper();
@@ -142,7 +142,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								modal: {
 									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
 									onClose: handleClose,
-									closeOnInteractOutside: $closeOnOutsideClick,
+									closeOnInteractOutside: $clickOutsideBehavior,
 								},
 								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
 								portal: getPortalDestination(node, $portal),

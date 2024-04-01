@@ -1,18 +1,23 @@
-import type { InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	ClickOutsideBehaviorType,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 
 export type ModalConfig = {
 	/**
 	 * Handler called when the overlay closes.
 	 */
 	onClose?: () => void;
+
 	/**
-	 * Whether the modal is able to be closed by interacting outside of it.
-	 * If true, the `onClose` callback will be called when the user interacts
-	 * outside of the modal.
+	 * Click outside behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to an outside click.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnInteractOutside?: boolean;
+	closeOnInteractOutside?: ClickOutsideBehaviorType;
 
 	/**
 	 * If `closeOnInteractOutside` is `true` and this function is provided,

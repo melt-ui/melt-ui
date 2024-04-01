@@ -17,7 +17,7 @@ const OPTION_PROPS = [
 		description: 'The alignment of the highlighted item when scrolling.',
 	},
 	PROPS.LOOP,
-	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.OUTSIDE_CLICK_BEHAVIOR,
 	PROPS.CLOSE_ON_ESCAPE,
 	PROPS.PREVENT_SCROLL,
 	PROPS.PORTAL,

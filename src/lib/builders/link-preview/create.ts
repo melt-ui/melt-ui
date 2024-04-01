@@ -40,7 +40,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
-	closeOnOutsideClick: true,
+	clickOutsideBehavior: 'close',
 	forceVisible: false,
 	portal: undefined,
 	closeOnEscape: true,
@@ -70,7 +70,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		closeDelay,
 		positioning,
 		arrowSize,
-		closeOnOutsideClick,
+		clickOutsideBehavior,
 		forceVisible,
 		portal,
 		closeOnEscape,
@@ -176,12 +176,12 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				[isVisible, activeTrigger, positioning, clickOutsideBehavior, portal, closeOnEscape],
 				([
 					$isVisible,
 					$activeTrigger,
 					$positioning,
-					$closeOnOutsideClick,
+					$clickOutsideBehavior,
 					$portal,
 					$closeOnEscape,
 				]) => {
@@ -196,7 +196,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							options: {
 								floating: $positioning,
 								modal: {
-									closeOnInteractOutside: $closeOnOutsideClick,
+									closeOnInteractOutside: $clickOutsideBehavior,
 									onClose: () => {
 										open.set(false);
 										$activeTrigger.focus();
