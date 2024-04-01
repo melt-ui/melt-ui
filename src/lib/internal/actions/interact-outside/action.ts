@@ -13,11 +13,20 @@ import type {
 } from './types.js';
 import type { Action } from 'svelte/action';
 
-export const useInteractOutside = ((node, config) => {
+const layers = new Set<HTMLElement>();
+
+const createIsHighestLayerFactory = (node: HTMLElement) => {
+	return () => isHighestLayerInteractOutside(node);
+};
+
+export const useInteractOutside = ((node, config = {}) => {
 	let unsubEvents = noop;
 	let unsubPointerDown = noop;
 	let unsubPointerUp = noop;
 	let unsubResetInterceptedEvents = noop;
+
+	layers.add(node);
+	const isHighestLayer = createIsHighestLayerFactory(node);
 
 	const documentObj = getOwnerDocument(node);
 
@@ -97,7 +106,7 @@ export const useInteractOutside = ((node, config) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
-			if (isAnyEventIntercepted()) return;
+			if (!isHighestLayer() || isAnyEventIntercepted()) return;
 			if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
 			const target = e.target;
 			if (isElement(target) && isOrContainsTarget(node, target)) {
@@ -112,8 +121,9 @@ export const useInteractOutside = ((node, config) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
-			if (isAnyEventIntercepted()) return;
-			if (shouldTriggerInteractOutside(e)) onInteractOutside?.(e);
+			if (isHighestLayer() && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
+				onInteractOutside?.(e);
+			}
 			resetPointerState();
 		}, 10);
 		unsubPointerUp = onPointerUpDebounced.destroy;
@@ -180,6 +190,7 @@ export const useInteractOutside = ((node, config) => {
 			unsubPointerDown();
 			unsubPointerUp();
 			unsubResetInterceptedEvents();
+			layers.delete(node);
 		},
 	};
 }) satisfies Action<HTMLElement, InteractOutsideConfig>;
@@ -196,6 +207,11 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	}
 
 	return node && !isOrContainsTarget(node, target);
+}
+
+function isHighestLayerInteractOutside(node: HTMLElement): boolean {
+	const index = Array.from(layers).indexOf(node);
+	return index === layers.size - 1;
 }
 
 function isOrContainsTarget(node: HTMLElement, target: Element) {
