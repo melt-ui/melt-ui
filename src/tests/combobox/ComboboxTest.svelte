@@ -67,4 +67,6 @@
 		</div>
 	</ul>
 	<div data-testid="outside-click" />
+
+	<input type="text" data-testid="other-input" aria-label="other input" />
 </main>
