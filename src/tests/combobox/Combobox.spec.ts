@@ -211,7 +211,7 @@ describe('Combobox', () => {
 
 	test('should not prevent focusing on another input on outside interaction of combobox', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(ComboboxTest, { closeOnEscape: false });
+		const { getByTestId } = render(ComboboxTest);
 
 		const input = getByTestId('input');
 		const menu = getByTestId('menu');
