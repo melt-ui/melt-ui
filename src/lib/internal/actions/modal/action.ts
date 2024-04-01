@@ -23,7 +23,6 @@ export const useModal = ((node, config) => {
 	function update(config: ModalConfig) {
 		unsubInteractOutside();
 		const { onClose, shouldCloseOnInteractOutside, closeOnInteractOutside } = config;
-		if (closeOnInteractOutside === null) return;
 
 		function closeModal() {
 			// we only want to call onClose if this is the topmost modal

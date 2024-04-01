@@ -59,7 +59,7 @@ export type _CreateMenuProps = {
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean | null;
+	closeOnOutsideClick?: boolean;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -183,7 +183,7 @@ export type _MenuBuilderOptions = {
 		loop: WithGet<Writable<boolean | undefined>>;
 		dir: WithGet<Writable<TextDirection>>;
 		closeOnEscape: WithGet<Writable<boolean>>;
-		closeOnOutsideClick: WithGet<Writable<boolean | null>>;
+		closeOnOutsideClick: WithGet<Writable<boolean>>;
 		portal: WithGet<Writable<string | HTMLElement | undefined | null>>;
 		forceVisible: WithGet<Writable<boolean>>;
 		typeahead: WithGet<Writable<boolean>>;

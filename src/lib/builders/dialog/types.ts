@@ -24,7 +24,7 @@ export type CreateDialogProps = {
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean | null;
+	closeOnOutsideClick?: boolean;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
