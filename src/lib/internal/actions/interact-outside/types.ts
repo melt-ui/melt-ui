@@ -1,3 +1,6 @@
+import type { WithGet } from '$lib/internal/helpers/withGet.js';
+import type { Readable } from 'svelte/store';
+
 export type InteractOutsideEvent = PointerEvent | MouseEvent | TouchEvent;
 
 export type InteractOutsideInterceptEventType =
@@ -12,6 +15,8 @@ export type InteractOutsideInterceptEventType =
 export type InteractOutsideInterceptHandler<E extends InteractOutsideInterceptEventType> = (
 	ev: HTMLElementEventMap[E]
 ) => void;
+
+export type ClickOutsideBehaviorType = 'close' | 'defer' | 'ignore';
 
 export type InteractOutsideConfig = {
 	/**
@@ -33,8 +38,12 @@ export type InteractOutsideConfig = {
 	onInteractOutsideStart?: (e: InteractOutsideEvent) => void;
 
 	/**
-	 * Whether or not outside interactions should be handled.
-	 * @default true
+	 * Click outside behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer`: Delegates the action to the parent floating element.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to an outside click.
+	 *
+	 * @defaultValue `close`
 	 */
-	enabled?: boolean;
+	behaviorType?: ClickOutsideBehaviorType | WithGet<Readable<ClickOutsideBehaviorType>>;
 };

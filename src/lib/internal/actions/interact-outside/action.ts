@@ -4,16 +4,21 @@ import {
 	executeCallbacks,
 	noop,
 	debounce,
+	type WithGet,
+	isReadable,
+	withGet,
 } from '$lib/internal/helpers/index.js';
+import { readable, type Readable } from 'svelte/store';
 import type {
 	InteractOutsideConfig,
 	InteractOutsideEvent,
 	InteractOutsideInterceptEventType,
 	InteractOutsideInterceptHandler,
+	ClickOutsideBehaviorType,
 } from './types.js';
 import type { Action } from 'svelte/action';
 
-const layers = new Set<HTMLElement>();
+const layers = new Map<HTMLElement, WithGet<Readable<ClickOutsideBehaviorType>>>();
 
 const createIsHighestLayerFactory = (node: HTMLElement) => {
 	return () => isHighestLayerInteractOutside(node);
@@ -25,7 +30,6 @@ export const useInteractOutside = ((node, config = {}) => {
 	let unsubPointerUp = noop;
 	let unsubResetInterceptedEvents = noop;
 
-	layers.add(node);
 	const isHighestLayer = createIsHighestLayerFactory(node);
 
 	const documentObj = getOwnerDocument(node);
@@ -98,8 +102,22 @@ export const useInteractOutside = ((node, config = {}) => {
 		unsubPointerUp();
 		unsubResetInterceptedEvents();
 		resetInterceptedEvents();
-		const { onInteractOutside, onInteractOutsideStart, enabled } = { enabled: true, ...config };
-		if (!enabled) return;
+		const options = { behaviorType: 'close', ...config } satisfies InteractOutsideConfig;
+
+		const behaviorType = isReadable(options.behaviorType)
+			? options.behaviorType
+			: withGet(readable(options.behaviorType));
+
+		function shouldTriggerInteractOutside(e: InteractOutsideEvent) {
+			return (
+				isPointerDown &&
+				!isPointerDownInside &&
+				isValidEvent(e, node) &&
+				behaviorType.get() === 'close'
+			);
+		}
+
+		layers.set(node, behaviorType);
 
 		/**
 		 * Debouncing `onPointerDown` ensures that other events can be flagged as not intercepted,
@@ -107,7 +125,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 */
 		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
 			if (!isHighestLayer() || isAnyEventIntercepted()) return;
-			if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
+			if (options.onInteractOutside && isValidEvent(e, node)) options.onInteractOutsideStart?.(e);
 			const target = e.target;
 			if (isElement(target) && isOrContainsTarget(node, target)) {
 				isPointerDownInside = true;
@@ -122,7 +140,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 */
 		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
 			if (isHighestLayer() && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
-				onInteractOutside?.(e);
+				options.onInteractOutside?.(e);
 			}
 			resetPointerState();
 		}, 10);
@@ -165,15 +183,10 @@ export const useInteractOutside = ((node, config = {}) => {
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerup', onPointerUpDebounced),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mouseup', onPointerUpDebounced),
 			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchend', onPointerUpDebounced),
-			setupBubblePhaseHandlerAndMarkAsNotIntercepted('click', onPointerUpDebounced)
-		);
-	}
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('click', onPointerUpDebounced),
 
-	function shouldTriggerInteractOutside(e: InteractOutsideEvent) {
-		if (isPointerDown && !isPointerDownInside && isValidEvent(e, node)) {
-			return true;
-		}
-		return false;
+			behaviorType.destroy ?? noop
+		);
 	}
 
 	function resetPointerState() {
@@ -210,8 +223,8 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 }
 
 function isHighestLayerInteractOutside(node: HTMLElement): boolean {
-	const index = Array.from(layers).indexOf(node);
-	return index === layers.size - 1;
+	const topMostLayer = [...layers].findLast(([_, behaviorType]) => behaviorType.get() !== 'defer');
+	return !!topMostLayer && topMostLayer[0] === node;
 }
 
 function isOrContainsTarget(node: HTMLElement, target: Element) {
