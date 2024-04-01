@@ -17,6 +17,7 @@ description:
 
 - **Input**: The input that opens, closes, filters the list, and displays the selected value from
   the list
+- **Trigger**: An optional button that opens and closes the menu.
 - **Menu**: The popover menu
   - **Option**: The individual combobox items
   - **Label**: The label for the input

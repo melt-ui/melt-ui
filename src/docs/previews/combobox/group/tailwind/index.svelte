@@ -77,7 +77,7 @@
 	});
 
 	const {
-		elements: { menu, input, option, label, group, groupLabel },
+		elements: { menu, input, option, label, group, groupLabel, trigger },
 		states: { open, inputValue, touchedInput, selected },
 		helpers: { isSelected },
 	} = createCombobox<Manga>({
@@ -123,13 +123,16 @@
 					px-3 pr-12 text-black"
 			placeholder="Best book ever"
 		/>
-		<div class="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-magnum-900">
+		<button
+			use:melt={$trigger}
+			class="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-magnum-900"
+		>
 			{#if $open}
 				<ChevronUp class="size-4" />
 			{:else}
 				<ChevronDown class="size-4" />
 			{/if}
-		</div>
+		</button>
 	</div>
 </div>
 {#if $open}
