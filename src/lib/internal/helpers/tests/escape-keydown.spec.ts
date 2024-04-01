@@ -134,7 +134,7 @@ describe('escape keydown', () => {
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
 
-		action1.update({ behaviorType: 'ignore' });
+		action1.update({ behaviorType: 'ignore', handler: handler1 });
 		dispatchEscape();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(2);
@@ -197,7 +197,7 @@ describe('escape keydown', () => {
 		expect(handler2).toHaveBeenCalledTimes(1);
 
 		const w2 = withGet.writable<EscapeBehaviorType>('ignore');
-		action2.update({ behaviorType: w2 });
+		action2.update({ behaviorType: w2, handler: handler2 });
 		dispatchEscape();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
