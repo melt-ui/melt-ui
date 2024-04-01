@@ -226,7 +226,6 @@ export function createDialog(props?: CreateDialogProps) {
 			} as const),
 		action: (node: HTMLElement) => {
 			const unsubPortal = effect([portal, isVisible], ([$portal, $isVisible]) => {
-				unsubPortal();
 				if (!$isVisible || $portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return;
