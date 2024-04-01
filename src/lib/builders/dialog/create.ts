@@ -225,20 +225,16 @@ export function createDialog(props?: CreateDialogProps) {
 				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 			} as const),
 		action: (node: HTMLElement) => {
-			let unsubPortal = noop;
-			const unsubDerived = effect([portal, isVisible], ([$portal, $isVisible]) => {
+			const unsubPortal = effect([portal, isVisible], ([$portal, $isVisible]) => {
 				unsubPortal();
 				if (!$isVisible || $portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return;
-				unsubPortal = usePortal(node, portalDestination).destroy;
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {
-				destroy() {
-					unsubDerived();
-					unsubPortal();
-				},
+				destroy: unsubPortal,
 			};
 		},
 	});

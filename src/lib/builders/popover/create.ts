@@ -224,7 +224,6 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 		action: (node: HTMLElement) => {
 			let unsubEscapeKeydown = noop;
-			let unsubPortal = noop;
 
 			if (closeOnEscape.get()) {
 				const escapeKeydown = useEscapeKeydown(node, {
@@ -237,18 +236,16 @@ export function createPopover(args?: CreatePopoverProps) {
 				}
 			}
 
-			const unsubDerived = effect([portal, isVisible], ([$portal, $isVisible]) => {
-				unsubPortal();
+			const unsubPortal = effect([portal, isVisible], ([$portal, $isVisible]) => {
 				if (!$isVisible || $portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return;
-				unsubPortal = usePortal(node, portalDestination).destroy;
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
 					unsubEscapeKeydown();
-					unsubDerived();
 					unsubPortal();
 				},
 			};
