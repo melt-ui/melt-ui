@@ -114,16 +114,14 @@ describe('Popover (Default)', () => {
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 		expect(getByTestId('content')).toHaveFocus();
-		await user.tab({ shift: true });
-		expect(getByTestId('trigger')).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `clickOutsideBehavior` false", async () => {
 		const { getByTestId, user, content } = await open({ clickOutsideBehavior: 'ignore' });
 		await user.click(getByTestId('outside'));
 		expect(content).toBeVisible();
-		await user.tab();
-		expect(getByTestId('closeFocus')).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it('Returns focus to trigger when manually setting `open` state to false', async () => {
