@@ -79,9 +79,9 @@
 			<Slider class="absolute left-1/2 top-[25rem] translate-x-[calc(-50%+30px)]" />
 			<Switch class="absolute left-[52.5rem] top-[3.5rem] sm:left-[62.5rem] sm:top-[3.5rem]" />
 			<TagsInput class="absolute left-[70%] top-[10rem]" />
-			<PinInput class="absolute left-[62%] top-[15rem] sm:left-[67.5%] lg:left-[75%]" />
+			<PinInput class="absolute left-[62%] top-[15rem] sm:left-[67.5%] lg:left-3/4" />
 			<Popover
-				class="absolute left-[25%] top-[10rem] hidden md:flex lg:left-[20%] "
+				class="absolute left-1/4 top-[10rem] hidden md:flex lg:left-[20%] "
 				contentClass="hidden md:block"
 			/>
 			<Tabs class="absolute left-[20rem] top-[30rem] sm:left-0 sm:top-[16rem]" />
