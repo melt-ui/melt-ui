@@ -233,16 +233,10 @@ describe('Dialog', () => {
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
-		const { getByTestId, user, overlay, content } = await open({
-			closeOnOutsideClick: false,
-		});
-		const closer = getByTestId('floating-closer');
-
+		const { user, overlay, content } = await open({ closeOnOutsideClick: false });
 		await user.click(overlay);
 		expect(content).toBeVisible();
-		expect(content).toHaveFocus();
-		await user.tab({ shift: true });
-		expect(closer).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it('Returns focus to trigger when manually setting `open` state to false', async () => {
