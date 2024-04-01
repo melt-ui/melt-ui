@@ -13,6 +13,16 @@ export const SEE = {
 	},
 };
 
+const createBulletsHTML = (bullets: string[]) => {
+	return bullets.map((bullet) => `<li>${bullet}</li>`).join('');
+};
+
+const OUTSIDE_CLICK_BEHAVIOR_BULLETS = (name: string) => [
+	`\`close\`: Closes the ${name} immediately.`,
+	`\`defer\`: Delegates the action to the parent floating element.`,
+	`\`ignore\`: Prevents the ${name} from closing and also blocks the parent element from closing in response to an outside click. This is distinct from \`defer\`, which allows the parent element to determine its response.`,
+];
+
 export const DESCRIPTIONS = {
 	FLOATING_CONFIG:
 		'A configuration object which determines how the floating element is positioned relative to the trigger.',
@@ -24,8 +34,10 @@ export const DESCRIPTIONS = {
 	LOOP: 'Whether or not the focus should loop back to the first item when the last item is reached.',
 	CLOSE_ON_ESCAPE: (name = 'element') =>
 		`Whether or not to close the ${name} when the escape key is pressed.`,
-	CLOSE_ON_CLICK_OUTSIDE: (name = 'element') =>
-		`Whether or not to close the ${name} when the user clicks outside of it.`,
+	OUTSIDE_CLICK_BEHAVIOR: (name = 'element') =>
+		`Defines how the ${name} reacts when the user clicks outside of it. ${createBulletsHTML(
+			OUTSIDE_CLICK_BEHAVIOR_BULLETS(name)
+		)}`,
 	BUILDER: (name: string) => `The builder function used to create the ${name} component.`,
 	PORTAL: (name = 'floating element') =>
 		`The element or selector to render the ${name} into. Nested floating elements are automatically rendered into their parent if not specified. Pass in \`null\` to disable portalling.`,
@@ -87,11 +99,11 @@ export const PROPS = {
 		description: DESCRIPTIONS.CLOSE_ON_ESCAPE(args.name ?? 'floating element'),
 		default: args.default ?? 'true',
 	}),
-	CLOSE_ON_OUTSIDE_CLICK: (args: PropArgs = {}): Prop => ({
-		name: 'closeOnOutsideClick',
-		type: 'boolean',
-		description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE(args.name ?? 'floating element'),
-		default: args.default ?? 'true',
+	OUTSIDE_CLICK_BEHAVIOR: (args: PropArgs = {}): Prop => ({
+		name: 'clickOutsideBehavior',
+		type: '"close" | "defer" | "ignore"',
+		description: DESCRIPTIONS.OUTSIDE_CLICK_BEHAVIOR(args.name ?? 'floating element'),
+		default: args.default ?? "'close'",
 	}),
 	PREVENT_SCROLL: (args: PropArgs = {}): Prop => ({
 		name: 'preventScroll',
