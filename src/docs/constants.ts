@@ -13,6 +13,16 @@ export const SEE = {
 	},
 };
 
+const createBulletsHTML = (bullets: string[]) => {
+	return bullets.map((bullet) => `<li>${bullet}</li>`).join('');
+};
+
+const ESCAPE_BEHAVIOR_BULLETS = (name: string) => [
+	`\`close\`: Closes the ${name} immediately.`,
+	`\`defer\`: Delegates the action to the parent floating element.`,
+	`\`ignore\`: Prevents the ${name} from closing and also blocks the parent element from closing in response to the Escape key. This is distinct from \`defer\`, which allows the parent element to determine its response.`,
+];
+
 export const DESCRIPTIONS = {
 	FLOATING_CONFIG:
 		'A configuration object which determines how the floating element is positioned relative to the trigger.',
@@ -22,8 +32,10 @@ export const DESCRIPTIONS = {
 	ON_SELECT:
 		'A callback which is called when the item is selected. To prevent the default behavior, call `e.preventDefault()` in the callback.',
 	LOOP: 'Whether or not the focus should loop back to the first item when the last item is reached.',
-	CLOSE_ON_ESCAPE: (name = 'element') =>
-		`Whether or not to close the ${name} when the escape key is pressed. Pass in \`null\` to let the parent floating element determine its own response. This differs from passing \`false\`, where the child specifies that it should not close when the escape key is pressed, thus preventing the parent from closing as well.`,
+	ESCAPE_BEHAVIOR: (name = 'element') =>
+		`Defines how the ${name} reacts when the Escape key is pressed. ${createBulletsHTML(
+			ESCAPE_BEHAVIOR_BULLETS(name)
+		)}`,
 	CLOSE_ON_CLICK_OUTSIDE: (name = 'element') =>
 		`Whether or not to close the ${name} when the user clicks outside of it.`,
 	BUILDER: (name: string) => `The builder function used to create the ${name} component.`,
@@ -81,11 +93,11 @@ export const PROPS = {
 		description: DESCRIPTIONS.PORTAL(args.name ?? 'floating element'),
 		default: args.default ?? 'body',
 	}),
-	CLOSE_ON_ESCAPE: (args: PropArgs = {}): Prop => ({
-		name: 'closeOnEscape',
-		type: 'boolean | null',
-		description: DESCRIPTIONS.CLOSE_ON_ESCAPE(args.name ?? 'floating element'),
-		default: args.default ?? 'true',
+	ESCAPE_BEHAVIOR: (args: PropArgs = {}): Prop => ({
+		name: 'escapeBehavior',
+		type: '"close" | "defer" | "ignore"',
+		description: DESCRIPTIONS.ESCAPE_BEHAVIOR(args.name ?? 'floating element'),
+		default: args.default ?? "'close'",
 	}),
 	CLOSE_ON_OUTSIDE_CLICK: (args: PropArgs = {}): Prop => ({
 		name: 'closeOnOutsideClick',

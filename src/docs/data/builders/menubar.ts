@@ -7,7 +7,7 @@ import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu.js';
 import { menubarEvents } from '$lib/builders/menubar/events.js';
 import { menubarIdParts } from '$lib/index.js';
 
-const OPTION_PROPS = [PROPS.CLOSE_ON_ESCAPE, PROPS.LOOP, PROPS.PREVENT_SCROLL];
+const OPTION_PROPS = [PROPS.ESCAPE_BEHAVIOR, PROPS.LOOP, PROPS.PREVENT_SCROLL];
 const BUILDER_NAME = 'menubar';
 
 const builder = builderSchema(BUILDER_NAME, {

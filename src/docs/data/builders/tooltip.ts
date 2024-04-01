@@ -16,7 +16,7 @@ import type { BuilderData } from './index.js';
 const OPTION_PROPS = [
 	PROPS.POSITIONING({ default: "position: 'top'" }),
 	PROPS.ARROW_SIZE,
-	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.ESCAPE_BEHAVIOR,
 	PROPS.FORCE_VISIBLE,
 	PROPS.PORTAL,
 	{

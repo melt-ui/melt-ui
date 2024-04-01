@@ -16,7 +16,7 @@ const OPTION_PROPS = [
 		description: 'The `role` attribute of the dialog element.',
 	},
 	PROPS.PREVENT_SCROLL,
-	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.ESCAPE_BEHAVIOR,
 	PROPS.CLOSE_ON_OUTSIDE_CLICK,
 	PROPS.PORTAL,
 	PROPS.FORCE_VISIBLE,
