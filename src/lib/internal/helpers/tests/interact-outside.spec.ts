@@ -24,7 +24,7 @@ const setup = (config?: InteractOutsideConfig) => {
 };
 
 describe('interact outside', () => {
-	it.only('calls handler on outside interaction provided `behaviorType: close`', async () => {
+	it('calls handler on outside interaction provided `behaviorType: close`', async () => {
 		const { handler, action } = setup({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler).toHaveBeenCalledTimes(1);
