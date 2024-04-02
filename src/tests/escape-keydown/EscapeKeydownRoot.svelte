@@ -15,21 +15,24 @@
 	const {
 		elements: { trigger, content, portalled },
 		states: { open },
+		options: { escapeBehavior: rootEscapeBehavior },
 	} = createDialog({ forceVisible: true });
+
+	const setRootEscapeBehaviorIgnore = () => rootEscapeBehavior.set('ignore');
 </script>
 
 <button use:melt={$trigger} data-testid="root-dialog-trigger">Open</button>
 {#if $open}
 	<div use:melt={$portalled}>
 		<div use:melt={$content} data-testid="root-dialog-content">
-			<Dialog {escapeBehavior} />
-			<Combobox {escapeBehavior} />
-			<LinkPreview {escapeBehavior} />
-			<Menubar {escapeBehavior} />
-			<Menu {escapeBehavior} />
-			<Popover {escapeBehavior} />
-			<Select {escapeBehavior} />
-			<Tooltip {escapeBehavior} />
+			<Dialog {escapeBehavior} {setRootEscapeBehaviorIgnore} />
+			<Combobox {escapeBehavior} {setRootEscapeBehaviorIgnore} />
+			<LinkPreview {escapeBehavior} {setRootEscapeBehaviorIgnore} />
+			<Menubar {escapeBehavior} {setRootEscapeBehaviorIgnore} />
+			<Menu {escapeBehavior} {setRootEscapeBehaviorIgnore} />
+			<Popover {escapeBehavior} {setRootEscapeBehaviorIgnore} />
+			<Select {escapeBehavior} {setRootEscapeBehaviorIgnore} />
+			<Tooltip {escapeBehavior} {setRootEscapeBehaviorIgnore} />
 		</div>
 	</div>
 {/if}

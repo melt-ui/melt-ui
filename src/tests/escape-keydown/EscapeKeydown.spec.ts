@@ -87,5 +87,32 @@ describe('Nested Escape Keydown Behaviors', () => {
 			await waitFor(() => expect(getContent()).toBeNull());
 			expect(getRootContent()).toBeNull();
 		});
+
+		it('updating parent `escapeBehavior` should not intercept escape key press', async () => {
+			const { user, getByTestId, queryByTestId, getRootContent } = await setup({
+				escapeBehavior: 'close',
+			});
+			const trigger = getByTestId(`${componentName}-trigger`);
+			const getContent = () => queryByTestId(`${componentName}-content`);
+
+			if (componentsToHover.has(componentName)) {
+				await user.hover(trigger);
+			} else {
+				await user.click(trigger);
+			}
+
+			expect(getContent()).toBeVisible();
+
+			/**
+			 * If we update parent `escapeBehaivor` to `ignore` and escape is pressed,
+			 * parent element should stay open and child element should close.
+			 * If the parent element's position in the stack was reset, on escape no element would be closed
+			 * because the parent would be at the "top" of the stack and it's set to ignore escape key presses.
+			 */
+			await user.click(getByTestId(`${componentName}-set-parent-escape-behavior-ignore`));
+			await user.keyboard(testKbd.ESCAPE);
+			expect(getContent()).toBeNull();
+			expect(getRootContent()).toBeVisible();
+		});
 	});
 });
