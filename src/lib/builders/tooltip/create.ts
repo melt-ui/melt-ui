@@ -197,8 +197,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 			let unsubEscapeKeydown = noop;
 
 			const unsubDerived = effect(
-				[isVisible, positioning, portal, escapeBehavior],
-				([$isVisible, $positioning, $portal, $escapeBehavior]) => {
+				[isVisible, positioning, portal],
+				([$isVisible, $positioning, $portal]) => {
 					unsubPortal();
 					unsubFloating();
 					unsubEscapeKeydown();
@@ -222,7 +222,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 						};
 
 						unsubEscapeKeydown = useEscapeKeydown(node, {
-							behaviorType: $escapeBehavior,
+							behaviorType: escapeBehavior,
 							handler: onEscapeKeyDown,
 						}).destroy;
 					});

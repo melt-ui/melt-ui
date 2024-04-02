@@ -178,15 +178,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, escapeBehavior],
-				([
-					$isVisible,
-					$rootActiveTrigger,
-					$positioning,
-					$closeOnOutsideClick,
-					$portal,
-					$escapeBehavior,
-				]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
@@ -214,7 +207,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									onClose: () => rootOpen.set(false),
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: { behaviorType: $escapeBehavior },
+								escapeKeydown: { behaviorType: escapeBehavior },
 							},
 						}).destroy;
 					});

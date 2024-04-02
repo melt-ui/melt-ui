@@ -176,15 +176,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal, escapeBehavior],
-				([
-					$isVisible,
-					$activeTrigger,
-					$positioning,
-					$closeOnOutsideClick,
-					$portal,
-					$escapeBehavior,
-				]) => {
+				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $activeTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
 
@@ -214,7 +207,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 								},
 								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
-								escapeKeydown: { behaviorType: $escapeBehavior },
+								escapeKeydown: { behaviorType: escapeBehavior },
 							},
 						}).destroy;
 					});

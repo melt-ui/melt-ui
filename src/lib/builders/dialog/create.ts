@@ -159,8 +159,8 @@ export function createDialog(props?: CreateDialogProps) {
 			let unsubFocusTrap = noop;
 
 			const unsubDerived = effect(
-				[isVisible, closeOnOutsideClick, escapeBehavior],
-				([$isVisible, $closeOnOutsideClick, $escapeBehavior]) => {
+				[isVisible, closeOnOutsideClick],
+				([$isVisible, $closeOnOutsideClick]) => {
 					unsubModal();
 					unsubEscape();
 					unsubFocusTrap();
@@ -180,7 +180,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 					unsubEscape = useEscapeKeydown(node, {
 						handler: handleClose,
-						behaviorType: $escapeBehavior,
+						behaviorType: escapeBehavior,
 					}).destroy;
 				}
 			);

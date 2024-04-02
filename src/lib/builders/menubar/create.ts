@@ -170,15 +170,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick, escapeBehavior],
-					([
-						$rootOpen,
-						$rootActiveTrigger,
-						$positioning,
-						$portal,
-						$closeOnOutsideClick,
-						$escapeBehavior,
-					]) => {
+					[rootOpen, rootActiveTrigger, positioning, portal, closeOnOutsideClick],
+					([$rootOpen, $rootActiveTrigger, $positioning, $portal, $closeOnOutsideClick]) => {
 						unsubPopper();
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
@@ -206,7 +199,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 										},
 									},
 									escapeKeydown: {
-										behaviorType: $escapeBehavior,
+										behaviorType: escapeBehavior,
 										handler: () => activeMenu.set(''),
 									},
 								},
