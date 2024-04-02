@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import InteractOutsideRoot from './InteractOutside.svelte';
 import type { CreateDialogProps } from '$lib/index.js';
+import { sleep } from '$lib/internal/helpers/sleep.js';
 
 async function setup(props: CreateDialogProps) {
 	const user = userEvent.setup();
@@ -62,6 +63,31 @@ describe('Nested Interact Outside Behaviors', () => {
 			await user.click(rootOverlay);
 			await waitFor(() => expect(getContent()).toBeNull());
 			expect(getRootContent()).toBeNull();
+		});
+
+		it('updating parent `clickOutsideBehavior` should not intercept outside click', async () => {
+			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
+				clickOutsideBehavior: 'close',
+			});
+			const trigger = getByTestId(`${componentName}-trigger`);
+			const getContent = () => queryByTestId(`${componentName}-content`);
+
+			await user.click(trigger);
+			expect(getContent()).toBeVisible();
+
+			/**
+			 * If we update parent `clickOutsideBehavior` to `ignore` and clicking outside,
+			 * parent element should stay open and child element should close.
+			 * If the parent element's position in the stack was reset, on outside click, no element would be closed
+			 * because the parent would be at the "top" of the stack and it's set to ignore outside clicks.
+			 */
+			await user.click(getByTestId(`${componentName}-set-parent-click-outside-behavior-ignore`));
+			await user.click(rootOverlay);
+			await waitFor(() => expect(getContent()).toBeNull());
+			expect(getRootContent()).toBeVisible();
+			await user.click(rootOverlay);
+			await sleep(20);
+			expect(getRootContent()).toBeVisible();
 		});
 	});
 });

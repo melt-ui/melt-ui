@@ -12,7 +12,10 @@
 	const {
 		elements: { trigger, content, portalled, overlay },
 		states: { open },
+		options: { clickOutsideBehavior: rootClickOutsideBehavior },
 	} = createDialog({ forceVisible: true, portal: 'body' });
+
+	const setRootClickOutsideBehaviorIgnore = () => rootClickOutsideBehavior.set('ignore');
 </script>
 
 <button use:melt={$trigger} data-testid="root-dialog-trigger">Open</button>
@@ -28,11 +31,11 @@
 			data-testid="root-dialog-content"
 			class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw] max-w-[450px] -translate-x-1/2 -translate-y-1/2 p-6 shadow-lg"
 		>
-			<Combobox {clickOutsideBehavior} />
-			<Menubar {clickOutsideBehavior} />
-			<Menu {clickOutsideBehavior} />
-			<Popover {clickOutsideBehavior} />
-			<Select {clickOutsideBehavior} />
+			<Combobox {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
+			<Menubar {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
+			<Menu {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
+			<Popover {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
+			<Select {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
 		</div>
 	</div>
 {/if}
