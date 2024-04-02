@@ -1,7 +1,4 @@
-import type {
-	ClickOutsideBehaviorType,
-	InteractOutsideEvent,
-} from '$lib/internal/actions/index.js';
+import type { InteractOutsideConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
 
 export type ModalConfig = {
 	/**
@@ -17,7 +14,7 @@ export type ModalConfig = {
 	 *
 	 * @defaultValue `close`
 	 */
-	clickOutsideBehavior?: ClickOutsideBehaviorType;
+	clickOutsideBehavior?: InteractOutsideConfig['behaviorType'];
 
 	/**
 	 * If `clickOutsideBehavior` is `'close'` and this function is provided,

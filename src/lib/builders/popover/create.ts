@@ -110,22 +110,13 @@ export function createPopover(args?: CreatePopoverProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[
-					isVisible,
-					activeTrigger,
-					positioning,
-					disableFocusTrap,
-					closeOnEscape,
-					clickOutsideBehavior,
-					portal,
-				],
+				[isVisible, activeTrigger, positioning, disableFocusTrap, closeOnEscape, portal],
 				([
 					$isVisible,
 					$activeTrigger,
 					$positioning,
 					$disableFocusTrap,
 					$closeOnEscape,
-					$clickOutsideBehavior,
 					$portal,
 				]) => {
 					unsubPopper();
@@ -142,7 +133,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								modal: {
 									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
 									onClose: handleClose,
-									clickOutsideBehavior: $clickOutsideBehavior,
+									clickOutsideBehavior,
 								},
 								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
 								portal: getPortalDestination(node, $portal),

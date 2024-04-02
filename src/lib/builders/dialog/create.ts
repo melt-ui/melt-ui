@@ -178,32 +178,29 @@ export function createDialog(props?: CreateDialogProps) {
 			let unsubEscape = noop;
 			let unsubFocusTrap = noop;
 
-			const unsubDerived = effect(
-				[isVisible, clickOutsideBehavior, closeOnEscape],
-				([$isVisible, $clickOutsideBehavior, $closeOnEscape]) => {
-					unsubModal();
-					unsubEscape();
-					unsubFocusTrap();
-					if (!$isVisible) return;
+			const unsubDerived = effect([isVisible, closeOnEscape], ([$isVisible, $closeOnEscape]) => {
+				unsubModal();
+				unsubEscape();
+				unsubFocusTrap();
+				if (!$isVisible) return;
 
-					unsubModal = useModal(node, {
-						clickOutsideBehavior: $clickOutsideBehavior,
-						onClose: handleClose,
-						shouldCloseOnInteractOutside(e) {
-							onOutsideClick.get()?.(e);
-							if (e.defaultPrevented) return false;
-							return true;
-						},
-					}).destroy;
+				unsubModal = useModal(node, {
+					clickOutsideBehavior,
+					onClose: handleClose,
+					shouldCloseOnInteractOutside(e) {
+						onOutsideClick.get()?.(e);
+						if (e.defaultPrevented) return false;
+						return true;
+					},
+				}).destroy;
 
-					unsubEscape = useEscapeKeydown(node, {
-						handler: handleClose,
-						enabled: $closeOnEscape,
-					}).destroy;
+				unsubEscape = useEscapeKeydown(node, {
+					handler: handleClose,
+					enabled: $closeOnEscape,
+				}).destroy;
 
-					unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
-				}
-			);
+				unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
+			});
 
 			return {
 				destroy: () => {

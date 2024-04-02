@@ -178,15 +178,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, clickOutsideBehavior, portal, closeOnEscape],
-				([
-					$isVisible,
-					$rootActiveTrigger,
-					$positioning,
-					$clickOutsideBehavior,
-					$portal,
-					$closeOnEscape,
-				]) => {
+				[isVisible, rootActiveTrigger, positioning, portal, closeOnEscape],
+				([$isVisible, $rootActiveTrigger, $positioning, $portal, $closeOnEscape]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
@@ -198,7 +191,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							options: {
 								floating: $positioning,
 								modal: {
-									clickOutsideBehavior: $clickOutsideBehavior,
+									clickOutsideBehavior,
 									shouldCloseOnInteractOutside: (e) => {
 										onOutsideClick.get()?.(e);
 										if (e.defaultPrevented) return false;

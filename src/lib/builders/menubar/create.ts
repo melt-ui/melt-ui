@@ -171,8 +171,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, positioning, portal, clickOutsideBehavior],
-					([$rootOpen, $rootActiveTrigger, $positioning, $portal, $clickOutsideBehavior]) => {
+					[rootOpen, rootActiveTrigger, positioning, portal],
+					([$rootOpen, $rootActiveTrigger, $positioning, $portal]) => {
 						unsubPopper();
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
@@ -185,7 +185,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
 									modal: {
-										clickOutsideBehavior: $clickOutsideBehavior,
+										clickOutsideBehavior,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return false;

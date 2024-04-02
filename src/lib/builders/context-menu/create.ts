@@ -145,15 +145,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, clickOutsideBehavior, portal, closeOnEscape],
-				([
-					$isVisible,
-					$rootActiveTrigger,
-					$positioning,
-					$clickOutsideBehavior,
-					$portal,
-					$closeOnEscape,
-				]) => {
+				[isVisible, rootActiveTrigger, positioning, portal, closeOnEscape],
+				([$isVisible, $rootActiveTrigger, $positioning, $portal, $closeOnEscape]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
@@ -166,7 +159,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 							options: {
 								floating: $positioning,
 								modal: {
-									clickOutsideBehavior: $clickOutsideBehavior,
+									clickOutsideBehavior,
 									onClose: () => {
 										rootOpen.set(false);
 									},
