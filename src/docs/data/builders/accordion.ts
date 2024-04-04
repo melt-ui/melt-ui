@@ -25,18 +25,6 @@ const builder = builderSchema(BUILDER_NAME, {
 	props: [
 		...OPTION_PROPS,
 		{
-			name: 'multiple',
-			type: 'boolean',
-			default: 'false',
-			description: 'If `true`, multiple accordion items can be open at the same time.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the accordion is disabled.',
-		},
-		{
 			name: 'defaultValue',
 			type: ['string', 'string[]', 'undefined'],
 			description: 'The default value of the accordion.',
