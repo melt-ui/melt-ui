@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Feature Request
+  - name: 🌟 Feature Request
     url: https://melt-ui.canny.io/
     about: Request, vote and explore new features
-  - name: Questions & Discussions
+  - name: 💬 Questions & Discussions
     url: https://github.com/melt-ui/melt-ui/discussions
     about: Ask questions and discuss topics with other developers
-  - name: Chat about Melt UI with the community
+  - name: 👾 Chat about Melt UI with the community
     url: https://melt-ui.com/discord
     about: Chat with the community and the team behind Melt UI
