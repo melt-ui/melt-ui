@@ -22,12 +22,79 @@ const setup = (config?: EscapeKeydownConfig) => {
 	return { action, handler };
 };
 
+const singleEscapeAssertions = [
+	{
+		behavior: 'close',
+		shouldClose: true,
+	},
+	{
+		behavior: 'ignore',
+		shouldClose: false,
+	},
+	{
+		behavior: 'defer-otherwise-close',
+		shouldClose: true,
+	},
+	{
+		behavior: 'defer-otherwise-ignore',
+		shouldClose: false,
+	},
+] as const satisfies { behavior: EscapeBehaviorType; shouldClose: boolean }[];
+
+const nestedEscapeAssertions = [
+	{
+		behaviors: ['close', 'close'],
+		expectedInvocations: [false, true],
+	},
+	{
+		behaviors: ['close', 'defer-otherwise-close'],
+		expectedInvocations: [true, false],
+	},
+	{
+		behaviors: ['close', 'defer-otherwise-ignore'],
+		expectedInvocations: [true, false],
+	},
+	{
+		behaviors: ['close', 'ignore'],
+		expectedInvocations: [false, false],
+	},
+	{
+		behaviors: ['defer-otherwise-close', 'defer-otherwise-close'],
+		expectedInvocations: [true, false],
+	},
+	{
+		behaviors: ['defer-otherwise-ignore', 'defer-otherwise-ignore'],
+		expectedInvocations: [false, false],
+	},
+] as const satisfies { behaviors: EscapeBehaviorType[]; expectedInvocations: boolean[] }[];
+
 describe('escape keydown', () => {
-	it('calls handler when escape key is pressed provided `behaviorType: close`', () => {
-		const { handler, action } = setup({ behaviorType: 'close' });
-		dispatchEscape();
-		expect(handler).toHaveBeenCalledTimes(1);
-		action.destroy();
+	describe('single layers', () => {
+		for (const { behavior, shouldClose } of singleEscapeAssertions) {
+			it(`provided '${behavior}', on escape ${shouldClose ? 'should' : 'should not'} close`, () => {
+				const { handler, action } = setup({ behaviorType: behavior });
+				expect(handler).not.toHaveBeenCalled();
+				dispatchEscape();
+				expect(handler).toHaveBeenCalledTimes(shouldClose ? 1 : 0);
+				action.destroy();
+			});
+		}
+	});
+
+	describe('nested layers', () => {
+		for (const { behaviors, expectedInvocations } of nestedEscapeAssertions) {
+			it(`provided behaviors '${behaviors}', expected invocations '${expectedInvocations}'`, () => {
+				const layers = behaviors.map((behaviorType) => setup({ behaviorType }));
+				layers.forEach(({ handler }) => expect(handler).not.toHaveBeenCalled());
+
+				dispatchEscape();
+				layers.forEach(({ handler }, idx) => {
+					const shouldInvoke = expectedInvocations[idx];
+					expect(handler).toHaveBeenCalledTimes(shouldInvoke ? 1 : 0);
+				});
+				layers.forEach(({ action }) => action.destroy());
+			});
+		}
 	});
 
 	it('does not call handler after unmounting', () => {
@@ -45,85 +112,17 @@ describe('escape keydown', () => {
 		action.destroy();
 	});
 
-	it('does not call handler when escape is pressed and `behaviorType: ignore`', () => {
-		const { handler, action } = setup({ behaviorType: 'ignore' });
-		dispatchEscape();
-		expect(handler).toHaveBeenCalledTimes(0);
-		action.destroy();
-	});
-
-	it('does not call handler when escape is pressed and `behaviorType: defer`', () => {
-		const { handler, action } = setup({ behaviorType: 'defer' });
-		dispatchEscape();
-		expect(handler).toHaveBeenCalledTimes(0);
-		action.destroy();
-	});
-
-	it('calls handler of top-most layer', () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
-		dispatchEscape();
-		expect(handler1).toHaveBeenCalledTimes(0);
-		expect(handler2).toHaveBeenCalledTimes(1);
-		action1.destroy();
-		action2.destroy();
-	});
-
-	it('calls handler of top-most layer with `behaviorType: close`', () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
-		dispatchEscape();
-		expect(handler1).toHaveBeenCalledTimes(0);
-		expect(handler2).toHaveBeenCalledTimes(1);
-		action1.destroy();
-		action2.destroy();
-	});
-
-	it('does not call handler of top-most layer with `behaviorType: ignore`', () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'ignore' });
-		dispatchEscape();
-		expect(handler1).toHaveBeenCalledTimes(0);
-		expect(handler2).toHaveBeenCalledTimes(0);
-		action1.destroy();
-		action2.destroy();
-	});
-
 	it('correctly unmounts event listener and calls handler of top-most layer', () => {
 		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
 		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
 		dispatchEscape();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
-		action2.destroy();
 
+		action2.destroy();
 		dispatchEscape();
 		expect(handler1).toHaveBeenCalledTimes(1);
 		expect(handler2).toHaveBeenCalledTimes(1);
-
-		action1.destroy();
-	});
-
-	it('calls handler of top-most layer ignoring layers with `behaviorType: defer`', () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'defer' });
-		const { handler: handler3, action: action3 } = setup({ behaviorType: 'defer' });
-		dispatchEscape();
-		expect(handler1).toHaveBeenCalledTimes(1);
-		expect(handler2).toHaveBeenCalledTimes(0);
-		expect(handler3).toHaveBeenCalledTimes(0);
-
-		action3.destroy();
-		dispatchEscape();
-		expect(handler1).toHaveBeenCalledTimes(2);
-		expect(handler2).toHaveBeenCalledTimes(0);
-		expect(handler3).toHaveBeenCalledTimes(0);
-
-		action2.destroy();
-		dispatchEscape();
-		expect(handler1).toHaveBeenCalledTimes(3);
-		expect(handler2).toHaveBeenCalledTimes(0);
-		expect(handler3).toHaveBeenCalledTimes(0);
 		action1.destroy();
 	});
 
@@ -160,7 +159,7 @@ describe('escape keydown', () => {
 
 	it('respects updated behaviorType', () => {
 		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'defer' });
+		const { handler: handler2, action: action2 } = setup({ behaviorType: 'defer-otherwise-close' });
 		dispatchEscape();
 		expect(handler1).toHaveBeenCalledTimes(1);
 		expect(handler2).toHaveBeenCalledTimes(0);
@@ -174,7 +173,7 @@ describe('escape keydown', () => {
 	});
 
 	it('respects updated behaviorType store', () => {
-		const w2 = withGet.writable<EscapeBehaviorType>('defer');
+		const w2 = withGet.writable<EscapeBehaviorType>('defer-otherwise-close');
 		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
 		const { handler: handler2, action: action2 } = setup({ behaviorType: w2 });
 		dispatchEscape();
