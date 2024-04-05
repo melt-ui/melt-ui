@@ -39,7 +39,7 @@ const singleEscapeAssertions = [
 		behavior: 'defer-otherwise-ignore',
 		shouldClose: false,
 	},
-] as const satisfies { behavior: EscapeBehaviorType; shouldClose: boolean }[];
+] satisfies { behavior: EscapeBehaviorType; shouldClose: boolean }[];
 
 const nestedEscapeAssertions = [
 	{
@@ -66,7 +66,7 @@ const nestedEscapeAssertions = [
 		behaviors: ['defer-otherwise-ignore', 'defer-otherwise-ignore'],
 		expectedInvocations: [false, false],
 	},
-] as const satisfies { behaviors: EscapeBehaviorType[]; expectedInvocations: boolean[] }[];
+] satisfies { behaviors: EscapeBehaviorType[]; expectedInvocations: boolean[] }[];
 
 describe('escape keydown', () => {
 	describe('single layers', () => {
