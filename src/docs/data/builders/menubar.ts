@@ -1,11 +1,11 @@
 import { KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import type { BuilderData } from './index.js';
-import { builder as dropdownBuilder } from './dropdown-menu.js';
-import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu.js';
 import { menubarEvents } from '$lib/builders/menubar/events.js';
 import { menubarIdParts } from '$lib/index.js';
+import { builder as dropdownBuilder } from './dropdown-menu.js';
+import type { BuilderData } from './index.js';
+import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu.js';
 
 const OPTION_PROPS = [PROPS.ESCAPE_BEHAVIOR, PROPS.LOOP, PROPS.PREVENT_SCROLL];
 const BUILDER_NAME = 'menubar';

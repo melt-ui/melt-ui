@@ -7,7 +7,7 @@
 
 [![](https://img.shields.io/github/actions/workflow/status/melt-ui/melt-ui/ci.yaml?style=flat)](https://github.com/melt-ui/melt-ui/actions/workflows/ci.yaml)
 ![](https://img.shields.io/github/license/melt-ui/melt-ui?style=flat)
-[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://discord.gg/2QDjZkYunf)
+[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://melt-ui.com/discord)
 
 ## About
 
@@ -67,10 +67,10 @@ if it wasn't for the work of some amazing people.
 
 Got any questions? Want to talk to the maintainers?
 
-Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and
+Our [Discord community](https://melt-ui.com/discord) is a great place to get in touch with us, and
 we'd love to have you there.
 
-<a href="https://discord.gg/2QDjZkYunf" alt="Melt UI Discord community">
+<a href="https://melt-ui.com/discord" alt="Melt UI Discord community">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/2QDjZkYunf">
   <img alt="Melt UI Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
