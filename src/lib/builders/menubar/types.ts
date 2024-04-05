@@ -18,7 +18,8 @@ export type CreateMenubarProps = {
 	/**
 	 * Escape behavior type.
 	 * `close`: Closes the element immediately.
-	 * `defer`: Delegates the action to the parent floating element.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
 	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
 	 * @defaultValue `close`
