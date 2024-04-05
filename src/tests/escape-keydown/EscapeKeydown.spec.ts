@@ -69,9 +69,28 @@ describe('Nested Escape Keydown Behaviors', () => {
 			expect(getRootContent()).toBeVisible();
 		});
 
-		it('`escapeBehavior: defer` on child should close both parent and child', async () => {
+		it('`escapeBehavior: defer-otherwise-close` on child should close both parent and child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent } = await setup({
-				escapeBehavior: 'defer',
+				escapeBehavior: 'defer-otherwise-close',
+			});
+			const trigger = getByTestId(`${componentName}-trigger`);
+			const getContent = () => queryByTestId(`${componentName}-content`);
+
+			if (componentsToHover.has(componentName)) {
+				await user.hover(trigger);
+			} else {
+				await user.click(trigger);
+			}
+
+			expect(getContent()).toBeVisible();
+			await user.keyboard(testKbd.ESCAPE);
+			await waitFor(() => expect(getContent()).toBeNull());
+			expect(getRootContent()).toBeNull();
+		});
+
+		it('`escapeBehavior: defer-otherwise-ignore` on child should close both parent and child', async () => {
+			const { user, getByTestId, queryByTestId, getRootContent } = await setup({
+				escapeBehavior: 'defer-otherwise-ignore',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
