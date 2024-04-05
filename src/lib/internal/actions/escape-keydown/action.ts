@@ -20,21 +20,28 @@ export const useEscapeKeydown = ((node, config = {}) => {
 		layers.set(node, behaviorType);
 
 		const onKeyDown = (e: KeyboardEvent) => {
-			if (e.key !== kbd.ESCAPE || !isHighestLayerEscapeKey(node)) return;
+			if (e.key !== kbd.ESCAPE || !isResponsibleEscapeLayer(node)) return;
 			const target = e.target;
 			if (!isHTMLElement(target)) return;
 
-			const $behaviorType = behaviorType.get();
 			e.preventDefault();
-			if ($behaviorType !== 'close' || shouldIgnoreEvent(e, options.ignore)) return;
-			options.handler?.(e);
+			if (shouldIgnoreEvent(e, options.ignore)) return;
+			if (shouldInvokeResponsibleLayerHandler(behaviorType.get())) {
+				options.handler?.(e);
+			}
 		};
 
 		unsub = executeCallbacks(
 			addEventListener(document, 'keydown', onKeyDown, { passive: false }),
 			effect(behaviorType, ($behaviorType) => {
-				if ($behaviorType === 'close') node.dataset.escapee = '';
-				else delete node.dataset.escapee;
+				if (
+					$behaviorType === 'close' ||
+					($behaviorType === 'defer-otherwise-close' && [...layers.keys()][0] === node)
+				) {
+					node.dataset.escapee = '';
+				} else {
+					delete node.dataset.escapee;
+				}
 			}),
 			behaviorType.destroy || noop
 		);
@@ -52,9 +59,21 @@ export const useEscapeKeydown = ((node, config = {}) => {
 	};
 }) satisfies Action<HTMLElement, EscapeKeydownConfig>;
 
-const isHighestLayerEscapeKey = (node: HTMLElement): boolean => {
-	const topMostLayer = [...layers].findLast(([_, behaviorType]) => behaviorType.get() !== 'defer');
-	return !!topMostLayer && topMostLayer[0] === node;
+const isResponsibleEscapeLayer = (node: HTMLElement): boolean => {
+	const layersArr = [...layers];
+	/**
+	 * We first check if we can find a top layer with `close` or `ignore`.
+	 * If that top layer was found and matches the provided node, then the node is
+	 * responsible for the escape. Otherwise, we know that all layers defer so
+	 * the first layer is the responsible one.
+	 */
+	const topMostLayer = layersArr.findLast(([_, behaviorType]) => {
+		const $behaviorType = behaviorType.get();
+		return $behaviorType === 'close' || $behaviorType === 'ignore';
+	});
+	if (topMostLayer) return topMostLayer[0] === node;
+	const [firstLayerNode] = layersArr[0];
+	return firstLayerNode === node;
 };
 
 const shouldIgnoreEvent = (e: KeyboardEvent, ignore: EscapeKeydownConfig['ignore']): boolean => {
@@ -64,4 +83,8 @@ const shouldIgnoreEvent = (e: KeyboardEvent, ignore: EscapeKeydownConfig['ignore
 		return true;
 	}
 	return false;
+};
+
+const shouldInvokeResponsibleLayerHandler = (behaviorType: EscapeBehaviorType) => {
+	return behaviorType === 'close' || behaviorType === 'defer-otherwise-close';
 };
