@@ -1086,6 +1086,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			value,
 			startValue,
 			endValue,
+			isSelectionStart,
+			isSelectionEnd,
+			isSelected
 		},
 		helpers: {
 			nextPage,
