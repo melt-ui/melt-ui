@@ -20,6 +20,7 @@ import {
 	withGet,
 	type WithGet,
 	portalAttr,
+	type Point,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
@@ -33,7 +34,6 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	setMeltMenuAttribute,
-	type Point,
 	type _MenuParts,
 } from '../menu/index.js';
 import type { ContextMenuEvents } from './events.js';
