@@ -1,14 +1,14 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { APISchema, KeyboardSchema } from '$docs/types.js';
 import {
-	toKebabCase,
 	builderSchema,
 	elementSchema,
+	floatingSideAndAlignDataAttrs,
+	floatingSideDataAttr,
 	genElements,
 	genProps,
 	propsToOptions,
-	floatingSideAndAlignDataAttrs,
-	floatingSideDataAttr,
+	toKebabCase,
 } from '$docs/utils/index.js';
 
 import { menuEvents } from '$lib/builders/menu/events.js';
@@ -247,7 +247,6 @@ function getMenuItemSchema(builderName: Menu) {
 	const ITEM = 'item';
 	return elementSchema(ITEM, {
 		description: 'A basic menu item.',
-		props: [PROPS.DISABLED],
 		dataAttributes: [
 			{
 				name: 'data-orientation',
