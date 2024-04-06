@@ -16,7 +16,7 @@ const dispatchOutsideClick = async () => {
 	await sleep(20);
 };
 
-const setup = (config?: InteractOutsideConfig) => {
+const mountLayer = (config?: InteractOutsideConfig) => {
 	const node = document.createElement('div');
 	const handler = vi.fn(noop);
 	const action = useInteractOutside(node, { ...config, onInteractOutside: handler });
@@ -25,14 +25,14 @@ const setup = (config?: InteractOutsideConfig) => {
 
 describe('interact outside', () => {
 	it('calls handler on outside interaction provided `behaviorType: close`', async () => {
-		const { handler, action } = setup({ behaviorType: 'close' });
+		const { handler, action } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler).toHaveBeenCalledTimes(1);
 		action.destroy();
 	});
 
 	it('does not call handler after unmounting', async () => {
-		const { handler, action } = setup({ behaviorType: 'close' });
+		const { handler, action } = mountLayer({ behaviorType: 'close' });
 		expect(handler).toHaveBeenCalledTimes(0);
 		action.destroy();
 		await dispatchOutsideClick();
@@ -40,22 +40,22 @@ describe('interact outside', () => {
 	});
 
 	it('does not call handler provided `behaviorType: ignore`', async () => {
-		const { handler, action } = setup({ behaviorType: 'ignore' });
+		const { handler, action } = mountLayer({ behaviorType: 'ignore' });
 		await dispatchOutsideClick();
 		expect(handler).toHaveBeenCalledTimes(0);
 		action.destroy();
 	});
 
 	it('does not call handler provided `behaviorType: defer`', async () => {
-		const { handler, action } = setup({ behaviorType: 'defer' });
+		const { handler, action } = mountLayer({ behaviorType: 'defer' });
 		await dispatchOutsideClick();
 		expect(handler).toHaveBeenCalledTimes(0);
 		action.destroy();
 	});
 
 	it('calls handler of top-most layer', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
@@ -64,8 +64,8 @@ describe('interact outside', () => {
 	});
 
 	it('calls handler of top-most layer with `behaviorType: close`', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
@@ -74,8 +74,8 @@ describe('interact outside', () => {
 	});
 
 	it('does not call handler of top-most layer with `behaviorType: ignore`', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'ignore' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'ignore' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(0);
@@ -84,8 +84,8 @@ describe('interact outside', () => {
 	});
 
 	it('correctly unmounts event listener and calls handler of top-most layer', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
@@ -99,9 +99,9 @@ describe('interact outside', () => {
 	});
 
 	it('calls handler of top-most layer ignoring layers with `behaviorType: defer`', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'defer' });
-		const { handler: handler3, action: action3 } = setup({ behaviorType: 'defer' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'defer' });
+		const { handler: handler3, action: action3 } = mountLayer({ behaviorType: 'defer' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(1);
 		expect(handler2).toHaveBeenCalledTimes(0);
@@ -122,8 +122,8 @@ describe('interact outside', () => {
 	});
 
 	it('does not change position of layer in the stack when options update', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
@@ -138,8 +138,8 @@ describe('interact outside', () => {
 
 	it('does not change position of layer in the stack when updating behaviorType store', async () => {
 		const w1 = withGet.writable<ClickOutsideBehaviorType>('close');
-		const { handler: handler1, action: action1 } = setup({ behaviorType: w1 });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: w1 });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
@@ -153,8 +153,8 @@ describe('interact outside', () => {
 	});
 
 	it('respects updated behaviorType', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'defer' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'defer' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(1);
 		expect(handler2).toHaveBeenCalledTimes(0);
@@ -169,8 +169,8 @@ describe('interact outside', () => {
 
 	it('respects updated behaviorType store', async () => {
 		const w2 = withGet.writable<ClickOutsideBehaviorType>('defer');
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: w2 });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: w2 });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(1);
 		expect(handler2).toHaveBeenCalledTimes(0);
@@ -184,8 +184,8 @@ describe('interact outside', () => {
 	});
 
 	it('respects updating behaviorType from string value to store', async () => {
-		const { handler: handler1, action: action1 } = setup({ behaviorType: 'close' });
-		const { handler: handler2, action: action2 } = setup({ behaviorType: 'close' });
+		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
+		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
