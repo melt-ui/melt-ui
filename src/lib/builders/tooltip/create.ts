@@ -80,6 +80,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const ids = toWritableStores({ ...generateIds(tooltipIdParts), ...withDefaults.ids });
 
 	let clickedTrigger = false;
+	let isPointerInsideTrigger = false;
+	let isPointerInsideContent = false;
 
 	const getEl = (part: keyof typeof ids) => {
 		if (!isBrowser) return null;
@@ -167,10 +169,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 					}
 				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
+					isPointerInsideTrigger = true;
 					if (isTouch(e)) return;
 					openTooltip('pointer');
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
+					isPointerInsideTrigger = false;
 					if (isTouch(e)) return;
 					if (openTimeout) {
 						window.clearTimeout(openTimeout);
@@ -187,7 +191,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					isPointerInsideTrigger = false;
+				},
 			};
 		},
 	});
@@ -242,13 +249,20 @@ export function createTooltip(props?: CreateTooltipProps) {
 			}
 
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'pointerenter', () => openTooltip('pointer')),
+				addMeltEventListener(node, 'pointerenter', () => {
+					isPointerInsideContent = true;
+					openTooltip('pointer');
+				}),
+				addMeltEventListener(node, 'pointerleave', () => {
+					isPointerInsideContent = false;
+				}),
 				addMeltEventListener(node, 'pointerdown', () => openTooltip('pointer')),
 				addEventListener(window, 'scroll', handleScroll, { capture: true })
 			);
 
 			return {
 				destroy() {
+					isPointerInsideContent = false;
 					unsubEvents();
 					unsubPortal();
 					unsubFloating();
@@ -307,13 +321,16 @@ export function createTooltip(props?: CreateTooltipProps) {
 					: [triggerEl, contentEl];
 				const polygon = makeHullFromElements(polygonElements);
 
-				isMouseInTooltipArea = pointInPolygon(
-					{
-						x: e.clientX,
-						y: e.clientY,
-					},
-					polygon
-				);
+				/**
+				 * This takes into account the potential discrepancy between the
+				 * pointer's coordinates (`clientX` and `clientY`) and the
+				 * exact boundaries of the trigger element's rectangle due to
+				 * sub-pixel rendering and rounding errors.
+				 */
+				isMouseInTooltipArea =
+					isPointerInsideTrigger ||
+					isPointerInsideContent ||
+					pointInPolygon({ x: e.clientX, y: e.clientY }, polygon);
 
 				if ($openReason !== 'pointer') return;
 
