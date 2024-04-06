@@ -19,8 +19,9 @@ const createBulletsHTML = (bullets: string[]) => {
 
 const OUTSIDE_CLICK_BEHAVIOR_BULLETS = (name: string) => [
 	`\`close\`: Closes the ${name} immediately.`,
-	`\`defer\`: Delegates the action to the parent floating element.`,
-	`\`ignore\`: Prevents the ${name} from closing and also blocks the parent element from closing in response to an outside click. This is distinct from \`defer\`, which allows the parent element to determine its response.`,
+	`\`ignore\`: Prevents the ${name} from closing and also blocks the parent element from closing in response to an outside click.`,
+	`\`defer-otherwise-close\`: Delegates the action to the parent element. If no parent is found, it closes the element.`,
+	`\`defer-otherwise-ignore\`: Delegates the action to the parent element. If no parent is found, nothing is done.`,
 ];
 
 export const DESCRIPTIONS = {
@@ -101,7 +102,7 @@ export const PROPS = {
 	}),
 	OUTSIDE_CLICK_BEHAVIOR: (args: PropArgs = {}): Prop => ({
 		name: 'clickOutsideBehavior',
-		type: '"close" | "defer" | "ignore"',
+		type: '"close" | "ignore" | "defer-otherwise-close" | "defer-otherwise-ignore"',
 		description: DESCRIPTIONS.OUTSIDE_CLICK_BEHAVIOR(args.name ?? 'floating element'),
 		default: args.default ?? "'close'",
 	}),
