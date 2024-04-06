@@ -57,25 +57,7 @@ export const useEscapeKeydown = ((node, config = {}) => {
 				}
 
 				e.preventDefault();
-
-				// If an ignore function is passed, check if it returns true
-				if (options.ignore) {
-					if (isFunction(options.ignore)) {
-						if (options.ignore(e)) return;
-					}
-					// If an ignore array is passed, check if any elements in the array match the target
-					else if (Array.isArray(options.ignore)) {
-						if (
-							options.ignore.length > 0 &&
-							options.ignore.some((ignoreEl) => {
-								return ignoreEl && target === ignoreEl;
-							})
-						)
-							return;
-					}
-				}
-
-				// If none of the above conditions are met, call the handler
+				if (shouldIgnoreEvent(e, options.ignore)) return;
 				options.handler?.(e);
 			}),
 			effect(enabled, ($enabled) => {
@@ -98,3 +80,12 @@ export const useEscapeKeydown = ((node, config = {}) => {
 		},
 	};
 }) satisfies Action<HTMLElement, EscapeKeydownConfig>;
+
+const shouldIgnoreEvent = (e: KeyboardEvent, ignore: EscapeKeydownConfig['ignore']): boolean => {
+	if (!ignore) return false;
+	if (isFunction(ignore) && ignore(e)) return true;
+	if (Array.isArray(ignore) && ignore.some((ignoreEl) => e.target === ignoreEl)) {
+		return true;
+	}
+	return false;
+};

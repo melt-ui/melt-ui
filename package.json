@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.76.2",
+	"version": "0.76.3",
 	"license": "MIT",
 	"repository": "github:melt-ui/melt-ui",
 	"author": "Thomas G. Lopes",
