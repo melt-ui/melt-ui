@@ -210,8 +210,7 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 }
 
 function isHighestLayerInteractOutside(node: HTMLElement): boolean {
-	const index = Array.from(layers).indexOf(node);
-	return index === layers.size - 1;
+	return Array.from(layers).at(-1) === node;
 }
 
 function isOrContainsTarget(node: HTMLElement, target: Element) {
