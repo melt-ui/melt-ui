@@ -20,17 +20,11 @@ import type { Action } from 'svelte/action';
 
 const layers = new Map<HTMLElement, WithGet<Readable<ClickOutsideBehaviorType>>>();
 
-const createIsHighestLayerFactory = (node: HTMLElement) => {
-	return () => isHighestLayerInteractOutside(node);
-};
-
 export const useInteractOutside = ((node, config = {}) => {
 	let unsubEvents = noop;
 	let unsubPointerDown = noop;
 	let unsubPointerUp = noop;
 	let unsubResetInterceptedEvents = noop;
-
-	const isHighestLayer = createIsHighestLayerFactory(node);
 
 	const documentObj = getOwnerDocument(node);
 
@@ -124,7 +118,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
-			if (!isHighestLayer() || isAnyEventIntercepted()) return;
+			if (!isHighestLayerInteractOutside(node) || isAnyEventIntercepted()) return;
 			if (options.onInteractOutside && isValidEvent(e, node)) options.onInteractOutsideStart?.(e);
 			const target = e.target;
 			if (isElement(target) && isOrContainsTarget(node, target)) {
@@ -139,7 +133,11 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
-			if (isHighestLayer() && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
+			if (
+				isHighestLayerInteractOutside(node) &&
+				!isAnyEventIntercepted() &&
+				shouldTriggerInteractOutside(e)
+			) {
 				options.onInteractOutside?.(e);
 			}
 			resetPointerState();
