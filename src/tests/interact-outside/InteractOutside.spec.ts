@@ -51,9 +51,9 @@ describe('Nested Interact Outside Behaviors', () => {
 			expect(getRootContent()).toBeVisible();
 		});
 
-		it('`clickOutsideBehavior: defer` on child should close both parent and child', async () => {
+		it('`clickOutsideBehavior: defer-otherwise-close` on child should close both parent and child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				clickOutsideBehavior: 'defer',
+				clickOutsideBehavior: 'defer-otherwise-close',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
