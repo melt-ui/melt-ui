@@ -102,13 +102,13 @@ export const useInteractOutside = ((node, config = {}) => {
 			? options.behaviorType
 			: withGet(readable(options.behaviorType));
 
+		/**
+		 * Checks if should trigger `onInteractOutside` of responsible layer.
+		 */
 		function shouldTriggerInteractOutside(e: InteractOutsideEvent) {
-			return (
-				isPointerDown &&
-				!isPointerDownInside &&
-				isValidEvent(e, node) &&
-				behaviorType.get() === 'close'
-			);
+			const $behaviorType = behaviorType.get();
+			if ($behaviorType !== 'close' && $behaviorType !== 'defer-otherwise-close') return false;
+			return isPointerDown && !isPointerDownInside && isValidEvent(e, node);
 		}
 
 		layers.set(node, behaviorType);
@@ -118,7 +118,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
-			if (!isHighestLayerInteractOutside(node) || isAnyEventIntercepted()) return;
+			if (!isResponsibleLayer(node) || isAnyEventIntercepted()) return;
 			if (options.onInteractOutside && isValidEvent(e, node)) options.onInteractOutsideStart?.(e);
 			const target = e.target;
 			if (isElement(target) && isOrContainsTarget(node, target)) {
@@ -133,11 +133,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
-			if (
-				isHighestLayerInteractOutside(node) &&
-				!isAnyEventIntercepted() &&
-				shouldTriggerInteractOutside(e)
-			) {
+			if (isResponsibleLayer(node) && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
 				options.onInteractOutside?.(e);
 			}
 			resetPointerState();
@@ -220,10 +216,22 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	return node && !isOrContainsTarget(node, target);
 }
 
-function isHighestLayerInteractOutside(node: HTMLElement): boolean {
-	const topMostLayer = [...layers].findLast(([_, behaviorType]) => behaviorType.get() !== 'defer');
-	return !!topMostLayer && topMostLayer[0] === node;
-}
+const isResponsibleLayer = (node: HTMLElement): boolean => {
+	const layersArr = [...layers];
+	/**
+	 * We first check if we can find a top layer with `close` or `ignore`.
+	 * If that top layer was found and matches the provided node, then the node is
+	 * responsible for the outside interaction. Otherwise, we know that all layers defer so
+	 * the first layer is the responsible one.
+	 */
+	const topMostLayer = layersArr.findLast(([_, behaviorType]) => {
+		const $behaviorType = behaviorType.get();
+		return $behaviorType === 'close' || $behaviorType === 'ignore';
+	});
+	if (topMostLayer) return topMostLayer[0] === node;
+	const [firstLayerNode] = layersArr[0];
+	return firstLayerNode === node;
+};
 
 function isOrContainsTarget(node: HTMLElement, target: Element) {
 	return node === target || node.contains(target);

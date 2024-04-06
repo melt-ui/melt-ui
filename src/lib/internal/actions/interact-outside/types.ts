@@ -16,7 +16,11 @@ export type InteractOutsideInterceptHandler<E extends InteractOutsideInterceptEv
 	ev: HTMLElementEventMap[E]
 ) => void;
 
-export type ClickOutsideBehaviorType = 'close' | 'defer' | 'ignore';
+export type ClickOutsideBehaviorType =
+	| 'close'
+	| 'defer-otherwise-close'
+	| 'defer-otherwise-ignore'
+	| 'ignore';
 
 export type InteractOutsideConfig = {
 	/**
@@ -40,7 +44,8 @@ export type InteractOutsideConfig = {
 	/**
 	 * Click outside behavior type.
 	 * `close`: Closes the element immediately.
-	 * `defer`: Delegates the action to the parent floating element.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
 	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to an outside click.
 	 *
 	 * @defaultValue `close`
