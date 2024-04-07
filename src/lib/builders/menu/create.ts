@@ -191,34 +191,36 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
-					setMeltMenuAttribute(node, selector);
-					unsubPopper = usePopper(node, {
-						anchorElement: $rootActiveTrigger,
-						open: rootOpen,
-						options: {
-							floating: $positioning,
-							modal: {
-								closeOnInteractOutside: $closeOnOutsideClick,
-								shouldCloseOnInteractOutside: (e) => {
-									onOutsideClick.get()?.(e);
-									if (e.defaultPrevented) return false;
+					tick().then(() => {
+						unsubPopper();
+						setMeltMenuAttribute(node, selector);
+						unsubPopper = usePopper(node, {
+							anchorElement: $rootActiveTrigger,
+							open: rootOpen,
+							options: {
+								floating: $positioning,
+								modal: {
+									closeOnInteractOutside: $closeOnOutsideClick,
+									shouldCloseOnInteractOutside: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return false;
 
-									if (
-										isHTMLElement($rootActiveTrigger) &&
-										$rootActiveTrigger.contains(e.target as Element)
-									) {
-										return false;
-									}
-									return true;
+										if (
+											isHTMLElement($rootActiveTrigger) &&
+											$rootActiveTrigger.contains(e.target as Element)
+										) {
+											return false;
+										}
+										return true;
+									},
+									onClose: () => rootOpen.set(false),
 								},
-								onClose: () => rootOpen.set(false),
+								portal: getPortalDestination(node, $portal),
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
-							portal: getPortalDestination(node, $portal),
-							escapeKeydown: $closeOnEscape ? undefined : null,
-						},
-					}).destroy;
-				},
-				{ runAfterTick: true }
+						}).destroy;
+					});
+				}
 			);
 
 			const unsubEvents = executeCallbacks(
@@ -782,21 +784,23 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (!$subIsVisible) return;
 						const activeTrigger = subActiveTrigger.get();
 						if (!activeTrigger) return;
-						const parentMenuEl = getParentMenu(activeTrigger);
+						tick().then(() => {
+							unsubPopper();
+							const parentMenuEl = getParentMenu(activeTrigger);
 
-						unsubPopper = usePopper(node, {
-							anchorElement: activeTrigger,
-							open: subOpen,
-							options: {
-								floating: $positioning,
-								portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
-								modal: null,
-								focusTrap: null,
-								escapeKeydown: null,
-							},
-						}).destroy;
-					},
-					{ runAfterTick: true }
+							unsubPopper = usePopper(node, {
+								anchorElement: activeTrigger,
+								open: subOpen,
+								options: {
+									floating: $positioning,
+									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
+									modal: null,
+									focusTrap: null,
+									escapeKeydown: null,
+								},
+							}).destroy;
+						});
+					}
 				);
 
 				const unsubEvents = executeCallbacks(
