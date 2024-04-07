@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.76.4
+
+### Patch Changes
+
+- Refactor effect internals to prevent potential memory leaks ([#1140](https://github.com/melt-ui/melt-ui/pull/1140))
+
 ## 0.76.3
 
 ### Patch Changes
