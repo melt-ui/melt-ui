@@ -17,9 +17,9 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	sleep,
 	portalAttr,
 	generateIds,
+	withGet,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -80,7 +80,7 @@ export function createPopover(args?: CreatePopoverProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const activeTrigger = withGet.writable<HTMLElement | null>(null);
 
 	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
 
@@ -88,28 +88,23 @@ export function createPopover(args?: CreatePopoverProps) {
 		activeTrigger.set(document.getElementById(ids.trigger.get()));
 	});
 
-	async function handleClose() {
-		await sleep(0);
+	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger.get());
-		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
 	}
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, portal, ids.content],
-		returned: ([$isVisible, $portal, $contentId]) => {
+		stores: [isVisible, open, activeTrigger, portal, ids.content],
+		returned: ([$isVisible, $open, $activeTrigger, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible && isBrowser ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
@@ -136,38 +131,24 @@ export function createPopover(args?: CreatePopoverProps) {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
 
-					const popper = usePopper(node, {
-						anchorElement: $activeTrigger,
-						open,
-						options: {
-							floating: $positioning,
-							focusTrap: $disableFocusTrap
-								? null
-								: {
-										returnFocusOnDeactivate: false,
-										clickOutsideDeactivates: true,
-										escapeDeactivates: true,
-								  },
-							modal: {
-								shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
-								onClose: handleClose,
-								open: $isVisible,
-								closeOnInteractOutside: $closeOnOutsideClick,
+					tick().then(() => {
+						unsubPopper();
+						unsubPopper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: $disableFocusTrap ? null : undefined,
+								modal: {
+									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
+									onClose: handleClose,
+									closeOnInteractOutside: $closeOnOutsideClick,
+								},
+								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
+								portal: getPortalDestination(node, $portal),
 							},
-							escapeKeydown: $closeOnEscape
-								? {
-										handler: () => {
-											handleClose();
-										},
-								  }
-								: null,
-							portal: getPortalDestination(node, $portal),
-						},
+						}).destroy;
 					});
-
-					if (popper && popper.destroy) {
-						unsubPopper = popper.destroy;
-					}
 				}
 			);
 
@@ -184,7 +165,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		open.update((prev) => {
 			return !prev;
 		});
-		if (triggerEl) {
+		if (triggerEl && triggerEl !== activeTrigger.get()) {
 			activeTrigger.set(triggerEl);
 		}
 	}
@@ -245,6 +226,8 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 		action: (node: HTMLElement) => {
 			let unsubEscapeKeydown = noop;
+			let unsubDerived = noop;
+			let unsubPortal = noop;
 
 			if (closeOnEscape.get()) {
 				const escapeKeydown = useEscapeKeydown(node, {
@@ -257,21 +240,18 @@ export function createPopover(args?: CreatePopoverProps) {
 				}
 			}
 
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			unsubDerived = effect([portal], ([$portal]) => {
+				unsubPortal();
+				if ($portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
+				if (portalDestination === null) return;
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
 					unsubEscapeKeydown();
+					unsubDerived();
 					unsubPortal();
 				},
 			};
@@ -280,14 +260,15 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const close = makeElement(name('close'), {
@@ -341,6 +322,16 @@ export function createPopover(args?: CreatePopoverProps) {
 			unsubs.forEach((unsub) => unsub());
 		};
 	});
+
+	effect(
+		open,
+		($open) => {
+			if (!isBrowser || $open) return;
+			const triggerEl = document.getElementById(ids.trigger.get());
+			handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
+		},
+		{ skipFirstRun: true }
+	);
 
 	return {
 		ids,

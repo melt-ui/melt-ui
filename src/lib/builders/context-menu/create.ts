@@ -127,18 +127,16 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	const menu = makeElement(name(), {
-		stores: [isVisible, portal, ids.menu, ids.trigger],
-		returned: ([$isVisible, $portal, $menuId, $triggerId]) => {
+		stores: [isVisible, rootOpen, rootActiveTrigger, portal, ids.menu, ids.trigger],
+		returned: ([$isVisible, $rootOpen, $rootActiveTrigger, $portal, $menuId, $triggerId]) => {
 			// We only want to render the menu when it's open and has an active trigger.
 			return {
 				role: 'menu',
 				hidden: $isVisible ? undefined : true,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $menuId,
 				'aria-labelledby': $triggerId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $rootOpen && $rootActiveTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
 				tabindex: -1,
 			} as const;
@@ -159,9 +157,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
+						unsubPopper();
 						setMeltMenuAttribute(node, selector);
 						const $virtual = virtual.get();
-						const popper = usePopper(node, {
+						unsubPopper = usePopper(node, {
 							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
 							open: rootOpen,
 							options: {
@@ -172,14 +171,11 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 										rootOpen.set(false);
 									},
 									shouldCloseOnInteractOutside: handleClickOutside,
-									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
-						});
-						if (!popper || !popper.destroy) return;
-						unsubPopper = popper.destroy;
+						}).destroy;
 					});
 				}
 			);

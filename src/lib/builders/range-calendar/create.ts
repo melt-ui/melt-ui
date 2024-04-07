@@ -285,7 +285,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				'data-invalid': $isInvalid ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
 				'data-readonly': $readonly ? '' : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['calendar']> => {
 			/**
@@ -312,20 +312,21 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			return {
 				'aria-hidden': true,
 				'data-disabled': $disabled ? '' : undefined,
-			};
+			} as const;
 		},
 	});
 
 	const grid = makeElement(name('grid'), {
 		stores: [readonly, disabled],
-		returned: ([$readonly, $disabled]) => ({
-			tabindex: -1,
-			role: 'grid',
-			'aria-readonly': $readonly ? ('true' as const) : undefined,
-			'aria-disabled': $disabled ? ('true' as const) : undefined,
-			'data-readonly': $readonly ? '' : undefined,
-			'data-disabled': $disabled ? '' : undefined,
-		}),
+		returned: ([$readonly, $disabled]) =>
+			({
+				tabindex: -1,
+				role: 'grid',
+				'aria-readonly': $readonly ? 'true' : undefined,
+				'aria-disabled': $disabled ? 'true' : undefined,
+				'data-readonly': $readonly ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
+			} as const),
 	});
 
 	const prevButton = makeElement(name('prevButton'), {
@@ -336,10 +337,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				role: 'button',
 				type: 'button' as const,
 				'aria-label': 'Previous',
-				'aria-disabled': disabled ? ('true' as const) : undefined,
+				'aria-disabled': disabled ? 'true' : undefined,
 				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['prevButton']> => {
 			const unsub = executeCallbacks(
@@ -361,10 +362,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				role: 'button',
 				type: 'button' as const,
 				'aria-label': 'Next',
-				'aria-disabled': disabled ? ('true' as const) : undefined,
+				'aria-disabled': disabled ? 'true' : undefined,
 				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['nextButton']> => {
 			const unsub = executeCallbacks(
@@ -545,20 +546,49 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * Updates the displayed months based on changes in the placeholder value,
 	 * which determines the months to show in the calendar.
 	 */
+	effect([placeholder], ([$placeholder]) => {
+		if (!isBrowser || !$placeholder) return;
+
+		const $visibleMonths = visibleMonths.get();
+
+		/**
+		 * If the placeholder's month is already in the visible months,
+		 * we don't need to do anything.
+		 */
+		if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
+			return;
+		}
+
+		const $weekStartsOn = weekStartsOn.get();
+		const $locale = locale.get();
+		const $fixedWeeks = fixedWeeks.get();
+		const $numberOfMonths = numberOfMonths.get();
+
+		const defaultMonthProps = {
+			weekStartsOn: $weekStartsOn,
+			locale: $locale,
+			fixedWeeks: $fixedWeeks,
+			numberOfMonths: $numberOfMonths,
+		};
+
+		months.set(
+			createMonths({
+				...defaultMonthProps,
+				dateObj: $placeholder,
+			})
+		);
+	});
+
+	/**
+	 * Updates the displayed months based on changes in the options values,
+	 * which determines the months to show in the calendar.
+	 */
 	effect(
-		[placeholder, weekStartsOn, locale, fixedWeeks, numberOfMonths],
-		([$placeholder, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
+		[weekStartsOn, locale, fixedWeeks, numberOfMonths],
+		([$weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
+			const $placeholder = placeholder.get();
+
 			if (!isBrowser || !$placeholder) return;
-
-			const $visibleMonths = visibleMonths.get();
-
-			/**
-			 * If the placeholder's month is already in the visible months,
-			 * we don't need to do anything.
-			 */
-			if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
-				return;
-			}
 
 			const defaultMonthProps = {
 				weekStartsOn: $weekStartsOn,

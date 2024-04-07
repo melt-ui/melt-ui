@@ -14,7 +14,7 @@ import {
 } from '@floating-ui/dom';
 import type { FloatingConfig } from './types.js';
 import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
-import type { VirtualElement } from '@floating-ui/core';
+import type { Placement, VirtualElement } from '@floating-ui/core';
 
 const defaultConfig = {
 	strategy: 'absolute',
@@ -31,6 +31,12 @@ const ARROW_TRANSFORM = {
 	top: 'rotate(225deg)',
 	right: 'rotate(315deg)',
 };
+
+const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
+const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
+
+type Side = (typeof SIDE_OPTIONS)[number];
+type Align = (typeof ALIGN_OPTIONS)[number];
 
 export function useFloating(
 	reference: HTMLElement | VirtualElement | undefined,
@@ -100,6 +106,9 @@ export function useFloating(
 
 	function compute() {
 		if (!reference || !floating) return;
+		// if the reference is no longer in the document (e.g. it was removed), ignore it
+		if (isHTMLElement(reference) && !reference.ownerDocument.documentElement.contains(reference))
+			return;
 		const { placement, strategy } = options;
 
 		computePosition(reference, floating, {
@@ -109,6 +118,13 @@ export function useFloating(
 		}).then((data) => {
 			const x = Math.round(data.x);
 			const y = Math.round(data.y);
+
+			// get the chosen side and align from the placement to apply as attributes
+			// to the floating element and arrow
+			const [side, align] = getSideAndAlignFromPlacement(data.placement);
+
+			floating.setAttribute('data-side', side);
+			floating.setAttribute('data-align', align);
 
 			Object.assign(floating.style, {
 				position: options.strategy,
@@ -120,6 +136,8 @@ export function useFloating(
 				const { x, y } = data.middlewareData.arrow;
 
 				const dir = data.placement.split('-')[0] as 'top' | 'bottom' | 'left' | 'right';
+
+				arrowEl.setAttribute('data-side', dir);
 
 				Object.assign(arrowEl.style, {
 					position: 'absolute',
@@ -144,4 +162,9 @@ export function useFloating(
 	return {
 		destroy: autoUpdate(reference, floating, compute),
 	};
+}
+
+function getSideAndAlignFromPlacement(placement: Placement) {
+	const [side, align = 'center'] = placement.split('-');
+	return [side as Side, align as Align] as const;
 }

@@ -44,7 +44,7 @@ import { derived, writable } from 'svelte/store';
 import type { CalendarEvents } from './events.js';
 import type { CalendarValue, CreateCalendarProps } from './types.js';
 
-const defaults = {
+export const defaults = {
 	isDateDisabled: undefined,
 	isDateUnavailable: undefined,
 	value: undefined,
@@ -286,7 +286,7 @@ export function createCalendar<
 				'data-invalid': $isInvalid ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
 				'data-readonly': $readonly ? '' : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['calendar']> => {
 			/**
@@ -323,7 +323,7 @@ export function createCalendar<
 			return {
 				'aria-hidden': true,
 				'data-disabled': $disabled ? '' : undefined,
-			};
+			} as const;
 		},
 	});
 
@@ -340,11 +340,11 @@ export function createCalendar<
 			return {
 				tabindex: -1,
 				role: 'grid',
-				'aria-readonly': $readonly ? ('true' as const) : undefined,
-				'aria-disabled': $disabled ? ('true' as const) : undefined,
+				'aria-readonly': $readonly ? 'true' : undefined,
+				'aria-disabled': $disabled ? 'true' : undefined,
 				'data-readonly': $readonly ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
-			};
+			} as const;
 		},
 	});
 
@@ -362,10 +362,10 @@ export function createCalendar<
 				role: 'button',
 				type: 'button' as const,
 				'aria-label': 'Previous',
-				'aria-disabled': disabled ? ('true' as const) : undefined,
+				'aria-disabled': disabled ? 'true' : undefined,
 				'data-disabled': disabled ? '' : undefined,
 				disabled: disabled ? true : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['prevButton']> => {
 			const unsub = executeCallbacks(
@@ -394,10 +394,10 @@ export function createCalendar<
 				role: 'button',
 				type: 'button' as const,
 				'aria-label': 'Next',
-				'aria-disabled': disabled ? ('true' as const) : undefined,
+				'aria-disabled': disabled ? 'true' : undefined,
 				'data-disabled': disabled ? '' : undefined,
 				disabled: disabled ? true : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['nextButton']> => {
 			const unsub = executeCallbacks(
@@ -514,20 +514,48 @@ export function createCalendar<
 	 * Updates the displayed months based on changes in the placeholder value,
 	 * which determines the months to show in the calendar.
 	 */
+	effect([placeholder], ([$placeholder]) => {
+		if (!isBrowser || !$placeholder) return;
+
+		const $visibleMonths = visibleMonths.get();
+
+		/**
+		 * If the placeholder's month is already in the visible months,
+		 * we don't need to do anything.
+		 */
+		if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
+			return;
+		}
+
+		const $weekStartsOn = weekStartsOn.get();
+		const $locale = locale.get();
+		const $fixedWeeks = fixedWeeks.get();
+		const $numberOfMonths = numberOfMonths.get();
+
+		const defaultMonthProps = {
+			weekStartsOn: $weekStartsOn,
+			locale: $locale,
+			fixedWeeks: $fixedWeeks,
+			numberOfMonths: $numberOfMonths,
+		};
+
+		months.set(
+			createMonths({
+				...defaultMonthProps,
+				dateObj: $placeholder,
+			})
+		);
+	});
+
+	/**
+	 * Updates the displayed months based on changes in the the options values,
+	 * which determines the months to show in the calendar.
+	 */
 	effect(
-		[placeholder, weekStartsOn, locale, fixedWeeks, numberOfMonths],
-		([$placeholder, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
+		[weekStartsOn, locale, fixedWeeks, numberOfMonths],
+		([$weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
+			const $placeholder = placeholder.get();
 			if (!isBrowser || !$placeholder) return;
-
-			const $visibleMonths = visibleMonths.get();
-
-			/**
-			 * If the placeholder's month is already in the visible months,
-			 * we don't need to do anything.
-			 */
-			if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
-				return;
-			}
 
 			const defaultMonthProps = {
 				weekStartsOn: $weekStartsOn,

@@ -1,12 +1,14 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { APISchema, KeyboardSchema } from '$docs/types.js';
 import {
-	toKebabCase,
 	builderSchema,
 	elementSchema,
+	floatingSideAndAlignDataAttrs,
+	floatingSideDataAttr,
 	genElements,
 	genProps,
 	propsToOptions,
+	toKebabCase,
 } from '$docs/utils/index.js';
 
 import { menuEvents } from '$lib/builders/menu/events.js';
@@ -194,6 +196,7 @@ function getMenuMenuSchema(builderName: string) {
 	return elementSchema('menu', {
 		description: `The element which wraps the entire menu.`,
 		dataAttributes: [
+			...floatingSideAndAlignDataAttrs,
 			{
 				name: 'data-state',
 				value: ATTRS.OPEN_CLOSED,
@@ -228,6 +231,7 @@ export function getMenuArrowSchema(builderName: string) {
 	return elementSchema('arrow', {
 		description: `An optional arrow element which points to the menu's trigger.`,
 		dataAttributes: [
+			floatingSideDataAttr,
 			{
 				name: 'data-arrow',
 				value: ATTRS.TRUE,
@@ -243,7 +247,6 @@ function getMenuItemSchema(builderName: Menu) {
 	const ITEM = 'item';
 	return elementSchema(ITEM, {
 		description: 'A basic menu item.',
-		props: [PROPS.DISABLED],
 		dataAttributes: [
 			{
 				name: 'data-orientation',
@@ -370,6 +373,7 @@ function getMenuSubmenuSchema(name: string) {
 	return elementSchema('submenu', {
 		description: 'A submenu element displayed when its trigger is selected.',
 		dataAttributes: [
+			...floatingSideAndAlignDataAttrs,
 			{
 				name: 'data-state',
 				value: ATTRS.OPEN_CLOSED,

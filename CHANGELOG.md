@@ -1,5 +1,75 @@
 # @melt-ui/svelte
 
+## 0.76.3
+
+### Patch Changes
+
+- fix(link preview): Fixed bug where content shows up at top left of the page after remounting trigger (fixes [#1060](https://github.com/melt-ui/melt-ui/issues/1060)) ([#1053](https://github.com/melt-ui/melt-ui/pull/1053))
+
+- Fixed bug where focus trap would deactivate on an intercepted outside interaction (closes #1134) ([#1135](https://github.com/melt-ui/melt-ui/pull/1135))
+
+- Fixed bug where focus trap would deactivate on escape that was intercepted (closes #1132) ([#1133](https://github.com/melt-ui/melt-ui/pull/1133))
+
+- Enhanced type accuracy by implementing as const for builder props, ensuring more precise type inference. ([#1015](https://github.com/melt-ui/melt-ui/pull/1015))
+
+- fix data-state consistency to be based on `$open` and avoid overriding floating-ui styles #1041 ([#1042](https://github.com/melt-ui/melt-ui/pull/1042))
+
+- Fix link preview: reset activeTrigger on trigger unmount ([#1129](https://github.com/melt-ui/melt-ui/pull/1129))
+
+- Fixed a bug where manually closing a dialog or popover would not restore focus to the trigger (closes #1109) ([#1110](https://github.com/melt-ui/melt-ui/pull/1110))
+
+- Refactor focus trap internals ([#1136](https://github.com/melt-ui/melt-ui/pull/1136))
+
+- Fixed bug where outside interactions could not be intercepted (closes #917) ([#1114](https://github.com/melt-ui/melt-ui/pull/1114))
+
+## 0.76.2
+
+### Patch Changes
+
+- Fixed a bug on touch devices where an outside interaction leaked click events to other dom elements (closes #1115) ([#1118](https://github.com/melt-ui/melt-ui/pull/1118))
+
+## 0.76.1
+
+### Patch Changes
+
+- Fixed bug where focus trap deactivates in dialog and popover when clicking outside provided `closeOnOutsideClick: false` (closes #1084) ([#1094](https://github.com/melt-ui/melt-ui/pull/1094))
+
+- Combobox: menu no longer closes when composing (Closes: #1106) ([#1107](https://github.com/melt-ui/melt-ui/pull/1107))
+
+- Fixed bug where focus trap deactivates in dialog and popover when pressing escape provided `closeOnEscape: false` (closes #1091) ([#1095](https://github.com/melt-ui/melt-ui/pull/1095))
+
+- Fixed memory leak caused by race conditions for various components (closes #1086) ([#1087](https://github.com/melt-ui/melt-ui/pull/1087))
+
+- performance: avoid effect multiple runs ([#1089](https://github.com/melt-ui/melt-ui/pull/1089))
+
+- Listbox: correct `arrowSize` JSDoc defaultValue ([#1050](https://github.com/melt-ui/melt-ui/pull/1050))
+
+- Popover: fixed a bug that has the potential to introduce a memory leak via the overlay ([#1112](https://github.com/melt-ui/melt-ui/pull/1112))
+
+## 0.76.0
+
+### Minor Changes
+
+- fix: datepicker not syncing with calendar + add defaults from calendar to datepicker ([#1076](https://github.com/melt-ui/melt-ui/pull/1076))
+
+### Patch Changes
+
+- Fix incorrect arrow position for Tooltip, Popover, Listbox, Link Preview provided forceVisible: false (closes #1048) ([#1049](https://github.com/melt-ui/melt-ui/pull/1049))
+
+- fix: months not updating when changing options ([#1070](https://github.com/melt-ui/melt-ui/pull/1070))
+
+- Floating: `data-side` & `data-align` for floating content ([#1082](https://github.com/melt-ui/melt-ui/pull/1082))
+
+- fix: months not updating when changing options (range calendar) ([#1072](https://github.com/melt-ui/melt-ui/pull/1072))
+
+## 0.75.3
+
+### Patch Changes
+
+- fix(Tooltip, Link Preview, Menu, Popover, Listbox) fixed bug where content jumps to top left of page during external unmounting when using out transition on the content and else if block to render the content (closes #1058, #1039) ([#1059](https://github.com/melt-ui/melt-ui/pull/1059))
+
+- Portalled Elements: fixed a bug where clicking inside a nested 'portalled' element would cause the parent to close ([#1066](https://github.com/melt-ui/melt-ui/pull/1066))
+
 ## 0.75.2
 
 ### Patch Changes

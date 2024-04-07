@@ -16,6 +16,7 @@ import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
 import { createFormatter, dateStore, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { DatePickerEvents } from './events.js';
+import { defaults as calendarDefaults } from '../calendar/create.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -36,6 +37,18 @@ const defaults = {
 	minValue: undefined,
 	maxValue: undefined,
 	weekdayFormat: 'narrow',
+	...omit(
+		calendarDefaults,
+		'isDateDisabled',
+		'isDateUnavailable',
+		'value',
+		'locale',
+		'disabled',
+		'readonly',
+		'minValue',
+		'maxValue',
+		'weekdayFormat'
+	),
 } satisfies CreateDatePickerProps;
 
 export function createDatePicker(props?: CreateDatePickerProps) {
@@ -83,7 +96,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				'aria-label': 'Open date picker',
 				'data-segment': 'trigger',
 				disabled: $disabled ? true : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<DatePickerEvents['trigger']> => {
 			const unsubKeydown = addMeltEventListener(node, 'keydown', handleTriggerKeydown);
@@ -129,6 +142,18 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	effect([options.maxValue], ([$maxValue]) => {
 		dateField.options.maxValue.set($maxValue);
 		calendar.options.maxValue.set($maxValue);
+	});
+
+	effect([options.numberOfMonths], ([$numberOfMonths]) => {
+		calendar.options.numberOfMonths.set($numberOfMonths);
+	});
+
+	effect([options.fixedWeeks], ([$fixedWeeks]) => {
+		calendar.options.fixedWeeks.set($fixedWeeks);
+	});
+
+	effect([options.weekStartsOn], ([$weekStartsOn]) => {
+		calendar.options.weekStartsOn.set($weekStartsOn);
 	});
 
 	const dateFieldOptions = omit(

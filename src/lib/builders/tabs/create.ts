@@ -50,7 +50,7 @@ export function createTabs(props?: CreateTabsProps) {
 		returned: ($orientation) => {
 			return {
 				'data-orientation': $orientation,
-			};
+			} as const;
 		},
 	});
 
@@ -62,7 +62,7 @@ export function createTabs(props?: CreateTabsProps) {
 				role: 'tablist',
 				'aria-orientation': $orientation,
 				'data-orientation': $orientation,
-			};
+			} as const;
 		},
 	});
 
@@ -90,7 +90,7 @@ export function createTabs(props?: CreateTabsProps) {
 				const isActive = sourceOfTruth === tabValue;
 
 				return {
-					type: 'button' as const,
+					type: 'button',
 					role: 'tab',
 					'data-state': isActive ? 'active' : 'inactive',
 					tabindex: isActive ? 0 : -1,
@@ -98,7 +98,7 @@ export function createTabs(props?: CreateTabsProps) {
 					'data-orientation': $orientation,
 					'data-disabled': disabledAttr(disabled),
 					disabled: disabledAttr(disabled),
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TabsEvents['trigger']> => {
@@ -194,7 +194,7 @@ export function createTabs(props?: CreateTabsProps) {
 						? undefined
 						: true,
 					tabindex: 0,
-				};
+				} as const;
 			};
 		},
 	});

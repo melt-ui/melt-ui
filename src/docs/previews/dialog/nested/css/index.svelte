@@ -36,8 +36,8 @@
 </script>
 
 <button use:melt={$trigger} class="trigger"> Open Dialog </button>
-<div use:melt={$portalled}>
-	{#if $open}
+{#if $open}
+	<div use:melt={$portalled}>
 		<div use:melt={$overlay} class="overlay" />
 		<div
 			class="content"
@@ -62,11 +62,11 @@
 				<X />
 			</button>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}
 
-<div use:melt={$portalledNested}>
-	{#if $openNested}
+{#if $openNested}
+	<div use:melt={$portalledNested}>
 		<div use:melt={$overlayNested} class="overlay overlay-nested" />
 		<div
 			class="content content-nested"
@@ -90,8 +90,8 @@
 				<X />
 			</button>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.trigger {

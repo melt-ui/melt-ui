@@ -3,6 +3,7 @@ import { isFunction, isHTMLElement, isReadable } from '$lib/internal/helpers/is.
 import { get, readable, type Readable } from 'svelte/store';
 import { effect, executeCallbacks, kbd, noop } from '../../helpers/index.js';
 import type { EscapeKeydownConfig } from './types.js';
+import type { Action } from 'svelte/action';
 
 /**
  * Creates a readable store that tracks the latest Escape Keydown that occurred on the document.
@@ -35,7 +36,7 @@ const documentEscapeKeyStore = readable<KeyboardEvent | undefined>(
 	}
 );
 
-export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig = {}) => {
+export const useEscapeKeydown = ((node, config = {}) => {
 	let unsub = noop;
 	function update(config: EscapeKeydownConfig = {}) {
 		unsub();
@@ -56,25 +57,7 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 				}
 
 				e.preventDefault();
-
-				// If an ignore function is passed, check if it returns true
-				if (options.ignore) {
-					if (isFunction(options.ignore)) {
-						if (options.ignore(e)) return;
-					}
-					// If an ignore array is passed, check if any elements in the array match the target
-					else if (Array.isArray(options.ignore)) {
-						if (
-							options.ignore.length > 0 &&
-							options.ignore.some((ignoreEl) => {
-								return ignoreEl && target === ignoreEl;
-							})
-						)
-							return;
-					}
-				}
-
-				// If none of the above conditions are met, call the handler
+				if (shouldIgnoreEvent(e, options.ignore)) return;
 				options.handler?.(e);
 			}),
 			effect(enabled, ($enabled) => {
@@ -96,4 +79,13 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 			unsub();
 		},
 	};
+}) satisfies Action<HTMLElement, EscapeKeydownConfig>;
+
+const shouldIgnoreEvent = (e: KeyboardEvent, ignore: EscapeKeydownConfig['ignore']): boolean => {
+	if (!ignore) return false;
+	if (isFunction(ignore) && ignore(e)) return true;
+	if (Array.isArray(ignore) && ignore.some((ignoreEl) => e.target === ignoreEl)) {
+		return true;
+	}
+	return false;
 };

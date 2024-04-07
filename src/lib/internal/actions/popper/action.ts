@@ -1,5 +1,5 @@
 import {
-	createFocusTrap,
+	useFocusTrap,
 	useEscapeKeydown,
 	useFloating,
 	usePortal,
@@ -22,7 +22,7 @@ const defaultConfig = {
 	portal: 'body',
 } satisfies PopperConfig;
 
-export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
+export const usePopper = ((popperElement, args) => {
 	popperElement.dataset.escapee = '';
 	const { anchorElement, open, options } = args as PopperArgs;
 	if (!anchorElement || !open || !options) {
@@ -34,30 +34,18 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 	const callbacks: Callback[] = [];
 
 	if (opts.portal !== null) {
-		const portal = usePortal(popperElement, opts.portal);
-		if (portal?.destroy) {
-			callbacks.push(portal.destroy);
-		}
+		callbacks.push(usePortal(popperElement, opts.portal).destroy);
 	}
 
 	callbacks.push(useFloating(anchorElement, popperElement, opts.floating).destroy);
 
 	if (opts.focusTrap !== null) {
-		const { useFocusTrap } = createFocusTrap({
-			immediate: true,
-			escapeDeactivates: false,
-			allowOutsideClick: true,
-			returnFocusOnDeactivate: false,
-			fallbackFocus: popperElement,
-
-			...opts.focusTrap,
-		});
-
-		const usedFocusTrap = useFocusTrap(popperElement);
-
-		if (usedFocusTrap?.destroy) {
-			callbacks.push(usedFocusTrap.destroy);
-		}
+		callbacks.push(
+			useFocusTrap(popperElement, {
+				fallbackFocus: popperElement,
+				...opts.focusTrap,
+			}).destroy
+		);
 	}
 
 	if (opts.modal !== null) {
@@ -103,4 +91,4 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 			unsubscribe();
 		},
 	};
-};
+}) satisfies Action<HTMLElement, PopperArgs>;

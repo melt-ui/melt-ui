@@ -137,17 +137,31 @@ export function createMenubar(props?: CreateMenubarProps) {
 		});
 
 		const menu = makeElement(name('menu'), {
-			stores: [isVisible, portal, m.ids.menu, m.ids.trigger, ids.menubar],
-			returned: ([$isVisible, $portal, $menuId, $triggerId, $menubarId]) => {
+			stores: [
+				isVisible,
+				rootOpen,
+				rootActiveTrigger,
+				portal,
+				m.ids.menu,
+				m.ids.trigger,
+				ids.menubar,
+			],
+			returned: ([
+				$isVisible,
+				$rootOpen,
+				$rootActiveTrigger,
+				$portal,
+				$menuId,
+				$triggerId,
+				$menubarId,
+			]) => {
 				return {
 					role: 'menu',
 					hidden: $isVisible ? undefined : true,
-					style: styleToString({
-						display: $isVisible ? undefined : 'none',
-					}),
+					style: $isVisible ? undefined : styleToString({ display: 'none' }),
 					id: $menuId,
 					'aria-labelledby': $triggerId,
-					'data-state': $isVisible ? 'open' : 'closed',
+					'data-state': $rootOpen && $rootActiveTrigger ? 'open' : 'closed',
 					'data-melt-scope': $menubarId,
 					'data-portal': portalAttr($portal),
 					tabindex: -1,
@@ -163,7 +177,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
 						tick().then(() => {
-							const popper = usePopper(node, {
+							unsubPopper();
+							unsubPopper = usePopper(node, {
 								anchorElement: $rootActiveTrigger,
 								open: rootOpen,
 								options: {
@@ -183,14 +198,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 										onClose: () => {
 											activeMenu.set('');
 										},
-										open: $rootOpen,
 									},
 								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+							}).destroy;
 						});
 					}
 				);

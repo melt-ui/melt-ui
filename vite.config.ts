@@ -25,5 +25,6 @@ export default defineConfig({
 			inline: ['clsx'],
 		},
 		retry: 5,
+		allowOnly: !process.env.CI,
 	},
 });

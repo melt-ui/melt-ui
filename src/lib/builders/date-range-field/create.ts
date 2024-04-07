@@ -5,7 +5,6 @@ import {
 	getAnnouncer,
 	getDefaultDate,
 	getFirstSegment,
-	isBefore,
 	isBeforeOrSame,
 } from '$lib/internal/helpers/date/index.js';
 import {
@@ -182,7 +181,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 				id: $labelId,
 				'data-invalid': $isInvalid ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
@@ -229,7 +228,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 				'aria-labelledby': $ids.label,
 				'aria-describedby': describedBy,
 				'data-invalid': $isInvalid ? '' : undefined,
-			};
+			} as const;
 		},
 		action: () => {
 			getAnnouncer();
@@ -252,7 +251,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 				id: $validationId,
 				'data-invalid': $isInvalid ? '' : undefined,
 				style: $isInvalid ? undefined : validStyle,
-			};
+			} as const;
 		},
 	});
 

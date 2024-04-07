@@ -30,7 +30,7 @@ export type CreateListboxProps<
 
 	/**
 	 * The size of the arrow in pixels.
-	 * @default 8
+	 * @default undefined
 	 */
 	arrowSize?: number;
 

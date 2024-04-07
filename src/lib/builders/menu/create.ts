@@ -154,17 +154,22 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	});
 
 	const rootMenu = makeElement(name(), {
-		stores: [isVisible, portal, rootIds.menu, rootIds.trigger],
-		returned: ([$isVisible, $portal, $rootMenuId, $rootTriggerId]) => {
+		stores: [isVisible, rootOpen, rootActiveTrigger, portal, rootIds.menu, rootIds.trigger],
+		returned: ([
+			$isVisible,
+			$rootOpen,
+			$rootActiveTrigger,
+			$portal,
+			$rootMenuId,
+			$rootTriggerId,
+		]) => {
 			return {
 				role: 'menu',
 				hidden: $isVisible ? undefined : true,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $rootMenuId,
 				'aria-labelledby': $rootTriggerId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $rootOpen && $rootActiveTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
 				tabindex: -1,
 			} as const;
@@ -185,8 +190,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
+						unsubPopper();
 						setMeltMenuAttribute(node, selector);
-						const popper = usePopper(node, {
+						unsubPopper = usePopper(node, {
 							anchorElement: $rootActiveTrigger,
 							open: rootOpen,
 							options: {
@@ -205,20 +211,12 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 										}
 										return true;
 									},
-									onClose: () => {
-										rootOpen.set(false);
-										$rootActiveTrigger.focus();
-									},
-									open: $isVisible,
+									onClose: () => rootOpen.set(false),
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
-						});
-
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+						}).destroy;
 					});
 				}
 			);
@@ -326,14 +324,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const rootArrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const overlay = makeElement(name('overlay'), {
@@ -354,11 +353,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 			if (closeOnEscape.get()) {
 				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						rootOpen.set(false);
-						const $rootActiveTrigger = rootActiveTrigger.get();
-						if ($rootActiveTrigger) $rootActiveTrigger.focus();
-					},
+					handler: () => rootOpen.set(false),
 				});
 				if (escapeKeydown && escapeKeydown.destroy) {
 					unsubEscapeKeydown = escapeKeydown.destroy;
@@ -369,12 +364,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
 				if (portalDestination === null) return noop;
-				const portalAction = usePortal(node, portalDestination);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
+				return usePortal(node, portalDestination).destroy;
 			});
 
 			return {
@@ -392,7 +382,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				role: 'menuitem',
 				tabindex: -1,
 				'data-orientation': 'vertical',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
@@ -452,18 +442,20 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const group = makeElement(name('group'), {
 		returned: () => {
-			return (groupId: string) => ({
-				role: 'group',
-				'aria-labelledby': groupId,
-			});
+			return (groupId: string) =>
+				({
+					role: 'group',
+					'aria-labelledby': groupId,
+				} as const);
 		},
 	});
 
 	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
-			return (groupId: string) => ({
-				id: groupId,
-			});
+			return (groupId: string) =>
+				({
+					id: groupId,
+				} as const);
 		},
 	});
 
@@ -586,9 +578,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const value = overridable(valueWritable, args.onValueChange);
 
 		const radioGroup = makeElement(name('radio-group'), {
-			returned: () => ({
-				role: 'group',
-			}),
+			returned: () =>
+				({
+					role: 'group',
+				} as const),
 		});
 
 		const radioItemDefaults = {
@@ -611,7 +604,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
-					};
+					} as const;
 				};
 			},
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['radioItem']> => {
@@ -753,17 +746,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		});
 
 		const subMenu = makeElement(name('submenu'), {
-			stores: [subIsVisible, subIds.menu, subIds.trigger],
-			returned: ([$subIsVisible, $subMenuId, $subTriggerId]) => {
+			stores: [subIsVisible, subOpen, subActiveTrigger, subIds.menu, subIds.trigger],
+			returned: ([$subIsVisible, $subOpen, $subActiveTrigger, $subMenuId, $subTriggerId]) => {
 				return {
 					role: 'menu',
 					hidden: $subIsVisible ? undefined : true,
-					style: styleToString({
-						display: $subIsVisible ? undefined : 'none',
-					}),
+					style: $subIsVisible ? undefined : styleToString({ display: 'none' }),
 					id: $subMenuId,
 					'aria-labelledby': $subTriggerId,
-					'data-state': $subIsVisible ? 'open' : 'closed',
+					'data-state': $subOpen && $subActiveTrigger ? 'open' : 'closed',
 					// unit tests fail on `.closest` if the id starts with a number
 					// so using a data attribute
 					'data-id': $subMenuId,
@@ -781,9 +772,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						const activeTrigger = subActiveTrigger.get();
 						if (!activeTrigger) return;
 						tick().then(() => {
+							unsubPopper();
 							const parentMenuEl = getParentMenu(activeTrigger);
 
-							const popper = usePopper(node, {
+							unsubPopper = usePopper(node, {
 								anchorElement: activeTrigger,
 								open: subOpen,
 								options: {
@@ -793,11 +785,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									focusTrap: null,
 									escapeKeydown: null,
 								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+							}).destroy;
 						});
 					}
 				);
@@ -1046,14 +1034,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subArrow = makeElement(name('subarrow'), {
 			stores: arrowSize,
-			returned: ($arrowSize) => ({
-				'data-arrow': true,
-				style: styleToString({
-					position: 'absolute',
-					width: `var(--arrow-size, ${$arrowSize}px)`,
-					height: `var(--arrow-size, ${$arrowSize}px)`,
-				}),
-			}),
+			returned: ($arrowSize) =>
+				({
+					'data-arrow': true,
+					style: styleToString({
+						position: 'absolute',
+						width: `var(--arrow-size, ${$arrowSize}px)`,
+						height: `var(--arrow-size, ${$arrowSize}px)`,
+					}),
+				} as const),
 		});
 
 		/* -------------------------------------------------------------------------------------------------
@@ -1155,11 +1144,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}
 	});
 
-	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
-		if (!isBrowser || $rootOpen || !$rootActiveTrigger) return;
-		const $closeFocus = closeFocus.get();
-		handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
-	});
+	effect(
+		[rootOpen],
+		([$rootOpen]) => {
+			if (!isBrowser || $rootOpen) return;
+			handleFocus({ prop: closeFocus.get(), defaultEl: rootActiveTrigger.get() });
+		},
+		{ skipFirstRun: true }
+	);
 
 	effect([rootOpen, preventScroll], ([$rootOpen, $preventScroll]) => {
 		if (!isBrowser) return;

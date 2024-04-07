@@ -1,13 +1,13 @@
-export function debounce<T extends (...args: unknown[]) => unknown>(fn: T, wait = 500) {
-	let timeout: ReturnType<typeof setTimeout> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => any>(fn: T, wait = 500) {
+	let timeout: NodeJS.Timeout;
 
-	return function (...args: Parameters<T>) {
-		const later = () => {
-			timeout = null;
-			fn(...args);
-		};
-
-		timeout && clearTimeout(timeout);
+	const debounced = (...args: Parameters<T>) => {
+		clearTimeout(timeout);
+		const later = () => fn(...args);
 		timeout = setTimeout(later, wait);
 	};
+
+	debounced.destroy = () => clearTimeout(timeout);
+	return debounced;
 }

@@ -18,8 +18,6 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
-	removeUndefined,
-	sleep,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
 
@@ -29,6 +27,7 @@ import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
+import { tick } from 'svelte';
 
 const defaults = {
 	positioning: {
@@ -142,7 +141,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'aria-describedby': $contentId,
 				id: $triggerId,
 				'data-state': $open ? 'open' : 'closed',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
 			const keydownHandler = (e: KeyboardEvent) => {
@@ -182,10 +181,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', async () => {
-					await sleep(0);
-					closeTooltip(true);
-				}),
+				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
 				addMeltEventListener(node, 'keydown', keydownHandler),
 				addEventListener(document, 'keydown', keydownHandler)
 			);
@@ -199,7 +195,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const content = makeElement(name('content'), {
 		stores: [isVisible, open, portal, ids.content],
 		returned: ([$isVisible, $open, $portal, $contentId]) => {
-			return removeUndefined({
+			return {
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
@@ -207,7 +203,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				id: $contentId,
 				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
-			});
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
@@ -216,26 +212,18 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsubDerived = effect(
 				[isVisible, positioning, portal],
 				([$isVisible, $positioning, $portal]) => {
+					unsubPortal();
+					unsubFloating();
 					const triggerEl = getEl('trigger');
-					if (!$isVisible || !triggerEl) {
+					if (!$isVisible || !triggerEl) return;
+
+					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
-						return;
-					}
-
-					const floatingReturn = useFloating(triggerEl, node, $positioning);
-					unsubFloating = floatingReturn.destroy;
-					if ($portal === null) {
-						unsubPortal();
-						return;
-					}
-					const portalDest = getPortalDestination(node, $portal);
-					if (portalDest) {
-						const portalReturn = usePortal(node, portalDest);
-						if (portalReturn && portalReturn.destroy) {
-							unsubPortal = portalReturn.destroy;
-						}
-					}
+						const portalDest = getPortalDestination(node, $portal);
+						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
+						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
+					});
 				}
 			);
 
@@ -272,14 +260,15 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	let isMouseInTooltipArea = false;

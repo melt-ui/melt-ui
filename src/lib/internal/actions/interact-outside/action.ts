@@ -3,79 +3,160 @@ import {
 	isElement,
 	executeCallbacks,
 	noop,
+	debounce,
 } from '$lib/internal/helpers/index.js';
-import type { InteractOutsideConfig, InteractOutsideEvent } from './types.js';
+import type {
+	InteractOutsideConfig,
+	InteractOutsideEvent,
+	InteractOutsideInterceptEventType,
+	InteractOutsideInterceptHandler,
+} from './types.js';
+import type { Action } from 'svelte/action';
 
-export function useInteractOutside(node: HTMLElement, config: InteractOutsideConfig) {
-	let unsub = noop;
+export const useInteractOutside = ((node, config) => {
+	let unsubEvents = noop;
+	let unsubPointerDown = noop;
+	let unsubPointerUp = noop;
+	let unsubResetInterceptedEvents = noop;
+
+	const documentObj = getOwnerDocument(node);
 
 	let isPointerDown = false;
 	let isPointerDownInside = false;
-	let ignoreEmulatedMouseEvents = false;
+
+	const interceptedEvents: Record<InteractOutsideInterceptEventType, boolean> = {
+		pointerdown: false,
+		pointerup: false,
+		mousedown: false,
+		mouseup: false,
+		touchstart: false,
+		touchend: false,
+		click: false,
+	};
+
+	const resetInterceptedEvents = () => {
+		for (const eventType in interceptedEvents) {
+			interceptedEvents[eventType as InteractOutsideInterceptEventType] = false;
+		}
+	};
+
+	const isAnyEventIntercepted = () => {
+		for (const isIntercepted of Object.values(interceptedEvents)) {
+			if (isIntercepted) return true;
+		}
+		return false;
+	};
+
+	/**
+	 * To determine event interception, events are marked as intercepted in the capture phase.
+	 * If they are not invoked again in the bubbling phase, it indicates user interception.
+	 */
+	const setupCapturePhaseHandlerAndMarkAsIntercepted = <
+		E extends InteractOutsideInterceptEventType
+	>(
+		eventType: E,
+		handler?: InteractOutsideInterceptHandler<E>
+	) => {
+		return addEventListener(
+			documentObj,
+			eventType,
+			(e: HTMLElementEventMap[E]) => {
+				interceptedEvents[eventType] = true;
+				handler?.(e);
+			},
+			true
+		);
+	};
+
+	/**
+	 * An event listener for the bubbling phase marks events as not intercepted.
+	 */
+	const setupBubblePhaseHandlerAndMarkAsNotIntercepted = <
+		E extends InteractOutsideInterceptEventType
+	>(
+		eventType: E,
+		handler?: InteractOutsideInterceptHandler<E>
+	) => {
+		return addEventListener(documentObj, eventType, (e: HTMLElementEventMap[E]) => {
+			interceptedEvents[eventType] = false;
+			handler?.(e);
+		});
+	};
 
 	function update(config: InteractOutsideConfig) {
-		unsub();
-		const { onInteractOutside, onInteractOutsideStart, enabled } = config;
-
+		unsubEvents();
+		unsubPointerDown();
+		unsubPointerUp();
+		unsubResetInterceptedEvents();
+		resetInterceptedEvents();
+		const { onInteractOutside, onInteractOutsideStart, enabled } = { enabled: true, ...config };
 		if (!enabled) return;
 
-		function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
-			if (onInteractOutside && isValidEvent(e, node)) {
-				onInteractOutsideStart?.(e);
-			}
+		/**
+		 * Debouncing `onPointerDown` ensures that other events can be flagged as not intercepted,
+		 * allowing a comprehensive check for intercepted events thereafter.
+		 */
+		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
+			if (isAnyEventIntercepted()) return;
+			if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
 			const target = e.target;
-
 			if (isElement(target) && isOrContainsTarget(node, target)) {
 				isPointerDownInside = true;
 			}
-
 			isPointerDown = true;
-		}
+		}, 10);
+		unsubPointerDown = onPointerDownDebounced.destroy;
 
-		function triggerInteractOutside(e: InteractOutsideEvent) {
-			onInteractOutside?.(e);
-		}
+		/**
+		 * Debouncing `onPointerUp` ensures that other events can be flagged as not intercepted,
+		 * allowing a comprehensive check for intercepted events thereafter.
+		 */
+		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
+			if (isAnyEventIntercepted()) return;
+			if (shouldTriggerInteractOutside(e)) onInteractOutside?.(e);
+			resetPointerState();
+		}, 10);
+		unsubPointerUp = onPointerUpDebounced.destroy;
 
-		const documentObj = getOwnerDocument(node);
+		/**
+		 * Debounces `resetInterceptedEvents` to avoid premature resetting while events are still firing. The debounce
+		 * delay is intentionally set longer than `onPointerUp`'s to ensure `onPointerUp` events are fully processed
+		 * during the bubbling phase before `resetInterceptedEventsDebounced` executes in the capture phase.
+		 */
+		const resetInterceptedEventsDebounced = debounce(resetInterceptedEvents, 20);
+		unsubResetInterceptedEvents = resetInterceptedEventsDebounced.destroy;
 
-		// Use pointer events if available, otherwise use mouse/touch events
-		if (typeof PointerEvent !== 'undefined') {
-			const onPointerUp = (e: PointerEvent) => {
-				if (shouldTriggerInteractOutside(e)) {
-					triggerInteractOutside(e);
-				}
-				resetPointerState();
-			};
+		unsubEvents = executeCallbacks(
+			/** Capture Events For Interaction Start */
+			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerdown'),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('mousedown'),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('touchstart'),
+			/**
+			 * Intercepted events are reset only at the end of an interaction, allowing
+			 * interception at the start while still capturing the entire interaction.
+			 * Additionally, intercepted events are reset in the capture phase with `resetInterceptedEventsDebounced`,
+			 * accommodating events not invoked in the bubbling phase due to user interception.
+			 */
+			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerup', resetInterceptedEventsDebounced),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('mouseup', resetInterceptedEventsDebounced),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('touchend', resetInterceptedEventsDebounced),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('click', resetInterceptedEventsDebounced),
 
-			unsub = executeCallbacks(
-				addEventListener(documentObj, 'pointerdown', onPointerDown, true),
-				addEventListener(documentObj, 'pointerup', onPointerUp, true)
-			);
-		} else {
-			const onMouseUp = (e: MouseEvent) => {
-				if (ignoreEmulatedMouseEvents) {
-					ignoreEmulatedMouseEvents = false;
-				} else if (shouldTriggerInteractOutside(e)) {
-					triggerInteractOutside(e);
-				}
-				resetPointerState();
-			};
-
-			const onTouchEnd = (e: TouchEvent) => {
-				ignoreEmulatedMouseEvents = true;
-				if (shouldTriggerInteractOutside(e)) {
-					triggerInteractOutside(e);
-				}
-				resetPointerState();
-			};
-
-			unsub = executeCallbacks(
-				addEventListener(documentObj, 'mousedown', onPointerDown, true),
-				addEventListener(documentObj, 'mouseup', onMouseUp, true),
-				addEventListener(documentObj, 'touchstart', onPointerDown, true),
-				addEventListener(documentObj, 'touchend', onTouchEnd, true)
-			);
-		}
+			/** Bubbling Events For Interaction Start */
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerdown', onPointerDownDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mousedown', onPointerDownDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchstart', onPointerDownDebounced),
+			/**
+			 * To effectively detect an end of an interaction, we must monitor all relevant events,
+			 * not just `click` events. This is because on touch devices, actions like pressing,
+			 * moving the finger, and lifting it off the screen may not trigger a `click` event,
+			 * but should still invoke `onPointerUp` to properly handle the interaction.
+			 */
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('pointerup', onPointerUpDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('mouseup', onPointerUpDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('touchend', onPointerUpDebounced),
+			setupBubblePhaseHandlerAndMarkAsNotIntercepted('click', onPointerUpDebounced)
+		);
 	}
 
 	function shouldTriggerInteractOutside(e: InteractOutsideEvent) {
@@ -94,9 +175,14 @@ export function useInteractOutside(node: HTMLElement, config: InteractOutsideCon
 
 	return {
 		update,
-		destroy: unsub,
+		destroy() {
+			unsubEvents();
+			unsubPointerDown();
+			unsubPointerUp();
+			unsubResetInterceptedEvents();
+		},
 	};
-}
+}) satisfies Action<HTMLElement, InteractOutsideConfig>;
 
 function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	if ('button' in e && e.button > 0) return false;
