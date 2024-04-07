@@ -15,10 +15,10 @@ import {
 	noop,
 	omit,
 	overridable,
-	pointInPolygon,
 	styleToString,
 	toWritableStores,
 	portalAttr,
+	isPointerInGraceArea,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
@@ -328,9 +328,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				 * sub-pixel rendering and rounding errors.
 				 */
 				isMouseInTooltipArea =
-					isPointerInsideTrigger ||
-					isPointerInsideContent ||
-					pointInPolygon({ x: e.clientX, y: e.clientY }, polygon);
+					isPointerInsideTrigger || isPointerInsideContent || isPointerInGraceArea(e, polygon);
 
 				if ($openReason !== 'pointer') return;
 
