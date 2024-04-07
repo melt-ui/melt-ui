@@ -2,7 +2,6 @@ import type { Stores, StoresValues } from 'svelte/store';
 import { derived } from 'svelte/store';
 import { noop } from '../index.js';
 import { safeOnDestroy } from '../lifecycle.js';
-import { tick } from 'svelte';
 
 type EffectOptions = {
 	/**
@@ -10,12 +9,6 @@ type EffectOptions = {
 	 * @default undefined
 	 */
 	skipFirstRun?: boolean;
-
-	/**
-	 * Whether to run effect after a tick
-	 * @default undefined
-	 */
-	runAfterTick?: boolean;
 };
 
 /**
@@ -33,7 +26,7 @@ export function effect<S extends Stores>(
 	fn: (values: StoresValues<S>) => (() => void) | void,
 	opts: EffectOptions = {}
 ): () => void {
-	const { skipFirstRun, runAfterTick } = opts;
+	const { skipFirstRun } = opts;
 	let isFirstRun = true;
 	let cb: (() => void) | void = undefined;
 
@@ -42,15 +35,9 @@ export function effect<S extends Stores>(
 		cb?.();
 		if (isFirstRun && skipFirstRun) {
 			isFirstRun = false;
-			return;
+		} else {
+			cb = fn(stores);
 		}
-		if (runAfterTick) {
-			tick().then(() => {
-				cb = fn(stores);
-			});
-			return;
-		}
-		cb = fn(stores);
 	}).subscribe(noop);
 
 	const unsub = () => {
