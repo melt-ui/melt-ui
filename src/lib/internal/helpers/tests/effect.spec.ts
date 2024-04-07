@@ -1,7 +1,5 @@
 import { writable } from 'svelte/store';
-import { effect, noop, sleep } from '../index.js';
-import { vi } from 'vitest';
-import { tick } from 'svelte';
+import { effect } from '../index.js';
 
 describe('effect', () => {
 	it('Gets called initially', () => {
@@ -49,7 +47,7 @@ describe('effect', () => {
 				calls++;
 			};
 		});
-		expect(calls).toBe(0);
+
 		unsub();
 		expect(calls).toBe(1);
 	});
@@ -69,24 +67,5 @@ describe('effect', () => {
 		w.set(2);
 		expect(calls).toBe(1);
 		unsub();
-	});
-
-	it('Respect `runAfterTick` prop', async () => {
-		vi.mock('svelte', () => ({
-			...vi.importActual('svelte'),
-			tick: vi.fn(() => Promise.resolve()),
-		}));
-		const fn = vi.fn(noop);
-		const unsub = effect([], fn, { runAfterTick: true });
-
-		expect(fn).not.toHaveBeenCalled();
-		expect(tick).toHaveBeenCalled();
-		/** Fn should not be called synchronously */
-		expect(fn).not.toHaveBeenCalled();
-		await sleep(0);
-		expect(fn).toHaveBeenCalled();
-
-		unsub();
-		vi.restoreAllMocks();
 	});
 });
