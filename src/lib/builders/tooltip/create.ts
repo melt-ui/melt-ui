@@ -27,7 +27,6 @@ import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
-import { tick } from 'svelte';
 
 const defaults = {
 	positioning: {
@@ -216,15 +215,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 					unsubFloating();
 					const triggerEl = getEl('trigger');
 					if (!$isVisible || !triggerEl) return;
-
-					tick().then(() => {
-						unsubPortal();
-						unsubFloating();
-						const portalDest = getPortalDestination(node, $portal);
-						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
-						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
-					});
-				}
+					const portalDest = getPortalDestination(node, $portal);
+					if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
+					unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
+				},
+				{ runAfterTick: true }
 			);
 
 			/**

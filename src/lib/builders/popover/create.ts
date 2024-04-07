@@ -130,26 +130,23 @@ export function createPopover(args?: CreatePopoverProps) {
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
-
-					tick().then(() => {
-						unsubPopper();
-						unsubPopper = usePopper(node, {
-							anchorElement: $activeTrigger,
-							open,
-							options: {
-								floating: $positioning,
-								focusTrap: $disableFocusTrap ? null : undefined,
-								modal: {
-									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
-									onClose: handleClose,
-									closeOnInteractOutside: $closeOnOutsideClick,
-								},
-								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
-								portal: getPortalDestination(node, $portal),
+					unsubPopper = usePopper(node, {
+						anchorElement: $activeTrigger,
+						open,
+						options: {
+							floating: $positioning,
+							focusTrap: $disableFocusTrap ? null : undefined,
+							modal: {
+								shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
+								onClose: handleClose,
+								closeOnInteractOutside: $closeOnOutsideClick,
 							},
-						}).destroy;
-					});
-				}
+							escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
+							portal: getPortalDestination(node, $portal),
+						},
+					}).destroy;
+				},
+				{ runAfterTick: true }
 			);
 
 			return {
