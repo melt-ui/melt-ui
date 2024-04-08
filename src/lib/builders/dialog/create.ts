@@ -174,34 +174,29 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 
 		action: (node: HTMLElement) => {
-			let unsubModal = noop;
-			let unsubEscape = noop;
-			let unsubFocusTrap = noop;
-
 			const unsubDerived = effect(
 				[isVisible, closeOnOutsideClick, closeOnEscape],
 				([$isVisible, $closeOnOutsideClick, $closeOnEscape]) => {
-					unsubModal();
-					unsubEscape();
-					unsubFocusTrap();
 					if (!$isVisible) return;
 
-					unsubModal = useModal(node, {
-						closeOnInteractOutside: $closeOnOutsideClick,
-						onClose: handleClose,
-						shouldCloseOnInteractOutside(e) {
-							onOutsideClick.get()?.(e);
-							if (e.defaultPrevented) return false;
-							return true;
-						},
-					}).destroy;
+					return executeCallbacks(
+						useModal(node, {
+							closeOnInteractOutside: $closeOnOutsideClick,
+							onClose: handleClose,
+							shouldCloseOnInteractOutside(e) {
+								onOutsideClick.get()?.(e);
+								if (e.defaultPrevented) return false;
+								return true;
+							},
+						}).destroy,
 
-					unsubEscape = useEscapeKeydown(node, {
-						handler: handleClose,
-						enabled: $closeOnEscape,
-					}).destroy;
+						useEscapeKeydown(node, {
+							handler: handleClose,
+							enabled: $closeOnEscape,
+						}).destroy,
 
-					unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
+						useFocusTrap(node, { fallbackFocus: node }).destroy
+					);
 				}
 			);
 
@@ -209,9 +204,6 @@ export function createDialog(props?: CreateDialogProps) {
 				destroy: () => {
 					unsubScroll();
 					unsubDerived();
-					unsubModal();
-					unsubEscape();
-					unsubFocusTrap();
 				},
 			};
 		},

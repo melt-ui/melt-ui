@@ -225,35 +225,20 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-			let unsubDerived = noop;
-			let unsubPortal = noop;
+			const $closeOnEscape = closeOnEscape.get();
 
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
-			unsubDerived = effect([portal], ([$portal]) => {
-				unsubPortal();
-				if ($portal === null) return;
-				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return;
-				unsubPortal = usePortal(node, portalDestination).destroy;
-			});
+			const unsub = executeCallbacks(
+				$closeOnEscape ? useEscapeKeydown(node, { handler: handleClose }).destroy : noop,
+				effect([portal], ([$portal]) => {
+					if ($portal === null) return;
+					const portalDestination = getPortalDestination(node, $portal);
+					if (portalDestination === null) return;
+					return usePortal(node, portalDestination).destroy;
+				})
+			);
 
 			return {
-				destroy() {
-					unsubEscapeKeydown();
-					unsubDerived();
-					unsubPortal();
-				},
+				destroy: unsub,
 			};
 		},
 	});
