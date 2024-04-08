@@ -1,3 +1,4 @@
+import { getOwnerDocument, isOrContainsTarget } from '$lib/internal/helpers/elements.js';
 import {
 	addEventListener,
 	isElement,
@@ -196,12 +197,4 @@ function isValidEvent(e: InteractOutsideEvent, node: HTMLElement): boolean {
 	}
 
 	return node && !isOrContainsTarget(node, target);
-}
-
-function isOrContainsTarget(node: HTMLElement, target: Element) {
-	return node === target || node.contains(target);
-}
-
-function getOwnerDocument(el: Element | null | undefined) {
-	return el?.ownerDocument ?? document;
 }
