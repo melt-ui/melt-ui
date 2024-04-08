@@ -117,7 +117,11 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
-			if (wasTopLayerInPointerDownCapture && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
+			if (
+				wasTopLayerInPointerDownCapture &&
+				!isAnyEventIntercepted() &&
+				shouldTriggerInteractOutside(e)
+			) {
 				onInteractOutside?.(e);
 			}
 			resetPointerState();
