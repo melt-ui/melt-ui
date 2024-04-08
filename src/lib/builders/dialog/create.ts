@@ -166,8 +166,6 @@ export function createDialog(props?: CreateDialogProps) {
 					unsubFocusTrap();
 					if (!$isVisible) return;
 
-					unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
-
 					unsubModal = useModal(node, {
 						closeOnInteractOutside: $closeOnOutsideClick,
 						onClose: handleClose,
@@ -182,6 +180,8 @@ export function createDialog(props?: CreateDialogProps) {
 						handler: handleClose,
 						behaviorType: escapeBehavior,
 					}).destroy;
+
+					unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
 				}
 			);
 
