@@ -468,49 +468,45 @@ export function createListbox<
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['menu']> => {
 			let unsubPopper = noop;
-			const unsubscribe = executeCallbacks(
-				// Bind the popper portal to the input element.
-				effect(
-					[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
-					([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
+			const unsubscribe = effect(
+				[isVisible, portal, closeOnOutsideClick, positioning, activeTrigger],
+				([$isVisible, $portal, $closeOnOutsideClick, $positioning, $activeTrigger]) => {
+					unsubPopper();
+					if (!$isVisible || !$activeTrigger) return;
+
+					tick().then(() => {
 						unsubPopper();
+						const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
 
-						if (!$isVisible || !$activeTrigger) return;
-
-						tick().then(() => {
-							unsubPopper();
-							const ignoreHandler = createClickOutsideIgnore(ids.trigger.get());
-
-							unsubPopper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-									focusTrap: null,
-									modal: {
-										closeOnInteractOutside: $closeOnOutsideClick,
-										onClose: closeMenu,
-										shouldCloseOnInteractOutside: (e) => {
-											onOutsideClick.get()?.(e);
-											if (e.defaultPrevented) return false;
-											const target = e.target;
-											if (!isElement(target)) return false;
-											if (target === $activeTrigger || $activeTrigger.contains(target)) {
-												return false;
-											}
-											// return opposite of the result of the ignoreHandler
-											if (ignoreHandler(e)) return false;
-											return true;
-										},
+						unsubPopper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: null,
+								modal: {
+									closeOnInteractOutside: $closeOnOutsideClick,
+									onClose: closeMenu,
+									shouldCloseOnInteractOutside: (e) => {
+										onOutsideClick.get()?.(e);
+										if (e.defaultPrevented) return false;
+										const target = e.target;
+										if (!isElement(target)) return false;
+										if (target === $activeTrigger || $activeTrigger.contains(target)) {
+											return false;
+										}
+										// return opposite of the result of the ignoreHandler
+										if (ignoreHandler(e)) return false;
+										return true;
 									},
-
-									escapeKeydown: null,
-									portal: getPortalDestination(node, $portal),
 								},
-							}).destroy;
-						});
-					}
-				)
+
+								escapeKeydown: null,
+								portal: getPortalDestination(node, $portal),
+							},
+						}).destroy;
+					});
+				}
 			);
 			return {
 				destroy: () => {
@@ -572,7 +568,7 @@ export function createListbox<
 				}),
 				effect(highlightOnHover, ($highlightOnHover) => {
 					if (!$highlightOnHover) return;
-					const unsub = executeCallbacks(
+					return executeCallbacks(
 						addMeltEventListener(node, 'mouseover', () => {
 							highlightedItem.set(node);
 						}),
@@ -580,8 +576,6 @@ export function createListbox<
 							highlightedItem.set(null);
 						})
 					);
-
-					return unsub;
 				})
 			);
 
