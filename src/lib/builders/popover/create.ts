@@ -51,6 +51,7 @@ const defaults = {
 	openFocus: undefined,
 	closeFocus: undefined,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close' | 'overlay';
@@ -75,6 +76,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		openFocus,
 		closeFocus,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -146,6 +148,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								},
 								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
 								portal: getPortalDestination(node, $portal),
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
