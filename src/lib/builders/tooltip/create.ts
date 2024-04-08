@@ -15,10 +15,10 @@ import {
 	noop,
 	omit,
 	overridable,
-	pointInPolygon,
 	styleToString,
 	toWritableStores,
 	portalAttr,
+	isPointerInGraceArea,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, useInteractOutside, usePortal } from '$lib/internal/actions/index.js';
@@ -312,14 +312,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					? [triggerEl]
 					: [triggerEl, contentEl];
 				const polygon = makeHullFromElements(polygonElements);
-
-				isMouseInTooltipArea = pointInPolygon(
-					{
-						x: e.clientX,
-						y: e.clientY,
-					},
-					polygon
-				);
+				isMouseInTooltipArea = isPointerInGraceArea(e, polygon);
 
 				if ($openReason !== 'pointer') return;
 
