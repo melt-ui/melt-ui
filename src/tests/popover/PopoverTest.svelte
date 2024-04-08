@@ -15,6 +15,10 @@
 		closeFocus,
 		...$$restProps,
 	});
+
+	const {
+		elements: { trigger: triggerB, content: contentB },
+	} = createPopover();
 </script>
 
 <button data-testid="closeFocus" id="closeFocus"> focus me on close </button>
@@ -65,6 +69,15 @@
 </div>
 <div data-testid="outside" />
 <button on:click|stopPropagation data-testid="click-interceptor">click interceptor</button>
+
+<button type="button" class="trigger" use:melt={$triggerB} data-testid="trigger-2">
+	<span>Open Popover</span>
+</button>
+<div use:melt={$contentB} class="content" data-testid="content-2">
+	<div class="flex flex-col gap-2.5">
+		<p>Dimensions</p>
+	</div>
+</div>
 
 <style lang="postcss">
 	fieldset {
