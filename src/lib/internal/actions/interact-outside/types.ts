@@ -1,5 +1,18 @@
 export type InteractOutsideEvent = PointerEvent | MouseEvent | TouchEvent;
 
+export type InteractOutsideInterceptEventType =
+	| 'pointerdown'
+	| 'pointerup'
+	| 'mousedown'
+	| 'mouseup'
+	| 'touchstart'
+	| 'touchend'
+	| 'click';
+
+export type InteractOutsideInterceptHandler<E extends InteractOutsideInterceptEventType> = (
+	ev: HTMLElementEventMap[E]
+) => void;
+
 export type InteractOutsideConfig = {
 	/**
 	 * Callback fired when an outside interaction event completes,
@@ -21,6 +34,7 @@ export type InteractOutsideConfig = {
 
 	/**
 	 * Whether or not outside interactions should be handled.
+	 * @default true
 	 */
 	enabled?: boolean;
 };

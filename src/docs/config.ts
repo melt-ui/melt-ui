@@ -10,7 +10,7 @@ export const siteConfig = {
 		'An open-source collection of accessible & customizable component builders for creating user interfaces with Svelte.',
 	links: {
 		github: 'https://github.com/melt-ui/melt-ui',
-		discord: 'https://discord.gg/cee8gHrznd',
+		discord: 'https://melt-ui.com/discord',
 	},
 	keywords: 'meltui,svelte,sveltekit,sveltekit components,svelte headless, radix svelte',
 };

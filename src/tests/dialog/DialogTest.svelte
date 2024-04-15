@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
+	import { kbd } from '$lib/internal/helpers/keyboard.js';
 
 	type $$Props = CreateDialogProps;
 
@@ -19,6 +20,13 @@
 		<div use:melt={$content} data-testid="content">
 			<h2 use:melt={$title} data-testid="title">Title</h2>
 			<p use:melt={$description} data-testid="description">Description</p>
+			<button on:click={() => open.update((p) => !p)} data-testid="toggle-open">toggle open</button>
+			<button
+				data-testid="escape-interceptor"
+				on:keydown={(e) => e.key === kbd.ESCAPE && e.stopPropagation()}
+			>
+				escape interceptor
+			</button>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
@@ -27,6 +35,30 @@
 	</div>
 </main>
 <div id="portal-target" data-testid="portal-target" />
+
+<button on:click|stopPropagation data-testid="click-interceptor">click interceptor</button>
+<button on:pointerdown|stopPropagation data-testid="pointerdown-interceptor">
+	pointerdown interceptor
+</button>
+<button on:pointerup|stopPropagation data-testid="pointerup-interceptor">
+	pointerup interceptor
+</button>
+<button on:mousedown|stopPropagation data-testid="mousedown-interceptor">
+	mousedown interceptor
+</button>
+<button on:mouseup|stopPropagation data-testid="mouseup-interceptor">mouseup interceptor</button>
+<button on:touchstart|stopPropagation data-testid="touchstart-interceptor">
+	touchstart interceptor
+</button>
+<button on:touchend|stopPropagation data-testid="touchend-interceptor">
+	touchend interceptor
+</button>
+<button
+	on:touchend|preventDefault|stopPropagation
+	data-testid="touchend-prevent-default-interceptor"
+>
+	touchend prevent default interceptor
+</button>
 
 {#if $open}
 	<!-- Floating close -->

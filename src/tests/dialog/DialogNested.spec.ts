@@ -1,4 +1,3 @@
-import { sleep } from '$lib/internal/helpers/index.js';
 import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import DialogNestedTest from './DialogNestedTest.svelte';
@@ -79,7 +78,6 @@ describe('Nested Dialogs', () => {
 		await user.click(trigger);
 		await waitFor(() => expect(getByTestId('content')).not.toBeNull());
 		await waitFor(() => expect(getByTestId('overlay')).not.toBeNull());
-		await sleep(100);
 		await user.click(getByTestId('overlay'));
 		await waitFor(() => expect(queryByTestId('content')).toBeNull());
 		expect(queryByTestId('content')).toBeNull();

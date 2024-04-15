@@ -90,25 +90,21 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger.get());
-		handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
 	}
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, portal, ids.content],
-		returned: ([$isVisible, $portal, $contentId]) => {
+		stores: [isVisible, open, activeTrigger, portal, ids.content],
+		returned: ([$isVisible, $open, $activeTrigger, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible && isBrowser ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					display: $isVisible ? undefined : 'none',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
@@ -142,27 +138,13 @@ export function createPopover(args?: CreatePopoverProps) {
 							open,
 							options: {
 								floating: $positioning,
-								focusTrap: $disableFocusTrap
-									? null
-									: {
-											returnFocusOnDeactivate: false,
-											clickOutsideDeactivates: $closeOnOutsideClick,
-											allowOutsideClick: true,
-											escapeDeactivates: $closeOnEscape,
-									  },
+								focusTrap: $disableFocusTrap ? null : undefined,
 								modal: {
 									shouldCloseOnInteractOutside: shouldCloseOnInteractOutside,
 									onClose: handleClose,
-									open: $isVisible,
 									closeOnInteractOutside: $closeOnOutsideClick,
 								},
-								escapeKeydown: $closeOnEscape
-									? {
-											handler: () => {
-												handleClose();
-											},
-									  }
-									: null,
+								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
 								portal: getPortalDestination(node, $portal),
 							},
 						}).destroy;
@@ -244,6 +226,8 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 		action: (node: HTMLElement) => {
 			let unsubEscapeKeydown = noop;
+			let unsubDerived = noop;
+			let unsubPortal = noop;
 
 			if (closeOnEscape.get()) {
 				const escapeKeydown = useEscapeKeydown(node, {
@@ -256,16 +240,18 @@ export function createPopover(args?: CreatePopoverProps) {
 				}
 			}
 
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if ($portal === null) return noop;
+			unsubDerived = effect([portal], ([$portal]) => {
+				unsubPortal();
+				if ($portal === null) return;
 				const portalDestination = getPortalDestination(node, $portal);
-				if (portalDestination === null) return noop;
-				return usePortal(node, portalDestination).destroy;
+				if (portalDestination === null) return;
+				unsubPortal = usePortal(node, portalDestination).destroy;
 			});
 
 			return {
 				destroy() {
 					unsubEscapeKeydown();
+					unsubDerived();
 					unsubPortal();
 				},
 			};
@@ -274,14 +260,15 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const close = makeElement(name('close'), {
@@ -335,6 +322,16 @@ export function createPopover(args?: CreatePopoverProps) {
 			unsubs.forEach((unsub) => unsub());
 		};
 	});
+
+	effect(
+		open,
+		($open) => {
+			if (!isBrowser || $open) return;
+			const triggerEl = document.getElementById(ids.trigger.get());
+			handleFocus({ prop: closeFocus.get(), defaultEl: triggerEl });
+		},
+		{ skipFirstRun: true }
+	);
 
 	return {
 		ids,

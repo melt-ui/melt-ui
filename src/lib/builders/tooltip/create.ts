@@ -15,11 +15,10 @@ import {
 	noop,
 	omit,
 	overridable,
-	pointInPolygon,
 	styleToString,
 	toWritableStores,
-	removeUndefined,
 	portalAttr,
+	isPointerInGraceArea,
 } from '$lib/internal/helpers/index.js';
 
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
@@ -142,7 +141,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'aria-describedby': $contentId,
 				id: $triggerId,
 				'data-state': $open ? 'open' : 'closed',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
 			const keydownHandler = (e: KeyboardEvent) => {
@@ -196,7 +195,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const content = makeElement(name('content'), {
 		stores: [isVisible, open, portal, ids.content],
 		returned: ([$isVisible, $open, $portal, $contentId]) => {
-			return removeUndefined({
+			return {
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
@@ -204,7 +203,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				id: $contentId,
 				'data-portal': portalAttr($portal),
 				'data-state': $open ? 'open' : 'closed',
-			});
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
@@ -261,14 +260,15 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	let isMouseInTooltipArea = false;
@@ -306,14 +306,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					? [triggerEl]
 					: [triggerEl, contentEl];
 				const polygon = makeHullFromElements(polygonElements);
-
-				isMouseInTooltipArea = pointInPolygon(
-					{
-						x: e.clientX,
-						y: e.clientY,
-					},
-					polygon
-				);
+				isMouseInTooltipArea = isPointerInGraceArea(e, polygon);
 
 				if ($openReason !== 'pointer') return;
 

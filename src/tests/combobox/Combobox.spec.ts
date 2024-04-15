@@ -5,7 +5,6 @@ import { describe } from 'vitest';
 import { testKbd as kbd } from '../utils.js';
 import ComboboxTest from './ComboboxTest.svelte';
 import type { ComboboxOptionProps } from '$lib/index.js';
-import { sleep } from '$lib/internal/helpers/sleep.js';
 import ComboboxForceVisibleTest from './ComboboxForceVisibleTest.svelte';
 
 const options: ComboboxOptionProps[] = [
@@ -155,7 +154,7 @@ describe('Combobox', () => {
 		expect(getByTestId('menu')).toBeVisible();
 	});
 
-	test.skip('Closes on outside click by default', async () => {
+	test('Closes on outside click by default', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(ComboboxTest);
 		const input = getByTestId('input');
@@ -207,8 +206,23 @@ describe('Combobox', () => {
 
 		expect(menu).not.toBeVisible();
 		await user.click(toggleBtn);
-		await sleep(100);
 		expect(menu).toBeVisible();
+	});
+
+	test('should not prevent focusing on another input on outside interaction of combobox', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(ComboboxTest, { closeOnEscape: false });
+
+		const input = getByTestId('input');
+		const menu = getByTestId('menu');
+		const otherInput = getByTestId('other-input');
+
+		await user.click(input);
+		expect(menu).toBeVisible();
+
+		await user.click(otherInput);
+		expect(otherInput).toHaveFocus();
+		await waitFor(() => expect(menu).not.toBeVisible());
 	});
 
 	test.todo('Selects multiple items when `multiple` is true');
@@ -375,7 +389,6 @@ describe('Combobox (forceVisible)', () => {
 
 		const outsideClick = getByTestId('outside-click');
 		await user.click(outsideClick);
-		await sleep(100);
 		expect(getMenu()).not.toBeNull();
 	});
 
@@ -435,7 +448,6 @@ describe('Combobox (forceVisible)', () => {
 
 		expect(getMenu()).toBeNull();
 		await user.click(toggleBtn);
-		await sleep(100);
 		expect(getMenu()).not.toBeNull();
 	});
 
