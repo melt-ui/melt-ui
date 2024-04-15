@@ -79,7 +79,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				'data-melt-menubar': '',
 				'data-orientation': 'horizontal',
 				id: $menubarId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
