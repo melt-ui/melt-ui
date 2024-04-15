@@ -69,6 +69,13 @@ export type CreatePopoverProps = {
 	onOutsideClick?: (event: InteractOutsideEvent) => void;
 
 	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
+
+	/**
 	 * Whether or not to prevent scrolling when the popover is open.
 	 *
 	 * @default false
