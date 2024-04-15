@@ -80,6 +80,7 @@ const defaults = {
 	typeahead: true,
 	closeOnItemClick: true,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -99,6 +100,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		disableFocusFirstItem,
 		closeOnItemClick,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -217,6 +219,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
@@ -786,6 +789,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									modal: null,
 									focusTrap: null,
 									escapeKeydown: null,
+									preventTextSelectionOverflow: null,
 								},
 							}).destroy;
 						});

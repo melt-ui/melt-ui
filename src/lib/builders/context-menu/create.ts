@@ -58,6 +58,7 @@ const defaults = {
 	closeFocus: undefined,
 	closeOnItemClick: true,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
@@ -66,8 +67,15 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
-	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape, loop } =
-		rootOptions;
+	const {
+		positioning,
+		closeOnOutsideClick,
+		portal,
+		forceVisible,
+		closeOnEscape,
+		loop,
+		preventTextSelectionOverflow,
+	} = rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -170,6 +178,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
