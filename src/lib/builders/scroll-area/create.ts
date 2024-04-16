@@ -132,7 +132,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 					'--melt-scroll-area-corner-height': `${$cornderHeight}px`,
 				}),
 				id: $rootId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			scrollAreaEl.set(node);
@@ -157,7 +157,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 					'overflow-y': $scrollbarYEnabled ? 'scroll' : 'hidden',
 				}),
 				id: $viewportId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			// Ensure we hide any native scrollbars on the viewport element
@@ -197,7 +197,7 @@ export function createScrollArea(props?: CreateScrollAreaProps) {
 					display: 'table',
 				}),
 				id: $contentId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			contentEl.set(node);
@@ -418,7 +418,7 @@ function createScrollbarThumb(state: ScrollAreaState) {
 						: `translate3d(0, ${Math.round($offset)}px, 0)`,
 				}),
 				'data-state': $hasThumb ? 'visible' : 'hidden',
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ScrollAreaEvents['thumb']> => {
 			scrollbarState.thumbEl.set(node);
@@ -512,7 +512,7 @@ function createScrollAreaCorner(rootState: ScrollAreaRootState) {
 					left: $dir === 'rtl' ? 0 : undefined,
 					bottom: 0,
 				}),
-			};
+			} as const;
 		},
 	});
 

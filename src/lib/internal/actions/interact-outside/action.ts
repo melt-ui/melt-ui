@@ -1,3 +1,4 @@
+import { getOwnerDocument, isOrContainsTarget } from '$lib/internal/helpers/elements.js';
 import {
 	addEventListener,
 	isElement,
@@ -232,11 +233,3 @@ const isResponsibleLayer = (node: HTMLElement): boolean => {
 	const [firstLayerNode] = layersArr[0];
 	return firstLayerNode === node;
 };
-
-function isOrContainsTarget(node: HTMLElement, target: Element) {
-	return node === target || node.contains(target);
-}
-
-function getOwnerDocument(el: Element | null | undefined) {
-	return el?.ownerDocument ?? document;
-}

@@ -46,6 +46,8 @@ export const DESCRIPTIONS = {
 		`Whether or not to force the ${name} to always be visible. This is useful for custom transitions and animations using conditional blocks.`,
 	ON_CHANGE: (store: string) =>
 		'A callback called when the value of the' + '`' + store + '`' + 'store should be changed.',
+	PREVENT_TEXT_SELECTION_OVERFLOW: (name = 'element') =>
+		`Whether to prevent text selection overflowing the ${name} when it is the top layer.`,
 };
 
 type PropArgs = {
@@ -110,6 +112,12 @@ export const PROPS = {
 		name: 'preventScroll',
 		type: 'boolean',
 		description: DESCRIPTIONS.PREVENT_SCROLL(args.name ?? 'floating element'),
+		default: args.default ?? 'true',
+	}),
+	PREVENT_TEXT_SELECTION_OVERFLOW: (args: PropArgs = {}): Prop => ({
+		name: 'preventTextSelectionOverflow',
+		type: 'boolean',
+		description: DESCRIPTIONS.PREVENT_TEXT_SELECTION_OVERFLOW(args.name ?? 'floating element'),
 		default: args.default ?? 'true',
 	}),
 	ARROW_SIZE: {

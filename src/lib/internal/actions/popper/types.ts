@@ -7,6 +7,7 @@ import type {
 import type { VirtualElement } from '@floating-ui/core';
 import type { Writable } from 'svelte/store';
 import type { ModalConfig } from '../modal/types.js';
+import type { PreventTextSelectionOverflowConfig } from '../prevent-text-selection-overflow/types.js';
 
 export type PopperConfig = {
 	floating?: FloatingConfig;
@@ -14,6 +15,7 @@ export type PopperConfig = {
 	modal?: ModalConfig | null;
 	portal?: PortalConfig | null;
 	escapeKeydown?: EscapeKeydownConfig | null;
+	preventTextSelectionOverflow?: PreventTextSelectionOverflowConfig | null;
 };
 
 export type PopperArgs = {

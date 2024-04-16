@@ -81,6 +81,13 @@ export type CreateLinkPreviewProps = {
 	closeOnEscape?: boolean;
 
 	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
+
+	/**
 	 * The size of the optional arrow element in pixels
 	 *
 	 * @default 8
