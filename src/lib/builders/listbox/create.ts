@@ -76,6 +76,7 @@ const defaults = {
 	typeahead: true,
 	highlightOnHover: true,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
@@ -146,6 +147,7 @@ export function createListbox<
 		name: nameProp,
 		highlightOnHover,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = options;
 	const { name, selector } = createElHelpers<ListboxParts>(withDefaults.builder);
 
@@ -506,6 +508,7 @@ export function createListbox<
 
 									escapeKeydown: null,
 									portal: getPortalDestination(node, $portal),
+									preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 								},
 							}).destroy;
 						});

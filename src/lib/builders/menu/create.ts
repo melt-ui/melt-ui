@@ -80,6 +80,7 @@ const defaults = {
 	typeahead: true,
 	closeOnItemClick: true,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -99,6 +100,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		disableFocusFirstItem,
 		closeOnItemClick,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -217,6 +219,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
@@ -283,11 +286,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
+			rootActiveTrigger.set(node);
 			applyAttrsIfDisabled(node);
-			rootActiveTrigger.update((p) => {
-				if (p) return p;
-				return node;
-			});
 
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -319,7 +319,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					rootActiveTrigger.set(null);
+				},
 			};
 		},
 	});
@@ -741,17 +744,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
-		safeOnMount(() => {
-			/**
-			 * Set active trigger on mount to handle controlled/forceVisible
-			 * state.
-			 */
-			const subTrigger = document.getElementById(subIds.trigger.get());
-			if (subTrigger) {
-				subActiveTrigger.set(subTrigger);
-			}
-		});
-
 		const subIsVisible = derivedVisible({
 			open: subOpen,
 			forceVisible,
@@ -797,6 +789,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									modal: null,
 									focusTrap: null,
 									escapeKeydown: null,
+									preventTextSelectionOverflow: null,
 								},
 							}).destroy;
 						});
@@ -833,12 +826,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (isCloseKey) {
 							const $subActiveTrigger = subActiveTrigger.get();
 							e.preventDefault();
-							subOpen.update(() => {
-								if ($subActiveTrigger) {
-									handleRovingFocus($subActiveTrigger);
-								}
-								return false;
-							});
+							$subActiveTrigger && handleRovingFocus($subActiveTrigger);
+							subOpen.set(false);
 							return;
 						}
 
@@ -910,10 +899,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
-				subActiveTrigger.update((p) => {
-					if (p) return p;
-					return node;
-				});
+				subActiveTrigger.set(node);
 
 				const unsubTimer = () => {
 					clearTimerStore(subOpenTimer);
@@ -930,16 +916,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 						handleRovingFocus(triggerEl);
-						if (!subOpen.get()) {
-							subOpen.update((prev) => {
-								const isAlreadyOpen = prev;
-								if (!isAlreadyOpen) {
-									subActiveTrigger.set(triggerEl);
-									return !prev;
-								}
-								return prev;
-							});
-						}
+						subOpen.set(true);
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
 						const $typed = typed.get();
@@ -981,10 +958,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (!subOpen.get() && !openTimer && !isElementDisabled(triggerEl)) {
 							subOpenTimer.set(
 								window.setTimeout(() => {
-									subOpen.update(() => {
-										subActiveTrigger.set(triggerEl);
-										return true;
-									});
+									subOpen.set(true);
 									clearTimerStore(subOpenTimer);
 								}, 100)
 							);
@@ -1056,6 +1030,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 				return {
 					destroy() {
+						subActiveTrigger.set(null);
 						unsubTimer();
 						unsubEvents();
 					},
@@ -1137,16 +1112,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	};
 
 	safeOnMount(() => {
-		/**
-		 * We need to set the active trigger on mount to cover the
-		 * case where the user sets the `open` store to `true` without
-		 * clicking on the trigger.
-		 */
-		const triggerEl = document.getElementById(rootIds.trigger.get());
-		if (isHTMLElement(triggerEl) && rootOpen.get()) {
-			rootActiveTrigger.set(triggerEl);
-		}
-
 		const unsubs: Array<() => void> = [];
 
 		const handlePointer = () => isUsingKeyboard.set(false);
@@ -1251,7 +1216,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			if (isOpen) {
 				nextFocusable.set(getNextFocusable(triggerEl));
 				prevFocusable.set(getPreviousFocusable(triggerEl));
-				rootActiveTrigger.set(triggerEl);
 			}
 
 			return isOpen;
