@@ -256,14 +256,14 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) =>
-		({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		} as const),
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	effect([open], ([$open]) => {
