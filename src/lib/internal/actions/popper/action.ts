@@ -13,6 +13,7 @@ import {
 import type { Action } from 'svelte/action';
 import type { PopperArgs, PopperConfig } from './types.js';
 import { useModal } from '../modal/action.js';
+import { usePreventTextSelectionOverflow } from '../prevent-text-selection-overflow/action.js';
 
 const defaultConfig = {
 	floating: {},
@@ -20,6 +21,7 @@ const defaultConfig = {
 	modal: {},
 	escapeKeydown: {},
 	portal: 'body',
+	preventTextSelectionOverflow: {},
 } satisfies PopperConfig;
 
 export const usePopper = ((popperElement, args) => {
@@ -80,6 +82,10 @@ export const usePopper = ((popperElement, args) => {
 				...opts.escapeKeydown,
 			}).destroy
 		);
+	}
+
+	if (opts.preventTextSelectionOverflow !== null) {
+		callbacks.push(usePreventTextSelectionOverflow(popperElement).destroy);
 	}
 
 	// @ts-expect-error - This works and is correct, but TS doesn't like it

@@ -78,7 +78,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				'data-melt-menubar': '',
 				'data-orientation': 'horizontal',
 				id: $menubarId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
@@ -108,6 +108,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		disableFocusFirstItem: false,
 		closeOnItemClick: true,
 		onOutsideClick: undefined,
+		preventTextSelectionOverflow: true,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -117,7 +118,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// options
 		const options = toWritableStores(withDefaults);
-		const { positioning, portal, forceVisible, closeOnOutsideClick, onOutsideClick } = options;
+		const {
+			positioning,
+			portal,
+			forceVisible,
+			closeOnOutsideClick,
+			onOutsideClick,
+			preventTextSelectionOverflow,
+		} = options;
 
 		const m = createMenuBuilder({
 			rootOptions: { ...options, preventScroll },
@@ -202,6 +210,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 										behaviorType: escapeBehavior,
 										handler: () => activeMenu.set(''),
 									},
+									preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 								},
 							}).destroy;
 						});

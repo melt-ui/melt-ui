@@ -20,6 +20,8 @@ import {
 	withGet,
 	type WithGet,
 	portalAttr,
+	type Point,
+	isElement,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
@@ -33,7 +35,6 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	setMeltMenuAttribute,
-	type Point,
 	type _MenuParts,
 } from '../menu/index.js';
 import type { ContextMenuEvents } from './events.js';
@@ -57,6 +58,7 @@ const defaults = {
 	closeFocus: undefined,
 	closeOnItemClick: true,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
@@ -65,8 +67,15 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
-	const { positioning, closeOnOutsideClick, portal, forceVisible, escapeBehavior, loop } =
-		rootOptions;
+	const {
+		positioning,
+		closeOnOutsideClick,
+		portal,
+		forceVisible,
+		escapeBehavior,
+		loop,
+		preventTextSelectionOverflow,
+	} = rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -109,15 +118,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		if (e.defaultPrevented) return false;
 
 		const target = e.target;
-		if (!(target instanceof Element)) return false;
+		if (!isElement(target)) return false;
 
 		const isClickInsideTrigger = target.closest(`[data-id="${ids.trigger.get()}"]`) !== null;
-
-		if (!isClickInsideTrigger || isLeftClick(e)) {
-			return true;
-		}
-
-		return false;
+		return !isClickInsideTrigger || isLeftClick(e);
 	}
 
 	const isVisible = derivedVisible({
@@ -154,7 +158,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 						setMeltMenuAttribute(node, selector);
 						const $virtual = virtual.get();
 						unsubPopper = usePopper(node, {
-							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
+							anchorElement: $virtual ?? $rootActiveTrigger,
 							open: rootOpen,
 							options: {
 								floating: $positioning,
@@ -167,6 +171,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								},
 								portal: getPortalDestination(node, $portal),
 								escapeKeydown: { behaviorType: escapeBehavior },
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
@@ -234,6 +239,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
+			rootActiveTrigger.set(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {
 				point.set({
@@ -242,7 +248,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				});
 				nextFocusable.set(getNextFocusable(node));
 				prevFocusable.set(getPreviousFocusable(node));
-				rootActiveTrigger.set(node);
 				rootOpen.set(true);
 			};
 
@@ -287,6 +292,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 			return {
 				destroy() {
+					rootActiveTrigger.set(null);
 					unsubTimer();
 					unsub();
 				},

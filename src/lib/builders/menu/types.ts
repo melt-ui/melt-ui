@@ -78,6 +78,13 @@ export type _CreateMenuProps = {
 	onOutsideClick?: (event: InteractOutsideEvent) => void;
 
 	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
+
+	/**
 	 * Whether or not to loop the menu navigation.
 	 *
 	 * @default false
@@ -192,6 +199,7 @@ export type _MenuBuilderOptions = {
 		dir: WithGet<Writable<TextDirection>>;
 		escapeBehavior: WithGet<Writable<EscapeBehaviorType>>;
 		closeOnOutsideClick: WithGet<Writable<boolean>>;
+		preventTextSelectionOverflow: WithGet<Writable<boolean>>;
 		portal: WithGet<Writable<string | HTMLElement | undefined | null>>;
 		forceVisible: WithGet<Writable<boolean>>;
 		typeahead: WithGet<Writable<boolean>>;

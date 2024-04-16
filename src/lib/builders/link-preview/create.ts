@@ -45,6 +45,7 @@ const defaults = {
 	portal: undefined,
 	escapeBehavior: 'close',
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies CreateLinkPreviewProps;
 
 export const linkPreviewIdParts = ['trigger', 'content'] as const;
@@ -75,11 +76,11 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		portal,
 		escapeBehavior,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(linkPreviewIdParts), ...withDefaults.ids });
 	let timeout: number | null = null;
-	let originalBodyUserSelect: string;
 
 	const handleOpen = withGet.derived(openDelay, ($openDelay) => {
 		return () => {
@@ -208,6 +209,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
 								escapeKeydown: { behaviorType: escapeBehavior },
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
@@ -254,36 +256,14 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) =>
-			({
-				'data-arrow': true,
-				style: styleToString({
-					position: 'absolute',
-					width: `var(--arrow-size, ${$arrowSize}px)`,
-					height: `var(--arrow-size, ${$arrowSize}px)`,
-				}),
-			} as const),
-	});
-
-	effect([containSelection], ([$containSelection]) => {
-		if (!isBrowser || !$containSelection) return;
-		const body = document.body;
-		const contentElement = document.getElementById(ids.content.get());
-		if (!contentElement) return;
-		// prefix for safari
-		originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
-		const originalContentUserSelect =
-			contentElement.style.userSelect || contentElement.style.webkitUserSelect;
-		body.style.userSelect = 'none';
-		body.style.webkitUserSelect = 'none';
-
-		contentElement.style.userSelect = 'text';
-		contentElement.style.webkitUserSelect = 'text';
-		return () => {
-			body.style.userSelect = originalBodyUserSelect;
-			body.style.webkitUserSelect = originalBodyUserSelect;
-			contentElement.style.userSelect = originalContentUserSelect;
-			contentElement.style.webkitUserSelect = originalContentUserSelect;
-		};
+		({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
+			}),
+		} as const),
 	});
 
 	effect([open], ([$open]) => {
