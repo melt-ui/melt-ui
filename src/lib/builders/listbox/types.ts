@@ -128,6 +128,13 @@ export type CreateListboxProps<
 	preventScroll?: boolean;
 
 	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
+
+	/**
 	 * If not undefined, the listbox menu will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
