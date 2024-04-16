@@ -323,14 +323,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	const rootArrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) =>
-		({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		} as const),
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const overlay = makeElement(name('overlay'), {
@@ -429,19 +429,19 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	const group = makeElement(name('group'), {
 		returned: () => {
 			return (groupId: string) =>
-			({
-				role: 'group',
-				'aria-labelledby': groupId,
-			} as const);
+				({
+					role: 'group',
+					'aria-labelledby': groupId,
+				} as const);
 		},
 	});
 
 	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
 			return (groupId: string) =>
-			({
-				id: groupId,
-			} as const);
+				({
+					id: groupId,
+				} as const);
 		},
 	});
 
@@ -565,9 +565,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const radioGroup = makeElement(name('radio-group'), {
 			returned: () =>
-			({
-				role: 'group',
-			} as const),
+				({
+					role: 'group',
+				} as const),
 		});
 
 		const radioItemDefaults = {
@@ -1022,14 +1022,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const subArrow = makeElement(name('subarrow'), {
 			stores: arrowSize,
 			returned: ($arrowSize) =>
-			({
-				'data-arrow': true,
-				style: styleToString({
-					position: 'absolute',
-					width: `var(--arrow-size, ${$arrowSize}px)`,
-					height: `var(--arrow-size, ${$arrowSize}px)`,
-				}),
-			} as const),
+				({
+					'data-arrow': true,
+					style: styleToString({
+						position: 'absolute',
+						width: `var(--arrow-size, ${$arrowSize}px)`,
+						height: `var(--arrow-size, ${$arrowSize}px)`,
+					}),
+				} as const),
 		});
 
 		/* -------------------------------------------------------------------------------------------------
@@ -1484,7 +1484,7 @@ export function handleMenuNavigation(e: KeyboardEvent, loop?: boolean) {
 }
 
 type Side = 'left' | 'right';
-type GraceIntent = { area: Polygon; side: Side; };
+type GraceIntent = { area: Polygon; side: Side };
 
 function isFocusWithinSubmenu(submenuId: string) {
 	const activeEl = document.activeElement;
