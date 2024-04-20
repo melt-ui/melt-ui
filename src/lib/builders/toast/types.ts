@@ -11,7 +11,7 @@ export type CreateToasterProps = {
 	hover?: 'pause' | 'pause-all' | null;
 };
 
-export type AddToastProps<T = object> = CreateToasterProps & {
+export type AddToastProps<T = object> = Omit<CreateToasterProps, 'hover'> & {
 	data: T;
 };
 
