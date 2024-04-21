@@ -58,12 +58,22 @@ enhance the experience of building with Svelte and improve the ecosystem for eve
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
+## Sponsors
+
+<p align="center">
+  <a href="https://github.com/sponsors/tglide">
+    <img src='https://github.com/tglide/static/blob/main/sponsors.svg?raw=true' alt="Logos from Sponsors" />
+  </a>
+</p>
+
+## Community
+
 Melt UI is an open-source project built by the community for the community. It wouldn't be possible
 if it wasn't for the work of some amazing people.
 
 [![Contributors](https://contrib.rocks/image?repo=melt-ui/melt-ui)](<[https://github.com/codemaniac-sahil/news-webapp-api](https://github.com/melt-ui/melt-ui)https://github.com/melt-ui/melt-ui/graphs/contributors>)
 
-## Community
+### Discord
 
 Got any questions? Want to talk to the maintainers?
 
