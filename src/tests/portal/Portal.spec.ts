@@ -6,16 +6,17 @@ import PopoverTagsInput from './PopoverTagsInput.svelte';
 import PopoverSelect from './PopoverSelect.svelte';
 import { assertActiveFocusTrap, testKbd as kbd } from '../utils.js';
 import type { PortalConfig } from '$lib/internal/actions/portal.js';
+import type { EscapeBehaviorType } from '$lib/internal/actions/index.js';
 
 function setupPopoverTooltip({
 	portalType,
-	tooltipCloseOnEscape,
+	tooltipEscapeBehavior,
 }: {
 	portalType: PortalConfig;
-	tooltipCloseOnEscape?: boolean;
+	tooltipEscapeBehavior?: EscapeBehaviorType;
 }) {
 	const user = userEvent.setup();
-	const returned = render(PopoverTooltip, { portal: portalType, tooltipCloseOnEscape });
+	const returned = render(PopoverTooltip, { portal: portalType, tooltipEscapeBehavior });
 	const popoverTrigger = returned.getByTestId('popover-trigger');
 	const popoverContent = returned.getByTestId('popover-content');
 	const tooltipTrigger = returned.getByTestId('tooltip-trigger');
@@ -109,7 +110,10 @@ describe.each(portalTestOptions)('Portal Behaviors - $label', ({ portalType }) =
 		});
 
 		it('should not close the popover nor the tooltip when escape is pressed while tooltip is open and tooltip `closeOnEscape` is false', async () => {
-			const { elements, user } = setupPopoverTooltip({ portalType, tooltipCloseOnEscape: false });
+			const { elements, user } = setupPopoverTooltip({
+				portalType,
+				tooltipEscapeBehavior: 'ignore',
+			});
 
 			expect(elements.popoverContent).not.toBeVisible();
 			await user.click(elements.popoverTrigger);

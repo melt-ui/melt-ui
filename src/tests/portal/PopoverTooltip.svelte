@@ -4,7 +4,7 @@
 	import type { PortalConfig } from '$lib/internal/actions/portal.js';
 
 	export let portal: PortalConfig;
-	export let tooltipCloseOnEscape: CreateTooltipProps['closeOnEscape'] = true;
+	export let tooltipEscapeBehavior: CreateTooltipProps['escapeBehavior'] = 'close';
 
 	const {
 		elements: { trigger, content, arrow, close },
@@ -16,7 +16,7 @@
 		openDelay: 0,
 		closeDelay: 0,
 		portal,
-		closeOnEscape: tooltipCloseOnEscape,
+		escapeBehavior: tooltipEscapeBehavior,
 	});
 </script>
 
