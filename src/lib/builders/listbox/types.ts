@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	EscapeBehaviorType,
+	FloatingConfig,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -104,12 +108,15 @@ export type CreateListboxProps<
 	closeOnOutsideClick?: boolean;
 
 	/**
-	 * Whether or not to close the listbox menu when the user presses
-	 * the escape key.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean;
+	escapeBehavior?: EscapeBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which

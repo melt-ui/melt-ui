@@ -1,3 +1,4 @@
+import type { EscapeBehaviorType } from '$lib/internal/actions/index.js';
 import type { IdObj } from '$lib/internal/helpers/id.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
@@ -15,11 +16,15 @@ export type CreateMenubarProps = {
 	loop?: boolean;
 
 	/**
-	 * Whether to close the active menu when the escape key is pressed.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean;
+	escapeBehavior?: EscapeBehaviorType;
 
 	/**
 	 * Whether to prevent scrolling the body when any menu within

@@ -7,7 +7,7 @@ import { builder as dropdownBuilder } from './dropdown-menu.js';
 import type { BuilderData } from './index.js';
 import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu.js';
 
-const OPTION_PROPS = [PROPS.CLOSE_ON_ESCAPE, PROPS.LOOP, PROPS.PREVENT_SCROLL];
+const OPTION_PROPS = [PROPS.ESCAPE_BEHAVIOR, PROPS.LOOP, PROPS.PREVENT_SCROLL];
 const BUILDER_NAME = 'menubar';
 
 const builder = builderSchema(BUILDER_NAME, {
