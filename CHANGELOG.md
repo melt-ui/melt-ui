@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.77.0
+
+### Minor Changes
+
+- Added new `preventTextSelectionOverflow` prop to builders to prevent text selection overflowing the floating element. (closes #1168) ([#1170](https://github.com/melt-ui/melt-ui/pull/1170))
+
+### Patch Changes
+
+- add `as const` return to more element builders (Date Field "segment", Menubar "menubar", Scroll Area) ([#1172](https://github.com/melt-ui/melt-ui/pull/1172))
+
+- chore: internal popover refactors ([#1055](https://github.com/melt-ui/melt-ui/pull/1055))
+
+- slider: add disable swapping option to avoid sorting of values array ([#1124](https://github.com/melt-ui/melt-ui/pull/1124))
+
+- chore: refactor menu internals ([#1056](https://github.com/melt-ui/melt-ui/pull/1056))
+
+- Refactor context menu internals ([#1054](https://github.com/melt-ui/melt-ui/pull/1054))
+
 ## 0.76.3
 
 ### Patch Changes
