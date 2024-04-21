@@ -175,9 +175,9 @@ describe('Dialog', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
-	it('Respects the `closeOnEscape` prop', async () => {
+	it('Respects the `escapeBehavior` prop', async () => {
 		const { user, content } = await open({
-			closeOnEscape: false,
+			escapeBehavior: 'ignore',
 		});
 
 		await user.keyboard(kbd.ESCAPE);
@@ -225,8 +225,8 @@ describe('Dialog', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
-	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
-		const { user, content } = await open({ closeOnEscape: false });
+	it("Doesn't deactivate focus trap on escape provided `escapeBehavior` false", async () => {
+		const { user, content } = await open({ escapeBehavior: 'ignore' });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 		await assertActiveFocusTrap(user, content);

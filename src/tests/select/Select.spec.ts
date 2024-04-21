@@ -170,9 +170,9 @@ describe('Select', () => {
 		await waitFor(() => expect(trigger).toHaveTextContent('Vanilla'), { timeout: 500 });
 	});
 
-	test('Respects the `closeOnEscape` prop', async () => {
+	test('Respects the `escapeBehavior` prop', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(SelectTest, { closeOnEscape: false });
+		const { getByTestId } = render(SelectTest, { escapeBehavior: 'ignore' });
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
 
@@ -238,7 +238,7 @@ describe('Select', () => {
 	});
 
 	test('Applies type="button" to the select trigger', async () => {
-		const { getByTestId } = render(SelectTest, { closeOnEscape: false });
+		const { getByTestId } = render(SelectTest, { escapeBehavior: 'ignore' });
 		const trigger = getByTestId('trigger');
 		expect(trigger).toHaveAttribute('type', 'button');
 	});

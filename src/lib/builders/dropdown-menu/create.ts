@@ -11,7 +11,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	clickOutsideBehavior: 'close',
 	portal: undefined,
 	loop: false,

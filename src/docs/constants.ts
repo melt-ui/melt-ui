@@ -24,6 +24,13 @@ const OUTSIDE_CLICK_BEHAVIOR_BULLETS = (name: string) => [
 	`\`defer-otherwise-ignore\`: Delegates the action to the parent element. If no parent is found, nothing is done.`,
 ];
 
+const ESCAPE_BEHAVIOR_BULLETS = (name: string) => [
+	`\`close\`: Closes the ${name} immediately.`,
+	`\`ignore\`: Prevents the ${name} from closing and also blocks the parent element from closing in response to the Escape key.`,
+	`\`defer-otherwise-close\`: Delegates the action to the parent element. If no parent is found, it closes the element.`,
+	`\`defer-otherwise-ignore\`: Delegates the action to the parent element. If no parent is found, nothing is done.`,
+];
+
 export const DESCRIPTIONS = {
 	FLOATING_CONFIG:
 		'A configuration object which determines how the floating element is positioned relative to the trigger.',
@@ -33,8 +40,10 @@ export const DESCRIPTIONS = {
 	ON_SELECT:
 		'A callback which is called when the item is selected. To prevent the default behavior, call `e.preventDefault()` in the callback.',
 	LOOP: 'Whether or not the focus should loop back to the first item when the last item is reached.',
-	CLOSE_ON_ESCAPE: (name = 'element') =>
-		`Whether or not to close the ${name} when the escape key is pressed.`,
+	ESCAPE_BEHAVIOR: (name = 'element') =>
+		`Defines how the ${name} reacts when the Escape key is pressed. ${createBulletsHTML(
+			ESCAPE_BEHAVIOR_BULLETS(name)
+		)}`,
 	OUTSIDE_CLICK_BEHAVIOR: (name = 'element') =>
 		`Defines how the ${name} reacts when the user clicks outside of it. ${createBulletsHTML(
 			OUTSIDE_CLICK_BEHAVIOR_BULLETS(name)
@@ -96,11 +105,11 @@ export const PROPS = {
 		description: DESCRIPTIONS.PORTAL(args.name ?? 'floating element'),
 		default: args.default ?? 'body',
 	}),
-	CLOSE_ON_ESCAPE: (args: PropArgs = {}): Prop => ({
-		name: 'closeOnEscape',
-		type: 'boolean',
-		description: DESCRIPTIONS.CLOSE_ON_ESCAPE(args.name ?? 'floating element'),
-		default: args.default ?? 'true',
+	ESCAPE_BEHAVIOR: (args: PropArgs = {}): Prop => ({
+		name: 'escapeBehavior',
+		type: '"close" | "ignore" | "defer-otherwise-close" | "defer-otherwise-ignore"',
+		description: DESCRIPTIONS.ESCAPE_BEHAVIOR(args.name ?? 'floating element'),
+		default: args.default ?? "'close'",
 	}),
 	OUTSIDE_CLICK_BEHAVIOR: (args: PropArgs = {}): Prop => ({
 		name: 'clickOutsideBehavior',

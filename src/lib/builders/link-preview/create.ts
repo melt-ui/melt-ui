@@ -43,7 +43,7 @@ const defaults = {
 	clickOutsideBehavior: 'close',
 	forceVisible: false,
 	portal: undefined,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	onOutsideClick: undefined,
 	preventTextSelectionOverflow: true,
 } satisfies CreateLinkPreviewProps;
@@ -74,7 +74,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		clickOutsideBehavior,
 		forceVisible,
 		portal,
-		closeOnEscape,
+		escapeBehavior,
 		onOutsideClick,
 		preventTextSelectionOverflow,
 	} = options;
@@ -177,8 +177,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, activeTrigger, positioning, portal, closeOnEscape],
-				([$isVisible, $activeTrigger, $positioning, $portal, $closeOnEscape]) => {
+				[isVisible, activeTrigger, positioning, portal],
+				([$isVisible, $activeTrigger, $positioning, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
 
@@ -208,7 +208,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 								},
 								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { behaviorType: escapeBehavior },
 								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;

@@ -11,7 +11,7 @@
 
 	export let loop = false;
 	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
-	export let closeOnEscape: CreateDropdownMenuProps['closeOnEscape'] = true;
+	export let escapeBehavior: CreateDropdownMenuProps['escapeBehavior'] = 'close';
 	export let clickOutsideBehavior: CreateDropdownMenuProps['clickOutsideBehavior'] = 'close';
 	export let submenuIds: CreateDropdownMenuProps['ids'] = undefined;
 
@@ -22,7 +22,7 @@
 		removeUndefined({
 			loop,
 			closeFocus,
-			closeOnEscape,
+			escapeBehavior,
 			clickOutsideBehavior,
 			...$$restProps,
 		})

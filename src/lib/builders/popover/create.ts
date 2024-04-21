@@ -21,12 +21,7 @@ import {
 	withGet,
 } from '$lib/internal/helpers/index.js';
 
-import {
-	useEscapeKeydown,
-	usePopper,
-	usePortal,
-	type InteractOutsideEvent,
-} from '$lib/internal/actions/index.js';
+import { usePopper, usePortal, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { writable } from 'svelte/store';
 import type { PopoverEvents } from './events.js';
@@ -40,7 +35,7 @@ const defaults = {
 	arrowSize: 8,
 	defaultOpen: false,
 	disableFocusTrap: false,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	preventScroll: false,
 	onOpenChange: undefined,
 	clickOutsideBehavior: 'close',
@@ -67,7 +62,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		arrowSize,
 		disableFocusTrap,
 		preventScroll,
-		closeOnEscape,
+		escapeBehavior,
 		clickOutsideBehavior,
 		portal,
 		forceVisible,
@@ -106,15 +101,8 @@ export function createPopover(args?: CreatePopoverProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, activeTrigger, positioning, disableFocusTrap, closeOnEscape, portal],
-				([
-					$isVisible,
-					$activeTrigger,
-					$positioning,
-					$disableFocusTrap,
-					$closeOnEscape,
-					$portal,
-				]) => {
+				[isVisible, activeTrigger, positioning, disableFocusTrap, portal],
+				([$isVisible, $activeTrigger, $positioning, $disableFocusTrap, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
 
@@ -131,7 +119,7 @@ export function createPopover(args?: CreatePopoverProps) {
 									onClose: handleClose,
 									clickOutsideBehavior,
 								},
-								escapeKeydown: $closeOnEscape ? { handler: handleClose } : null,
+								escapeKeydown: { behaviorType: escapeBehavior },
 								portal: getPortalDestination(node, $portal),
 								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
@@ -210,20 +198,8 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
 			let unsubDerived = noop;
 			let unsubPortal = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
 
 			unsubDerived = effect([portal], ([$portal]) => {
 				unsubPortal();
@@ -235,7 +211,6 @@ export function createPopover(args?: CreatePopoverProps) {
 
 			return {
 				destroy() {
-					unsubEscapeKeydown();
 					unsubDerived();
 					unsubPortal();
 				},

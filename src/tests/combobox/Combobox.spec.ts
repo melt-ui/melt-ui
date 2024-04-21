@@ -182,9 +182,9 @@ describe('Combobox', () => {
 		expect(menu).not.toBeVisible();
 	});
 
-	test('Respects the `closeOnEscape` prop', async () => {
+	test('Respects the `escapeBehavior` prop', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(ComboboxTest, { closeOnEscape: false });
+		const { getByTestId } = render(ComboboxTest, { escapeBehavior: 'ignore' });
 
 		const input = getByTestId('input');
 		const menu = getByTestId('menu');
@@ -211,7 +211,7 @@ describe('Combobox', () => {
 
 	test('should not prevent focusing on another input on outside interaction of combobox', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(ComboboxTest, { closeOnEscape: false });
+		const { getByTestId } = render(ComboboxTest);
 
 		const input = getByTestId('input');
 		const menu = getByTestId('menu');
@@ -422,10 +422,10 @@ describe('Combobox (forceVisible)', () => {
 		await waitFor(() => expect(getMenu()).toBeNull());
 	});
 
-	test('Respects the `closeOnEscape` prop', async () => {
+	test('Respects the `escapeBehavior` prop', async () => {
 		const user = userEvent.setup();
 		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest, {
-			closeOnEscape: false,
+			escapeBehavior: 'ignore',
 		});
 
 		const input = getByTestId('input');

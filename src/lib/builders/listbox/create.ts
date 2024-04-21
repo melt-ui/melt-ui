@@ -1,4 +1,4 @@
-import { useEscapeKeydown, usePopper } from '$lib/internal/actions/index.js';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addHighlight,
@@ -66,7 +66,7 @@ const defaults = {
 	defaultOpen: false,
 	clickOutsideBehavior: 'close',
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	forceVisible: false,
 	portal: undefined,
 	builder: 'listbox',
@@ -134,7 +134,7 @@ export function createListbox<
 		scrollAlignment,
 		loop,
 		clickOutsideBehavior,
-		closeOnEscape,
+		escapeBehavior,
 		preventScroll,
 		portal,
 		forceVisible,
@@ -433,23 +433,10 @@ export function createListbox<
 				})
 			);
 
-			let unsubEscapeKeydown = noop;
-
-			const escape = useEscapeKeydown(node, {
-				handler: closeMenu,
-				enabled: derived([open, closeOnEscape], ([$open, $closeOnEscape]) => {
-					return $open && $closeOnEscape;
-				}),
-			});
-			if (escape && escape.destroy) {
-				unsubEscapeKeydown = escape.destroy;
-			}
-
 			return {
 				destroy() {
 					activeTrigger.set(null);
 					unsubscribe();
-					unsubEscapeKeydown();
 				},
 			};
 		},
@@ -506,7 +493,7 @@ export function createListbox<
 										},
 									},
 
-									escapeKeydown: null,
+									escapeKeydown: { handler: closeMenu, behaviorType: escapeBehavior },
 									portal: getPortalDestination(node, $portal),
 									preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 								},
