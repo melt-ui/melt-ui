@@ -183,8 +183,8 @@ const input = elementSchema('input', {
 	events: comboboxEvents['input'],
 });
 
-const item = elementSchema('item', {
-	description: 'The menu item element',
+const option = elementSchema('option', {
+	description: 'The individual combobox item',
 	props: [
 		{
 			name: 'value',
@@ -201,25 +201,25 @@ const item = elementSchema('item', {
 			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
-			description: 'Whether or not the `item` is disabled.',
+			description: 'Whether or not the `option` is disabled.',
 		},
 	],
 	dataAttributes: [
 		{
 			name: 'data-disabled',
-			value: ATTRS.DISABLED('`item`'),
+			value: ATTRS.DISABLED('`option`'),
 		},
 		{
 			name: 'data-selected',
-			value: ATTRS.SELECTED('`item`'),
+			value: ATTRS.SELECTED('`option`'),
 		},
 		{
 			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED(),
 		},
 		{
-			name: 'data-melt-combobox-item',
-			value: ATTRS.MELT('item'),
+			name: 'data-melt-combobox-option',
+			value: ATTRS.MELT('option'),
 		},
 	],
 	events: comboboxEvents['item'],
@@ -317,7 +317,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, label, group, groupLabel, arrow, hiddenInput];
+const schemas = [builder, menu, input, option, label, group, groupLabel, arrow, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',
