@@ -62,7 +62,7 @@ Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
 <p align="center">
   <a href="https://github.com/sponsors/tglide">
-    <img src='https://github.com/tglide/static/blob/main/sponsors.svg?raw=true' alt="Logos from Sponsors" />
+    <img src='https://github.com/tglide/sponsors/blob/main/sponsors.svg?raw=true' alt="Logos from Sponsors" />
   </a>
 </p>
 
