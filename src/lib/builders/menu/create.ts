@@ -1,5 +1,5 @@
 import { createSeparator } from '$lib/builders/index.js';
-import { useEscapeKeydown, usePopper, usePortal } from '$lib/internal/actions/index.js';
+import { usePopper, usePortal } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -71,7 +71,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
 	portal: undefined,
 	loop: false,
@@ -90,7 +90,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		preventScroll,
 		arrowSize,
 		positioning,
-		closeOnEscape,
+		escapeBehavior,
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
@@ -182,15 +182,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
-				([
-					$isVisible,
-					$rootActiveTrigger,
-					$positioning,
-					$closeOnOutsideClick,
-					$portal,
-					$closeOnEscape,
-				]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
@@ -218,7 +211,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									onClose: () => rootOpen.set(false),
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { behaviorType: escapeBehavior },
 								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
@@ -354,17 +347,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => rootOpen.set(false),
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
@@ -374,7 +356,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 			return {
 				destroy() {
-					unsubEscapeKeydown();
 					unsubPortal();
 				},
 			};
@@ -1126,14 +1107,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 		};
 
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
 		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
-		unsubs.push(addEventListener(document, 'keydown', keydownListener));
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());
@@ -1189,25 +1163,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		return () => {
 			unsubs.forEach((unsub) => unsub());
 		};
-	});
-
-	effect(rootOpen, ($rootOpen) => {
-		if (!isBrowser) return;
-
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = (e: KeyboardEvent) => {
-			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
-
-		return executeCallbacks(
-			addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'keydown', handleKeyDown, { capture: true })
-		);
 	});
 
 	function handleOpen(triggerEl: HTMLElement) {

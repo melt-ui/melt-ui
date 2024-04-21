@@ -10,7 +10,6 @@ import {
 	isDocument,
 	isElement,
 	isTouch,
-	kbd,
 	makeHullFromElements,
 	noop,
 	omit,
@@ -21,7 +20,12 @@ import {
 	isPointerInGraceArea,
 } from '$lib/internal/helpers/index.js';
 
-import { useFloating, useInteractOutside, usePortal } from '$lib/internal/actions/index.js';
+import {
+	useEscapeKeydown,
+	useFloating,
+	useInteractOutside,
+	usePortal,
+} from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
@@ -40,7 +44,7 @@ const defaults = {
 	closeDelay: 0,
 	forceVisible: false,
 	portal: undefined,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	disableHoverableContent: false,
 	group: undefined,
 } satisfies CreateTooltipProps;
@@ -66,7 +70,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		closeDelay,
 		forceVisible,
 		portal,
-		closeOnEscape,
+		escapeBehavior,
 		disableHoverableContent,
 		group,
 	} = options;
@@ -80,6 +84,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const ids = toWritableStores({ ...generateIds(tooltipIdParts), ...withDefaults.ids });
 
 	let clickedTrigger = false;
+	let isPointerInsideTrigger = false;
+	let isPointerInsideContent = false;
 
 	const getEl = (part: keyof typeof ids) => {
 		if (!isBrowser) return null;
@@ -144,17 +150,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
-			const keydownHandler = (e: KeyboardEvent) => {
-				if (closeOnEscape.get() && e.key === kbd.ESCAPE) {
-					if (openTimeout) {
-						window.clearTimeout(openTimeout);
-						openTimeout = null;
-					}
-
-					open.set(false);
-				}
-			};
-
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', () => {
 					const $closeOnPointerDown = closeOnPointerDown.get();
@@ -167,10 +162,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 					}
 				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
+					isPointerInsideTrigger = true;
 					if (isTouch(e)) return;
 					openTooltip('pointer');
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
+					isPointerInsideTrigger = false;
 					if (isTouch(e)) return;
 					if (openTimeout) {
 						window.clearTimeout(openTimeout);
@@ -181,13 +178,14 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (clickedTrigger) return;
 					openTooltip('focus');
 				}),
-				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
-				addMeltEventListener(node, 'keydown', keydownHandler),
-				addEventListener(document, 'keydown', keydownHandler)
+				addMeltEventListener(node, 'blur', () => closeTooltip(true))
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					isPointerInsideTrigger = false;
+				},
 			};
 		},
 	});
@@ -209,6 +207,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			let unsubFloating = noop;
 			let unsubPortal = noop;
 			let unsubInteractOutside = noop;
+			let unsubEscapeKeydown = noop;
 
 			const unsubDerived = effect(
 				[isVisible, positioning, portal],
@@ -216,18 +215,33 @@ export function createTooltip(props?: CreateTooltipProps) {
 					unsubPortal();
 					unsubFloating();
 					unsubInteractOutside();
+					unsubEscapeKeydown();
 					const triggerEl = getEl('trigger');
 					if (!$isVisible || !triggerEl) return;
 					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
 						unsubInteractOutside();
+						unsubEscapeKeydown();
 						const portalDest = getPortalDestination(node, $portal);
 						if (portalDest !== null) {
 							unsubPortal = usePortal(node, portalDest).destroy;
 						}
 						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
 						unsubInteractOutside = useInteractOutside(node).destroy;
+
+						const onEscapeKeyDown = () => {
+							if (openTimeout) {
+								window.clearTimeout(openTimeout);
+								openTimeout = null;
+							}
+							open.set(false);
+						};
+
+						unsubEscapeKeydown = useEscapeKeydown(node, {
+							behaviorType: escapeBehavior,
+							handler: onEscapeKeyDown,
+						}).destroy;
 					});
 				}
 			);
@@ -247,13 +261,20 @@ export function createTooltip(props?: CreateTooltipProps) {
 			}
 
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'pointerenter', () => openTooltip('pointer')),
+				addMeltEventListener(node, 'pointerenter', () => {
+					isPointerInsideContent = true;
+					openTooltip('pointer');
+				}),
+				addMeltEventListener(node, 'pointerleave', () => {
+					isPointerInsideContent = false;
+				}),
 				addMeltEventListener(node, 'pointerdown', () => openTooltip('pointer')),
 				addEventListener(window, 'scroll', handleScroll, { capture: true })
 			);
 
 			return {
 				destroy() {
+					isPointerInsideContent = false;
 					unsubEvents();
 					unsubPortal();
 					unsubFloating();
@@ -312,7 +333,15 @@ export function createTooltip(props?: CreateTooltipProps) {
 					? [triggerEl]
 					: [triggerEl, contentEl];
 				const polygon = makeHullFromElements(polygonElements);
-				isMouseInTooltipArea = isPointerInGraceArea(e, polygon);
+
+				/**
+				 * This takes into account the potential discrepancy between the
+				 * pointer's coordinates (`clientX` and `clientY`) and the
+				 * exact boundaries of the trigger element's rectangle due to
+				 * sub-pixel rendering and rounding errors.
+				 */
+				isMouseInTooltipArea =
+					isPointerInsideTrigger || isPointerInsideContent || isPointerInGraceArea(e, polygon);
 
 				if ($openReason !== 'pointer') return;
 

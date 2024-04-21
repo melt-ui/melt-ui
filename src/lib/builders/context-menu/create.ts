@@ -46,7 +46,7 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
 	portal: undefined,
 	loop: false,
@@ -72,7 +72,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
-		closeOnEscape,
+		escapeBehavior,
 		loop,
 		preventTextSelectionOverflow,
 	} = rootOptions;
@@ -149,15 +149,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
-				([
-					$isVisible,
-					$rootActiveTrigger,
-					$positioning,
-					$closeOnOutsideClick,
-					$portal,
-					$closeOnEscape,
-				]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
@@ -177,7 +170,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 									shouldCloseOnInteractOutside: handleClickOutside,
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { behaviorType: escapeBehavior },
 								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;

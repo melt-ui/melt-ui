@@ -18,7 +18,7 @@
 	export let defaultValue: string | undefined = undefined;
 	export let ids: CreateComboboxProps<unknown>['ids'] = undefined;
 	export let onOutsideClick: CreateComboboxProps<unknown>['onOutsideClick'] = undefined;
-	export let closeOnEscape: CreateComboboxProps<unknown>['closeOnEscape'] = undefined;
+	export let escapeBehavior: CreateComboboxProps<unknown>['escapeBehavior'] = undefined;
 
 	const {
 		elements: { menu, input, option, label },
@@ -34,7 +34,7 @@
 				: undefined,
 			ids,
 			onOutsideClick,
-			closeOnEscape,
+			escapeBehavior,
 			forceVisible: true,
 		})
 	);

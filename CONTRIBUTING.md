@@ -127,7 +127,7 @@ submitting the pull request.
 
 ## Contribute from a browser IDE
 
-Make changes and contribute to OctoBot in a single click with an **already setup and ready to code
+Make changes and contribute to Melt UI in a single click with an **already setup and ready to code
 developer environment** using Gitpod !
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/?autostart=true#https://github.com/melt-ui/melt-ui/tree/develop)

@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	EscapeBehaviorType,
+	FloatingConfig,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
@@ -47,11 +51,15 @@ export type CreatePopoverProps = {
 	disableFocusTrap?: boolean;
 
 	/**
-	 * Whether or not to close the popover when the escape key is pressed.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean;
+	escapeBehavior?: EscapeBehaviorType;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.

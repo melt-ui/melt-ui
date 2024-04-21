@@ -39,7 +39,7 @@ const { name } = createElHelpers<DialogParts>('dialog');
 
 const defaults = {
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
 	role: 'dialog',
 	defaultOpen: false,
@@ -60,7 +60,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const {
 		preventScroll,
-		closeOnEscape,
+		escapeBehavior,
 		closeOnOutsideClick,
 		role,
 		portal,
@@ -135,26 +135,6 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
-			return {
-				destroy() {
-					unsubEscapeKeydown();
-				},
-			};
-		},
 	});
 
 	const content = makeElement(name('content'), {
@@ -174,13 +154,13 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 
 		action: (node: HTMLElement) => {
-			let unsubModal = noop;
 			let unsubEscape = noop;
+			let unsubModal = noop;
 			let unsubFocusTrap = noop;
 
 			const unsubDerived = effect(
-				[isVisible, closeOnOutsideClick, closeOnEscape],
-				([$isVisible, $closeOnOutsideClick, $closeOnEscape]) => {
+				[isVisible, closeOnOutsideClick],
+				([$isVisible, $closeOnOutsideClick]) => {
 					unsubModal();
 					unsubEscape();
 					unsubFocusTrap();
@@ -198,7 +178,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 					unsubEscape = useEscapeKeydown(node, {
 						handler: handleClose,
-						enabled: $closeOnEscape,
+						behaviorType: escapeBehavior,
 					}).destroy;
 
 					unsubFocusTrap = useFocusTrap(node, { fallbackFocus: node }).destroy;
