@@ -366,13 +366,13 @@ export function createListbox<
 						(e.key === kbd.ENTER && !e.isComposing) ||
 						(e.key === kbd.SPACE && isHTMLButtonElement(node))
 					) {
-						e.preventDefault();
 						const $highlightedItem = highlightedItem.get();
 						if ($highlightedItem) {
+							e.preventDefault();
 							selectItem($highlightedItem);
-						}
-						if (!multiple.get()) {
-							closeMenu();
+							if (!multiple.get()) {
+								closeMenu();
+							}
 						}
 					}
 					// Pressing Alt + Up should close the menu.
