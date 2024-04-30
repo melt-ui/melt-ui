@@ -6,9 +6,13 @@ export function getPageItems({
 	siblingCount = 1,
 }: GetPageItemsArgs): Array<PageItem> {
 	const pageItems: Array<PageItem> = [];
-	const pagesToShow = new Set([1, totalPages]);
+	const pagesToShow = new Set([1]);
 	const firstItemWithSiblings = 3 + siblingCount;
 	const lastItemWithSiblings = totalPages - 2 - siblingCount;
+
+	if(totalPages > 1) {
+		pagesToShow.add(totalPages);
+	}
 
 	if (firstItemWithSiblings > lastItemWithSiblings) {
 		for (let p = 2; p <= totalPages - 1; p++) {
