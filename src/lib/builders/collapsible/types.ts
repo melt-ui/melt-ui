@@ -1,7 +1,7 @@
-import type { createCollapsible } from './create.js';
+import type { CollapsibleIdParts, createCollapsible } from './create.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 export type { CollapsibleComponentEvents } from './events.js';
 
 export type CreateCollapsibleProps = {
@@ -41,6 +41,11 @@ export type CreateCollapsibleProps = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onOpenChange?: ChangeFn<boolean>;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: Partial<IdObj<CollapsibleIdParts>>;
 };
 
 export type Collapsible = BuilderReturn<typeof createCollapsible>;
