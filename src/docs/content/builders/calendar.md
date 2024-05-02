@@ -479,7 +479,7 @@ are available for use.
 		/* ... */
 	} = createCalendar({
 		locale: 'fa',
-		new CalendarDate(new PersianCalendar(), 1403, 2, 12)  
+		defaultValue: new CalendarDate(new PersianCalendar(), 1403, 2, 12)  
 	})
 </script>
 ```
