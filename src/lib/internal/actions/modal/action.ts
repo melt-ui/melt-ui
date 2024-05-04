@@ -1,4 +1,4 @@
-import { isElement, last, noop } from '$lib/internal/helpers/index.js';
+import { isElement, last, noop, sleep } from '$lib/internal/helpers/index.js';
 import type { InteractOutsideEvent } from '../interact-outside/types.js';
 import { useInteractOutside } from '../index.js';
 import type { ModalConfig } from './types.js';
@@ -7,7 +7,11 @@ import type { Action } from 'svelte/action';
 const visibleModals: Element[] = [];
 export const useModal = ((node, config) => {
 	let unsubInteractOutside = noop;
-	visibleModals.push(node);
+
+	// Filthy hack to allow closing elements before the new one appears
+	sleep(100).then(() => {
+		visibleModals.push(node);
+	})
 
 	function removeNodeFromVisibleModals() {
 		const index = visibleModals.indexOf(node);
