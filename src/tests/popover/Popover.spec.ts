@@ -152,4 +152,13 @@ describe('Popover (Default)', () => {
 		expect(content).toBeVisible();
 		await assertActiveFocusTrap(user, content);
 	});
+
+	it('closes popover when opening a sibling popover', async () => {
+		const { getByTestId, user, content } = await open();
+		await user.click(getByTestId('click-interceptor'));
+		expect(content).toBeVisible();
+		await user.click(getByTestId('trigger-2'));
+		await waitFor(() => expect(content).not.toBeVisible());
+		expect(getByTestId('content-2')).toBeVisible();
+	});
 });
