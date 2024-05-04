@@ -1,5 +1,21 @@
 # @melt-ui/svelte
 
+## 0.78.0
+
+### Minor Changes
+
+- Fixed escape keydown behavior by using stacks to correctly handle nested floating elements ([#1142](https://github.com/melt-ui/melt-ui/pull/1142))
+
+- Changed `closeOnEscape` builder prop to `escapeBehavior` to provide even further fine-grained control over escape behavior in builders (closes #1142) ([#1142](https://github.com/melt-ui/melt-ui/pull/1142))
+
+### Patch Changes
+
+- fix: Modal elements allow others to close again (closes #1177) ([`7ebc8202`](https://github.com/melt-ui/melt-ui/commit/7ebc820268fa6e80657a930ffb0c5141b620388c))
+
+- Fixed bug where tooltip would close while the pointer is still inside trigger (closes #886) ([#1158](https://github.com/melt-ui/melt-ui/pull/1158))
+
+- fix: pagination pages when count = 0 ([`883b1598`](https://github.com/melt-ui/melt-ui/commit/883b159899919eb0838130947c4c6a03a42d8a9b))
+
 ## 0.77.0
 
 ### Minor Changes
