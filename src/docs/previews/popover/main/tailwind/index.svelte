@@ -3,5 +3,3 @@
 </script>
 
 <Popover />
-<Popover />
-<Popover />
