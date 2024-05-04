@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.79.0
+
+### Minor Changes
+
+- Add support for sibling portals (closes #1077, #1153) ([#1080](https://github.com/melt-ui/melt-ui/pull/1080))
+
+### Patch Changes
+
+- Fixed a bug where a floating element would not close on outside interaction that opens a new floating element. (closes #1167) ([#1080](https://github.com/melt-ui/melt-ui/pull/1080))
+
 ## 0.78.0
 
 ### Minor Changes
