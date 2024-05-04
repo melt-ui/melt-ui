@@ -20,7 +20,6 @@ import {
 	toWritableStores,
 	portalAttr,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import { withGet, type WithGet } from '$lib/internal/helpers/withGet.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { writable, type Readable } from 'svelte/store';
@@ -44,8 +43,9 @@ const defaults = {
 	closeOnOutsideClick: true,
 	forceVisible: false,
 	portal: 'body',
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies CreateLinkPreviewProps;
 
 export const linkPreviewIdParts = ['trigger', 'content'] as const;
@@ -74,13 +74,13 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		closeOnOutsideClick,
 		forceVisible,
 		portal,
-		closeOnEscape,
+		escapeBehavior,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(linkPreviewIdParts), ...withDefaults.ids });
 	let timeout: number | null = null;
-	let originalBodyUserSelect: string;
 
 	const handleOpen = withGet.derived(openDelay, ($openDelay) => {
 		return () => {
@@ -116,15 +116,16 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		stores: [open, ids.trigger, ids.content],
 		returned: ([$open, $triggerId, $contentId]) => {
 			return {
-				role: 'button' as const,
-				'aria-haspopup': 'dialog' as const,
+				role: 'button',
+				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': $contentId,
 				id: $triggerId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['trigger']> => {
+			activeTrigger.set(node);
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
@@ -142,7 +143,10 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					activeTrigger.set(null);
+				},
 			};
 		},
 	});
@@ -150,21 +154,16 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	const content = makeElement(name('content'), {
-		stores: [isVisible, portal, ids.content],
-		returned: ([$isVisible, $portal, $contentId]) => {
+		stores: [isVisible, open, activeTrigger, portal, ids.content],
+		returned: ([$isVisible, $open, $activeTrigger, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
-				style: styleToString({
-					'pointer-events': $isVisible ? undefined : 'none',
-					opacity: $isVisible ? 1 : 0,
-					userSelect: 'text',
-					WebkitUserSelect: 'text',
-				}),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 				id: $contentId,
-				'data-state': $isVisible ? 'open' : 'closed',
+				'data-state': $open && $activeTrigger ? 'open' : 'closed',
 				'data-portal': portalAttr($portal),
-			};
+			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {
 			let unsub = noop;
@@ -178,15 +177,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
-				([
-					$isVisible,
-					$activeTrigger,
-					$positioning,
-					$closeOnOutsideClick,
-					$portal,
-					$closeOnEscape,
-				]) => {
+				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $activeTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
 
@@ -213,11 +205,11 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 											return false;
 										return true;
 									},
-									open: $isVisible,
 								},
 								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { behaviorType: escapeBehavior },
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
@@ -263,42 +255,15 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
-	});
-
-	effect([containSelection], ([$containSelection]) => {
-		if (!isBrowser || !$containSelection) return;
-		const body = document.body;
-		const contentElement = document.getElementById(ids.content.get());
-		if (!contentElement) return;
-		// prefix for safari
-		originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
-		const originalContentUserSelect =
-			contentElement.style.userSelect || contentElement.style.webkitUserSelect;
-		body.style.userSelect = 'none';
-		body.style.webkitUserSelect = 'none';
-
-		contentElement.style.userSelect = 'text';
-		contentElement.style.webkitUserSelect = 'text';
-		return () => {
-			body.style.userSelect = originalBodyUserSelect;
-			body.style.webkitUserSelect = originalBodyUserSelect;
-			contentElement.style.userSelect = originalContentUserSelect;
-			contentElement.style.webkitUserSelect = originalContentUserSelect;
-		};
-	});
-
-	safeOnMount(() => {
-		const triggerEl = document.getElementById(ids.trigger.get());
-		if (!triggerEl) return;
-		activeTrigger.set(triggerEl);
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	effect([open], ([$open]) => {

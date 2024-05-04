@@ -21,8 +21,8 @@
 </script>
 
 <button use:melt={$trigger} class="trigger"> View Notifications </button>
-<div use:melt={$portalled}>
-	{#if $open}
+{#if $open}
+	<div use:melt={$portalled}>
 		<div
 			use:melt={$overlay}
 			class="overlay"
@@ -57,8 +57,8 @@
 				</div>
 			</section>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.trigger {

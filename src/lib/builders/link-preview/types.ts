@@ -1,4 +1,5 @@
 import type {
+	EscapeBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
 	PortalConfig,
@@ -70,12 +71,22 @@ export type CreateLinkPreviewProps = {
 	onOutsideClick?: (event: InteractOutsideEvent) => void;
 
 	/**
-	 * Whether or not to close the linkpreview when the escape key is pressed
-	 * while it is open.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean;
+	escapeBehavior?: EscapeBehaviorType;
+
+	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
 
 	/**
 	 * The size of the optional arrow element in pixels

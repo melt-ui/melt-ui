@@ -1,4 +1,5 @@
 import type {
+	EscapeBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
 	PortalConfig,
@@ -51,11 +52,15 @@ export type CreatePopoverProps = {
 	disableFocusTrap?: boolean;
 
 	/**
-	 * Whether or not to close the popover when the escape key is pressed.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean;
+	escapeBehavior?: EscapeBehaviorType;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.
@@ -71,6 +76,13 @@ export type CreatePopoverProps = {
 	 * the dialog will not close when the user clicks outside of it.
 	 */
 	onOutsideClick?: (event: InteractOutsideEvent) => void;
+
+	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
 
 	/**
 	 * Whether or not to prevent scrolling when the popover is open.

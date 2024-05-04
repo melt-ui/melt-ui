@@ -39,7 +39,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 			return {
 				role: 'toolbar',
 				'data-orientation': $orientation,
-			};
+			} as const;
 		},
 	});
 

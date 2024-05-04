@@ -1,61 +1,30 @@
-// Modified from Grail UI v0.9.6 (2023-06-10)
-// Source: https://github.com/grail-ui/grail-ui
-// https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/focusTrap/focusTrap.types.ts
-
-import type { ActivateOptions, DeactivateOptions, Options as FocusTrapOptions } from 'focus-trap';
-import type { Action } from 'svelte/action';
-import type { Readable } from 'svelte/store';
+import type {
+	Options as FocusTrapOptions,
+	KeyboardEventToBoolean,
+	MouseEventToBoolean,
+} from 'focus-trap';
 
 export type FocusTrapConfig = FocusTrapOptions & {
 	/**
-	 * Immediately activate the trap
+	 * Default: `false`. If `false`, when the trap is deactivated,
+	 * focus will *not* return to the element that had focus before activation.
 	 */
-	immediate?: boolean;
-};
-
-export type FocusTrapReturn = {
+	returnFocusOnDeactivate?: boolean;
 	/**
-	 * Indicates if the focus trap is currently active.
+	 * Default: `false`. If `false` or returns `false`, the `Escape` key will not trigger
+	 * deactivation of the focus trap. This can be useful if you want
+	 * to force the user to make a decision instead of allowing an easy
+	 * way out. Note that if a function is given, it's only called if the ESC key
+	 * was pressed.
 	 */
-	hasFocus: Readable<boolean>;
-
+	escapeDeactivates?: boolean | KeyboardEventToBoolean;
 	/**
-	 * Indicates if the focus trap is currently paused.
+	 * If set and is or returns `true`, a click outside the focus trap will not
+	 * be prevented, even when `clickOutsideDeactivates` is `false`. When
+	 * `clickOutsideDeactivates` is `true`, this option is **ignored** (i.e.
+	 * if it's a function, it will not be called). Use this option to control
+	 * if (and even which) clicks are allowed outside the trap in conjunction
+	 * with `clickOutsideDeactivates: false`. Default: `true`.
 	 */
-	isPaused: Readable<boolean>;
-
-	/**
-	 * Activate the focus trap.
-	 *
-	 * @see https://github.com/focus-trap/focus-trap#trapactivateactivateoptions
-	 */
-	activate: (opts?: ActivateOptions) => void;
-
-	/**
-	 * Deactivate the focus trap.
-	 *
-	 * @see https://github.com/focus-trap/focus-trap#trapdeactivatedeactivateoptions
-	 */
-	deactivate: (opts?: DeactivateOptions) => void;
-
-	/**
-	 * Pause the focus trap.
-	 *
-	 * @see https://github.com/focus-trap/focus-trap#trappause
-	 */
-	pause: () => void;
-
-	/**
-	 * Unpauses the focus trap.
-	 *
-	 * @see https://github.com/focus-trap/focus-trap#trapunpause
-	 */
-	unpause: () => void;
-
-	/**
-	 * Action to attach to the element that you want to act as a focus trap.
-	 */
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	useFocusTrap: Action<HTMLElement, any>;
+	allowOutsideClick?: boolean | MouseEventToBoolean;
 };

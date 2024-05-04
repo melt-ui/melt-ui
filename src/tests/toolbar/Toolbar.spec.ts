@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -113,8 +113,8 @@ describe('Toolbar', () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(ToolbarTest, props);
 
-		const nextKey = `{${props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN}}`;
-		const prevKey = `{${props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP}}`;
+		const nextKey = props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN;
+		const prevKey = props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP;
 
 		const reversedItems = [...items].reverse();
 
@@ -180,8 +180,8 @@ describe('Toolbar', () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(ToolbarTest, { loop: true, ...props });
 
-			const nextKey = `{${props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN}}`;
-			const prevKey = `{${props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP}}`;
+			const nextKey = props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN;
+			const prevKey = props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP;
 
 			await user.tab();
 			const firstItem = getByTestId(items[0]);
@@ -243,8 +243,8 @@ describe('Toolbar', () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(ToolbarTest, { loop: false, ...props });
 
-			const nextKey = `{${props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN}}`;
-			const prevKey = `{${props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP}}`;
+			const nextKey = props.orientation === horizontal ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN;
+			const prevKey = props.orientation === horizontal ? kbd.ARROW_LEFT : kbd.ARROW_UP;
 
 			const firstItem = getByTestId(items[0]);
 			const lastItem = getByTestId(items[items.length - 1]);
@@ -312,9 +312,9 @@ describe('Toolbar', () => {
 		const firstItem = getByTestId(items[0]);
 		const lastItem = getByTestId(items[items.length - 1]);
 		expect(firstItem).toHaveFocus();
-		await user.keyboard(`{${kbd.END}}`);
+		await user.keyboard(kbd.END);
 		expect(lastItem).toHaveFocus();
-		await user.keyboard(`{${kbd.HOME}}`);
+		await user.keyboard(kbd.HOME);
 		expect(firstItem).toHaveFocus();
 	});
 
@@ -326,7 +326,7 @@ describe('Toolbar', () => {
 			const curr = getByTestId(item);
 			curr.focus();
 			expect(curr).toHaveFocus();
-			await user.keyboard(`{${kbd.SPACE}}`);
+			await user.keyboard(kbd.SPACE);
 			expect(curr).toHaveAttribute('aria-pressed', 'true');
 			expect(curr).toHaveAttribute('data-state', 'on');
 		}
@@ -335,7 +335,7 @@ describe('Toolbar', () => {
 			const curr = getByTestId(item);
 			curr.focus();
 			expect(curr).toHaveFocus();
-			await user.keyboard(`{${kbd.SPACE}}`);
+			await user.keyboard(kbd.SPACE);
 			expect(curr).toHaveAttribute('aria-checked', 'true');
 			expect(curr).toHaveAttribute('data-state', 'on');
 		}

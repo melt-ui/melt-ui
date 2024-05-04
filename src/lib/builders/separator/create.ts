@@ -21,7 +21,7 @@ export const createSeparator = (props?: CreateSeparatorProps) => {
 				'aria-orientation': ariaOrientation,
 				'aria-hidden': $decorative,
 				'data-orientation': $orientation,
-			};
+			} as const;
 		},
 	});
 

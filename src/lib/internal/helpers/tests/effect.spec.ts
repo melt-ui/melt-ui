@@ -51,4 +51,21 @@ describe('effect', () => {
 		unsub();
 		expect(calls).toBe(1);
 	});
+
+	it('Respect `skipFirstRun` prop', async () => {
+		const w = writable(1);
+		let calls = 0;
+		const unsub = effect(
+			w,
+			() => {
+				calls++;
+			},
+			{ skipFirstRun: true }
+		);
+		expect(calls).toBe(0);
+
+		w.set(2);
+		expect(calls).toBe(1);
+		unsub();
+	});
 });

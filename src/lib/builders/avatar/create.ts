@@ -54,7 +54,7 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 			return {
 				src: $src,
 				style: imageStyles,
-			};
+			} as const;
 		},
 	});
 
@@ -69,7 +69,7 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 						  })
 						: undefined,
 				hidden: $loadingStatus === 'loaded' ? true : undefined,
-			};
+			} as const;
 		},
 	});
 

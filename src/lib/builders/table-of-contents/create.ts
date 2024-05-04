@@ -355,7 +355,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 				return {
 					'data-id': id,
 					'data-active': active ? '' : undefined,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLAnchorElement) => {

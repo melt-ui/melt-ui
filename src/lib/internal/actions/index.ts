@@ -1,4 +1,3 @@
-export * from './click-outside/index.js';
 export * from './escape-keydown/index.js';
 export * from './floating/index.js';
 export * from './focus-trap/index.js';

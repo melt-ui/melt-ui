@@ -96,7 +96,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 					'data-id': id,
 					tabindex,
 					'aria-expanded': hasChildren ? $expanded.includes(id) : undefined,
-				};
+				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TreeEvents['item']> => {
@@ -252,14 +252,15 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	const group = makeElement(name('group'), {
 		stores: [expanded],
 		returned: ([$expanded]) => {
-			return (opts: { id: string }) => ({
-				role: 'group',
-				'data-group-id': opts.id,
-				hidden: !forceVisible && !$expanded.includes(opts.id) ? true : undefined,
-				style: styleToString({
-					display: !forceVisible && !$expanded.includes(opts.id) ? 'none' : undefined,
-				}),
-			});
+			return (opts: { id: string }) =>
+				({
+					role: 'group',
+					'data-group-id': opts.id,
+					hidden: !forceVisible && !$expanded.includes(opts.id) ? true : undefined,
+					style: styleToString({
+						display: !forceVisible && !$expanded.includes(opts.id) ? 'none' : undefined,
+					}),
+				} as const);
 		},
 	});
 

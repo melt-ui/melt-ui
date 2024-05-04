@@ -1,4 +1,4 @@
-import { useEscapeKeydown, usePopper } from '$lib/internal/actions/index.js';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addHighlight,
@@ -38,7 +38,6 @@ import {
 	toggle,
 	withGet,
 } from '$lib/internal/helpers/index.js';
-import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { tick } from 'svelte';
@@ -67,7 +66,7 @@ const defaults = {
 	defaultOpen: false,
 	closeOnOutsideClick: true,
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	forceVisible: false,
 	portal: 'body',
 	builder: 'listbox',
@@ -77,6 +76,7 @@ const defaults = {
 	typeahead: true,
 	highlightOnHover: true,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
@@ -134,7 +134,7 @@ export function createListbox<
 		scrollAlignment,
 		loop,
 		closeOnOutsideClick,
-		closeOnEscape,
+		escapeBehavior,
 		preventScroll,
 		portal,
 		forceVisible,
@@ -147,6 +147,7 @@ export function createListbox<
 		name: nameProp,
 		highlightOnHover,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = options;
 	const { name, selector } = createElHelpers<ListboxParts>(withDefaults.builder);
 
@@ -207,12 +208,6 @@ export function createListbox<
 	 */
 	async function openMenu() {
 		open.set(true);
-
-		const triggerEl = document.getElementById(ids.trigger.get());
-		if (!triggerEl) return;
-
-		// The active trigger is used to anchor the menu to the input element.
-		if (triggerEl !== activeTrigger.get()) activeTrigger.set(triggerEl);
 
 		// Wait a tick for the menu to open then highlight the selected item.
 		await tick();
@@ -290,6 +285,7 @@ export function createListbox<
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['trigger']> => {
+			activeTrigger.set(node);
 			const isInput = isHTMLInputElement(node);
 
 			const unsubscribe = executeCallbacks(
@@ -366,7 +362,10 @@ export function createListbox<
 						return;
 					}
 					// Pressing enter with a highlighted item should select it.
-					if (e.key === kbd.ENTER || (e.key === kbd.SPACE && isHTMLButtonElement(node))) {
+					if (
+						(e.key === kbd.ENTER && !e.isComposing) ||
+						(e.key === kbd.SPACE && isHTMLButtonElement(node))
+					) {
 						e.preventDefault();
 						const $highlightedItem = highlightedItem.get();
 						if ($highlightedItem) {
@@ -434,22 +433,10 @@ export function createListbox<
 				})
 			);
 
-			let unsubEscapeKeydown = noop;
-
-			const escape = useEscapeKeydown(node, {
-				handler: closeMenu,
-				enabled: derived([open, closeOnEscape], ([$open, $closeOnEscape]) => {
-					return $open && $closeOnEscape;
-				}),
-			});
-			if (escape && escape.destroy) {
-				unsubEscapeKeydown = escape.destroy;
-			}
-
 			return {
 				destroy() {
+					activeTrigger.set(null);
 					unsubscribe();
-					unsubEscapeKeydown();
 				},
 			};
 		},
@@ -465,7 +452,7 @@ export function createListbox<
 				hidden: $isVisible ? undefined : true,
 				id: $menuId,
 				role: 'listbox',
-				style: styleToString({ display: $isVisible ? undefined : 'none' }),
+				style: $isVisible ? undefined : styleToString({ display: 'none' }),
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['menu']> => {
@@ -492,7 +479,6 @@ export function createListbox<
 									modal: {
 										closeOnInteractOutside: $closeOnOutsideClick,
 										onClose: closeMenu,
-										open: $isVisible,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return false;
@@ -507,8 +493,9 @@ export function createListbox<
 										},
 									},
 
-									escapeKeydown: null,
+									escapeKeydown: { handler: closeMenu, behaviorType: escapeBehavior },
 									portal: getPortalDestination(node, $portal),
+									preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 								},
 							}).destroy;
 						});
@@ -536,7 +523,7 @@ export function createListbox<
 			return {
 				id: $labelId,
 				for: $triggerId,
-			};
+			} as const;
 		},
 		action: labelAction,
 	});
@@ -594,18 +581,20 @@ export function createListbox<
 
 	const group = makeElement(name('group'), {
 		returned: () => {
-			return (groupId: string) => ({
-				role: 'group',
-				'aria-labelledby': groupId,
-			});
+			return (groupId: string) =>
+				({
+					role: 'group',
+					'aria-labelledby': groupId,
+				} as const);
 		},
 	});
 
 	const groupLabel = makeElement(name('group-label'), {
 		returned: () => {
-			return (groupId: string) => ({
-				id: groupId,
-			});
+			return (groupId: string) =>
+				({
+					id: groupId,
+				} as const);
 		},
 	});
 
@@ -621,33 +610,20 @@ export function createListbox<
 
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
-		returned: ($arrowSize) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		}),
+		returned: ($arrowSize) =>
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	/* ------------------- */
 	/* LIFECYCLE & EFFECTS */
 	/* ------------------- */
-
-	safeOnMount(() => {
-		if (!isBrowser) return;
-		const menuEl = document.getElementById(ids.menu.get());
-
-		const triggerEl = document.getElementById(ids.trigger.get());
-		if (triggerEl) {
-			activeTrigger.set(triggerEl);
-		}
-
-		if (!menuEl) return;
-		const selectedEl = menuEl.querySelector('[data-selected]');
-		if (!isHTMLElement(selectedEl)) return;
-	});
 
 	/**
 	 * Handles moving the `data-highlighted` attribute between items when
@@ -666,18 +642,9 @@ export function createListbox<
 		});
 	});
 
-	effect([open], ([$open]) => {
-		if (!isBrowser) return;
-
-		let unsubScroll = noop;
-
-		if (preventScroll.get() && $open) {
-			unsubScroll = removeScroll();
-		}
-
-		return () => {
-			unsubScroll();
-		};
+	effect([open, preventScroll], ([$open, $preventScroll]) => {
+		if (!isBrowser || !$open || !$preventScroll) return;
+		return removeScroll();
 	});
 
 	return {

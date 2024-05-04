@@ -2,7 +2,6 @@ import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
-	addEventListener,
 	addHighlight,
 	addMeltEventListener,
 	makeElement,
@@ -49,7 +48,7 @@ const { name } = createElHelpers<_MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	preventScroll: false,
 } satisfies CreateMenubarProps;
 
@@ -60,7 +59,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
 
 	const options = toWritableStores(omit(withDefaults, 'ids'));
-	const { loop, closeOnEscape, preventScroll } = options;
+	const { loop, escapeBehavior, preventScroll } = options;
 	const activeMenu = withGet(writable<string>(''));
 
 	const nextFocusable = withGet(writable<HTMLElement | null>(null));
@@ -79,7 +78,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				'data-melt-menubar': '',
 				'data-orientation': 'horizontal',
 				id: $menubarId,
-			};
+			} as const;
 		},
 		action: (node: HTMLElement) => {
 			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
@@ -99,7 +98,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		arrowSize: 8,
 		dir: 'ltr',
 		loop: false,
-		closeOnEscape: true,
+		escapeBehavior: 'close',
 		closeOnOutsideClick: true,
 		portal: 'body',
 		forceVisible: false,
@@ -109,6 +108,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		disableFocusFirstItem: false,
 		closeOnItemClick: true,
 		onOutsideClick: undefined,
+		preventTextSelectionOverflow: true,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -118,7 +118,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// options
 		const options = toWritableStores(withDefaults);
-		const { positioning, portal, forceVisible, closeOnOutsideClick, onOutsideClick } = options;
+		const {
+			positioning,
+			portal,
+			forceVisible,
+			closeOnOutsideClick,
+			onOutsideClick,
+			preventTextSelectionOverflow,
+		} = options;
 
 		const m = createMenuBuilder({
 			rootOptions: { ...options, preventScroll },
@@ -137,17 +144,31 @@ export function createMenubar(props?: CreateMenubarProps) {
 		});
 
 		const menu = makeElement(name('menu'), {
-			stores: [isVisible, portal, m.ids.menu, m.ids.trigger, ids.menubar],
-			returned: ([$isVisible, $portal, $menuId, $triggerId, $menubarId]) => {
+			stores: [
+				isVisible,
+				rootOpen,
+				rootActiveTrigger,
+				portal,
+				m.ids.menu,
+				m.ids.trigger,
+				ids.menubar,
+			],
+			returned: ([
+				$isVisible,
+				$rootOpen,
+				$rootActiveTrigger,
+				$portal,
+				$menuId,
+				$triggerId,
+				$menubarId,
+			]) => {
 				return {
 					role: 'menu',
 					hidden: $isVisible ? undefined : true,
-					style: styleToString({
-						display: $isVisible ? undefined : 'none',
-					}),
+					style: $isVisible ? undefined : styleToString({ display: 'none' }),
 					id: $menuId,
 					'aria-labelledby': $triggerId,
-					'data-state': $isVisible ? 'open' : 'closed',
+					'data-state': $rootOpen && $rootActiveTrigger ? 'open' : 'closed',
 					'data-melt-scope': $menubarId,
 					'data-portal': portalAttr($portal),
 					tabindex: -1,
@@ -184,8 +205,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 										onClose: () => {
 											activeMenu.set('');
 										},
-										open: $rootOpen,
 									},
+									escapeKeydown: {
+										behaviorType: escapeBehavior,
+										handler: () => activeMenu.set(''),
+									},
+									preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 								},
 							}).destroy;
 						});
@@ -562,12 +587,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 				if (MENUBAR_NAV_KEYS.includes(e.key)) {
 					handleMenubarNavigation(e);
-				}
-			}),
-			addEventListener(document, 'keydown', (e) => {
-				if (closeOnEscape.get() && e.key === kbd.ESCAPE) {
-					window.clearTimeout(closeTimer.get());
-					activeMenu.set('');
 				}
 			})
 		);

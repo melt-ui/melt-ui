@@ -1,6 +1,7 @@
 import type { Action } from 'svelte/action';
 import { derived, type Readable, type Stores, type StoresValues } from 'svelte/store';
 import { isBrowser, isHTMLElement, noop } from './index.js';
+import { removeUndefined } from './object.js';
 import { lightable } from './store/lightable.js';
 
 export function getElementByMeltId(id: string) {
@@ -87,21 +88,25 @@ export function makeElement<
 				const result = returned(values);
 				if (isFunctionWithParams(result)) {
 					const fn = (...args: Parameters<typeof result>) => {
-						return hiddenAction({
-							...result(...args),
-							[`data-melt-${name}`]: '',
-							action: action ?? noop,
-						});
+						return hiddenAction(
+							removeUndefined({
+								...result(...args),
+								[`data-melt-${name}`]: '',
+								action: action ?? noop,
+							})
+						);
 					};
 					fn.action = action ?? noop;
 					return fn;
 				}
 
-				return hiddenAction({
-					...result,
-					[`data-melt-${name}`]: '',
-					action: action ?? noop,
-				});
+				return hiddenAction(
+					removeUndefined({
+						...result,
+						[`data-melt-${name}`]: '',
+						action: action ?? noop,
+					})
+				);
 			});
 		} else {
 			// If stores are not provided, return a lightable store, for consistency
@@ -110,11 +115,13 @@ export function makeElement<
 
 			if (isFunctionWithParams(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
-					return hiddenAction({
-						...result(...args),
-						[`data-melt-${name}`]: '',
-						action: action ?? noop,
-					});
+					return hiddenAction(
+						removeUndefined({
+							...result(...args),
+							[`data-melt-${name}`]: '',
+							action: action ?? noop,
+						})
+					);
 				};
 				resultFn.action = action ?? noop;
 
@@ -122,11 +129,13 @@ export function makeElement<
 			}
 
 			return lightable(
-				hiddenAction({
-					...result,
-					[`data-melt-${name}`]: '',
-					action: action ?? noop,
-				})
+				hiddenAction(
+					removeUndefined({
+						...result,
+						[`data-melt-${name}`]: '',
+						action: action ?? noop,
+					})
+				)
 			);
 		}
 	})() as MeltElementStore<S, A, R, Name>;

@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -34,7 +34,7 @@ describe('Tabs', () => {
 
 		for (const tab of tabs) {
 			expect(getByTestId(`${tab}-trigger`)).toHaveFocus();
-			await userEvent.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await userEvent.keyboard(kbd.ARROW_RIGHT);
 		}
 
 		const lastTrigger = getByTestId(`${tabs[tabs.length - 1]}-trigger`);
@@ -42,7 +42,7 @@ describe('Tabs', () => {
 
 		for (const tab of [...tabs].reverse()) {
 			expect(getByTestId(`${tab}-trigger`)).toHaveFocus();
-			await userEvent.keyboard(`{${kbd.ARROW_LEFT}}`);
+			await userEvent.keyboard(kbd.ARROW_LEFT);
 		}
 	});
 });

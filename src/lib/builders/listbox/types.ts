@@ -1,4 +1,5 @@
 import type {
+	EscapeBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
 	PortalConfig,
@@ -34,7 +35,7 @@ export type CreateListboxProps<
 
 	/**
 	 * The size of the arrow in pixels.
-	 * @default 8
+	 * @default undefined
 	 */
 	arrowSize?: number;
 
@@ -108,12 +109,15 @@ export type CreateListboxProps<
 	closeOnOutsideClick?: boolean;
 
 	/**
-	 * Whether or not to close the listbox menu when the user presses
-	 * the escape key.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean;
+	escapeBehavior?: EscapeBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -130,6 +134,13 @@ export type CreateListboxProps<
 	 * @default true
 	 */
 	preventScroll?: boolean;
+
+	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
 
 	/**
 	 * If not undefined, the listbox menu will be rendered within the provided element or selector.

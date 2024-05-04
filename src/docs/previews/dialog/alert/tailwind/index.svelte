@@ -29,12 +29,12 @@
 	Delete Item
 </button>
 
-<div class="force-dark" use:melt={$portalled}>
-	{#if $open}
+{#if $open}
+	<div class="force-dark" use:melt={$portalled}>
 		<div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
 		<div
-			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
-            max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
+			class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw]
+            max-w-[450px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white
             p-6 shadow-lg"
 			transition:flyAndScale={{
 				duration: 150,
@@ -78,5 +78,5 @@
 				<X class="size-4" />
 			</button>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}

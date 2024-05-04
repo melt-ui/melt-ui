@@ -28,8 +28,8 @@
 >
 	View Notifications
 </button>
-<div class="force-dark" use:melt={$portalled}>
-	{#if $open}
+{#if $open}
+	<div class="force-dark" use:melt={$portalled}>
 		<div
 			use:melt={$overlay}
 			class="fixed inset-0 z-50 bg-black/50"
@@ -88,5 +88,5 @@
 				</div>
 			</section>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}

@@ -100,7 +100,6 @@ describe('Tooltip', () => {
 		await waitFor(() => expect(content).toBeVisible());
 
 		await user.click(content);
-		await sleep(100);
 		expect(content).toBeVisible();
 	});
 
