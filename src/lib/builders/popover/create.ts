@@ -222,21 +222,21 @@ export function createPopover(args?: CreatePopoverProps) {
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) =>
-		({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$arrowSize}px)`,
-				height: `var(--arrow-size, ${$arrowSize}px)`,
-			}),
-		} as const),
+			({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
+				}),
+			} as const),
 	});
 
 	const close = makeElement(name('close'), {
 		returned: () =>
-		({
-			type: 'button',
-		} as const),
+			({
+				type: 'button',
+			} as const),
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {

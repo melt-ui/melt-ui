@@ -473,13 +473,13 @@ are available for use.
 ```svelte showLineNumbers {3,8,9}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
-	import { PersianCalendar} from '@internationalized/date';
+	import { PersianCalendar } from '@internationalized/date'
 
 	const {
 		/* ... */
 	} = createCalendar({
 		locale: 'fa',
-		defaultValue: new CalendarDate(new PersianCalendar(), 1403, 2, 12)  
+		defaultValue: new CalendarDate(new PersianCalendar(), 1403, 2, 12)
 	})
 </script>
 ```
