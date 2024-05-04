@@ -11,7 +11,7 @@ description: A control that allows the user to toggle between checked and not ch
 
 ## Anatomy
 
-- **Root**: The root container for the accordion
+- **Root**: The root container for the switch
 - **Input**: The native HTML input that is visually hidden
 
 ## Usage
