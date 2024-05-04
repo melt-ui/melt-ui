@@ -19,6 +19,7 @@ import {
 	portalAttr,
 	generateIds,
 	withGet,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper, usePortal, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
@@ -137,7 +138,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
-	function toggleOpen() {
+	async function toggleOpen() {
 		open.update((prev) => !prev);
 	}
 	function shouldCloseOnInteractOutside(e: InteractOutsideEvent) {
@@ -221,21 +222,21 @@ export function createPopover(args?: CreatePopoverProps) {
 	const arrow = makeElement(name('arrow'), {
 		stores: arrowSize,
 		returned: ($arrowSize) =>
-			({
-				'data-arrow': true,
-				style: styleToString({
-					position: 'absolute',
-					width: `var(--arrow-size, ${$arrowSize}px)`,
-					height: `var(--arrow-size, ${$arrowSize}px)`,
-				}),
-			} as const),
+		({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
+			}),
+		} as const),
 	});
 
 	const close = makeElement(name('close'), {
 		returned: () =>
-			({
-				type: 'button',
-			} as const),
+		({
+			type: 'button',
+		} as const),
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {

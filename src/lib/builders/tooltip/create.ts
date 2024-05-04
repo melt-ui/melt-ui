@@ -20,7 +20,12 @@ import {
 	isPointerInGraceArea,
 } from '$lib/internal/helpers/index.js';
 
-import { useEscapeKeydown, useFloating, usePortal } from '$lib/internal/actions/index.js';
+import {
+	useEscapeKeydown,
+	useFloating,
+	useInteractOutside,
+	usePortal,
+} from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable, type Writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id.js';
@@ -201,6 +206,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			let unsubFloating = noop;
 			let unsubPortal = noop;
+			let unsubInteractOutside = noop;
 			let unsubEscapeKeydown = noop;
 
 			const unsubDerived = effect(
@@ -208,17 +214,21 @@ export function createTooltip(props?: CreateTooltipProps) {
 				([$isVisible, $positioning, $portal]) => {
 					unsubPortal();
 					unsubFloating();
+					unsubInteractOutside();
 					unsubEscapeKeydown();
 					const triggerEl = getEl('trigger');
 					if (!$isVisible || !triggerEl) return;
-
 					tick().then(() => {
 						unsubPortal();
 						unsubFloating();
+						unsubInteractOutside();
 						unsubEscapeKeydown();
 						const portalDest = getPortalDestination(node, $portal);
-						if (portalDest) unsubPortal = usePortal(node, portalDest).destroy;
+						if (portalDest !== null) {
+							unsubPortal = usePortal(node, portalDest).destroy;
+						}
 						unsubFloating = useFloating(triggerEl, node, $positioning).destroy;
+						unsubInteractOutside = useInteractOutside(node).destroy;
 
 						const onEscapeKeyDown = () => {
 							if (openTimeout) {
@@ -269,6 +279,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					unsubPortal();
 					unsubFloating();
 					unsubDerived();
+					unsubInteractOutside();
 				},
 			};
 		},

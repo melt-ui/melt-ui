@@ -97,6 +97,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		unsubPointerUp();
 		unsubResetInterceptedEvents();
 		resetInterceptedEvents();
+		let wasResponsibleLayer = false;
 		const options = { behaviorType: 'close', ...config } satisfies InteractOutsideConfig;
 
 		const behaviorType = isReadable(options.behaviorType)
@@ -119,7 +120,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
-			if (!isResponsibleLayer(node) || isAnyEventIntercepted()) return;
+			if (!wasResponsibleLayer || isAnyEventIntercepted()) return;
 			if (options.onInteractOutside && isValidEvent(e, node)) options.onInteractOutsideStart?.(e);
 			const target = e.target;
 			if (isElement(target) && isOrContainsTarget(node, target)) {
@@ -134,7 +135,7 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
 		const onPointerUpDebounced = debounce((e: InteractOutsideEvent) => {
-			if (isResponsibleLayer(node) && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
+			if (wasResponsibleLayer && !isAnyEventIntercepted() && shouldTriggerInteractOutside(e)) {
 				options.onInteractOutside?.(e);
 			}
 			resetPointerState();
@@ -149,11 +150,15 @@ export const useInteractOutside = ((node, config = {}) => {
 		const resetInterceptedEventsDebounced = debounce(resetInterceptedEvents, 20);
 		unsubResetInterceptedEvents = resetInterceptedEventsDebounced.destroy;
 
+		const markTopLayerInPointerDown = () => {
+			wasResponsibleLayer = isResponsibleLayer(node);
+		};
+
 		unsubEvents = executeCallbacks(
 			/** Capture Events For Interaction Start */
-			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerdown'),
-			setupCapturePhaseHandlerAndMarkAsIntercepted('mousedown'),
-			setupCapturePhaseHandlerAndMarkAsIntercepted('touchstart'),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('pointerdown', markTopLayerInPointerDown),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('mousedown', markTopLayerInPointerDown),
+			setupCapturePhaseHandlerAndMarkAsIntercepted('touchstart', markTopLayerInPointerDown),
 			/**
 			 * Intercepted events are reset only at the end of an interaction, allowing
 			 * interception at the start while still capturing the entire interaction.
