@@ -464,6 +464,26 @@ constructor.
 	<svelte:component this={previews.locale} />
 </Preview>
 
+The Calendar builder also supports the use of specific calendar systems, such as the Persian
+calendar. You can achieve this by providing the defaultValue or defaultPlaceholder props with the
+desired calendar system. Various calendar systems supported by
+[@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/Calendar.html#implementations)
+are available for use.
+
+```svelte showLineNumbers {3,8,9}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+	import { PersianCalendar } from '@internationalized/date'
+
+	const {
+		/* ... */
+	} = createCalendar({
+		locale: 'fa',
+		defaultValue: new CalendarDate(new PersianCalendar(), 1403, 2, 12)
+	})
+</script>
+```
+
 ### Prevent Deselection
 
 By default, users can deselect a selected date without selecting another, by selecting the date

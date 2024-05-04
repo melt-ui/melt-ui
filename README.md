@@ -7,7 +7,7 @@
 
 [![](https://img.shields.io/github/actions/workflow/status/melt-ui/melt-ui/ci.yaml?style=flat)](https://github.com/melt-ui/melt-ui/actions/workflows/ci.yaml)
 ![](https://img.shields.io/github/license/melt-ui/melt-ui?style=flat)
-[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://discord.gg/2QDjZkYunf)
+[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://melt-ui.com/discord)
 
 ## About
 
@@ -58,19 +58,29 @@ enhance the experience of building with Svelte and improve the ecosystem for eve
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
+## Sponsors
+
+<p align="center">
+  <a href="https://github.com/sponsors/tglide">
+    <img src='https://github.com/tglide/sponsors/blob/main/sponsors.svg?raw=true' alt="Logos from Sponsors" />
+  </a>
+</p>
+
+## Community
+
 Melt UI is an open-source project built by the community for the community. It wouldn't be possible
 if it wasn't for the work of some amazing people.
 
 [![Contributors](https://contrib.rocks/image?repo=melt-ui/melt-ui)](<[https://github.com/codemaniac-sahil/news-webapp-api](https://github.com/melt-ui/melt-ui)https://github.com/melt-ui/melt-ui/graphs/contributors>)
 
-## Community
+### Discord
 
 Got any questions? Want to talk to the maintainers?
 
-Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and
+Our [Discord community](https://melt-ui.com/discord) is a great place to get in touch with us, and
 we'd love to have you there.
 
-<a href="https://discord.gg/2QDjZkYunf" alt="Melt UI Discord community">
+<a href="https://melt-ui.com/discord" alt="Melt UI Discord community">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/2QDjZkYunf">
   <img alt="Melt UI Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">

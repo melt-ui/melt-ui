@@ -109,21 +109,19 @@ describe('Popover (Default)', () => {
 		expect(content.id).toBe(ids.content);
 	});
 
-	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
-		const { getByTestId, user, content } = await open({ closeOnEscape: false });
+	it("Doesn't deactivate focus trap on escape provided `escapeBehavior` false", async () => {
+		const { getByTestId, user, content } = await open({ escapeBehavior: 'ignore' });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 		expect(getByTestId('content')).toHaveFocus();
-		await user.tab({ shift: true });
-		expect(getByTestId('trigger')).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
 		const { getByTestId, user, content } = await open({ closeOnOutsideClick: false });
 		await user.click(getByTestId('outside'));
 		expect(content).toBeVisible();
-		await user.tab();
-		expect(getByTestId('closeFocus')).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it('Returns focus to trigger when manually setting `open` state to false', async () => {
@@ -153,5 +151,14 @@ describe('Popover (Default)', () => {
 		await user.click(getByTestId('click-interceptor'));
 		expect(content).toBeVisible();
 		await assertActiveFocusTrap(user, content);
+	});
+
+	it('closes popover when opening a sibling popover', async () => {
+		const { getByTestId, user, content } = await open();
+		await user.click(getByTestId('click-interceptor'));
+		expect(content).toBeVisible();
+		await user.click(getByTestId('trigger-2'));
+		await waitFor(() => expect(content).not.toBeVisible());
+		expect(getByTestId('content-2')).toBeVisible();
 	});
 });

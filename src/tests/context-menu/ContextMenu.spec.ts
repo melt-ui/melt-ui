@@ -158,9 +158,9 @@ describe('Context Menu', () => {
 		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
 	});
 
-	test('respects `closeOnEscape` prop', async () => {
+	test('respects `escapeBehavior` prop', async () => {
 		const { user, getByTestId } = await open({
-			closeOnEscape: false,
+			escapeBehavior: 'ignore',
 		});
 		await user.keyboard(kbd.ESCAPE);
 		expect(getByTestId('menu')).toBeVisible();

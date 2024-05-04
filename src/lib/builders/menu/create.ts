@@ -1,5 +1,5 @@
 import { createSeparator } from '$lib/builders/index.js';
-import { useEscapeKeydown, usePopper, usePortal } from '$lib/internal/actions/index.js';
+import { usePopper, usePortal } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -32,6 +32,8 @@ import {
 	styleToString,
 	toWritableStores,
 	portalAttr,
+	type Polygon,
+	isPointerInGraceArea,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -69,7 +71,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
-	closeOnEscape: true,
+	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
 	portal: undefined,
 	loop: false,
@@ -78,6 +80,7 @@ const defaults = {
 	typeahead: true,
 	closeOnItemClick: true,
 	onOutsideClick: undefined,
+	preventTextSelectionOverflow: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -87,7 +90,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		preventScroll,
 		arrowSize,
 		positioning,
-		closeOnEscape,
+		escapeBehavior,
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
@@ -97,6 +100,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		disableFocusFirstItem,
 		closeOnItemClick,
 		onOutsideClick,
+		preventTextSelectionOverflow,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -178,15 +182,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
-				([
-					$isVisible,
-					$rootActiveTrigger,
-					$positioning,
-					$closeOnOutsideClick,
-					$portal,
-					$closeOnEscape,
-				]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
@@ -214,7 +211,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									onClose: () => rootOpen.set(false),
 								},
 								portal: getPortalDestination(node, $portal),
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								escapeKeydown: { behaviorType: escapeBehavior },
+								preventTextSelectionOverflow: { enabled: preventTextSelectionOverflow },
 							},
 						}).destroy;
 					});
@@ -281,11 +279,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
+			rootActiveTrigger.set(node);
 			applyAttrsIfDisabled(node);
-			rootActiveTrigger.update((p) => {
-				if (p) return p;
-				return node;
-			});
 
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -317,7 +312,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					rootActiveTrigger.set(null);
+				},
 			};
 		},
 	});
@@ -349,17 +347,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubEscapeKeydown = noop;
-
-			if (closeOnEscape.get()) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => rootOpen.set(false),
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if ($portal === null) return noop;
 				const portalDestination = getPortalDestination(node, $portal);
@@ -369,7 +356,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 			return {
 				destroy() {
-					unsubEscapeKeydown();
 					unsubPortal();
 				},
 			};
@@ -739,17 +725,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
-		safeOnMount(() => {
-			/**
-			 * Set active trigger on mount to handle controlled/forceVisible
-			 * state.
-			 */
-			const subTrigger = document.getElementById(subIds.trigger.get());
-			if (subTrigger) {
-				subActiveTrigger.set(subTrigger);
-			}
-		});
-
 		const subIsVisible = derivedVisible({
 			open: subOpen,
 			forceVisible,
@@ -795,6 +770,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									modal: null,
 									focusTrap: null,
 									escapeKeydown: null,
+									preventTextSelectionOverflow: null,
 								},
 							}).destroy;
 						});
@@ -831,12 +807,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (isCloseKey) {
 							const $subActiveTrigger = subActiveTrigger.get();
 							e.preventDefault();
-							subOpen.update(() => {
-								if ($subActiveTrigger) {
-									handleRovingFocus($subActiveTrigger);
-								}
-								return false;
-							});
+							$subActiveTrigger && handleRovingFocus($subActiveTrigger);
+							subOpen.set(false);
 							return;
 						}
 
@@ -908,10 +880,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
-				subActiveTrigger.update((p) => {
-					if (p) return p;
-					return node;
-				});
+				subActiveTrigger.set(node);
 
 				const unsubTimer = () => {
 					clearTimerStore(subOpenTimer);
@@ -928,16 +897,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 						handleRovingFocus(triggerEl);
-						if (!subOpen.get()) {
-							subOpen.update((prev) => {
-								const isAlreadyOpen = prev;
-								if (!isAlreadyOpen) {
-									subActiveTrigger.set(triggerEl);
-									return !prev;
-								}
-								return prev;
-							});
-						}
+						subOpen.set(true);
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
 						const $typed = typed.get();
@@ -979,10 +939,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (!subOpen.get() && !openTimer && !isElementDisabled(triggerEl)) {
 							subOpenTimer.set(
 								window.setTimeout(() => {
-									subOpen.update(() => {
-										subActiveTrigger.set(triggerEl);
-										return true;
-									});
+									subOpen.set(true);
 									clearTimerStore(subOpenTimer);
 								}, 100)
 							);
@@ -1054,6 +1011,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 				return {
 					destroy() {
+						subActiveTrigger.set(null);
 						unsubTimer();
 						unsubEvents();
 					},
@@ -1135,16 +1093,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	};
 
 	safeOnMount(() => {
-		/**
-		 * We need to set the active trigger on mount to cover the
-		 * case where the user sets the `open` store to `true` without
-		 * clicking on the trigger.
-		 */
-		const triggerEl = document.getElementById(rootIds.trigger.get());
-		if (isHTMLElement(triggerEl) && rootOpen.get()) {
-			rootActiveTrigger.set(triggerEl);
-		}
-
 		const unsubs: Array<() => void> = [];
 
 		const handlePointer = () => isUsingKeyboard.set(false);
@@ -1159,14 +1107,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 		};
 
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
 		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
-		unsubs.push(addEventListener(document, 'keydown', keydownListener));
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());
@@ -1224,32 +1165,12 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		};
 	});
 
-	effect(rootOpen, ($rootOpen) => {
-		if (!isBrowser) return;
-
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = (e: KeyboardEvent) => {
-			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen && closeOnEscape.get()) {
-				rootOpen.set(false);
-				return;
-			}
-		};
-
-		return executeCallbacks(
-			addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true }),
-			addEventListener(document, 'keydown', handleKeyDown, { capture: true })
-		);
-	});
-
 	function handleOpen(triggerEl: HTMLElement) {
 		rootOpen.update((prev) => {
 			const isOpen = !prev;
 			if (isOpen) {
 				nextFocusable.set(getNextFocusable(triggerEl));
 				prevFocusable.set(getPreviousFocusable(triggerEl));
-				rootActiveTrigger.set(triggerEl);
 			}
 
 			return isOpen;
@@ -1562,38 +1483,8 @@ export function handleMenuNavigation(e: KeyboardEvent, loop?: boolean) {
 	handleRovingFocus(candidateNodes[nextIndex]);
 }
 
-export type Point = { x: number; y: number };
-type Polygon = Point[];
 type Side = 'left' | 'right';
 type GraceIntent = { area: Polygon; side: Side };
-
-function isPointerInGraceArea(e: PointerEvent, area?: Polygon) {
-	if (!area) return false;
-	const cursorPos = { x: e.clientX, y: e.clientY };
-	return isPointInPolygon(cursorPos, area);
-}
-
-/**
- * Determine if a point is inside of a polygon.
- *
- * @see https://github.com/substack/point-in-polygon
- */
-function isPointInPolygon(point: Point, polygon: Polygon) {
-	const { x, y } = point;
-	let inside = false;
-	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-		const xi = polygon[i].x;
-		const yi = polygon[i].y;
-		const xj = polygon[j].x;
-		const yj = polygon[j].y;
-
-		// prettier-ignore
-		const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-		if (intersect) inside = !inside;
-	}
-
-	return inside;
-}
 
 function isFocusWithinSubmenu(submenuId: string) {
 	const activeEl = document.activeElement;

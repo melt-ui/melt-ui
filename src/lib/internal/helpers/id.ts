@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid/non-secure';
+import type { Expand } from '../types.js';
 
 /**
  * A function that generates a random id

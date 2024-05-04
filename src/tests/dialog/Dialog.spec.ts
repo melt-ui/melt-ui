@@ -175,9 +175,9 @@ describe('Dialog', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
-	it('Respects the `closeOnEscape` prop', async () => {
+	it('Respects the `escapeBehavior` prop', async () => {
 		const { user, content } = await open({
-			closeOnEscape: false,
+			escapeBehavior: 'ignore',
 		});
 
 		await user.keyboard(kbd.ESCAPE);
@@ -225,24 +225,18 @@ describe('Dialog', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
-	it("Doesn't deactivate focus trap on escape provided `closeOnEscape` false", async () => {
-		const { user, content } = await open({ closeOnEscape: false });
+	it("Doesn't deactivate focus trap on escape provided `escapeBehavior` false", async () => {
+		const { user, content } = await open({ escapeBehavior: 'ignore' });
 		await user.keyboard(kbd.ESCAPE);
 		expect(content).toBeVisible();
 		await assertActiveFocusTrap(user, content);
 	});
 
 	it("Doesn't deactivate focus trap on outside click provided `closeOnOutsideClick` false", async () => {
-		const { getByTestId, user, overlay, content } = await open({
-			closeOnOutsideClick: false,
-		});
-		const closer = getByTestId('floating-closer');
-
+		const { user, overlay, content } = await open({ closeOnOutsideClick: false });
 		await user.click(overlay);
 		expect(content).toBeVisible();
-		expect(content).toHaveFocus();
-		await user.tab({ shift: true });
-		expect(closer).not.toHaveFocus();
+		await assertActiveFocusTrap(user, content);
 	});
 
 	it('Returns focus to trigger when manually setting `open` state to false', async () => {

@@ -154,7 +154,7 @@ describe('Combobox', () => {
 		expect(getByTestId('menu')).toBeVisible();
 	});
 
-	test.skip('Closes on outside click by default', async () => {
+	test('Closes on outside click by default', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(ComboboxTest);
 		const input = getByTestId('input');
@@ -182,9 +182,9 @@ describe('Combobox', () => {
 		expect(menu).not.toBeVisible();
 	});
 
-	test('Respects the `closeOnEscape` prop', async () => {
+	test('Respects the `escapeBehavior` prop', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(ComboboxTest, { closeOnEscape: false });
+		const { getByTestId } = render(ComboboxTest, { escapeBehavior: 'ignore' });
 
 		const input = getByTestId('input');
 		const menu = getByTestId('menu');
@@ -207,6 +207,22 @@ describe('Combobox', () => {
 		expect(menu).not.toBeVisible();
 		await user.click(toggleBtn);
 		expect(menu).toBeVisible();
+	});
+
+	test('should not prevent focusing on another input on outside interaction of combobox', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(ComboboxTest);
+
+		const input = getByTestId('input');
+		const menu = getByTestId('menu');
+		const otherInput = getByTestId('other-input');
+
+		await user.click(input);
+		expect(menu).toBeVisible();
+
+		await user.click(otherInput);
+		expect(otherInput).toHaveFocus();
+		await waitFor(() => expect(menu).not.toBeVisible());
 	});
 
 	test.todo('Selects multiple items when `multiple` is true');
@@ -406,10 +422,10 @@ describe('Combobox (forceVisible)', () => {
 		await waitFor(() => expect(getMenu()).toBeNull());
 	});
 
-	test('Respects the `closeOnEscape` prop', async () => {
+	test('Respects the `escapeBehavior` prop', async () => {
 		const user = userEvent.setup();
 		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest, {
-			closeOnEscape: false,
+			escapeBehavior: 'ignore',
 		});
 
 		const input = getByTestId('input');

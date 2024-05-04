@@ -39,6 +39,12 @@ const OPTION_PROPS = [
 		default: "'ltr'",
 		description: 'The direction of the slider.',
 	},
+	{
+		name: 'autoSort',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether to automatically sort the values array when using multiple thumbs.',
+	},
 	PROPS.DISABLED,
 ];
 const BUILDER_NAME = 'slider';

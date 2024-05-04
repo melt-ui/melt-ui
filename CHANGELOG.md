@@ -1,5 +1,71 @@
 # @melt-ui/svelte
 
+## 0.79.0
+
+### Minor Changes
+
+- Add support for sibling portals (closes #1077, #1153) ([#1080](https://github.com/melt-ui/melt-ui/pull/1080))
+
+### Patch Changes
+
+- Fixed a bug where a floating element would not close on outside interaction that opens a new floating element. (closes #1167) ([#1080](https://github.com/melt-ui/melt-ui/pull/1080))
+
+## 0.78.0
+
+### Minor Changes
+
+- Fixed escape keydown behavior by using stacks to correctly handle nested floating elements ([#1142](https://github.com/melt-ui/melt-ui/pull/1142))
+
+- Changed `closeOnEscape` builder prop to `escapeBehavior` to provide even further fine-grained control over escape behavior in builders (closes #1142) ([#1142](https://github.com/melt-ui/melt-ui/pull/1142))
+
+### Patch Changes
+
+- fix: Modal elements allow others to close again (closes #1177) ([`7ebc8202`](https://github.com/melt-ui/melt-ui/commit/7ebc820268fa6e80657a930ffb0c5141b620388c))
+
+- Fixed bug where tooltip would close while the pointer is still inside trigger (closes #886) ([#1158](https://github.com/melt-ui/melt-ui/pull/1158))
+
+- fix: pagination pages when count = 0 ([`883b1598`](https://github.com/melt-ui/melt-ui/commit/883b159899919eb0838130947c4c6a03a42d8a9b))
+
+## 0.77.0
+
+### Minor Changes
+
+- Added new `preventTextSelectionOverflow` prop to builders to prevent text selection overflowing the floating element. (closes #1168) ([#1170](https://github.com/melt-ui/melt-ui/pull/1170))
+
+### Patch Changes
+
+- add `as const` return to more element builders (Date Field "segment", Menubar "menubar", Scroll Area) ([#1172](https://github.com/melt-ui/melt-ui/pull/1172))
+
+- chore: internal popover refactors ([#1055](https://github.com/melt-ui/melt-ui/pull/1055))
+
+- slider: add disable swapping option to avoid sorting of values array ([#1124](https://github.com/melt-ui/melt-ui/pull/1124))
+
+- chore: refactor menu internals ([#1056](https://github.com/melt-ui/melt-ui/pull/1056))
+
+- Refactor context menu internals ([#1054](https://github.com/melt-ui/melt-ui/pull/1054))
+
+## 0.76.3
+
+### Patch Changes
+
+- fix(link preview): Fixed bug where content shows up at top left of the page after remounting trigger (fixes [#1060](https://github.com/melt-ui/melt-ui/issues/1060)) ([#1053](https://github.com/melt-ui/melt-ui/pull/1053))
+
+- Fixed bug where focus trap would deactivate on an intercepted outside interaction (closes #1134) ([#1135](https://github.com/melt-ui/melt-ui/pull/1135))
+
+- Fixed bug where focus trap would deactivate on escape that was intercepted (closes #1132) ([#1133](https://github.com/melt-ui/melt-ui/pull/1133))
+
+- Enhanced type accuracy by implementing as const for builder props, ensuring more precise type inference. ([#1015](https://github.com/melt-ui/melt-ui/pull/1015))
+
+- fix data-state consistency to be based on `$open` and avoid overriding floating-ui styles #1041 ([#1042](https://github.com/melt-ui/melt-ui/pull/1042))
+
+- Fix link preview: reset activeTrigger on trigger unmount ([#1129](https://github.com/melt-ui/melt-ui/pull/1129))
+
+- Fixed a bug where manually closing a dialog or popover would not restore focus to the trigger (closes #1109) ([#1110](https://github.com/melt-ui/melt-ui/pull/1110))
+
+- Refactor focus trap internals ([#1136](https://github.com/melt-ui/melt-ui/pull/1136))
+
+- Fixed bug where outside interactions could not be intercepted (closes #917) ([#1114](https://github.com/melt-ui/melt-ui/pull/1114))
+
 ## 0.76.2
 
 ### Patch Changes

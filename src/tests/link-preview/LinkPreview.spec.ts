@@ -45,9 +45,9 @@ describe('LinkPreview (Default)', () => {
 		await user.keyboard(kbd.ESCAPE);
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
-	test('Respects the `closeOnEscape` prop', async () => {
+	test('Respects the `escapeBehavior` prop', async () => {
 		const { getByTestId, trigger, user } = setup({
-			closeOnEscape: false,
+			escapeBehavior: 'ignore',
 		});
 		const content = getByTestId('content');
 

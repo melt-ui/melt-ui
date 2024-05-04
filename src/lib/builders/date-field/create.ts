@@ -449,7 +449,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					'data-invalid': $isInvalid ? '' : undefined,
 					'data-disabled': $disabled ? '' : undefined,
 					'data-segment': `${part}`,
-				};
+				} as const;
 				if (part === 'literal') {
 					return defaultAttrs;
 				}

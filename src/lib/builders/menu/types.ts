@@ -1,4 +1,8 @@
-import type { FloatingConfig, InteractOutsideEvent } from '$lib/internal/actions/index.js';
+import type {
+	EscapeBehaviorType,
+	FloatingConfig,
+	InteractOutsideEvent,
+} from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
@@ -34,11 +38,15 @@ export type _CreateMenuProps = {
 	preventScroll?: boolean;
 
 	/**
-	 * Whether or not to close the menu when the escape key is pressed.
+	 * Escape behavior type.
+	 * `close`: Closes the element immediately.
+	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
+	 * `defer-otherwise-ignore`: Delegates the action to the parent element. If no parent is found, nothing is done.
+	 * `ignore`: Prevents the element from closing and also blocks the parent element from closing in response to the Escape key.
 	 *
-	 * @default true
+	 * @defaultValue `close`
 	 */
-	closeOnEscape?: boolean;
+	escapeBehavior?: EscapeBehaviorType;
 
 	/**
 	 * Whether or not to close the menu when an internal item is clicked.
@@ -68,6 +76,13 @@ export type _CreateMenuProps = {
 	 * the dialog will not close when the user clicks outside of it.
 	 */
 	onOutsideClick?: (event: InteractOutsideEvent) => void;
+
+	/**
+	 * Whether should prevent text selection overflowing the element when the element is the top layer.
+	 *
+	 * @defaultValue `true`
+	 */
+	preventTextSelectionOverflow?: boolean;
 
 	/**
 	 * Whether or not to loop the menu navigation.
@@ -182,8 +197,9 @@ export type _MenuBuilderOptions = {
 		preventScroll: WithGet<Writable<boolean | undefined>>;
 		loop: WithGet<Writable<boolean | undefined>>;
 		dir: WithGet<Writable<TextDirection>>;
-		closeOnEscape: WithGet<Writable<boolean>>;
+		escapeBehavior: WithGet<Writable<EscapeBehaviorType>>;
 		closeOnOutsideClick: WithGet<Writable<boolean>>;
+		preventTextSelectionOverflow: WithGet<Writable<boolean>>;
 		portal: WithGet<Writable<string | HTMLElement | undefined | null>>;
 		forceVisible: WithGet<Writable<boolean>>;
 		typeahead: WithGet<Writable<boolean>>;

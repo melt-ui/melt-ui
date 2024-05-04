@@ -27,10 +27,10 @@
 				<table class="w-full min-w-[540px] text-left sm:min-w-full">
 					<tbody class="divide-y divide-neutral-700">
 						<tr class="w-1/4 text-neutral-300">
-							<td class="w-[25%] whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
+							<td class="w-1/4 whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
 								{tableHeading}
 							</td>
-							<td class="w-[75%] whitespace-nowrap py-2 text-sm font-medium">Description</td>
+							<td class="w-3/4 whitespace-nowrap py-2 text-sm font-medium">Description</td>
 						</tr>
 						{#each data as returnedProp}
 							<tr>

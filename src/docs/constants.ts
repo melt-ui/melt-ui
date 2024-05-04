@@ -13,6 +13,17 @@ export const SEE = {
 	},
 };
 
+const createBulletsHTML = (bullets: string[]) => {
+	return bullets.map((bullet) => `<li>${bullet}</li>`).join('');
+};
+
+const ESCAPE_BEHAVIOR_BULLETS = (name: string) => [
+	`\`close\`: Closes the ${name} immediately.`,
+	`\`ignore\`: Prevents the ${name} from closing and also blocks the parent element from closing in response to the Escape key.`,
+	`\`defer-otherwise-close\`: Delegates the action to the parent element. If no parent is found, it closes the element.`,
+	`\`defer-otherwise-ignore\`: Delegates the action to the parent element. If no parent is found, nothing is done.`,
+];
+
 export const DESCRIPTIONS = {
 	FLOATING_CONFIG:
 		'A configuration object which determines how the floating element is positioned relative to the trigger.',
@@ -22,8 +33,10 @@ export const DESCRIPTIONS = {
 	ON_SELECT:
 		'A callback which is called when the item is selected. To prevent the default behavior, call `e.preventDefault()` in the callback.',
 	LOOP: 'Whether or not the focus should loop back to the first item when the last item is reached.',
-	CLOSE_ON_ESCAPE: (name = 'element') =>
-		`Whether or not to close the ${name} when the escape key is pressed.`,
+	ESCAPE_BEHAVIOR: (name = 'element') =>
+		`Defines how the ${name} reacts when the Escape key is pressed. ${createBulletsHTML(
+			ESCAPE_BEHAVIOR_BULLETS(name)
+		)}`,
 	CLOSE_ON_CLICK_OUTSIDE: (name = 'element') =>
 		`Whether or not to close the ${name} when the user clicks outside of it.`,
 	BUILDER: (name: string) => `The builder function used to create the ${name} component.`,
@@ -33,6 +46,8 @@ export const DESCRIPTIONS = {
 		`Whether or not to force the ${name} to always be visible. This is useful for custom transitions and animations using conditional blocks.`,
 	ON_CHANGE: (store: string) =>
 		'A callback called when the value of the' + '`' + store + '`' + 'store should be changed.',
+	PREVENT_TEXT_SELECTION_OVERFLOW: (name = 'element') =>
+		`Whether to prevent text selection overflowing the ${name} when it is the top layer.`,
 };
 
 type PropArgs = {
@@ -81,11 +96,11 @@ export const PROPS = {
 		description: DESCRIPTIONS.PORTAL(args.name ?? 'floating element'),
 		default: args.default ?? 'body',
 	}),
-	CLOSE_ON_ESCAPE: (args: PropArgs = {}): Prop => ({
-		name: 'closeOnEscape',
-		type: 'boolean',
-		description: DESCRIPTIONS.CLOSE_ON_ESCAPE(args.name ?? 'floating element'),
-		default: args.default ?? 'true',
+	ESCAPE_BEHAVIOR: (args: PropArgs = {}): Prop => ({
+		name: 'escapeBehavior',
+		type: '"close" | "ignore" | "defer-otherwise-close" | "defer-otherwise-ignore"',
+		description: DESCRIPTIONS.ESCAPE_BEHAVIOR(args.name ?? 'floating element'),
+		default: args.default ?? "'close'",
 	}),
 	CLOSE_ON_OUTSIDE_CLICK: (args: PropArgs = {}): Prop => ({
 		name: 'closeOnOutsideClick',
@@ -97,6 +112,12 @@ export const PROPS = {
 		name: 'preventScroll',
 		type: 'boolean',
 		description: DESCRIPTIONS.PREVENT_SCROLL(args.name ?? 'floating element'),
+		default: args.default ?? 'true',
+	}),
+	PREVENT_TEXT_SELECTION_OVERFLOW: (args: PropArgs = {}): Prop => ({
+		name: 'preventTextSelectionOverflow',
+		type: 'boolean',
+		description: DESCRIPTIONS.PREVENT_TEXT_SELECTION_OVERFLOW(args.name ?? 'floating element'),
 		default: args.default ?? 'true',
 	}),
 	ARROW_SIZE: {

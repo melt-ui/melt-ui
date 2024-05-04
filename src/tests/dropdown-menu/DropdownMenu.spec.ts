@@ -203,9 +203,9 @@ describe('Dropdown Menu (Default)', () => {
 		expect(closeFocus).toHaveFocus();
 	});
 
-	test('respects `closeOnEscape` prop', async () => {
+	test('respects `escapeBehavior` prop', async () => {
 		const { user, trigger, getByTestId } = setup({
-			closeOnEscape: false,
+			escapeBehavior: 'ignore',
 		});
 		const menu = getByTestId('menu');
 		await user.click(trigger);
