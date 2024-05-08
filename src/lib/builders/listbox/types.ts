@@ -1,6 +1,6 @@
 import type {
 	EscapeBehaviorType,
-	ClickOutsideBehaviorType,
+	InteractOutsideBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
 } from '$lib/internal/actions/index.js';
@@ -109,7 +109,7 @@ export type CreateListboxProps<
 	 *
 	 * @defaultValue `close`
 	 */
-	clickOutsideBehavior?: ClickOutsideBehaviorType;
+	interactOutsideBehavior?: InteractOutsideBehaviorType;
 
 	/**
 	 * Escape behavior type.

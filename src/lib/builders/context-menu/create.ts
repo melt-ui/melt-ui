@@ -47,7 +47,7 @@ const defaults = {
 	},
 	preventScroll: true,
 	escapeBehavior: 'close',
-	clickOutsideBehavior: 'close',
+	interactOutsideBehavior: 'close',
 	portal: undefined,
 	loop: false,
 	dir: 'ltr',
@@ -69,7 +69,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
 	const {
 		positioning,
-		clickOutsideBehavior,
+		interactOutsideBehavior,
 		portal,
 		forceVisible,
 		escapeBehavior,
@@ -163,7 +163,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 							options: {
 								floating: $positioning,
 								modal: {
-									clickOutsideBehavior,
+									interactOutsideBehavior,
 									onClose: () => {
 										rootOpen.set(false);
 									},

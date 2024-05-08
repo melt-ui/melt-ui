@@ -1,6 +1,6 @@
 import type {
 	EscapeBehaviorType,
-	ClickOutsideBehaviorType,
+	InteractOutsideBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
 } from '$lib/internal/actions/index.js';
@@ -71,7 +71,7 @@ export type CreatePopoverProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	clickOutsideBehavior?: ClickOutsideBehaviorType;
+	interactOutsideBehavior?: InteractOutsideBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which

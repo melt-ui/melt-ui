@@ -15,16 +15,16 @@ export type ModalConfig = {
 	 *
 	 * @defaultValue `close`
 	 */
-	clickOutsideBehavior?: InteractOutsideConfig['behaviorType'];
+	interactOutsideBehavior?: InteractOutsideConfig['behaviorType'];
 
 	/**
-	 * If `clickOutsideBehavior` is `'close'` and this function is provided,
+	 * If `interactOutsideBehavior` is `'close'` and this function is provided,
 	 * it will be called with the element that the outside interaction occurred
 	 * on. Whatever is returned from this function will determine whether the
 	 * modal actually closes or not.
 	 *
 	 * This is useful to filter out interactions with certain elements from
-	 * closing the modal. If `clickOutsideBehavior` is not `'close'`, this function
+	 * closing the modal. If `interactOutsideBehavior` is not `'close'`, this function
 	 * will not be called.
 	 */
 	shouldCloseOnInteractOutside?: (event: InteractOutsideEvent) => boolean;

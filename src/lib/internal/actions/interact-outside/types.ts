@@ -16,7 +16,7 @@ export type InteractOutsideInterceptHandler<E extends InteractOutsideInterceptEv
 	ev: HTMLElementEventMap[E]
 ) => void;
 
-export type ClickOutsideBehaviorType =
+export type InteractOutsideBehaviorType =
 	| 'close'
 	| 'defer-otherwise-close'
 	| 'defer-otherwise-ignore'
@@ -50,5 +50,5 @@ export type InteractOutsideConfig = {
 	 *
 	 * @defaultValue `close`
 	 */
-	behaviorType?: ClickOutsideBehaviorType | WithGet<Readable<ClickOutsideBehaviorType>>;
+	behaviorType?: InteractOutsideBehaviorType | WithGet<Readable<InteractOutsideBehaviorType>>;
 };

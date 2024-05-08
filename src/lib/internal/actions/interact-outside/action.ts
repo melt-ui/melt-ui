@@ -15,11 +15,11 @@ import type {
 	InteractOutsideEvent,
 	InteractOutsideInterceptEventType,
 	InteractOutsideInterceptHandler,
-	ClickOutsideBehaviorType,
+	InteractOutsideBehaviorType,
 } from './types.js';
 import type { Action } from 'svelte/action';
 
-const layers = new Map<HTMLElement, WithGet<Readable<ClickOutsideBehaviorType>>>();
+const layers = new Map<HTMLElement, WithGet<Readable<InteractOutsideBehaviorType>>>();
 
 export const useInteractOutside = ((node, config = {}) => {
 	let unsubEvents = noop;

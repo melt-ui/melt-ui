@@ -3,7 +3,7 @@ import { noop } from '$lib/internal/helpers/callbacks.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import {
 	useInteractOutside,
-	type ClickOutsideBehaviorType,
+	type InteractOutsideBehaviorType,
 	type InteractOutsideConfig,
 } from '$lib/internal/actions/index.js';
 import { sleep } from '../sleep.js';
@@ -39,7 +39,7 @@ const singleLayerAssertions = [
 		behavior: 'defer-otherwise-ignore',
 		shouldClose: false,
 	},
-] satisfies { behavior: ClickOutsideBehaviorType; shouldClose: boolean }[];
+] satisfies { behavior: InteractOutsideBehaviorType; shouldClose: boolean }[];
 
 const nestedLayerAssertions = [
 	{
@@ -66,7 +66,7 @@ const nestedLayerAssertions = [
 		behaviors: ['defer-otherwise-ignore', 'defer-otherwise-ignore'],
 		expectedInvocations: [false, false],
 	},
-] satisfies { behaviors: ClickOutsideBehaviorType[]; expectedInvocations: boolean[] }[];
+] satisfies { behaviors: InteractOutsideBehaviorType[]; expectedInvocations: boolean[] }[];
 
 describe('interact outside', () => {
 	describe('single layers', () => {
@@ -137,7 +137,7 @@ describe('interact outside', () => {
 	});
 
 	it('does not change position of layer in the stack when updating behaviorType store', async () => {
-		const w1 = withGet.writable<ClickOutsideBehaviorType>('close');
+		const w1 = withGet.writable<InteractOutsideBehaviorType>('close');
 		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: w1 });
 		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: 'close' });
 		await dispatchOutsideClick();
@@ -170,7 +170,7 @@ describe('interact outside', () => {
 	});
 
 	it('respects updated behaviorType store', async () => {
-		const w2 = withGet.writable<ClickOutsideBehaviorType>('defer-otherwise-close');
+		const w2 = withGet.writable<InteractOutsideBehaviorType>('defer-otherwise-close');
 		const { handler: handler1, action: action1 } = mountLayer({ behaviorType: 'close' });
 		const { handler: handler2, action: action2 } = mountLayer({ behaviorType: w2 });
 		await dispatchOutsideClick();
@@ -192,7 +192,7 @@ describe('interact outside', () => {
 		expect(handler1).toHaveBeenCalledTimes(0);
 		expect(handler2).toHaveBeenCalledTimes(1);
 
-		const w2 = withGet.writable<ClickOutsideBehaviorType>('ignore');
+		const w2 = withGet.writable<InteractOutsideBehaviorType>('ignore');
 		action2.update({ behaviorType: w2, onInteractOutside: handler2 });
 		await dispatchOutsideClick();
 		expect(handler1).toHaveBeenCalledTimes(0);

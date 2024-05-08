@@ -12,7 +12,7 @@
 	export let loop = false;
 	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
 	export let escapeBehavior: CreateDropdownMenuProps['escapeBehavior'] = 'close';
-	export let clickOutsideBehavior: CreateDropdownMenuProps['clickOutsideBehavior'] = 'close';
+	export let interactOutsideBehavior: CreateDropdownMenuProps['interactOutsideBehavior'] = 'close';
 	export let submenuIds: CreateDropdownMenuProps['ids'] = undefined;
 
 	const {
@@ -23,7 +23,7 @@
 			loop,
 			closeFocus,
 			escapeBehavior,
-			clickOutsideBehavior,
+			interactOutsideBehavior,
 			...$$restProps,
 		})
 	);

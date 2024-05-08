@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createMenubar, melt, type CreateMenubarMenuProps } from '$lib/index.js';
 
-	type $$Props = CreateMenubarMenuProps & { setRootClickOutsideBehaviorIgnore: () => void };
-	export let setRootClickOutsideBehaviorIgnore: () => void;
+	type $$Props = CreateMenubarMenuProps & { setRootInteractOutsideBehaviorIgnore: () => void };
+	export let setRootInteractOutsideBehaviorIgnore: () => void;
 
 	const {
 		elements: { menubar },
@@ -21,9 +21,9 @@
 		<div use:melt={$menu} data-testid="menubar-content">
 			<button
 				data-testid="menubar-set-parent-click-outside-behavior-ignore"
-				on:click={setRootClickOutsideBehaviorIgnore}
+				on:click={setRootInteractOutsideBehaviorIgnore}
 			>
-				set root clickOutsideBehavior: ignore
+				set root interactOutsideBehavior: ignore
 			</button>
 		</div>
 	{/if}

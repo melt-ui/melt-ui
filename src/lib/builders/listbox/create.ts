@@ -64,7 +64,7 @@ const defaults = {
 	scrollAlignment: 'nearest',
 	loop: true,
 	defaultOpen: false,
-	clickOutsideBehavior: 'close',
+	interactOutsideBehavior: 'close',
 	preventScroll: true,
 	escapeBehavior: 'close',
 	forceVisible: false,
@@ -133,7 +133,7 @@ export function createListbox<
 	const {
 		scrollAlignment,
 		loop,
-		clickOutsideBehavior,
+		interactOutsideBehavior,
 		escapeBehavior,
 		preventScroll,
 		portal,
@@ -477,7 +477,7 @@ export function createListbox<
 									floating: $positioning,
 									focusTrap: null,
 									modal: {
-										clickOutsideBehavior,
+										interactOutsideBehavior,
 										onClose: closeMenu,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);

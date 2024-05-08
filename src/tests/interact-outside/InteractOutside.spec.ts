@@ -21,9 +21,9 @@ const components = ['combobox', 'menubar', 'menu', 'popover', 'select'] as const
 
 describe('Nested Interact Outside Behaviors', () => {
 	describe.each(components)('dialog + %s', (componentName) => {
-		it('`clickOutsideBehavior: close` on child should only close child', async () => {
+		it('`interactOutsideBehavior: close` on child should only close child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				clickOutsideBehavior: 'close',
+				interactOutsideBehavior: 'close',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -37,9 +37,9 @@ describe('Nested Interact Outside Behaviors', () => {
 			await waitFor(() => expect(getRootContent()).toBeNull());
 		});
 
-		it('`clickOutsideBehavior: ignore` on child should neither close child nor parent', async () => {
+		it('`interactOutsideBehavior: ignore` on child should neither close child nor parent', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				clickOutsideBehavior: 'ignore',
+				interactOutsideBehavior: 'ignore',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -51,9 +51,9 @@ describe('Nested Interact Outside Behaviors', () => {
 			expect(getRootContent()).toBeVisible();
 		});
 
-		it('`clickOutsideBehavior: defer-otherwise-close` on child should close both parent and child', async () => {
+		it('`interactOutsideBehavior: defer-otherwise-close` on child should close both parent and child', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				clickOutsideBehavior: 'defer-otherwise-close',
+				interactOutsideBehavior: 'defer-otherwise-close',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -65,9 +65,9 @@ describe('Nested Interact Outside Behaviors', () => {
 			expect(getRootContent()).toBeNull();
 		});
 
-		it('updating parent `clickOutsideBehavior` should not intercept outside click', async () => {
+		it('updating parent `interactOutsideBehavior` should not intercept outside click', async () => {
 			const { user, getByTestId, queryByTestId, getRootContent, rootOverlay } = await setup({
-				clickOutsideBehavior: 'close',
+				interactOutsideBehavior: 'close',
 			});
 			const trigger = getByTestId(`${componentName}-trigger`);
 			const getContent = () => queryByTestId(`${componentName}-content`);
@@ -76,7 +76,7 @@ describe('Nested Interact Outside Behaviors', () => {
 			expect(getContent()).toBeVisible();
 
 			/**
-			 * If we update parent `clickOutsideBehavior` to `ignore` and clicking outside,
+			 * If we update parent `interactOutsideBehavior` to `ignore` and clicking outside,
 			 * parent element should stay open and child element should close.
 			 * If the parent element's position in the stack was reset, on outside click, no element would be closed
 			 * because the parent would be at the "top" of the stack and it's set to ignore outside clicks.

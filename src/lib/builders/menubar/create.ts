@@ -99,7 +99,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		dir: 'ltr',
 		loop: false,
 		escapeBehavior: 'close',
-		clickOutsideBehavior: 'close',
+		interactOutsideBehavior: 'close',
 		portal: undefined,
 		forceVisible: false,
 		defaultOpen: false,
@@ -122,7 +122,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			positioning,
 			portal,
 			forceVisible,
-			clickOutsideBehavior,
+			interactOutsideBehavior,
 			onOutsideClick,
 			preventTextSelectionOverflow,
 		} = options;
@@ -192,7 +192,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
 									modal: {
-										clickOutsideBehavior,
+										interactOutsideBehavior,
 										shouldCloseOnInteractOutside: (e) => {
 											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return false;

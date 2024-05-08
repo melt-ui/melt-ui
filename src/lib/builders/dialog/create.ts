@@ -40,7 +40,7 @@ const { name } = createElHelpers<DialogParts>('dialog');
 const defaults = {
 	preventScroll: true,
 	escapeBehavior: 'close',
-	clickOutsideBehavior: 'close',
+	interactOutsideBehavior: 'close',
 	role: 'dialog',
 	defaultOpen: false,
 	portal: undefined,
@@ -61,7 +61,7 @@ export function createDialog(props?: CreateDialogProps) {
 	const {
 		preventScroll,
 		escapeBehavior,
-		clickOutsideBehavior,
+		interactOutsideBehavior,
 		role,
 		portal,
 		forceVisible,
@@ -165,7 +165,7 @@ export function createDialog(props?: CreateDialogProps) {
 				if (!$isVisible) return;
 
 				unsubModal = useModal(node, {
-					clickOutsideBehavior,
+					interactOutsideBehavior,
 					onClose: handleClose,
 					shouldCloseOnInteractOutside(e) {
 						onOutsideClick.get()?.(e);

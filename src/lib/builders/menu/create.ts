@@ -72,7 +72,7 @@ const defaults = {
 	},
 	preventScroll: true,
 	escapeBehavior: 'close',
-	clickOutsideBehavior: 'close',
+	interactOutsideBehavior: 'close',
 	portal: undefined,
 	loop: false,
 	dir: 'ltr',
@@ -91,7 +91,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		arrowSize,
 		positioning,
 		escapeBehavior,
-		clickOutsideBehavior,
+		interactOutsideBehavior,
 		portal,
 		forceVisible,
 		typeahead,
@@ -195,7 +195,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							options: {
 								floating: $positioning,
 								modal: {
-									clickOutsideBehavior,
+									interactOutsideBehavior,
 									shouldCloseOnInteractOutside: (e) => {
 										onOutsideClick.get()?.(e);
 										if (e.defaultPrevented) return false;

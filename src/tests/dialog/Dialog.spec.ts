@@ -154,9 +154,9 @@ describe('Dialog', () => {
 		await waitFor(() => expect(getByTestId('closeFocus')).toHaveFocus());
 	});
 
-	it('Respects the `clickOutsideBehavior` prop', async () => {
+	it('Respects the `interactOutsideBehavior` prop', async () => {
 		const { user, content, overlay } = await open({
-			clickOutsideBehavior: 'ignore',
+			interactOutsideBehavior: 'ignore',
 		});
 
 		expect(overlay).toBeVisible();
@@ -164,9 +164,9 @@ describe('Dialog', () => {
 		expect(content).toBeVisible();
 	});
 
-	it('When clickOutsideBehavior is false, clicking floating closer closes dialog', async () => {
+	it('When interactOutsideBehavior is false, clicking floating closer closes dialog', async () => {
 		const { getByTestId, user, content } = await open({
-			clickOutsideBehavior: 'ignore',
+			interactOutsideBehavior: 'ignore',
 		});
 		const closer = getByTestId('floating-closer');
 
@@ -232,8 +232,8 @@ describe('Dialog', () => {
 		await assertActiveFocusTrap(user, content);
 	});
 
-	it("Doesn't deactivate focus trap on outside click provided `clickOutsideBehavior` ignore", async () => {
-		const { user, overlay, content } = await open({ clickOutsideBehavior: 'ignore' });
+	it("Doesn't deactivate focus trap on outside click provided `interactOutsideBehavior` ignore", async () => {
+		const { user, overlay, content } = await open({ interactOutsideBehavior: 'ignore' });
 
 		await user.click(overlay);
 		expect(content).toBeVisible();

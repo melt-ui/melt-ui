@@ -2,7 +2,7 @@ import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js'
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { DialogIdParts, createDialog } from './create.js';
-import type { ClickOutsideBehaviorType } from '$lib/internal/actions/index.js';
+import type { InteractOutsideBehaviorType } from '$lib/internal/actions/index.js';
 import type { EscapeBehaviorType } from '$lib/internal/actions/index.js';
 export type { DialogComponentEvents } from './events.js';
 export type CreateDialogProps = {
@@ -34,7 +34,7 @@ export type CreateDialogProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	clickOutsideBehavior?: ClickOutsideBehaviorType;
+	interactOutsideBehavior?: InteractOutsideBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createSelect, melt, type CreateSelectProps } from '$lib/index.js';
 
-	type $$Props = CreateSelectProps & { setRootClickOutsideBehaviorIgnore: () => void };
-	export let setRootClickOutsideBehaviorIgnore: () => void;
+	type $$Props = CreateSelectProps & { setRootInteractOutsideBehaviorIgnore: () => void };
+	export let setRootInteractOutsideBehaviorIgnore: () => void;
 
 	const {
 		elements: { trigger, menu },
@@ -15,9 +15,9 @@
 	<div use:melt={$menu} data-testid="select-content">
 		<button
 			data-testid="select-set-parent-click-outside-behavior-ignore"
-			on:click={setRootClickOutsideBehaviorIgnore}
+			on:click={setRootInteractOutsideBehaviorIgnore}
 		>
-			set root clickOutsideBehavior: ignore
+			set root interactOutsideBehavior: ignore
 		</button>
 	</div>
 {/if}

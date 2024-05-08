@@ -12,7 +12,7 @@ export const useModal = ((node, config) => {
 		const {
 			onClose,
 			shouldCloseOnInteractOutside,
-			clickOutsideBehavior: closeOnInteractOutside,
+			interactOutsideBehavior: closeOnInteractOutside,
 		} = config;
 
 		function closeModal() {

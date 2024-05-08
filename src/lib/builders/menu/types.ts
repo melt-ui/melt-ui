@@ -1,6 +1,6 @@
 import type {
 	EscapeBehaviorType,
-	ClickOutsideBehaviorType,
+	InteractOutsideBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
 } from '$lib/internal/actions/index.js';
@@ -72,7 +72,7 @@ export type _CreateMenuProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	clickOutsideBehavior?: ClickOutsideBehaviorType;
+	interactOutsideBehavior?: InteractOutsideBehaviorType;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -203,7 +203,7 @@ export type _MenuBuilderOptions = {
 		loop: WithGet<Writable<boolean | undefined>>;
 		dir: WithGet<Writable<TextDirection>>;
 		escapeBehavior: WithGet<Writable<EscapeBehaviorType>>;
-		clickOutsideBehavior: WithGet<Writable<ClickOutsideBehaviorType>>;
+		interactOutsideBehavior: WithGet<Writable<InteractOutsideBehaviorType>>;
 		preventTextSelectionOverflow: WithGet<Writable<boolean>>;
 		portal: WithGet<Writable<string | HTMLElement | undefined | null>>;
 		forceVisible: WithGet<Writable<boolean>>;

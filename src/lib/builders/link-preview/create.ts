@@ -40,7 +40,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
-	clickOutsideBehavior: 'close',
+	interactOutsideBehavior: 'close',
 	forceVisible: false,
 	portal: undefined,
 	escapeBehavior: 'close',
@@ -71,7 +71,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		closeDelay,
 		positioning,
 		arrowSize,
-		clickOutsideBehavior,
+		interactOutsideBehavior,
 		forceVisible,
 		portal,
 		escapeBehavior,
@@ -190,7 +190,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 							options: {
 								floating: $positioning,
 								modal: {
-									clickOutsideBehavior,
+									interactOutsideBehavior,
 									onClose: () => {
 										open.set(false);
 										$activeTrigger.focus();

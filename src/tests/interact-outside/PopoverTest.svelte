@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createPopover, melt, type CreatePopoverProps } from '$lib/index.js';
 
-	type $$Props = CreatePopoverProps & { setRootClickOutsideBehaviorIgnore: () => void };
-	export let setRootClickOutsideBehaviorIgnore: () => void;
+	type $$Props = CreatePopoverProps & { setRootInteractOutsideBehaviorIgnore: () => void };
+	export let setRootInteractOutsideBehaviorIgnore: () => void;
 
 	const {
 		elements: { trigger, content },
@@ -15,9 +15,9 @@
 	<div use:melt={$content} data-testid="popover-content">
 		<button
 			data-testid="popover-set-parent-click-outside-behavior-ignore"
-			on:click={setRootClickOutsideBehaviorIgnore}
+			on:click={setRootInteractOutsideBehaviorIgnore}
 		>
-			set root clickOutsideBehavior: ignore
+			set root interactOutsideBehavior: ignore
 		</button>
 	</div>
 {/if}

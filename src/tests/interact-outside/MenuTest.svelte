@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createDropdownMenu, melt, type CreateDropdownMenuProps } from '$lib/index.js';
 
-	type $$Props = CreateDropdownMenuProps & { setRootClickOutsideBehaviorIgnore: () => void };
-	export let setRootClickOutsideBehaviorIgnore: () => void;
+	type $$Props = CreateDropdownMenuProps & { setRootInteractOutsideBehaviorIgnore: () => void };
+	export let setRootInteractOutsideBehaviorIgnore: () => void;
 
 	const {
 		elements: { trigger, menu },
@@ -15,9 +15,9 @@
 	<div use:melt={$menu} data-testid="menu-content">
 		<button
 			data-testid="menu-set-parent-click-outside-behavior-ignore"
-			on:click={setRootClickOutsideBehaviorIgnore}
+			on:click={setRootInteractOutsideBehaviorIgnore}
 		>
-			set root clickOutsideBehavior: ignore
+			set root interactOutsideBehavior: ignore
 		</button>
 	</div>
 {/if}

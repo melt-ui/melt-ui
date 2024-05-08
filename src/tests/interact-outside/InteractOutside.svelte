@@ -7,15 +7,15 @@
 	import Select from './SelectTest.svelte';
 
 	type $$Props = CreateDialogProps;
-	export let clickOutsideBehavior: CreateDialogProps['clickOutsideBehavior'] = 'close';
+	export let interactOutsideBehavior: CreateDialogProps['interactOutsideBehavior'] = 'close';
 
 	const {
 		elements: { trigger, content, portalled, overlay },
 		states: { open },
-		options: { clickOutsideBehavior: rootClickOutsideBehavior },
+		options: { interactOutsideBehavior: rootInteractOutsideBehavior },
 	} = createDialog({ forceVisible: true, portal: 'body' });
 
-	const setRootClickOutsideBehaviorIgnore = () => rootClickOutsideBehavior.set('ignore');
+	const setRootInteractOutsideBehaviorIgnore = () => rootInteractOutsideBehavior.set('ignore');
 </script>
 
 <button use:melt={$trigger} data-testid="root-dialog-trigger">Open</button>
@@ -31,11 +31,11 @@
 			data-testid="root-dialog-content"
 			class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw] max-w-[450px] -translate-x-1/2 -translate-y-1/2 p-6 shadow-lg"
 		>
-			<Combobox {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
-			<Menubar {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
-			<Menu {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
-			<Popover {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
-			<Select {clickOutsideBehavior} {setRootClickOutsideBehaviorIgnore} />
+			<Combobox {interactOutsideBehavior} {setRootInteractOutsideBehaviorIgnore} />
+			<Menubar {interactOutsideBehavior} {setRootInteractOutsideBehaviorIgnore} />
+			<Menu {interactOutsideBehavior} {setRootInteractOutsideBehaviorIgnore} />
+			<Popover {interactOutsideBehavior} {setRootInteractOutsideBehaviorIgnore} />
+			<Select {interactOutsideBehavior} {setRootInteractOutsideBehaviorIgnore} />
 		</div>
 	</div>
 {/if}

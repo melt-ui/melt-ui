@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createCombobox, melt, type CreateComboboxProps } from '$lib/index.js';
 
-	type $$Props = CreateComboboxProps & { setRootClickOutsideBehaviorIgnore: () => void };
-	export let setRootClickOutsideBehaviorIgnore: () => void;
+	type $$Props = CreateComboboxProps & { setRootInteractOutsideBehaviorIgnore: () => void };
+	export let setRootInteractOutsideBehaviorIgnore: () => void;
 
 	const {
 		elements: { input, menu },
@@ -15,9 +15,9 @@
 	<div use:melt={$menu} data-testid="combobox-content">
 		<button
 			data-testid="combobox-set-parent-click-outside-behavior-ignore"
-			on:click={setRootClickOutsideBehaviorIgnore}
+			on:click={setRootInteractOutsideBehaviorIgnore}
 		>
-			set root clickOutsideBehavior: ignore
+			set root interactOutsideBehavior: ignore
 		</button>
 	</div>
 {/if}

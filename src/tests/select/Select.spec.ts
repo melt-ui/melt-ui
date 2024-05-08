@@ -184,9 +184,9 @@ describe('Select', () => {
 		expect(menu).toBeVisible();
 	});
 
-	test('Respects the `clickOutsideBehavior` prop', async () => {
+	test('Respects the `interactOutsideBehavior` prop', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(SelectTest, { clickOutsideBehavior: 'ignore' });
+		const { getByTestId } = render(SelectTest, { interactOutsideBehavior: 'ignore' });
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
 
