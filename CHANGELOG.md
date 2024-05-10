@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.79.1
+
+### Patch Changes
+
+- Fix: checkbox hiddenInput not calling change events ([`caae3c01`](https://github.com/melt-ui/melt-ui/commit/caae3c01d4bde5c6f8331fb0e63bf7dc0f573810))
+
 ## 0.79.0
 
 ### Minor Changes
