@@ -107,7 +107,7 @@ const input = elementSchema('input', {
 	description: 'The native input element.',
 	dataAttributes: [
 		{
-			name: 'data-melt-checkbox-input',
+			name: 'data-melt-checkbox-hidden-input',
 			value: ATTRS.MELT('checkbox input'),
 		},
 	],
