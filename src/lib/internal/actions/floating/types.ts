@@ -2,6 +2,7 @@
 // Source: https://github.com/grail-ui/grail-ui
 // https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/floating/floating.types.ts
 
+import type { FlipOptions } from '@floating-ui/core';
 import type { Boundary } from '@floating-ui/dom';
 
 /**
@@ -67,7 +68,7 @@ export type FloatingConfig = {
 	 *
 	 * @see https://floating-ui.com/docs/flip
 	 */
-	flip?: boolean;
+	flip?: boolean | FlipOptions;
 
 	/**
 	 * Whether the floating element can overlap the reference element.
