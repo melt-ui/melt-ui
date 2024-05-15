@@ -40,14 +40,14 @@ export type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
 export type Expand<T> = T extends object
 	? T extends infer O
-	? { [K in keyof O]: O[K] }
-	: never
+		? { [K in keyof O]: O[K] }
+		: never
 	: T;
 
 export type ExpandDeep<T> = T extends object
 	? T extends infer O
-	? { [K in keyof O]: ExpandDeep<O[K]> }
-	: never
+		? { [K in keyof O]: ExpandDeep<O[K]> }
+		: never
 	: T;
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
@@ -70,21 +70,21 @@ export type MeltActionReturn<Events extends keyof HTMLElementEventMap> = ActionR
 	undefined,
 	{
 		[K in Events as `on:m-${string & K}`]?: K extends keyof HTMLElementEventMap
-		? MeltEventHandler<HTMLElementEventMap[K]>
-		: never;
+			? MeltEventHandler<HTMLElementEventMap[K]>
+			: never;
 	}
 >;
 
 type CustomMeltComponentEvents<Events extends keyof HTMLElementEventMap> = {
 	[K in Events as `m-${string & K}`]?: K extends keyof HTMLElementEventMap
-	? MeltEventHandler<HTMLElementEventMap[K]>
-	: never;
+		? MeltEventHandler<HTMLElementEventMap[K]>
+		: never;
 };
 
 export type InternalCustomEvents<Events extends keyof HTMLElementEventMap> = {
 	[K in Events as K]?: K extends keyof HTMLElementEventMap
-	? EventHandler<HTMLElementEventMap[K]>
-	: never;
+		? EventHandler<HTMLElementEventMap[K]>
+		: never;
 };
 
 type ElementEvents<T> = T extends ReadonlyArray<infer U> ? U : never;
@@ -119,10 +119,10 @@ export type WhenTrue<TrueOrFalse, IfTrue, IfFalse, IfNeither = IfTrue | IfFalse>
 
 export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>>> = Expand<{
 	[K in keyof T as K extends keyof NewNames
-	? NewNames[K] extends PropertyKey
-	? NewNames[K]
-	: K
-	: K]: T[K];
+		? NewNames[K] extends PropertyKey
+			? NewNames[K]
+			: K
+		: K]: T[K];
 }>;
 
 export type NonEmptyArray<T> = [T, ...T[]];
