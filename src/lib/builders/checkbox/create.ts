@@ -72,12 +72,12 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 	const input = createHiddenInput({
 		value,
 		checked,
-		type: ('checkbox'),
+		type: 'checkbox',
 		name: name,
 		disabled: disabled,
 		required,
 		prefix: 'checkbox',
-	})
+	});
 
 	const isIndeterminate = derived(checked, ($checked) => $checked === 'indeterminate');
 	const isChecked = derived(checked, ($checked) => $checked === true);
