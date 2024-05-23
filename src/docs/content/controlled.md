@@ -59,7 +59,6 @@ interaction.
 ```svelte {10}
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte'
-	import { writable } from 'svelte/store'
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },
