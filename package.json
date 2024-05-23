@@ -58,7 +58,7 @@
 		"!dist/**/tests"
 	],
 	"peerDependencies": {
-		"svelte": ">=3 <5"
+		"svelte": ">=3 <=5"
 	},
 	"dependencies": {
 		"@floating-ui/core": "^1.3.1",
