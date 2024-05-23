@@ -277,6 +277,7 @@ export function createListbox<
 				'aria-controls': $menuId,
 				'aria-expanded': $open,
 				'aria-labelledby': $labelId,
+				'data-state': $open ? 'open' : 'closed',
 				// autocomplete: 'off',
 				id: $triggerId,
 				role: 'combobox',
