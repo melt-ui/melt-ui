@@ -49,6 +49,10 @@ export type CreateTableOfContentsArgs = {
 	 */
 	activeType?: ActiveType;
 	/**
+	 * Root margin for the intersection observer.
+	 */
+	rootMargin?: string;
+	/**
 	 * A custom filter function for headings.
 	 */
 	headingFilterFn?: HeadingFilterFn;

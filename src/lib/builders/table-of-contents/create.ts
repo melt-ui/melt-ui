@@ -32,6 +32,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		selector,
 		exclude,
 		activeType,
+		rootMargin,
 		scrollBehaviour,
 		scrollOffset,
 		headingFilterFn,
@@ -301,6 +302,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			observer = new IntersectionObserver(handleElementObservation, {
 				root: null,
 				threshold: observer_threshold,
+				rootMargin,
 			});
 			elementsList.forEach((el) => observer?.observe(el));
 		}
