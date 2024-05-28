@@ -13,7 +13,7 @@ import {
 	autoUpdate,
 } from '@floating-ui/dom';
 import type { FloatingConfig } from './types.js';
-import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
+import { isHTMLElement, isObject, noop } from '$lib/internal/helpers/index.js';
 import type { Placement, VirtualElement, FlipOptions } from '@floating-ui/core';
 
 const defaultConfig = {
@@ -38,8 +38,6 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 type Side = (typeof SIDE_OPTIONS)[number];
 type Align = (typeof ALIGN_OPTIONS)[number];
 
-const isFlipOptions = (value: any): value is FlipOptions => typeof value === 'object';
-
 export function useFloating(
 	reference: HTMLElement | VirtualElement | undefined,
 	floating: HTMLElement | undefined,
@@ -60,7 +58,7 @@ export function useFloating(
 			flip({
 				boundary: options.boundary,
 				padding: options.overflowPadding,
-				...(isFlipOptions(options.flip) && options.flip),
+				...(isObject(options.flip) && options.flip),
 			})
 		);
 	}
