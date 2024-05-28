@@ -28,6 +28,11 @@ export type CreateSliderProps = {
 	onValueChange?: ChangeFn<number[]>;
 
 	/**
+	 * The callback invoked when the user has committed the value of the slider.
+	 */
+	onValueCommitted?: (value: number[]) => void;
+
+	/**
 	 * The minimum value of the slider.
 	 *
 	 * @default 0
