@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.80.0
+
+### Minor Changes
+
+- feat(slider): add `onValueCommitted` callback ([#1212](https://github.com/melt-ui/melt-ui/pull/1212))
+
+- fix: add `data-state` to select & combobox (closes #1199) ([#1200](https://github.com/melt-ui/melt-ui/pull/1200))
+
+- chore: change peer deps to support svelte 5 ([#1207](https://github.com/melt-ui/melt-ui/pull/1207))
+
 ## 0.79.1
 
 ### Patch Changes
