@@ -33,9 +33,9 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
-			...props,
 			closeDelay: closeDelay.get(),
 			type: type.get(),
+			...props,
 		} satisfies AddToastProps<T>;
 
 		const ids = {
@@ -49,7 +49,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				? null
 				: window.setTimeout(() => {
 						removeToast(ids.content);
-				  }, propsWithDefaults.closeDelay);
+				  }, propsWithDefaults.closeDelay ?? defaults.closeDelay);
 
 		const getPercentage = () => {
 			const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;
