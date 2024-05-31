@@ -10,9 +10,10 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable } from 'svelte/store';
+import { derived, readable, writable } from 'svelte/store';
 import type { CheckboxEvents } from './events.js';
 import type { CreateCheckboxProps } from './types.js';
+import { createHiddenInput } from '../hidden-input/create.js';
 
 const defaults = {
 	disabled: false,
@@ -68,28 +69,14 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 		},
 	});
 
-	const input = makeElement('checkbox-input', {
-		stores: [checked, name, value, required, disabled],
-		returned: ([$checked, $name, $value, $required, $disabled]) => {
-			return {
-				type: 'checkbox',
-				'aria-hidden': true,
-				hidden: true,
-				tabindex: -1,
-				name: $name,
-				value: $value,
-				checked: $checked === 'indeterminate' ? false : $checked,
-				required: $required,
-				disabled: disabledAttr($disabled),
-				style: styleToString({
-					position: 'absolute',
-					opacity: 0,
-					'pointer-events': 'none',
-					margin: 0,
-					transform: 'translateX(-100%)',
-				}),
-			} as const;
-		},
+	const input = createHiddenInput({
+		value,
+		checked,
+		type: 'checkbox',
+		name: name,
+		disabled: disabled,
+		required,
+		prefix: 'checkbox',
 	});
 
 	const isIndeterminate = derived(checked, ($checked) => $checked === 'indeterminate');

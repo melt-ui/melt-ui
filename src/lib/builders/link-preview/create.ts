@@ -42,7 +42,7 @@ const defaults = {
 	arrowSize: 8,
 	interactOutsideBehavior: 'close',
 	forceVisible: false,
-	portal: undefined,
+	portal: 'body',
 	escapeBehavior: 'close',
 	onOutsideClick: undefined,
 	preventTextSelectionOverflow: true,

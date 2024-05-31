@@ -42,7 +42,9 @@ const { name } = createElHelpers('slider');
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+	const options = toWritableStores(
+		omit(withDefaults, 'value', 'onValueChange', 'onValueCommitted', 'defaultValue')
+	);
 	const { min, max, step, orientation, dir, disabled, autoSort } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -323,6 +325,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 						break;
 					}
 				}
+
+				if (withDefaults?.onValueCommitted) {
+					withDefaults.onValueCommitted(value.get());
+				}
 			});
 
 			return {
@@ -516,6 +522,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 			const pointerUp = () => {
 				isActive.set(false);
+
+				if (withDefaults?.onValueCommitted) {
+					withDefaults.onValueCommitted(value.get());
+				}
 			};
 
 			const unsub = executeCallbacks(

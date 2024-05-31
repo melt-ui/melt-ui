@@ -3,6 +3,7 @@ import type {
 	InteractOutsideBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
+	PortalConfig,
 } from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
@@ -150,7 +151,7 @@ export type CreateListboxProps<
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: PortalConfig | null;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.

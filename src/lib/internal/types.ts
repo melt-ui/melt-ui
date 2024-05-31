@@ -1,4 +1,5 @@
 import type { ActionReturn } from 'svelte/action';
+import type { Readable } from 'svelte/store';
 
 // Check if type are equal or just extends
 export type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <
@@ -125,3 +126,5 @@ export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>
 }>;
 
 export type NonEmptyArray<T> = [T, ...T[]];
+
+export type MaybeReadable<T> = T | Readable<T>;

@@ -3,6 +3,7 @@ import type {
 	InteractOutsideBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
+	PortalConfig,
 } from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
@@ -61,7 +62,7 @@ export type _CreateMenuProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: PortalConfig | null;
 
 	/**
 	 * Click outside behavior type.

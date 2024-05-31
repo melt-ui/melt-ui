@@ -43,7 +43,7 @@ const defaults = {
 	openDelay: 1000,
 	closeDelay: 0,
 	forceVisible: false,
-	portal: undefined,
+	portal: 'body',
 	escapeBehavior: 'close',
 	disableHoverableContent: false,
 	group: undefined,

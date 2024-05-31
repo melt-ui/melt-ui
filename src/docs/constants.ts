@@ -50,7 +50,7 @@ export const DESCRIPTIONS = {
 		)}`,
 	BUILDER: (name: string) => `The builder function used to create the ${name} component.`,
 	PORTAL: (name = 'floating element') =>
-		`The element or selector to render the ${name} into. Nested floating elements are automatically rendered into their parent if not specified. Pass in \`null\` to disable portalling.`,
+		`The element or selector to render the ${name} into. Nested floating elements are automatically rendered into their own portal if not specified. Pass in \`null\` to disable portalling. Pass in \`undefined\` to use parent portal.`,
 	FORCE_VISIBLE: (name = 'element') =>
 		`Whether or not to force the ${name} to always be visible. This is useful for custom transitions and animations using conditional blocks.`,
 	ON_CHANGE: (store: string) =>

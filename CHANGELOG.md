@@ -1,5 +1,35 @@
 # @melt-ui/svelte
 
+## 0.81.0
+
+### Minor Changes
+
+- Mount each floating element into their own portal by default now that stack handling has been improved ([#1103](https://github.com/melt-ui/melt-ui/pull/1103))
+
+- Support all of Floating UI's FlipOptions at `positioning.flip` ([#1203](https://github.com/melt-ui/melt-ui/pull/1203))
+
+### Patch Changes
+
+- fix svelte peer deps ([`de0169dd`](https://github.com/melt-ui/melt-ui/commit/de0169dd840a4ea51dd0a0611b59797665095a8c))
+
+- fix undefined on portal update ([`87bce8a0`](https://github.com/melt-ui/melt-ui/commit/87bce8a0ec9d085715b8985c16158ebd3991b71a))
+
+## 0.80.0
+
+### Minor Changes
+
+- feat(slider): add `onValueCommitted` callback ([#1212](https://github.com/melt-ui/melt-ui/pull/1212))
+
+- fix: add `data-state` to select & combobox (closes #1199) ([#1200](https://github.com/melt-ui/melt-ui/pull/1200))
+
+- chore: change peer deps to support svelte 5 ([#1207](https://github.com/melt-ui/melt-ui/pull/1207))
+
+## 0.79.1
+
+### Patch Changes
+
+- Fix: checkbox hiddenInput not calling change events ([`caae3c01`](https://github.com/melt-ui/melt-ui/commit/caae3c01d4bde5c6f8331fb0e63bf7dc0f573810))
+
 ## 0.79.0
 
 ### Minor Changes

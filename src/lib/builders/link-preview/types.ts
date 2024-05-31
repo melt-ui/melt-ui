@@ -3,6 +3,7 @@ import type {
 	InteractOutsideBehaviorType,
 	FloatingConfig,
 	InteractOutsideEvent,
+	PortalConfig,
 } from '$lib/internal/actions/index.js';
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
@@ -113,7 +114,7 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string | null;
+	portal?: PortalConfig | null;
 
 	/**
 	 * Optionally override the default ids we assign to the elements

@@ -1,11 +1,16 @@
 import { readable, type Readable } from 'svelte/store';
 import { isReadable } from '../is.js';
 import { withGet, type WithGet } from '../withGet.js';
+import type { MaybeReadable } from '$lib/internal/types.js';
 
 type TODO = any;
 
 export type ToReadableStores<T extends Record<string, unknown>> = {
-	[K in keyof T]: T[K] extends Readable<TODO> ? WithGet<T[K]> : WithGet<Readable<T[K]>>;
+	[K in keyof T]: T[K] extends Readable<TODO>
+		? WithGet<T[K]>
+		: T[K] extends MaybeReadable<infer U>
+		? WithGet<Readable<U>>
+		: WithGet<Readable<T[K]>>;
 };
 
 /**
@@ -29,5 +34,5 @@ export function toReadableStores<T extends Record<string, unknown>>(
 		}
 	});
 
-	return result;
+	return result as any;
 }

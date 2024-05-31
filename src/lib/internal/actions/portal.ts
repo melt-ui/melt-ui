@@ -13,8 +13,9 @@ export const usePortal = ((el, target = 'body') => {
 		};
 	}
 
-	async function update(newTarget: HTMLElement | string | undefined) {
+	async function update(newTarget: PortalConfig = 'body') {
 		target = newTarget;
+
 		if (typeof target === 'string') {
 			targetEl = document.querySelector(target);
 			if (targetEl === null) {

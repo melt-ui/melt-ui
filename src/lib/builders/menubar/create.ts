@@ -100,7 +100,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		loop: false,
 		escapeBehavior: 'close',
 		interactOutsideBehavior: 'close',
-		portal: undefined,
+		portal: 'body',
 		forceVisible: false,
 		defaultOpen: false,
 		typeahead: true,

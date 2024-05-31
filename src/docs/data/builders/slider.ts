@@ -72,6 +72,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A callback that is called when the value of the slider changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
+		{
+			name: 'onValueCommitted',
+			type: '(value: number[]) => void',
+			description: 'The callback invoked when the user has committed the value of the slider.',
+		},
 	],
 	elements: [
 		{
