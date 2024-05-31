@@ -33,9 +33,9 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
+			...props,
 			closeDelay: closeDelay.get(),
 			type: type.get(),
-			...props,
 		} satisfies AddToastProps<T>;
 
 		const ids = {
