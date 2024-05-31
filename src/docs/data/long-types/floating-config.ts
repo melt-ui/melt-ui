@@ -1,3 +1,5 @@
+import type { FlipOptions } from '@floating-ui/core';
+
 type FloatingConfig = {
 	/**
 	 * The initial placement of the floating element.
@@ -56,7 +58,7 @@ type FloatingConfig = {
 	 *
 	 * @see https://floating-ui.com/docs/flip
 	 */
-	flip?: boolean;
+	flip?: boolean | FlipOptions;
 
 	/**
 	 * Whether the floating element can overlap the reference element.

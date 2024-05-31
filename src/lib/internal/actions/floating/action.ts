@@ -13,8 +13,8 @@ import {
 	autoUpdate,
 } from '@floating-ui/dom';
 import type { FloatingConfig } from './types.js';
-import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
-import type { Placement, VirtualElement } from '@floating-ui/core';
+import { isHTMLElement, isObject, noop } from '$lib/internal/helpers/index.js';
+import type { Placement, VirtualElement, FlipOptions } from '@floating-ui/core';
 
 const defaultConfig = {
 	strategy: 'absolute',
@@ -58,6 +58,7 @@ export function useFloating(
 			flip({
 				boundary: options.boundary,
 				padding: options.overflowPadding,
+				...(isObject(options.flip) && options.flip),
 			})
 		);
 	}
