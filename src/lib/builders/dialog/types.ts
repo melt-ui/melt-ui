@@ -3,7 +3,10 @@ import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { DialogIdParts, createDialog } from './create.js';
 import type { PortalConfig } from '$lib/internal/actions/portal.js';
-import type { EscapeBehaviorType, InteractOutsideBehaviorType } from '$lib/internal/actions/index.js';
+import type {
+	EscapeBehaviorType,
+	InteractOutsideBehaviorType,
+} from '$lib/internal/actions/index.js';
 export type { DialogComponentEvents } from './events.js';
 export type CreateDialogProps = {
 	/**
