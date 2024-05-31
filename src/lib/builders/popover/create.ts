@@ -40,7 +40,7 @@ const defaults = {
 	preventScroll: false,
 	onOpenChange: undefined,
 	closeOnOutsideClick: true,
-	portal: undefined,
+	portal: 'body',
 	forceVisible: false,
 	openFocus: undefined,
 	closeFocus: undefined,

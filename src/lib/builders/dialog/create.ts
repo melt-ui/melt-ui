@@ -43,7 +43,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	role: 'dialog',
 	defaultOpen: false,
-	portal: undefined,
+	portal: 'body',
 	forceVisible: false,
 	openFocus: undefined,
 	closeFocus: undefined,

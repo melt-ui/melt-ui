@@ -48,7 +48,7 @@ const defaults = {
 	preventScroll: true,
 	escapeBehavior: 'close',
 	closeOnOutsideClick: true,
-	portal: undefined,
+	portal: 'body',
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
