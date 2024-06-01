@@ -8,6 +8,7 @@
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
 		"deploy": "vite build",
+		"prepare": "svelte-kit sync",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
