@@ -21,7 +21,6 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { withGet } from '$lib/internal/helpers/withGet.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';

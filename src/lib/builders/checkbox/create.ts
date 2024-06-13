@@ -6,11 +6,10 @@ import {
 	kbd,
 	omit,
 	overridable,
-	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, readable, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { CheckboxEvents } from './events.js';
 import type { CreateCheckboxProps } from './types.js';
 import { createHiddenInput } from '../hidden-input/create.js';

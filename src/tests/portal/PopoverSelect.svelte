@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPopover, createSelect, melt, type CreateSelectProps } from '$lib/index.js';
+	import { createPopover, createSelect, melt } from '$lib/index.js';
 	import { Settings2 } from '$icons/index.js';
 	import type { PortalConfig } from '$lib/internal/actions/portal.js';
 

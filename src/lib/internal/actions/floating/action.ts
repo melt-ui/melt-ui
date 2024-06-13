@@ -14,7 +14,7 @@ import {
 } from '@floating-ui/dom';
 import type { FloatingConfig } from './types.js';
 import { isHTMLElement, isObject, noop } from '$lib/internal/helpers/index.js';
-import type { Placement, VirtualElement, FlipOptions } from '@floating-ui/core';
+import type { Placement, VirtualElement } from '@floating-ui/core';
 
 const defaultConfig = {
 	strategy: 'absolute',

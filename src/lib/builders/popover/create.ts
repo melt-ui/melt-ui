@@ -19,7 +19,6 @@ import {
 	portalAttr,
 	generateIds,
 	withGet,
-	sleep,
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper, usePortal, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
