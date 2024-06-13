@@ -7,6 +7,7 @@
 		states: { tags },
 	} = createTagsInput({
 		defaultTags: ['Svelte', 'Typescript'],
+		maxTags: 4,
 		unique: true,
 		add(tag) {
 			return { id: tag, value: tag };
