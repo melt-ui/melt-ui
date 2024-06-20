@@ -29,6 +29,7 @@
 	import { ModeWatcher } from 'mode-watcher';
 
 	$: isRoot = $page.url.pathname === '/';
+	let skipToContent = false;
 </script>
 
 <svelte:head>
@@ -45,6 +46,15 @@
 
 <ModeWatcher defaultMode="dark" />
 
+<a
+	href="#main"
+	on:blur={() => (skipToContent = false)}
+	on:focus={() => (skipToContent = true)}
+	class="focus:top-4 focus:z-100 z-0 fixed force-dark bg-neutral-900 text-neutral-100 top-[-20rem] ml-56 px-2 py-1 rounded-tl-xl rounded-br-xl max-sm:right-[6]"
+	tabindex="0"
+>
+	Skip to main content
+</a>
 <div class="relative flex min-h-screen flex-col md:flex-col-reverse" id="page">
 	<div class="flex flex-1">
 		<slot />

@@ -22,7 +22,7 @@
 			</Switch>
 		</div>
 	</aside>
-	<div class="mx-auto w-full min-w-0">
+	<div id="main" class="mx-auto w-full min-w-0">
 		<slot />
 	</div>
 </div>
