@@ -20,6 +20,8 @@ export type CreateRadioGroupProps = {
 	 */
 	required?: boolean;
 
+	name?: string;
+
 	/**
 	 * Whether or not the radio group should loop around when the end
 	 * is reached.

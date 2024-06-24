@@ -17,6 +17,11 @@ const OPTION_PROPS = [
 		default: '"vertical"',
 		description: 'The orientation of the radio group.',
 	},
+	{
+		name: 'name',
+		type: 'string',
+		description: 'The name to be used for the hidden input.',
+	},
 ];
 const BUILDER_NAME = 'radio group';
 

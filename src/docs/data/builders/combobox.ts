@@ -31,6 +31,11 @@ const OPTION_PROPS = [
 		description:
 			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
 	},
+	{
+		name: 'name',
+		type: 'string',
+		description: 'The name to be used for the hidden input.',
+	},
 ];
 
 const BUILDER_NAME = 'combobox';
