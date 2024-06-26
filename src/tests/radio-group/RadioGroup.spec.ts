@@ -84,4 +84,9 @@ describe('Radio Group', () => {
 		expect(els[2]).toHaveFocus();
 		expect(els[1]).not.toHaveFocus();
 	});
+
+	it('has specified name on hidden input', async () => {
+		const { getByTestId } = setup({ name: 'name' });
+		expect(getByTestId('input')).toHaveAttribute('name', 'name');
+	});
 });

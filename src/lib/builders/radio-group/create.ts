@@ -16,7 +16,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { derived, writable } from 'svelte/store';
+import { derived, readonly, writable } from 'svelte/store';
 import { createHiddenInput } from '../hidden-input/create.js';
 import type { RadioGroupEvents } from './events.js';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types.js';
@@ -27,6 +27,7 @@ const defaults = {
 	disabled: false,
 	required: false,
 	defaultValue: undefined,
+	name: undefined,
 } satisfies Defaults<CreateRadioGroupProps>;
 
 type RadioGroupParts = 'item' | 'hidden-input';
@@ -38,7 +39,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 
 	// options
 	const options = toWritableStores(omit(withDefaults, 'value'));
-	const { disabled, required, loop, orientation } = options;
+	const { disabled, required, loop, orientation, name: nameProp } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -177,6 +178,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 
 	const hiddenInput = createHiddenInput({
 		value,
+		name: readonly(nameProp),
 		disabled,
 		required,
 	});

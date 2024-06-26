@@ -16,6 +16,7 @@
 	export let disabled: CreateRadioGroupProps['disabled'] = undefined;
 	export let onValueChange: CreateRadioGroupProps['onValueChange'] = undefined;
 	export let required: CreateRadioGroupProps['required'] = undefined;
+	export let name: CreateRadioGroupProps['name'] = undefined;
 	export let items: Item[] = [
 		{ value: 'a', disabled: false },
 		{ value: 'b', disabled: false },
@@ -24,7 +25,7 @@
 	];
 
 	const {
-		elements: { root, item },
+		elements: { root, item, hiddenInput },
 		states: { value: localValue },
 	} = createRadioGroup({
 		value,
@@ -32,6 +33,7 @@
 		onValueChange,
 		disabled,
 		required,
+		name,
 		...removeUndefined($$restProps),
 	});
 </script>
@@ -39,6 +41,7 @@
 <main>
 	<div data-testid="value">{$localValue}</div>
 	<form>
+		<input use:melt={$hiddenInput} data-testid="input" />
 		<label id="radio-group-label" for="radio-group" data-testid="label"> Airplane mode </label>
 		<div use:melt={$root} data-testid="root">
 			{#each items as radioItem}
