@@ -1096,6 +1096,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			setMonth,
 			isDateDisabled: _isDateDisabled,
 			isDateUnavailable,
+			isSelectionStart,
+			isSelectionEnd,
+			isSelected
 		},
 		options,
 		ids,
