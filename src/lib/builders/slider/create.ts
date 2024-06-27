@@ -521,11 +521,11 @@ export const createSlider = (props?: CreateSliderProps) => {
 			};
 
 			const pointerUp = () => {
-				isActive.set(false);
-
-				if (withDefaults?.onValueCommitted) {
+				if (withDefaults?.onValueCommitted && isActive.get()) {
 					withDefaults.onValueCommitted(value.get());
 				}
+
+				isActive.set(false);
 			};
 
 			const unsub = executeCallbacks(

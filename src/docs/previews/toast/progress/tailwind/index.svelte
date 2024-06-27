@@ -7,16 +7,20 @@
 </script>
 
 <script lang="ts">
-	import { createToaster } from '$lib/index.js';
+	import { writable, type Writable } from 'svelte/store';
+	import { createToaster, type CreateToasterProps } from '$lib/index.js';
 	import { flip } from 'svelte/animate';
 	import Toast from './toast.svelte';
+	import SelectHover from './select-hover.svelte';
 
-	const {
+	const hover: Writable<CreateToasterProps['hover']> = writable('pause');
+
+	$: ({
 		elements,
 		helpers: { addToast },
 		states: { toasts },
 		actions: { portal },
-	} = createToaster<ToastData>();
+	} = createToaster<ToastData>({ hover: $hover }));
 
 	const toastData: ToastData[] = [
 		{
@@ -40,6 +44,8 @@
 		addToast({ data: toastData[Math.floor(Math.random() * toastData.length)] });
 	}
 </script>
+
+<SelectHover bind:value={$hover} />
 
 <button
 	class="inline-flex items-center justify-center rounded-xl bg-white px-4 py-3

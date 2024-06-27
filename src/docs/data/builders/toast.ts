@@ -20,6 +20,12 @@ const OPTION_PROPS = [
 		default: "'foreground'",
 		description: 'The sensitivity of the toast for accessibility purposes.',
 	},
+	{
+		name: 'hover',
+		type: ["'pause'", "'pause-all'", 'null'],
+		default: "'pause'",
+		description: 'The behavior when a toast is hovered.',
+	},
 ];
 
 const BUILDER_NAME = 'toast';
@@ -129,7 +135,7 @@ const keyboard: KeyboardSchema = [
 ];
 
 const schemas = [builder, content, title, description, close];
-const features = ['Automatically closes', 'Resets closing on hover'];
+const features = ['Automatically closes', 'Pause closing on hover (single, all, none)'];
 
 export const toastData: BuilderData = {
 	schemas,
