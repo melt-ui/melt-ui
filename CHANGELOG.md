@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.82.0
+
+### Minor Changes
+
+- Added prop to createToaster() to pause all timers on hover ([#1178](https://github.com/melt-ui/melt-ui/pull/1178))
+
+- feat(tags-input): split on paste ([#1229](https://github.com/melt-ui/melt-ui/pull/1229))
+
+- add selection helpers to range calendar ([`cf20fc72`](https://github.com/melt-ui/melt-ui/commit/cf20fc72bf367da13a17daaa9807bd430ff99688))
+
+- add `name` prop to radio group builder hidden input element ([#1237](https://github.com/melt-ui/melt-ui/pull/1237))
+
+### Patch Changes
+
+- fix(Calendar): sometimes first day of next month is missing ([#1236](https://github.com/melt-ui/melt-ui/pull/1236))
+
+- fix(slider): `onValueCommitted` called if the slider had an active state ([#1218](https://github.com/melt-ui/melt-ui/pull/1218))
+
 ## 0.81.0
 
 ### Minor Changes
