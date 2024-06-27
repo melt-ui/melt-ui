@@ -339,7 +339,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if (!addOnPaste.get()) return;
 					e.preventDefault();
 
-					const newTags = pastedText.split(',')
+					const newTags = pastedText.split(',');
 					addTag: for (let i = 0; i < newTags.length; i++) {
 						const newTag = newTags[i];
 						// Update value with the pasted tag or set invalid
@@ -504,11 +504,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				} as const;
 			};
@@ -644,11 +644,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				} as const;
 			};

@@ -32,6 +32,7 @@
 		states: { value: insideValue, months, headingValue, weekdays },
 		options: {
 			weekdayFormat: weekdayFormatOption,
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			numberOfMonths: numberOfMonthsOption,
 			fixedWeeks: fixedWeeksOption,
 			weekStartsOn: weekStartsOnOption,

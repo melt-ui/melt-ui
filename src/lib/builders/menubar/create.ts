@@ -65,7 +65,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const nextFocusable = withGet(writable<HTMLElement | null>(null));
 	const prevFocusable = withGet(writable<HTMLElement | null>(null));
 	const lastFocusedMenuTrigger = withGet(writable<HTMLElement | null>(null));
-	const closeTimer = withGet(writable(0));
+	// const closeTimer = withGet(writable(0));
 	let scrollRemoved = false;
 
 	const ids = toWritableStores({ ...generateIds(menubarIdParts), ...withDefaults.ids });

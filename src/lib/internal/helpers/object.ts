@@ -57,6 +57,7 @@ export function removeUndefined<T extends object>(
 	for (const key in obj) {
 		const value = obj[key];
 		if (value !== undefined) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			result[key] = value as any;
 		}
 	}

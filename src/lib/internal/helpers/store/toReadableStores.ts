@@ -3,6 +3,7 @@ import { isReadable } from '../is.js';
 import { withGet, type WithGet } from '../withGet.js';
 import type { MaybeReadable } from '$lib/internal/types.js';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TODO = any;
 
 export type ToReadableStores<T extends Record<string, unknown>> = {
@@ -34,5 +35,5 @@ export function toReadableStores<T extends Record<string, unknown>>(
 		}
 	});
 
-	return result as any;
+	return result as TODO;
 }
