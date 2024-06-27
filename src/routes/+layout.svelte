@@ -50,7 +50,7 @@
 	href="#main"
 	on:blur={() => (skipToContent = false)}
 	on:focus={() => (skipToContent = true)}
-	class="focus:top-4 focus:z-100 z-0 fixed force-dark bg-neutral-900 text-neutral-100 top-[-20rem] ml-56 px-2 py-1 rounded-tl-xl rounded-br-xl max-sm:right-[6]"
+	class="force-dark focus:z-1000 fixed top-[-20rem] z-0 ml-56 rounded-br-xl rounded-tl-xl bg-neutral-900 px-2 py-1 text-neutral-100 focus:top-4 max-sm:right-[6]"
 	tabindex="0"
 >
 	Skip to main content
