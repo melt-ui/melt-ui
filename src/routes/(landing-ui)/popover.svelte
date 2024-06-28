@@ -25,8 +25,13 @@
 
 	export let contentClass = '';
 
+	let popoverButton: HTMLButtonElement;
+
 	onMount(() => {
 		open.set(true);
+		setTimeout(() => {
+			popoverButton.blur();
+		}, 100);
 	});
 </script>
 
