@@ -49,7 +49,7 @@ export type CreateTableOfContentsArgs = {
 	 */
 	activeType?: ActiveType;
 	/**
-	 * Root margin for the intersection observer.
+	 * The root margin for the intersection observer. Refer to the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) for more information.
 	 */
 	rootMargin?: string;
 	/**
