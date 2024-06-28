@@ -60,6 +60,12 @@ const builder: APISchema = {
 			description:
 				'Allows you to overwrite the default scroll function with your own custom one. The scroll function gets the heading id passed to it.',
 		},
+		{
+			name: 'pushStateFn',
+			type: 'PushStateFn',
+			description:
+				"Allows you to overwrite the browser pushState function. The pushState function receives the fragment that corresponds to the heading id. It is intended to be used with SvelteKit's navigation module.",
+		},
 	],
 	builders: [
 		{
