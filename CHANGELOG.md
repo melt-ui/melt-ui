@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.83.0
+
+### Minor Changes
+
+- feat: add rootMargin to TableOfContents builder ([#1210](https://github.com/melt-ui/melt-ui/pull/1210))
+
 ## 0.82.0
 
 ### Minor Changes
