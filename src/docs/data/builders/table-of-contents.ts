@@ -36,6 +36,12 @@ const builder: APISchema = {
 `'lowest-parents'` means that parents of the heading with the lowest visible content are also considered active, and the same goes for `'highest-parents'`.",
 		},
 		{
+			name: 'rootMargin',
+			type: 'string',
+			description:
+				'The root margin for the intersection observer. Refer to the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) for more information.',
+		},
+		{
 			name: 'scrollOffset',
 			type: 'number',
 			default: '0',

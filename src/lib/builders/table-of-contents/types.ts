@@ -49,6 +49,10 @@ export type CreateTableOfContentsArgs = {
 	 */
 	activeType?: ActiveType;
 	/**
+	 * The root margin for the intersection observer. Refer to the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) for more information.
+	 */
+	rootMargin?: string;
+	/**
 	 * A custom filter function for headings.
 	 */
 	headingFilterFn?: HeadingFilterFn;
