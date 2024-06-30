@@ -6,6 +6,7 @@ import {
 	getDefaultDate,
 	getFirstSegment,
 	isBeforeOrSame,
+	type DateRange,
 } from '$lib/internal/helpers/date/index.js';
 import {
 	addMeltEventListener,
@@ -67,7 +68,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults.onValueChange);
+	const value = overridable<DateRange | undefined>(valueWritable, withDefaults.onValueChange);
 
 	const startValue = withGet.writable<DateValue | undefined>(
 		value.get()?.start ?? withDefaults.defaultValue?.start
@@ -280,6 +281,8 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	 * Synchronize the `value` store with the individual `startValue`
 	 * and `endValue` stores that are used by the individual date fields.
 	 *
+	 * We want to keep the `value` `start`/`end` set to `undefined` until
+	 * both `startValue` and `endValue` are set.
 	 * We only want to update the `value` store when both the `startValue`
 	 * and `endValue` stores are not `undefined`. This is because the
 	 * `value` store is used to determine if the date field is completed,
@@ -291,7 +294,10 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		const $startValue = startValue.get();
 		const $endValue = endValue.get();
 
-		if ($value?.start && $value?.end) {
+		if (!$value?.start || !$value?.end) {
+			startValue.set(undefined);
+			endValue.set(undefined);
+		} else {
 			if ($value.start !== $startValue) {
 				startValue.set($value.start);
 			}
