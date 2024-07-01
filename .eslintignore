@@ -30,3 +30,6 @@ playwright-report
 
 src/pagefind/**/*
 static/pagefind/**/*
+
+# Trunk config
+.trunk/**/*
