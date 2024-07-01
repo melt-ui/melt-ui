@@ -4,6 +4,9 @@ version: 0.1
 cli:
   version: 1.22.2
 # Trunk provides extensibility via plugins. (https://docs.trunk.io/plugins)
+repo:
+  # develop is the branch that everyone's work is merged into
+  trunk_branch: develop
 plugins:
   sources:
     - id: trunk
