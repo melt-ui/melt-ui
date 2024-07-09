@@ -19,7 +19,15 @@ runtimes:
     - node@18.12.1
     - python@3.10.8
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
+
 lint:
+  definitions:
+      - name: eslint
+        files: [typescript, javascript, svelte]
+  files:
+    - name: svelte
+      extensions:
+        - svelte
   enabled:
     # CI/Infra
     - actionlint@1.7.1
