@@ -52,7 +52,7 @@
 			}
 			return next;
 		},
-		openFocus: comboboxInput,
+		openFocus: () => comboboxInput,
 	});
 
 	let search: Promise<PagefindSearchFragment[]> | null = null;
