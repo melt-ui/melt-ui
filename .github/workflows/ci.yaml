@@ -24,7 +24,7 @@ jobs:
         with:
           version: 8.6.3
           run_install: true
-      - run: pnpm run lint
+      - run: pnpm run lint --ci
 
   Check:
     runs-on: ubuntu-latest
