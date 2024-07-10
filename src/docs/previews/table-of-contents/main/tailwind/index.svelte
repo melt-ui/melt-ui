@@ -2,6 +2,7 @@
 	import { Bird } from '$icons/index.js';
 	import Tree from './tree.svelte';
 	import { createTableOfContents } from '$lib/index.js';
+	import { pushState } from '$app/navigation';
 
 	const {
 		elements: { item },
@@ -10,6 +11,11 @@
 		selector: '#toc-builder-preview',
 		exclude: ['h1', 'h4', 'h5', 'h6'],
 		activeType: 'all',
+		/**
+		 * Here we can optionally provide SvelteKit's `pushState` function.
+		 * This function preserve navigation state within the framework.
+		 */
+		pushStateFn: pushState,
 		headingFilterFn: (heading) => !heading.hasAttribute('data-toc-ignore'),
 		scrollFn: (id) => {
 			/**
