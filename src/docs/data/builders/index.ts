@@ -1,6 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types.js';
 import { accordionData } from './accordion.js';
 import { avatarData } from './avatar.js';
+import { chartData } from './chart.js';
 import { checkboxData } from './checkbox.js';
 import { collapsibleData } from './collapsible.js';
 import { comboboxData } from './combobox.js';
@@ -47,6 +48,7 @@ export const builderMap = {
 	accordion: accordionData,
 	avatar: avatarData,
 	calendar: calendarData,
+	chart: chartData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
 	combobox: comboboxData,
