@@ -26,7 +26,7 @@
 				...h_band
 			},
 			y: {
-				accessor: 'apples',
+				accessor: row => [0, row.apples],
 				domain: [0, null],
 				...v_linear
 			}
@@ -40,14 +40,11 @@
 		area_d,
 		dimensions: {
 			x: {
-				accessor_d: xAccessorD,
-				scaled_d: xGetScaled,
-				scaler_d: xGetScaler
+				scaled_d: x_scaled_d,
+				scaler_d: x_scaler_d
 			},
 			y: {
-				scaled_d: yGetScaled,
-				scaler_d: yGetScaler,
-				range_d: xRange
+				scaled_d: y_scaled_d,
 			}
 		}
 	} = chart;
@@ -67,12 +64,11 @@
 
 					<g transform="translate({$area_d.padding.inner.left}, {$area_d.padding.inner.top})">
 						{#each $data as row, i}
-							{@const x = $xGetScaled(row)}
-							{@const y0 = $yGetScaler(0)}
-							{@const y = $yGetScaled(row)}
-							{@const w = $xGetScaler.bandwidth() }
+							{@const x = $x_scaled_d(row)}
+							{@const y = $y_scaled_d(row)}
+							{@const w = $x_scaler_d.bandwidth() }
 
-							<rect x={x} y={y} width={w} height={y0 - y} stroke="green" class="fill-white stroke-magnum-800 stroke-[2px]"/>
+							<rect x={x} y={y[1]} width={w} height={y[0] - y[1]} stroke="green" class="fill-white stroke-magnum-800 stroke-[2px]"/>
 						{/each}
 					</g>
 				</svg>
