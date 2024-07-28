@@ -7,5 +7,5 @@ export type PreventTextSelectionOverflowConfig = {
 	 *
 	 * @defaultValue `true`
 	 */
-	enabled?: boolean | WithGet<Readable<boolean>>;
+	enabled?: boolean | WithGet<Readable<boolean>> | undefined;
 };

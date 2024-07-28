@@ -10,16 +10,16 @@ import type { ModalConfig } from '../modal/types.js';
 import type { PreventTextSelectionOverflowConfig } from '../prevent-text-selection-overflow/types.js';
 
 export type PopperConfig = {
-	floating?: FloatingConfig;
-	focusTrap?: FocusTrapConfig | null;
-	modal?: ModalConfig | null;
-	portal?: PortalConfig | null;
-	escapeKeydown?: EscapeKeydownConfig | null;
-	preventTextSelectionOverflow?: PreventTextSelectionOverflowConfig | null;
+	floating?: FloatingConfig | undefined;
+	focusTrap?: FocusTrapConfig | null | undefined;
+	modal?: ModalConfig | null | undefined;
+	portal?: PortalConfig | null | undefined;
+	escapeKeydown?: EscapeKeydownConfig | null | undefined;
+	preventTextSelectionOverflow?: PreventTextSelectionOverflowConfig | null | undefined;
 };
 
 export type PopperArgs = {
 	anchorElement: Element | VirtualElement;
 	open: Writable<boolean>;
-	options?: PopperConfig;
+	options?: PopperConfig | undefined;
 };

@@ -6,20 +6,20 @@ export type { ToggleGroupComponentEvents } from './events.js';
 export type ToggleGroupType = 'single' | 'multiple';
 
 export type CreateToggleGroupProps<T extends ToggleGroupType = 'single'> = {
-	defaultValue?: T extends 'single' ? string : string[];
-	value?: Writable<string | string[] | undefined>;
-	onValueChange?: ChangeFn<string | string[] | undefined>;
-	type?: T;
-	disabled?: boolean;
-	rovingFocus?: boolean;
-	loop?: boolean;
-	orientation?: Orientation;
+	defaultValue?: (T extends 'single' ? string : string[]) | undefined;
+	value?: Writable<string | string[] | undefined> | undefined;
+	onValueChange?: ChangeFn<string | string[] | undefined> | undefined;
+	type?: T | undefined;
+	disabled?: boolean | undefined;
+	rovingFocus?: boolean | undefined;
+	loop?: boolean | undefined;
+	orientation?: Orientation | undefined;
 };
 
 export type ToggleGroupItemProps =
 	| {
 			value: string;
-			disabled?: boolean;
+			disabled?: boolean | undefined;
 	  }
 	| string;
 

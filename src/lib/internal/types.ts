@@ -20,7 +20,7 @@ export type Arrayable<T> = T | T[];
 
 export type CreatePaginationProps = {
 	count: number;
-	perPage?: number;
+	perPage?: number | undefined;
 };
 
 type NullableKeys<T> = {

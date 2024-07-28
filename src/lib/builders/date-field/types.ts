@@ -12,7 +12,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateValue;
+	defaultValue?: DateValue | undefined;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -24,7 +24,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateValue | undefined>;
+	onValueChange?: ChangeFn<DateValue | undefined> | undefined;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -34,7 +34,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateValue | undefined>;
+	value?: Writable<DateValue | undefined> | undefined;
 
 	/**
 	 * The date that is used when the date field is empty to
@@ -42,7 +42,7 @@ export type DateFieldProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
+	defaultPlaceholder?: DateValue | undefined;
 
 	/**
 	 * A writable store that can be used to control the placeholder
@@ -55,7 +55,7 @@ export type DateFieldProps = {
 	 * the field. The `placeholder` store is used as the starting
 	 * point for cycling through the individual date segments.
 	 */
-	placeholder?: Writable<DateValue>;
+	placeholder?: Writable<DateValue> | undefined;
 
 	/**
 	 * A function called when the placeholder value changes. It receives
@@ -70,7 +70,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue> | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -79,7 +79,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: Matcher | undefined;
 
 	/**
 	 * The minimum acceptable date. When provided, the
@@ -88,7 +88,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	minValue?: DateValue;
+	minValue?: DateValue | undefined;
 
 	/**
 	 * The maximum acceptable date. When provided, the
@@ -97,7 +97,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	maxValue?: DateValue;
+	maxValue?: DateValue | undefined;
 
 	/**
 	 * If true, the date field will be disabled and users
@@ -106,7 +106,7 @@ export type DateFieldProps = {
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * If true, the date field will be readonly, and users
@@ -115,7 +115,7 @@ export type DateFieldProps = {
 	 *
 	 * @default false
 	 */
-	readonly?: boolean;
+	readonly?: boolean | undefined;
 
 	/**
 	 *
@@ -123,7 +123,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	readonlySegments?: EditableSegmentPart[];
+	readonlySegments?: EditableSegmentPart[] | undefined;
 
 	/**
 	 * The format to use for displaying the time in the input.
@@ -133,14 +133,14 @@ export type DateFieldProps = {
 	 *
 	 * Defaults to the locale's default time format.
 	 */
-	hourCycle?: 12 | 24;
+	hourCycle?: 12 | 24 | undefined;
 
 	/**
 	 * The locale to use for formatting the date field.
 	 *
 	 * @default 'en'
 	 */
-	locale?: string;
+	locale?: string | undefined;
 
 	/**
 	 * The granularity of the date field. This determines which
@@ -158,14 +158,14 @@ export type DateFieldProps = {
 	 *
 	 * @default 'day'
 	 */
-	granularity?: Granularity;
+	granularity?: Granularity | undefined;
 
 	/**
 	 * Whether or not to hide the timeZoneName segment from the date field.
 	 *
 	 * @default false;
 	 */
-	hideTimeZone?: boolean;
+	hideTimeZone?: boolean | undefined;
 
 	/**
 	 * The name to use for the hidden input element of the date field,
@@ -174,7 +174,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	name?: string;
+	name?: string | undefined;
 
 	/**
 	 *
@@ -183,7 +183,7 @@ export type DateFieldProps = {
 	 *
 	 * @default false
 	 */
-	required?: boolean;
+	required?: boolean | undefined;
 
 	/**
 	 * Override any of the element IDs set by the builder.
@@ -193,7 +193,7 @@ export type DateFieldProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<IdObj<DateFieldIdParts>>;
+	ids?: Partial<IdObj<DateFieldIdParts>> | undefined;
 };
 
 export type CreateDateFieldProps = DateFieldProps;

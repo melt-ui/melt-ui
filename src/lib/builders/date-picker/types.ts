@@ -15,7 +15,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateValue;
+	defaultValue?: DateValue | undefined;
 
 	/**
 	 * A function called when the value of the date picker changes.
@@ -27,7 +27,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateValue | undefined>;
+	onValueChange?: ChangeFn<DateValue | undefined> | undefined;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -37,7 +37,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateValue | undefined>;
+	value?: Writable<DateValue | undefined> | undefined;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -51,7 +51,7 @@ export type DatePickerProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
+	defaultPlaceholder?: DateValue | undefined;
 
 	/**
 	 * A writable store that can be used to control the placeholder
@@ -74,7 +74,7 @@ export type DatePickerProps = {
 	 *
 	 * @default Writable<CalendarDate> - the current date at midnight.
 	 */
-	placeholder?: Writable<DateValue>;
+	placeholder?: Writable<DateValue> | undefined;
 
 	/**
 	 * A function called when the placeholder value changes. It receives
@@ -89,7 +89,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue> | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will
@@ -100,7 +100,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateDisabled?: Matcher;
+	isDateDisabled?: Matcher | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -117,12 +117,12 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: Matcher | undefined;
 
 	/**
 	 * @default 'en'
 	 */
-	locale?: string;
+	locale?: string | undefined;
 };
 
 type ModifiedDateFieldProps = Omit<

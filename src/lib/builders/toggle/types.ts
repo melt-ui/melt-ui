@@ -5,10 +5,10 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { ToggleComponentEvents } from './events.js';
 
 export type CreateToggleProps = {
-	disabled?: boolean;
-	defaultPressed?: boolean;
-	pressed?: Writable<boolean>;
-	onPressedChange?: ChangeFn<boolean>;
+	disabled?: boolean | undefined;
+	defaultPressed?: boolean | undefined;
+	pressed?: Writable<boolean> | undefined;
+	onPressedChange?: ChangeFn<boolean> | undefined;
 };
 
 export type Toggle = BuilderReturn<typeof createToggle>;

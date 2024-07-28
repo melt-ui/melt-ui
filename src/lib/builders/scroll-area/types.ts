@@ -10,7 +10,7 @@ export type CreateScrollAreaProps = {
 	 *
 	 * @default 'hover'
 	 */
-	type?: ScrollAreaType;
+	type?: ScrollAreaType | undefined;
 
 	/**
 	 * If the type is `"scroll"` or `"hover"`, this determines how long
@@ -19,20 +19,20 @@ export type CreateScrollAreaProps = {
 	 *
 	 * @default 600
 	 */
-	hideDelay?: number;
+	hideDelay?: number | undefined;
 
 	/**
 	 * The reading direction of the scroll area.
 	 *
 	 * @default 'ltr'
 	 */
-	dir?: TextDirection;
+	dir?: TextDirection | undefined;
 
 	/**
 	 * Optionally override the default ids assigned to the
 	 * elements.
 	 */
-	ids?: Partial<IdObj<ScrollAreaIdParts>>;
+	ids?: Partial<IdObj<ScrollAreaIdParts>> | undefined;
 };
 
 export type ScrollArea = ReturnType<typeof createScrollArea>;

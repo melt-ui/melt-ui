@@ -12,53 +12,53 @@ export type CreateSliderProps = {
 	 *
 	 * @default []
 	 */
-	defaultValue?: number[];
+	defaultValue?: number[] | undefined;
 
 	/**
 	 * The controlled value store for the switch.
 	 * If provided, this will override the value passed to `defaultValue`.
 	 */
-	value?: Writable<number[]>;
+	value?: Writable<number[]> | undefined;
 
 	/**
 	 * The callback invoked when the value store of the slider changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<number[]>;
+	onValueChange?: ChangeFn<number[]> | undefined;
 
 	/**
 	 * The callback invoked when the user has committed the value of the slider.
 	 */
-	onValueCommitted?: (value: number[]) => void;
+	onValueCommitted?: ((value: number[]) => void) | undefined;
 
 	/**
 	 * The minimum value of the slider.
 	 *
 	 * @default 0
 	 */
-	min?: number;
+	min?: number | undefined;
 
 	/**
 	 * The maximum value of the slider.
 	 *
 	 * @default 100
 	 */
-	max?: number;
+	max?: number | undefined;
 
 	/**
 	 * The amount to increment or decrement the value of the slider.
 	 *
 	 * @default 1
 	 */
-	step?: number;
+	step?: number | undefined;
 
 	/**
 	 * The orientation of the slider.
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: SliderOrientation;
+	orientation?: SliderOrientation | undefined;
 
 	/**
 	 * The direction of the slider.
@@ -68,21 +68,21 @@ export type CreateSliderProps = {
 	 *
 	 * @default 'ltr'
 	 */
-	dir?: 'ltr' | 'rtl';
+	dir?: 'ltr' | 'rtl' | undefined;
 
 	/**
 	 * When `true`, prevents the user from interacting with the slider.
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * When `false`, disables automatically sorting the value array when moving thumbs past each other.
 	 *
 	 * @default true
 	 */
-	autoSort?: boolean;
+	autoSort?: boolean | undefined;
 };
 
 export type Slider = BuilderReturn<typeof createSlider>;

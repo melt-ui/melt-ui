@@ -9,15 +9,15 @@ import type { Writable } from 'svelte/store';
 import type { TooltipIdParts, createTooltip } from './create.js';
 export type { TooltipComponentEvents } from './events.js';
 export type CreateTooltipProps = {
-	positioning?: FloatingConfig;
-	arrowSize?: number;
-	defaultOpen?: boolean;
-	open?: Writable<boolean>;
-	onOpenChange?: ChangeFn<boolean>;
-	closeOnPointerDown?: boolean;
-	openDelay?: number;
-	closeDelay?: number;
-	forceVisible?: boolean;
+	positioning?: FloatingConfig | undefined;
+	arrowSize?: number | undefined;
+	defaultOpen?: boolean | undefined;
+	open?: Writable<boolean> | undefined;
+	onOpenChange?: ChangeFn<boolean> | undefined;
+	closeOnPointerDown?: boolean | undefined;
+	openDelay?: number | undefined;
+	closeDelay?: number | undefined;
+	forceVisible?: boolean | undefined;
 	/**
 	 * Escape behavior type.
 	 * `close`: Closes the element immediately.
@@ -27,26 +27,26 @@ export type CreateTooltipProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	escapeBehavior?: EscapeBehaviorType;
+	escapeBehavior?: EscapeBehaviorType | undefined;
 
-	disableHoverableContent?: boolean;
+	disableHoverableContent?: boolean | undefined;
 	/**
 	 * If set to `true`, whenever you open this tooltip, all other tooltips
 	 * with `group` also set to `true` will close. If you pass in a string
 	 * instead, only tooltips with the same `group` value will be closed.
 	 */
-	group?: boolean | string;
+	group?: boolean | string | undefined;
 	/**
 	 * If not undefined, the tooltip will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: PortalConfig | null;
+	portal?: PortalConfig | null | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<TooltipIdParts>>;
+	ids?: Partial<IdObj<TooltipIdParts>> | undefined;
 };
 
 export type Tooltip = BuilderReturn<typeof createTooltip>;

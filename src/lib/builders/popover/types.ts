@@ -14,18 +14,18 @@ export type CreatePopoverProps = {
 	/**
 	 * The positioning configuration for the floating element.
 	 */
-	positioning?: FloatingConfig;
+	positioning?: FloatingConfig | undefined;
 
 	/**
 	 * The size of the optional arrow in pixels.
 	 */
-	arrowSize?: number;
+	arrowSize?: number | undefined;
 
 	/**
 	 * The initial state of the `open` store.
 	 * Should only be used if the popover is uncontrolled.
 	 */
-	defaultOpen?: boolean;
+	defaultOpen?: boolean | undefined;
 
 	/**
 	 * A store that controls the open state.
@@ -33,7 +33,7 @@ export type CreatePopoverProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	open?: Writable<boolean>;
+	open?: Writable<boolean> | undefined;
 
 	/**
 	 * Optional function that runs whenever open should change.
@@ -42,14 +42,14 @@ export type CreatePopoverProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onOpenChange?: ChangeFn<boolean>;
+	onOpenChange?: ChangeFn<boolean> | undefined;
 
 	/**
 	 * Whether or not to disable the focus trap when the popover is open.
 	 *
 	 * @default false
 	 */
-	disableFocusTrap?: boolean;
+	disableFocusTrap?: boolean | undefined;
 
 	/**
 	 * Escape behavior type.
@@ -60,14 +60,14 @@ export type CreatePopoverProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	escapeBehavior?: EscapeBehaviorType;
+	escapeBehavior?: EscapeBehaviorType | undefined;
 
 	/**
 	 * Whether or not to close the popover when the escape key is pressed.
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: boolean | undefined;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -75,28 +75,28 @@ export type CreatePopoverProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: InteractOutsideEvent) => void;
+	onOutsideClick?: ((event: InteractOutsideEvent) => void) | undefined;
 
 	/**
 	 * Whether should prevent text selection overflowing the element when the element is the top layer.
 	 *
 	 * @defaultValue `true`
 	 */
-	preventTextSelectionOverflow?: boolean;
+	preventTextSelectionOverflow?: boolean | undefined;
 
 	/**
 	 * Whether or not to prevent scrolling when the popover is open.
 	 *
 	 * @default false
 	 */
-	preventScroll?: boolean;
+	preventScroll?: boolean | undefined;
 
 	/**
 	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: PortalConfig | null;
+	portal?: PortalConfig | null | undefined;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -106,24 +106,24 @@ export type CreatePopoverProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
 	/**
 	 * Override the default autofocus behavior of the popover
 	 * on open.
 	 */
-	openFocus?: FocusProp;
+	openFocus?: FocusProp | undefined;
 
 	/**
 	 * Override the default autofocus behavior of the popover
 	 * on close.
 	 */
-	closeFocus?: FocusProp;
+	closeFocus?: FocusProp | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<PopoverIdParts>>;
+	ids?: Partial<IdObj<PopoverIdParts>> | undefined;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

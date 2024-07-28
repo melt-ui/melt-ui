@@ -23,7 +23,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default false
 	 */
-	preventDeselect?: boolean;
+	preventDeselect?: boolean | undefined;
 
 	/**
 	 * The minimum selectable date. When provided, the
@@ -32,7 +32,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined
 	 */
-	minValue?: DateValue;
+	minValue?: DateValue | undefined;
 
 	/**
 	 * The maximum selectable date. When provided, the
@@ -41,7 +41,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined
 	 */
-	maxValue?: DateValue;
+	maxValue?: DateValue | undefined;
 
 	/**
 	 * The default value for the date picker. When provided,
@@ -50,7 +50,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: S;
+	defaultValue?: S | undefined;
 
 	/**
 	 * A function called when the value of the date picker changes.
@@ -62,7 +62,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<S | undefined>;
+	onValueChange?: ChangeFn<S | undefined> | undefined;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -72,7 +72,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<S | undefined>;
+	value?: Writable<S | undefined> | undefined;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -86,7 +86,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
+	defaultPlaceholder?: DateValue | undefined;
 
 	/**
 	 * A writable store that can be used to externally control the placeholder date.
@@ -103,7 +103,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default Writable<CalendarDate> - set to the current date at midnight.
 	 */
-	placeholder?: Writable<DateValue>;
+	placeholder?: Writable<DateValue> | undefined;
 
 	/**
 	 * A function called when the placeholder value changes. It takes a single argument,
@@ -117,7 +117,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue> | undefined;
 
 	/**
 	 * Applicable only when `numberOfMonths` is greater than 1.
@@ -132,7 +132,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default false
 	 */
-	pagedNavigation?: boolean;
+	pagedNavigation?: boolean | undefined;
 
 	/**
 	 * The day of the week to start the calendar on, which must
@@ -141,7 +141,7 @@ export type CreateCalendarProps<
 	 *
 	 * @defaultValue 0 (Sunday)
 	 */
-	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | undefined;
 
 	/**
 	 * How the string representation of the weekdays provided via the `weekdays` state store
@@ -157,7 +157,7 @@ export type CreateCalendarProps<
 	 *
 	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#weekday
 	 */
-	weekdayFormat?: Intl.DateTimeFormatOptions['weekday'];
+	weekdayFormat?: Intl.DateTimeFormatOptions['weekday'] | undefined;
 
 	/**
 	 * A function that receives a date and returns `true` or `false` to indicate whether
@@ -171,7 +171,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	isDateDisabled?: Matcher;
+	isDateDisabled?: Matcher | undefined;
 
 	/**
 	 * Dates matching the provided matchers are marked as "unavailable." Unlike disabled dates,
@@ -186,7 +186,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: Matcher | undefined;
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.
@@ -198,7 +198,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default false
 	 */
-	fixedWeeks?: boolean;
+	fixedWeeks?: boolean | undefined;
 
 	/**
 	 * Determines the number of months to display on the calendar simultaneously.
@@ -206,7 +206,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default 1
 	 */
-	numberOfMonths?: number;
+	numberOfMonths?: number | undefined;
 
 	/**
 	 * This label is exclusively used for accessibility, remaining hidden from the page.
@@ -218,21 +218,21 @@ export type CreateCalendarProps<
 	 * - 'Appointment date' will be read as 'Appointment date, January 2021' if the current month is January 2021.
 	 * - 'Booking date' will be read as 'Booking date, January 2021' if the current month is January 2021.
 	 */
-	calendarLabel?: string;
+	calendarLabel?: string | undefined;
 
 	/**
 	 * The default locale setting.
 	 *
 	 * @default 'en'
 	 */
-	locale?: string;
+	locale?: string | undefined;
 
 	/**
 	 * The default locale setting.
 	 *
 	 * @default 'en'
 	 */
-	multiple?: Multiple;
+	multiple?: Multiple | undefined;
 
 	/**
 	 * Whether the calendar is disabled. When true, the user will not
@@ -241,7 +241,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * Whether the calendar is readonly. When true, the user will be able
@@ -251,12 +251,12 @@ export type CreateCalendarProps<
 	 *
 	 * @default false
 	 */
-	readonly?: boolean;
+	readonly?: boolean | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<CalendarIdParts>>;
+	ids?: Partial<IdObj<CalendarIdParts>> | undefined;
 };
 
 export type Calendar = ReturnType<typeof createCalendar>;
