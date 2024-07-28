@@ -612,7 +612,7 @@ export function createChart<
 			const accumulators_all = $checkers
 				.map(checker => typeof checker === 'function' ? checker() : undefined);
 			const accumulators = accumulators_all
-				.filter(accumulator => !!accumulator);
+				.filter((accumulator) : accumulator is NonNullable<typeof accumulator> => !!accumulator);
 
 			// all extents are predefined, no need to parse the data?
 			if (accumulators.length === 0) {
