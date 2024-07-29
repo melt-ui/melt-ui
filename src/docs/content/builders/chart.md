@@ -4,9 +4,11 @@ description: A control that displays a d3 chart
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components'
+    import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+    export let snippets
+    export let previews
 </script>
 
 ## Anatomy
@@ -43,6 +45,16 @@ In the example above, we have the following:
     * Domain: `[0, 3840]`
     * Range: `height - margin - padding`
     * Scale: [`d3 scaleLinear`](https://d3js.org/d3-scale/linear)
+
+## Examples
+
+### Multiple
+
+We expose a `multiple` prop to allow for multiple selections.
+
+<Preview code={snippets.multi}> 
+  <svelte:component this={previews.multi} /> 
+</Preview>
 
 ## API Reference
 
