@@ -1,11 +1,9 @@
 import type { Readable } from 'svelte/store';
 import type {
-	Dimension,
 	Dimension_MaybeStores,
 	DimensionAccessors,
 	DimensionAccessors_MaybeStores,
 } from './types-describe.js';
-import type { DomainField } from './types-basic.js';
 
 export type StoreOrType<TYPE> = TYPE | Readable<TYPE>;
 
@@ -54,27 +52,8 @@ export type ReplaceLeafType<TYPE, TO> =
 	? { [k in keyof TYPE]: ReplaceLeafType<TYPE[k], TO> }
 	: TO;
 
-export type InferAccessorReturn<ROW, META, ACCESSOR> =
-	InferMaybeStoreInner<ACCESSOR> extends (row: ROW, info: { meta: META }) => infer R
-		? R
-		: InferMaybeStoreInner<ACCESSOR> extends keyof ROW
-		? ROW[InferMaybeStoreInner<ACCESSOR>]
-		: never
-
-export type MarkPartial<OBJECT,MEMBERS extends keyof OBJECT> =
-	Omit<OBJECT, MEMBERS> &
-	Partial<Pick<OBJECT, MEMBERS>>;
-
 // TODO: Use these to avoid retrying in create
 export type InferGeneratorReturn<GENERATOR> = GENERATOR extends Generator<any, infer R, any> ? R : never;
-export type InferGeneratorYield<GENERATOR> = GENERATOR extends Generator<infer Y, any, any> ? Y : never;
-export type InferGeneratorReceive<GENERATOR> = GENERATOR extends Generator<any, any, infer R> ? R : never;
-
-
-export type Infer_Type_DomainType<RETURN> =
-	RETURN extends DomainField<infer DOMAINTYPE>
-		? DOMAINTYPE
-		: never;
 
 export type Infer_DimensionAccessor_ReturnType<ROW, ACCESSOR> =
 	ACCESSOR extends keyof ROW
