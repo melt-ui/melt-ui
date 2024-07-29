@@ -86,17 +86,24 @@ export function createChart<
 						Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]>>>
 					accessors_d:
 						'accessors' extends keyof DIMENSIONS[k]
-						? (
-								{
-									[sub in keyof DIMENSIONS[k]['accessors']]:
-										Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['accessors'][sub]>>>
-								}
-						)
+						? {
+								[sub in keyof DIMENSIONS[k]['accessors']]:
+									Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['accessors'][sub]>>>
+							}
 						: Record<string, never>
 					scaled_d:
 						DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
 						? ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, Infer_Dimension_MaybeStores_Accessors<DIMENSIONS[k]>>, RANGETYPE>
 						: never
+					scaleds_d:
+						'accessors' extends keyof DIMENSIONS[k]
+							? {
+									[sub in keyof DIMENSIONS[k]['accessors']]:
+									DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
+										? ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['accessors'][sub]>, RANGETYPE>
+										: never
+								}
+							: Record<string, never>
 				};
 		}
 	}
@@ -365,7 +372,16 @@ export function createChart<
 		// return
 		Stores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
 		Stores<DimensionDiscreteDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
-		{ scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>> },
+		{
+			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
+			scaleds_d:
+				'accessors' extends keyof DIMENSION
+					? {
+						[sub in keyof DIMENSION['accessors']]:
+							ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSION['accessors'][sub]>, RANGETYPE>
+					}
+					: Record<string, never>
+		},
 		// receive
 		Readable<ExtentsDiscreteSet<DOMAINTYPE>>
 	>
@@ -503,7 +519,8 @@ export function createChart<
 			domain_d,
 			range_d,
 			scaler_d,
-			scaled_d
+			scaled_d,
+			scaleds_d: scaleds_d as never
 		}
 	}
 
@@ -516,7 +533,16 @@ export function createChart<
 		// return
 		Stores<DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
 		Stores<DimensionContinuousDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
-		{ scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>> },
+		{
+			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>
+			scaleds_d:
+				'accessors' extends keyof DIMENSION
+					? {
+						[sub in keyof DIMENSION['accessors']]:
+						ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSION['accessors'][sub]>, RANGETYPE>
+					}
+					: Record<string, never>
+		},
 		// receive
 		Readable<undefined | ExtentsContinuousBound<DOMAINTYPE>>
 	>
@@ -640,7 +666,8 @@ export function createChart<
 			domain_d,
 			range_d,
 			scaler_d,
-			scaled_d
+			scaled_d,
+			scaleds_d: scaleds_d as never
 		}
 	}
 

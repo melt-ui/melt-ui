@@ -25,7 +25,6 @@ export type ChartBasicsMeta_MaybeStores<META> =
 	{ meta: StoreOrType<META> }
 
 export type ChartBasicsMeta_Stores<META> =
-	object |
 	{ meta: Readable<META> }
 
 export type ChartBasics<ROW, META> =
