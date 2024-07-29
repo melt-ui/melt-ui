@@ -1,37 +1,9 @@
 import type { Readable } from 'svelte/store';
-import type {
-	Dimension_MaybeStores,
-	DimensionAccessors,
-	DimensionAccessors_MaybeStores,
-} from './types-describe.js';
+import type { Dimension_MaybeStores, DimensionAccessors_MaybeStores } from './types-describe.js';
 
 export type StoreOrType<TYPE> = TYPE | Readable<TYPE>;
 
-export type MaybeStore<TYPE> = TYPE | Readable<TYPE>;
-export type MaybeStores<TYPE> = {
-	[k in keyof TYPE] :
-		k extends 'discrete'
-		? TYPE[k]
-		: k extends 'accessors'
-		? { [a in keyof TYPE[k]]: MaybeStore<TYPE[k][a]> }
-		:	MaybeStore<TYPE[k]>
-}
-export type Stores<TYPE> = {
-	[k in keyof TYPE]-?
-	: k extends 'discrete'
-	? TYPE[k]
-	: k extends 'accessors' | 'accessors_d'
-	? { [a in keyof TYPE[k]]: Readable<TYPE[k][a]> }
-	: Readable<TYPE[k]>
-}
 export type StringValue = { toString(): string };
-
-export type InferMaybeAccessors<DIMENSION extends MaybeStores<DimensionAccessors<any, any, any>>> =
-	'accessor' extends keyof DIMENSION
-	? DIMENSION['accessor']
-	: 'accessors' extends keyof DIMENSION
-	? DIMENSION['accessors'][keyof DIMENSION['accessors']]
-	: never;
 
 export type InferStoreInner<STORE> =
 	STORE extends Readable<infer INNER>

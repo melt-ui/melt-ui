@@ -2,35 +2,26 @@ import type {
 	ChartBasics_MaybeStores,
 	ChartBasics_Stores,
 	Dimension_MaybeStores,
-	DimensionContinuous,
 	DimensionContinuous_MaybeStores,
 	DimensionContinuous_Stores,
-	DimensionDiscrete,
 	DimensionDiscrete_MaybeStores,
 	DimensionDiscrete_Stores,
 } from './types-describe.js';
 import type {
-	Infer_Dimension_MaybeStores_Accessors,
-	Infer_DimensionAccessor_ReturnType, Infer_DimensionAccessors_MaybeStores_ReturnType,
+	Infer_DimensionAccessor_ReturnType,
+	Infer_DimensionAccessors_MaybeStores_ReturnType,
 	InferGeneratorReturn,
-	InferMaybeAccessors,
-	InferMaybeStoreInner,
-	MaybeStores,
 	ReplaceLeafType,
-	Stores,
 } from './types-util.js';
 import type {
 	ChartBasicsDerived_Stores,
-	DimensionContinuousDerived,
 	DimensionContinuousDerived_Stores,
-	DimensionDiscreteDerived,
 	DimensionDiscreteDerived_Stores,
 } from './types-create.js';
 import type {
 	Accessor,
 	AccessorFunc,
 	AccessorFuncRt,
-	AccessorScaledOutput,
 	DomainContinuousBound,
 	DomainDiscreteArray,
 	DomainDiscreteSet,
@@ -364,15 +355,15 @@ export function createChart<
 		}
 	}
 
-	function * createDimensionDiscrete<DIMENSION extends MaybeStores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+	function * createDimensionDiscrete<DIMENSION extends DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
 		props: DIMENSION
 	)
 	: Generator<
 		// yield
 		Readable<ExtentsDiscreteSet<DOMAINTYPE> | AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>>>,
 		// return
-		Stores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
-		Stores<DimensionDiscreteDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
+		DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
+		DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
 			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
 			scaleds_d:
@@ -525,15 +516,15 @@ export function createChart<
 		}
 	}
 
-	function * createDimensionContinuous<DIMENSION extends MaybeStores<DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+	function * createDimensionContinuous<DIMENSION extends DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
 		props: DIMENSION
 	)
 		: Generator<
 		// yield
 		Readable<undefined | ExtentsContinuousBound<DOMAINTYPE> | AccumulatorCreator<ROW, META, undefined | ExtentsContinuousBound<DOMAINTYPE>>>,
 		// return
-		Stores<DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
-		Stores<DimensionContinuousDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
+		DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
+		DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
 			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>
 			scaleds_d:
