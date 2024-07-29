@@ -28,6 +28,7 @@ import type {
 	DimensionDiscreteDerived_Stores,
 } from './types-create.js';
 import type {
+	Accessor,
 	AccessorFunc, AccessorFuncRt,
 	AccessorScaledOutput,
 	DomainContinuousBound,
@@ -40,6 +41,7 @@ import type {
 	Scaler,
 	Sides,
 	Size,
+	Range, Reverse, ScalerFactoryContinuous, ScalerFactoryDiscrete,
 } from './types-basic.js';
 import { derived, type Readable, readonly, writable } from 'svelte/store';
 import {
@@ -188,31 +190,13 @@ export function createChart<
 		}
 	);
 
-	function * createDimensionDiscrete<DIMENSION extends MaybeStores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
-		props: DIMENSION
-	)
-	: Generator<
-		// yield
-		Readable<ExtentsDiscreteSet<DOMAINTYPE> | AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>>>,
-		// return
-		Stores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
-		Stores<DimensionDiscreteDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
-		{ scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>> },
-		// receive
-		Readable<ExtentsDiscreteSet<DOMAINTYPE>>
-	>
-	{
-		const accessor = 'accessor' in props ? makeStore(props.accessor) : undefined;
-		const accessors = 'accessors' in props
-			? Object.fromEntries(Object.entries(props.accessors).map(([name, accessor]) => tuple(name, makeStore(accessor))))
-			: undefined;
-		const range = makeStore(props.range);
-		const reverse = makeStore(props.reverse);
-		const sort = makeStore(props.sort);
-		const extents = makeStore(props.extents);
-		const domain = makeStore(props.domain);
-		const scalerFactory = makeStore(props.scalerFactory);
-
+	function create_accessors_d<DOMAINTYPE>(
+		accessor: Readable<Accessor<ROW, META, DOMAINTYPE>> | undefined,
+		accessors: {
+			[p: string]:
+				Readable<keyof ROW | AccessorFunc<ROW, META, DOMAINTYPE>>
+			} | undefined
+	) {
 		const accessors_d = accessors
 			? Object.fromEntries(
 				Object
@@ -242,25 +226,162 @@ export function createChart<
 						return (row: ROW) => row[$accessor] as DOMAINTYPE;
 				}
 			)
-		: Object.entries(accessors_d).length !== 0
-		? derived(
-				Object.values(accessors_d),
-				($accessors_d) => {
-					const keys = Object.keys(accessors_d);
-					return (row: ROW, info: { meta: META }) => {
-						return Object.fromEntries(
-							keys.map((key, i) => [
-								key,
-								$accessors_d[i](row, info)
-							])
-						)
+			: Object.entries(accessors_d).length !== 0
+				? derived(
+					Object.values(accessors_d),
+					($accessors_d) => {
+						const keys = Object.keys(accessors_d);
+						return (row: ROW, info: { meta: META }) => {
+							return Object.fromEntries(
+								keys.map((key, i) => [
+									key,
+									$accessors_d[i](row, info)
+								])
+							)
+						}
 					}
-				}
-		)
-		: undefined;
+				)
+				: undefined;
 
 		if (!accessor_d)
 			throw new Error('no accessors defined');
+
+		return { accessor_d, accessors_d };
+	}
+
+	function create_range_d<RANGETYPE>(
+		range: Readable<Range<RANGETYPE, META> | undefined>,
+		reverse: Readable<Reverse<META> | undefined>
+	) {
+		const range_d = derived(
+			[range, reverse],
+			([$range, $reverse], set: (value: RangeList<RANGETYPE> | undefined) => void) => {
+
+				const order = <R extends Array<unknown>>(r: R) => $reverse ? [...r].reverse() as R : r;
+
+				if (!$range)
+					return set(undefined);
+
+				if (typeof $range !== 'function')
+					return set(order($range));
+
+				return derived(
+					[area_d, meta],
+					([$area_d, $meta]) =>
+						order($range({ area: $area_d, meta: $meta }))
+				).subscribe(set)
+			}
+		);
+
+		return range_d;
+	}
+
+	function create_scaled_d<DOMAINTYPE extends DOMAINSIMPLETYPE, DOMAINSIMPLETYPE, RANGETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+		scalerFactory:
+			Readable<ScalerFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>> |
+			Readable<ScalerFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>,
+		meta:
+			Readable<META>,
+		domain_d:
+			Readable<DomainDiscreteSet<DOMAINTYPE>> |
+			Readable<DomainContinuousBound<DOMAINTYPE> | undefined>,
+		range_d:
+			Readable<RangeList<RANGETYPE> | undefined>,
+		accessor_d:
+			Readable<AccessorFunc<ROW, META, DOMAINTYPE>>,
+		accessors_d:
+			{ [p: string]: Readable<AccessorFunc<ROW, META, DOMAINTYPE>> }
+	) {
+		const scaler_d = derived(
+			[
+				scalerFactory,
+				meta,
+				domain_d,
+				range_d
+			],
+			([
+				 $scalerFactory,
+				 $meta,
+				 $domain_d,
+				 $range_d
+			 ]) => {
+				return $scalerFactory({
+					meta: $meta as never,
+					domain_d: $domain_d as never,
+					range_d: $range_d
+				})
+			}
+		);
+
+		function create_scaled_d(accessor_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>) {
+			const scaled_d = derived(
+				[accessor_d, scaler_d],
+				([$accessor_d, $scaler_d]) => {
+					return ((row: ROW, info: { meta: META }) => {
+						const value = $accessor_d(row, info);
+
+						const map = (value: DomainField<DOMAINTYPE>): DomainField<RANGETYPE> => {
+							if (Array.isArray(value))
+								return value.map(v => map(v))
+
+							if (!!value && typeof value === 'object')
+								return Object.fromEntries(Object.entries(value).map(([n, v]) => [n, map(v)]));
+
+							return $scaler_d(value);
+						}
+
+						return map(value);
+					})
+				}
+			);
+
+			return scaled_d;
+		}
+
+		const scaled_d = create_scaled_d(accessor_d)
+
+		const scaleds_d = Object.fromEntries(
+			Object
+				.entries(accessors_d)
+				.map(([name, accessor_d]) => tuple(
+					name,
+					create_scaled_d(accessor_d)
+				))
+		);
+
+		return {
+			scaler_d,
+			scaled_d,
+			scaleds_d
+		}
+	}
+
+	function * createDimensionDiscrete<DIMENSION extends MaybeStores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+		props: DIMENSION
+	)
+	: Generator<
+		// yield
+		Readable<ExtentsDiscreteSet<DOMAINTYPE> | AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>>>,
+		// return
+		Stores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
+		Stores<DimensionDiscreteDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>> &
+		{ scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>> },
+		// receive
+		Readable<ExtentsDiscreteSet<DOMAINTYPE>>
+	>
+	{
+		const accessor = 'accessor' in props ? makeStore(props.accessor) : undefined;
+		const accessors = 'accessors' in props
+			?  Object.fromEntries(Object.entries(props.accessors).map(([name, accessor]) => tuple(name, makeStore(accessor))))
+			: undefined;
+		const range = makeStore(props.range);
+		const reverse = makeStore(props.reverse);
+		const sort = makeStore(props.sort);
+		const extents = makeStore(props.extents);
+		const domain = makeStore(props.domain);
+		const scalerFactory = makeStore(props.scalerFactory);
+
+		const { accessor_d, accessors_d } = create_accessors_d(accessor, accessors);
 
 		const checker = derived(
 			[accessor_d, extents],
@@ -351,66 +472,19 @@ export function createChart<
 				}
 		);
 
-		const range_d = derived(
-			[range, reverse],
-			([$range, $reverse], set: (value: RangeList<RANGETYPE> | undefined) => void) => {
+		const range_d = create_range_d(range, reverse);
 
-				const order = <R extends Array<unknown>>(r: R) => $reverse ? [...r].reverse() as R : r;
-
-				if (!$range)
-					return set(undefined);
-
-				if (typeof $range !== 'function')
-					return set(order($range));
-
-				return derived(
-					[area_d, meta],
-					([$area_d, $meta]) =>
-						order($range({ area: $area_d, meta: $meta }))
-				).subscribe(set)
-			}
-		);
-
-		const scaler_d = derived(
-			[
-				scalerFactory,
-				meta,
-				domain_d,
-				range_d
-			],
-			([
-				 $scalerFactory,
-				 $meta,
-				 $domain_d,
-				 $range_d
-			 ]) => {
-				return $scalerFactory({
-					meta: $meta as never,
-					domain_d: $domain_d,
-					range_d: $range_d
-				})
-			}
-		);
-
-		const scaled_d = derived(
-			[accessor_d, scaler_d],
-			([$accessor_d, $scaler_d]) => {
-				return ((row: ROW, info: { meta: META }) => {
-					const value = $accessor_d(row, info);
-
-					const map = (value: DomainField<DOMAINTYPE>): DomainField<RANGETYPE> => {
-						if (Array.isArray(value))
-							return value.map(v => map(v))
-
-						if (!!value && typeof value === 'object')
-							return Object.fromEntries(Object.entries(value).map(([n, v]) => [n, map(v)]));
-
-						return $scaler_d(value);
-					}
-
-					return map(value);
-				})
-			}
+		const {
+			scaler_d,
+			scaled_d,
+			scaleds_d
+		} = create_scaled_d(
+			scalerFactory,
+			meta,
+			domain_d,
+			range_d,
+			accessor_d,
+			accessors_d
 		);
 
 		return {
@@ -458,55 +532,7 @@ export function createChart<
 		const domain = makeStore(props.domain);
 		const scalerFactory = makeStore(props.scalerFactory);
 
-		const accessors_d = accessors
-			? Object.fromEntries(
-				Object
-					.entries(accessors)
-					.map(([name, accessor]) => [
-						name,
-						derived(
-							accessor,
-							($accessor) => {
-								if (typeof $accessor === 'function')
-									return $accessor
-								else
-									return (row: ROW) => row[$accessor] as DOMAINTYPE;
-							}
-						)
-					])
-			)
-			: { };
-
-		const accessor_d = accessor
-			? derived(
-				accessor,
-				($accessor) => {
-					if (typeof $accessor === 'function')
-						return $accessor
-					else
-						return (row: ROW) => row[$accessor] as DOMAINTYPE;
-				}
-			)
-			: Object.entries(accessors_d).length !== 0
-				? derived(
-					Object.values(accessors_d),
-					($accessors_d) => {
-						const keys = Object.keys(accessors_d);
-						return (row: ROW, info: { meta: META }) => {
-							return Object.fromEntries(
-								keys.map((key, i) => [
-									key,
-									$accessors_d[i](row, info)
-								])
-							)
-						}
-					}
-				)
-				: undefined;
-
-		if (!accessor_d)
-			throw new Error('no accessors defined');
-
+		const { accessor_d, accessors_d } = create_accessors_d(accessor, accessors);
 
 		const checker = derived(
 			[accessor_d, extents, extentsDefault],
@@ -583,67 +609,19 @@ export function createChart<
 			}
 		);
 
-		const range_d = derived(
-			[range, reverse],
-			([$range, $reverse], set: (value: RangeList<RANGETYPE> | undefined) => void) => {
+		const range_d = create_range_d(range, reverse);
 
-				const order = <R extends Array<unknown>>(r: R) =>
-					$reverse ? [...r].reverse() as R : r;
-
-				if (!$range)
-					return set(undefined);
-
-				if (typeof $range !== 'function')
-					return set(order($range));
-
-				return derived(
-					[area_d, meta],
-					([$area_d, $meta]) =>
-						order($range({ area: $area_d, meta: $meta }))
-				).subscribe(set)
-			}
-		);
-
-		const scaler_d = derived(
-			[
-				scalerFactory,
-				meta,
-				domain_d,
-				range_d
-			],
-			([
-				 $scalerFactory,
-				 $meta,
-				 $domain_d,
-				 $range_d
-			 ]) => {
-				return $scalerFactory({
-					meta: $meta as never,
-					domain_d: $domain_d,
-					range_d: $range_d
-				})
-			}
-		);
-
-		const scaled_d = derived(
-			[accessor_d, scaler_d],
-			([$accessor_d, $scaler_d]) => {
-				return ((row: ROW, info: { meta: META }) => {
-					const value = $accessor_d(row, info);
-
-					const map = (value: DomainField<DOMAINTYPE>): DomainField<RANGETYPE> => {
-						if (Array.isArray(value))
-							return value.map(v => map(v))
-
-						if (!!value && typeof value === 'object')
-							return Object.fromEntries(Object.entries(value).map(([n, v]) => [n, map(v)]));
-
-						return $scaler_d(value);
-					}
-
-					return map(value);
-				})
-			}
+		const {
+			scaler_d,
+			scaled_d,
+			scaleds_d
+		} = create_scaled_d(
+			scalerFactory,
+			meta,
+			domain_d,
+			range_d,
+			accessor_d,
+			accessors_d
 		);
 
 		return {

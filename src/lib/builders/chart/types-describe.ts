@@ -93,14 +93,17 @@ export type DimensionAccessors_Stores<ROW, META, DOMAINTYPE> =
 
 export type DimensionRange<META, RANGETYPE> = {
 	range?: Range<RANGETYPE, META>;
+	reverse?: Reverse<META>;
 }
 
 export type DimensionRange_MaybeStores<META, RANGETYPE> = {
 	range?: StoreOrType<Range<RANGETYPE, META> | undefined>;
+	reverse?: StoreOrType<Reverse<META> | undefined>;
 }
 
 export type DimensionRange_Stores<META, RANGETYPE> = {
 	range?: Readable<Range<RANGETYPE, META> | undefined>;
+	reverse?: Readable<Reverse<META> | undefined>;
 }
 
 export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
@@ -108,7 +111,6 @@ export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RA
 	DimensionRange<META, RANGETYPE> &
 	{
 		discrete: true;
-		reverse?: Reverse<META>;
 		extents?: ExtentsDiscrete<DOMAINTYPE, META>;
 		domain?: DomainDiscrete<DOMAINTYPE, META>;
 		sort?: SortFunc<DOMAINTYPE>;
@@ -120,7 +122,6 @@ export type DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSI
 	DimensionRange_MaybeStores<META, RANGETYPE> &
 	{
 		discrete: true;
-		reverse?: StoreOrType<Reverse<META> | undefined>;
 		extents?: StoreOrType<ExtentsDiscrete<DOMAINTYPE, META> | undefined>;
 		domain?: StoreOrType<DomainDiscrete<DOMAINTYPE, META> | undefined>;
 		sort?: StoreOrType<SortFunc<DOMAINTYPE> | undefined>;
@@ -132,7 +133,6 @@ export type DimensionDiscrete_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLET
 	DimensionRange_Stores<META, RANGETYPE> &
 	{
 		discrete: true;
-		reverse?: Readable<Reverse<META> | undefined>;
 		extents?: Readable<ExtentsDiscrete<DOMAINTYPE, META> | undefined>;
 		domain?: Readable<DomainDiscrete<DOMAINTYPE, META> | undefined>;
 		sort?: Readable<SortFunc<DOMAINTYPE> | undefined>;
@@ -144,7 +144,6 @@ export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, 
 	DimensionRange<META, RANGETYPE> &
 	{
 		discrete?: false;
-		reverse?: Reverse<META>;
 		extents?: ExtentsContinuous<DOMAINTYPE, META>;
 		extentsDefault?: ExtentsContinuousBound<DOMAINTYPE>;
 		domain?: DomainContinuous<DOMAINTYPE, META>;
@@ -156,7 +155,6 @@ export type DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE extends DOMAIN
 	DimensionRange_MaybeStores<META, RANGETYPE> &
 	{
 		discrete?: false;
-		reverse?: StoreOrType<Reverse<META> | undefined>;
 		extents?: StoreOrType<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
 		extentsDefault?: StoreOrType<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
 		domain?: StoreOrType<DomainContinuous<DOMAINTYPE, META> | undefined>;
@@ -168,7 +166,6 @@ export type DimensionContinuous_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPL
 	DimensionRange_Stores<META, RANGETYPE> &
 	{
 		discrete?: false;
-		reverse?: Readable<Reverse<META> | undefined>;
 		extents?: Readable<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
 		extentsDefault?: Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
 		domain?: Readable<DomainContinuous<DOMAINTYPE, META> | undefined>;
