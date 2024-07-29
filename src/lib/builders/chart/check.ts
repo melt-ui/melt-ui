@@ -6,16 +6,19 @@ import { h_linear, h_range } from './cardinal.js';
 import type { InferStoreInner, ReplaceLeafType } from './types-util.js';
 import { tuple } from './util.js';
 
-type IsEqual<A,B> = [A] extends [B] ? true : false;
+type IsEqual<A,B> =
+	[A] extends [B]
+		? ([B] extends [A] ? true : false)
+		: false;
 type Contains<C, M> = M extends keyof C ? true : false;
 type Assert<C,V extends C> = V;
 
 const ndata  = [
-	{ year: '2016', apples: 10 },
-	{ year: '2018', apples: 11 }
+	{ year: '2016', apples: 10, bananas: 20 },
+	{ year: '2018', apples: 11, bananas: 21 }
 ];
 
-type Row = { year: string, apples: number };
+type Row = { year: string, apples: number, bananas: number };
 const rdata: Row[] = ndata;
 
 const meta = {
@@ -23,7 +26,6 @@ const meta = {
 }
 
 const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
-
 
 {
 	const result = createChart({
@@ -35,7 +37,7 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 			x: {
 				discrete: true,
 				accessor: 'year',
-				scalerFactory: scalerFactoryBand<string>
+				scalerFactory: scalerFactoryBand
 			},
 			y: {
 				accessor: 'apples',
@@ -43,7 +45,14 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 			},
 			complex: {
 				accessor: (row, { meta }) => complexReturn,
-				scalerFactory: scalerFactoryLinear<number>	
+				scalerFactory: scalerFactoryLinear
+			},
+			merge: {
+				accessors: {
+					a: 'apples',
+					b: 'bananas'
+				},
+				scalerFactory: scalerFactoryLinear
 			}
 		}
 	});
@@ -55,17 +64,17 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 
 	type HasMeta = Assert<IsEqual<typeof result.meta, Readable<typeof meta>>, true>
 	
-	//type A = typeof result.dimensions.complex.scaled_d;
-	//const a: A = null!;
-	//
-	//type B = InferStoreInner<A>;
-	//const b: B = null!;
-	//
-	//type C = ReturnType<B>
-	//const c: C = null!;
-	//
-	//type R = ReplaceLeafType<typeof complexReturn, string>;
-	//const r: R = null!;
+//	type A = typeof result.dimensions.x.reverse;
+//	const a: A = null!;
+//
+//	type B = InferStoreInner<A>;
+//	const b: B = null!;
+//
+//	type C = ReturnType<B>
+//	const c: C = null!;
+//
+//	type R = ReplaceLeafType<typeof complexReturn, string>;
+//	const r: R = null!;
 
 	type XDiscrete = Assert<IsEqual<typeof result.dimensions.x.discrete, true>, true>;
 	type XAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.x.accessor_d>>, [Row, { meta: typeof meta }]>, true>;
@@ -74,7 +83,7 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 	type XDomainD = Assert<IsEqual<InferStoreInner<typeof result.dimensions.x.domain_d>, DomainDiscreteSet<string>>, true>
 	type XScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.x.scaled_d>>, number>, true>
 
-	type YDiscrete = Assert<IsEqual<typeof result.dimensions.y.discrete, false | undefined>, true>;
+	type YDiscrete = Assert<IsEqual<typeof result.dimensions.y.discrete, false>, true>;
 	type YAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.y.accessor_d>>, [Row, { meta: typeof meta }]>, true>;
 	type YAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.y.accessor_d>>, number>, true>;
 	type YDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.y.domain>, DomainContinuous<number, typeof meta> | undefined>, true>
@@ -88,5 +97,13 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 	type ComplexDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.complex.domain>, DomainContinuous<number, typeof meta> | undefined>, true>
 	type ComplexDomainD = Assert<IsEqual<InferStoreInner<typeof result.dimensions.complex.domain_d>, DomainContinuousBound<number> | undefined>, true>
 	type ComplexScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.complex.scaled_d>>, typeof complexReturn>, true>
-	
+
+	type MergeDiscrete = Assert<IsEqual<typeof result.dimensions.merge.discrete, true>, false>;
+	type MergeAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.merge.accessor_d>>, [Row, { meta: typeof meta }]>, true>;
+	type MergeAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.accessor_d>>, { a: number, b: number }>, true>;
+	type MergeDomain = Assert<IsEqual<typeof result.dimensions.merge.domain, undefined | Readable<DomainContinuous<number, typeof meta> | undefined>>, true>
+	type MergeDomainD = Assert<IsEqual<InferStoreInner<typeof result.dimensions.merge.domain_d>, DomainContinuousBound<number> | undefined>, true>
+	type MergeScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.scaled_d>>, { a: number, b: number }>, true>
+	type MergeAccessorAReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.accessors_d.a>>, number>, true>;
+	type MergeAccessorBReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.accessors_d.b>>, number>, true>;
 }

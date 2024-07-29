@@ -1,8 +1,9 @@
 import type { Readable } from 'svelte/store';
+import type { Dimension_MaybeStores, DimensionAccessors_MaybeStores } from './types-describe.js';
+import type { DomainField } from './types-basic.js';
 
 export type MaybeStore<TYPE> = TYPE | Readable<TYPE>;
-export type MaybeStores<TYPE> = { [k in keyof TYPE] : k extends 'discrete' ? TYPE[k] : MaybeStore<TYPE[k]> }
-export type Stores<TYPE> = { [k in keyof TYPE]-? : k extends 'discrete' ? TYPE[k] : Readable<TYPE[k]> }
+
 export type StringValue = { toString(): string };
 
 export type InferStoreInner<STORE> =
@@ -15,6 +16,11 @@ export type InferMaybeStoreInner<MAYBESTORE> =
 		? INNER
 		: MAYBESTORE;
 
+export type Store<MAYBESTORE> =
+	MAYBESTORE extends Readable<infer INNER>
+		? MAYBESTORE
+		: Readable<MAYBESTORE>;
+
 export type ReplaceLeafType<TYPE, TO> =
 	TYPE extends [...infer ELEMENTS]
 	? { [K in keyof TYPE]: ReplaceLeafType<TYPE[K], TO> }
@@ -24,18 +30,31 @@ export type ReplaceLeafType<TYPE, TO> =
 	? { [k in keyof TYPE]: ReplaceLeafType<TYPE[k], TO> }
 	: TO;
 
-export type InferAccessorReturn<ROW, META, ACCESSOR> =
-	InferMaybeStoreInner<ACCESSOR> extends (row: ROW, info: { meta: META }) => infer R
-		? R
-		: InferMaybeStoreInner<ACCESSOR> extends keyof ROW
-		? ROW[InferMaybeStoreInner<ACCESSOR>]
-		: never
-
-export type MarkPartial<OBJECT,MEMBERS extends keyof OBJECT> =
-	Omit<OBJECT, MEMBERS> &
-	Partial<Pick<OBJECT, MEMBERS>>;
-
 // TODO: Use these to avoid retrying in create
 export type InferGeneratorReturn<GENERATOR> = GENERATOR extends Generator<any, infer R, any> ? R : never;
-export type InferGeneratorYield<GENERATOR> = GENERATOR extends Generator<infer Y, any, any> ? Y : never;
-export type InferGeneratorReceive<GENERATOR> = GENERATOR extends Generator<any, any, infer R> ? R : never;
+
+export type Infer_DimensionAccessor_ReturnType<ROW, ACCESSOR> =
+	ACCESSOR extends keyof ROW
+		? ROW[ACCESSOR]
+		: ACCESSOR extends (...args: any[]) => infer RETURNTYPE
+		? RETURNTYPE
+		: never;
+
+export type Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION extends DimensionAccessors_MaybeStores<ROW, any, any>, ROW> =
+	'accessor' extends keyof DIMENSION
+	? Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['accessor']>>
+	: 'accessors' extends keyof DIMENSION
+	? {
+			[sub in keyof DIMENSION['accessors']]:
+				Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['accessors'][sub]>>
+	}
+	: never
+
+export type Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSION extends DimensionAccessors_MaybeStores<ROW, any, any>, ROW, DOMAINSIMPLETYPE> =
+	Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION, ROW> extends DomainField<infer DOMAINTYPE>
+		? (
+			DOMAINTYPE extends DOMAINSIMPLETYPE
+			? DOMAINTYPE
+			: never
+		)
+		: never
