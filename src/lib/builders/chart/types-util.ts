@@ -1,7 +1,7 @@
 import type { Readable } from 'svelte/store';
 import type { Dimension_MaybeStores, DimensionAccessors_MaybeStores } from './types-describe.js';
 
-export type StoreOrType<TYPE> = TYPE | Readable<TYPE>;
+export type MaybeStore<TYPE> = TYPE | Readable<TYPE>;
 
 export type StringValue = { toString(): string };
 

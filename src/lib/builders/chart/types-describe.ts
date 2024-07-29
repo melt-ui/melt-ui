@@ -13,7 +13,7 @@ import type {
 	Sides,
 	SortFunc,
 } from './types-basic.js';
-import type { StoreOrType } from './types-util.js';
+import type { MaybeStore } from './types-util.js';
 import type { Readable } from 'svelte/store';
 
 export type ChartBasicsMeta<META> =
@@ -22,7 +22,7 @@ export type ChartBasicsMeta<META> =
 
 export type ChartBasicsMeta_MaybeStores<META> =
 	object |
-	{ meta: StoreOrType<META> }
+	{ meta: MaybeStore<META> }
 
 export type ChartBasicsMeta_Stores<META> =
 	{ meta: Readable<META> }
@@ -40,12 +40,12 @@ export type ChartBasics<ROW, META> =
 export type ChartBasics_MaybeStores<ROW, META> =
 	ChartBasicsMeta_MaybeStores<META> &
 	{
-		data: StoreOrType<ROW[]>;
+		data: MaybeStore<ROW[]>;
 		//meta?: META; // A chart should either have meta or not have meta, never either
-		width: StoreOrType<number>;
-		height: StoreOrType<number>;
-		margin?: StoreOrType<Sides | number | undefined>;
-		padding?: StoreOrType<Sides | number | undefined>;
+		width: MaybeStore<number>;
+		height: MaybeStore<number>;
+		margin?: MaybeStore<Sides | number | undefined>;
+		padding?: MaybeStore<Sides | number | undefined>;
 	}
 
 
@@ -72,11 +72,11 @@ export type DimensionAccessors<ROW, META, DOMAINTYPE> =
 export type DimensionAccessors_MaybeStores<ROW, META, DOMAINTYPE> =
 	{
 		accessor:
-			StoreOrType<Accessor<ROW, META, DOMAINTYPE>>
+			MaybeStore<Accessor<ROW, META, DOMAINTYPE>>
 	} |
 	{
 		accessors:
-			Record<string, StoreOrType<Accessor<ROW, META, DOMAINTYPE>>>
+			Record<string, MaybeStore<Accessor<ROW, META, DOMAINTYPE>>>
 	}
 
 export type DimensionAccessors_Stores<ROW, META, DOMAINTYPE> =
@@ -96,8 +96,8 @@ export type DimensionRange<META, RANGETYPE> = {
 }
 
 export type DimensionRange_MaybeStores<META, RANGETYPE> = {
-	range?: StoreOrType<Range<RANGETYPE, META> | undefined>;
-	reverse?: StoreOrType<Reverse<META> | undefined>;
+	range?: MaybeStore<Range<RANGETYPE, META> | undefined>;
+	reverse?: MaybeStore<Reverse<META> | undefined>;
 }
 
 export type DimensionRange_Stores<META, RANGETYPE> = {
@@ -121,10 +121,10 @@ export type DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSI
 	DimensionRange_MaybeStores<META, RANGETYPE> &
 	{
 		discrete: true;
-		extents?: StoreOrType<ExtentsDiscrete<DOMAINTYPE, META> | undefined>;
-		domain?: StoreOrType<DomainDiscrete<DOMAINTYPE, META> | undefined>;
-		sort?: StoreOrType<SortFunc<DOMAINTYPE> | undefined>;
-		scalerFactory: StoreOrType<ScalerFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
+		extents?: MaybeStore<ExtentsDiscrete<DOMAINTYPE, META> | undefined>;
+		domain?: MaybeStore<DomainDiscrete<DOMAINTYPE, META> | undefined>;
+		sort?: MaybeStore<SortFunc<DOMAINTYPE> | undefined>;
+		scalerFactory: MaybeStore<ScalerFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
 export type DimensionDiscrete_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
@@ -154,10 +154,10 @@ export type DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE extends DOMAIN
 	DimensionRange_MaybeStores<META, RANGETYPE> &
 	{
 		discrete?: false;
-		extents?: StoreOrType<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
-		extentsDefault?: StoreOrType<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
-		domain?: StoreOrType<DomainContinuous<DOMAINTYPE, META> | undefined>;
-		scalerFactory: StoreOrType<ScalerFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
+		extents?: MaybeStore<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
+		extentsDefault?: MaybeStore<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
+		domain?: MaybeStore<DomainContinuous<DOMAINTYPE, META> | undefined>;
+		scalerFactory: MaybeStore<ScalerFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
 export type DimensionContinuous_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
