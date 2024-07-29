@@ -16,6 +16,11 @@ export type InferMaybeStoreInner<MAYBESTORE> =
 		? INNER
 		: MAYBESTORE;
 
+export type Store<MAYBESTORE> =
+	MAYBESTORE extends Readable<infer INNER>
+		? MAYBESTORE
+		: Readable<MAYBESTORE>;
+
 export type ReplaceLeafType<TYPE, TO> =
 	TYPE extends [...infer ELEMENTS]
 	? { [K in keyof TYPE]: ReplaceLeafType<TYPE[K], TO> }

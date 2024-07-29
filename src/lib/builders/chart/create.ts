@@ -1,7 +1,7 @@
 import type {
 	ChartBasics_MaybeStores,
-	ChartBasics_Stores,
-	Dimension_MaybeStores,
+	ChartBasics_Stores, Dimension,
+	Dimension_MaybeStores, DimensionAccessors,
 	DimensionContinuous_MaybeStores,
 	DimensionContinuous_Stores,
 	DimensionDiscrete_MaybeStores,
@@ -10,8 +10,8 @@ import type {
 import type {
 	Infer_DimensionAccessor_ReturnType, Infer_DimensionAccessors_MaybeStores_DomainType,
 	Infer_DimensionAccessors_MaybeStores_ReturnType,
-	InferGeneratorReturn,
-	ReplaceLeafType,
+	InferGeneratorReturn, InferMaybeStoreInner,
+	ReplaceLeafType, Store,
 } from './types-util.js';
 import type {
 	ChartBasicsDerived_Stores,
@@ -71,6 +71,29 @@ export function createChart<
 					? DimensionContinuous_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					& DimensionContinuousDerived_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					: never
+				) &
+				(
+					DIMENSIONS[k] extends Dimension<ROW, META, any, any, infer DOMAINSIMPLETYPE, any>
+					? (
+							'accessor' extends keyof DIMENSIONS[k]
+							? {
+									accessor:
+										Readable<Accessor<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>>>
+							}
+							: object
+					) &
+						(
+							'accessors' extends keyof DIMENSIONS[k]
+							? {
+									accessors:
+										{
+											[sub in keyof (DIMENSIONS[k]['accessors'])]:
+												Readable<Accessor<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>>>
+										}
+							}
+							: object
+					)
+					: object
 				) &
 				{
 					// maintain correct return type for accessor(s)
