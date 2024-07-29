@@ -1,16 +1,34 @@
-import type { ChartBasics, DimensionContinuous, DimensionDiscrete } from './types-describe.js';
 import type {
-	InferMaybeAccessors,
+	ChartBasics_MaybeStores,
+	ChartBasics_Stores,
+	Dimension_MaybeStores,
+	DimensionContinuous,
+	DimensionContinuous_MaybeStores,
+	DimensionContinuous_Stores,
+	DimensionDiscrete,
+	DimensionDiscrete_MaybeStores,
+	DimensionDiscrete_Stores,
+} from './types-describe.js';
+import type {
+	Infer_Dimension_MaybeStores_Accessors,
+	Infer_DimensionAccessor_ReturnType,
+	InferAccessorReturn,
 	InferGeneratorReturn,
+	InferMaybeAccessors,
 	InferMaybeStoreInner,
 	MaybeStores,
 	ReplaceLeafType,
-	Stores, InferAccessorReturn,
+	Stores,
 } from './types-util.js';
-import type { ChartBasicsDerived, DimensionContinuousDerived, DimensionDiscreteDerived } from './types-create.js';
 import type {
-	Accessor,
-	AccessorFunc,
+	ChartBasicsDerived_Stores,
+	DimensionContinuousDerived,
+	DimensionContinuousDerived_Stores,
+	DimensionDiscreteDerived,
+	DimensionDiscreteDerived_Stores,
+} from './types-create.js';
+import type {
+	AccessorFunc, AccessorFuncRt,
 	AccessorScaledOutput,
 	DomainContinuousBound,
 	DomainDiscreteArray,
@@ -30,71 +48,52 @@ import {
 	createAccumulatorCreatorDiscrete,
 } from './accumulator.js';
 import { makeStore, tuple } from './util.js';
-import { Replace } from 'lucide-svelte';
 
 export function createChart<
 	ROW,
 	META,
 	DIMENSIONS extends {
-		[k: string]:
-			MaybeStores<
-				DimensionDiscrete<ROW, META, any, any, any, any> |
-				DimensionContinuous<ROW, META, any, any, any, any>
-			>
+		[k: string]: Dimension_MaybeStores<ROW, META, any, any, any, any>
 	},
 >(
 	props:
-		MaybeStores<ChartBasics<ROW>> &
+		ChartBasics_MaybeStores<ROW, META> &
 		{
 			meta?: META | Readable<META>
 			dimensions: DIMENSIONS
 		}
 ):
-	Stores<ChartBasics<ROW>> &
-	{ meta: Readable<META> } &
-	Stores<ChartBasicsDerived<ROW, META>> &
+	ChartBasics_Stores<ROW, META> &
+	ChartBasicsDerived_Stores<ROW, META> &
 	{
 		dimensions: {
 			[k in keyof DIMENSIONS]: (
-					DIMENSIONS[k] extends MaybeStores<DimensionDiscrete<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>>
-					? Stores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
-					& Stores<DimensionDiscreteDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
+					DIMENSIONS[k] extends DimensionDiscrete_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
+					? DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					& DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<InferMaybeAccessors<DIMENSIONS[k]>>>> }
-					: DIMENSIONS[k] extends MaybeStores<DimensionContinuous<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>>
-					? Stores<DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
-					& Stores<DimensionContinuousDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
+					: DIMENSIONS[k] extends DimensionContinuous_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
+					? DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					& DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<InferMaybeAccessors<DIMENSIONS[k]>>>> }
 					: never
 				) &
 				{
-					// maintain correct return type for accessor
+					// maintain correct return type for accessor(s)
 					accessor_d:
-						'accessor' extends keyof DIMENSIONS[k]
+						Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]>>>
+					accessors_d:
+						'accessors' extends keyof DIMENSIONS[k]
 						? (
-							DIMENSIONS[k]['accessor'] extends keyof ROW
-							? Readable<(row: ROW, info: { meta: META }) => ROW[DIMENSIONS[k]['accessor']]>
-							: DIMENSIONS[k]['accessor'] extends (row: ROW, info: { meta: META }) => infer DT
-							? Readable<(row: ROW, info: { meta: META }) => DT>
-							: DIMENSIONS[k]['accessor'] extends Readable<infer ACCESSOR>
-							? (
-								ACCESSOR extends keyof ROW
-								? Readable<(row: ROW, info: { meta: META }) => ROW[ACCESSOR]>
-								: ACCESSOR extends (row: ROW, info: { meta: META }) => infer DT
-								? Readable<(row: ROW, info: { meta: META }) => DT>
-								: never
-							)
-							: never
+								{
+									[sub in keyof DIMENSIONS[k]['accessors']]:
+										Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['accessors'][sub]>>>
+								}
 						)
-						: never
+						: Record<string, never>
 					scaled_d:
-						DIMENSIONS[k] extends MaybeStores<DimensionDiscrete<ROW, META, any, infer RANGETYPE, any, any>>
-						? (
-								Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<InferAccessorReturn<ROW, META, InferMaybeAccessors<DIMENSIONS[k]>>, RANGETYPE>>
-						)
-						: DIMENSIONS[k] extends MaybeStores<DimensionContinuous<ROW, META, any, infer RANGETYPE, any, any>>
-						? (
-								Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<InferAccessorReturn<ROW, META, InferMaybeAccessors<DIMENSIONS[k]>>, RANGETYPE>>
-						)
+						DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
+						? ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, Infer_Dimension_MaybeStores_Accessors<DIMENSIONS[k]>>, RANGETYPE>
 						: never
 				};
 		}
@@ -133,8 +132,8 @@ export function createChart<
 				...size,
 				left: 0,
 				top: 0,
-				bottom: size.width,
-				right: size.height
+				bottom: size.height,
+				right: size.width
 			};
 			
 			const margin_inner: Size & Sides = {

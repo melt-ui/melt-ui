@@ -29,7 +29,8 @@ export type DomainFieldArray<DOMAINTYPE> = DomainField<DOMAINTYPE>[];
 export type DomainFieldRecord<DOMAINTYPE> = { [key: string]: DomainField<DOMAINTYPE> };
 
 export type AccessorKey<ROW> = keyof ROW;
-export type AccessorFunc<ROW, META, DOMAINTYPE> = (row: ROW, info: { meta: META }) => DomainField<DOMAINTYPE>;
+export type AccessorFuncRt<ROW, META, RETURNTYPE> = (row: ROW, info: { meta: META }) => RETURNTYPE;
+export type AccessorFunc<ROW, META, DOMAINTYPE> = AccessorFuncRt<ROW, META, DomainField<DOMAINTYPE>>;
 export type Accessor<ROW, META, DOMAINTYPE> = AccessorKey<ROW> | AccessorFunc<ROW, META, DOMAINTYPE>;
 
 export type RangeList<RANGETYPE> = [RANGETYPE, RANGETYPE, ...RANGETYPE[]];

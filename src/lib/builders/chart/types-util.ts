@@ -1,5 +1,8 @@
 import type { Readable } from 'svelte/store';
-import type { DimensionAccessors } from './types-describe.js';
+import type { Dimension, Dimension_MaybeStores, DimensionAccessors } from './types-describe.js';
+import type { DomainField } from './types-basic.js';
+
+export type StoreOrType<TYPE> = TYPE | Readable<TYPE>;
 
 export type MaybeStore<TYPE> = TYPE | Readable<TYPE>;
 export type MaybeStores<TYPE> = {
@@ -61,3 +64,23 @@ export type MarkPartial<OBJECT,MEMBERS extends keyof OBJECT> =
 export type InferGeneratorReturn<GENERATOR> = GENERATOR extends Generator<any, infer R, any> ? R : never;
 export type InferGeneratorYield<GENERATOR> = GENERATOR extends Generator<infer Y, any, any> ? Y : never;
 export type InferGeneratorReceive<GENERATOR> = GENERATOR extends Generator<any, any, infer R> ? R : never;
+
+
+export type Infer_Type_DomainType<RETURN> =
+	RETURN extends DomainField<infer DOMAINTYPE>
+		? DOMAINTYPE
+		: never;
+
+export type Infer_DimensionAccessor_ReturnType<ROW, ACCESSOR> =
+	ACCESSOR extends keyof ROW
+		? ROW[ACCESSOR]
+		: ACCESSOR extends (...args: any[]) => infer RETURNTYPE
+		? RETURNTYPE
+		: never;
+
+export type Infer_Dimension_MaybeStores_Accessors<DIMENSION extends Dimension_MaybeStores<any, any, any, any, any, any>> =
+	'accessor' extends keyof DIMENSION
+	? DIMENSION['accessor']
+	: 'accessors' extends keyof DIMENSION
+	? DIMENSION['accessors'][keyof DIMENSION['accessors']]
+	: never;
