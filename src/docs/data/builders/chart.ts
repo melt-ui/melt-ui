@@ -152,6 +152,7 @@ const features = [
 	'User definable dimensions',
 	'Supports any number of dimensions',
 	'Defaults for cardinal dimensions',
+	'Support for overlaying charts'
 ];
 
 export const chartData: BuilderData = {
