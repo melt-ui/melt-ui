@@ -11,8 +11,7 @@ import type {
 } from './types-describe.js';
 import type {
 	Infer_Dimension_MaybeStores_Accessors,
-	Infer_DimensionAccessor_ReturnType,
-	InferAccessorReturn,
+	Infer_DimensionAccessor_ReturnType, Infer_DimensionAccessors_MaybeStores_ReturnType,
 	InferGeneratorReturn,
 	InferMaybeAccessors,
 	InferMaybeStoreInner,
@@ -29,7 +28,8 @@ import type {
 } from './types-create.js';
 import type {
 	Accessor,
-	AccessorFunc, AccessorFuncRt,
+	AccessorFunc,
+	AccessorFuncRt,
 	AccessorScaledOutput,
 	DomainContinuousBound,
 	DomainDiscreteArray,
@@ -37,11 +37,14 @@ import type {
 	DomainField,
 	ExtentsContinuousBound,
 	ExtentsDiscreteSet,
+	Range,
 	RangeList,
+	Reverse,
 	Scaler,
+	ScalerFactoryContinuous,
+	ScalerFactoryDiscrete,
 	Sides,
 	Size,
-	Range, Reverse, ScalerFactoryContinuous, ScalerFactoryDiscrete,
 } from './types-basic.js';
 import { derived, type Readable, readonly, writable } from 'svelte/store';
 import {
@@ -73,17 +76,15 @@ export function createChart<
 					DIMENSIONS[k] extends DimensionDiscrete_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
 					? DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					& DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
-					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<InferMaybeAccessors<DIMENSIONS[k]>>>> }
 					: DIMENSIONS[k] extends DimensionContinuous_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
 					? DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					& DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
-					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<InferMaybeAccessors<DIMENSIONS[k]>>>> }
 					: never
 				) &
 				{
 					// maintain correct return type for accessor(s)
 					accessor_d:
-						Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]>>>
+						Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSIONS[k], ROW>>>
 					accessors_d:
 						'accessors' extends keyof DIMENSIONS[k]
 						? {
@@ -93,7 +94,7 @@ export function createChart<
 						: Record<string, never>
 					scaled_d:
 						DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
-						? ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, Infer_Dimension_MaybeStores_Accessors<DIMENSIONS[k]>>, RANGETYPE>
+						? Readable<AccessorFuncRt<ROW, META, ReplaceLeafType<Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSIONS[k], ROW>, RANGETYPE>>>
 						: never
 					scaleds_d:
 						'accessors' extends keyof DIMENSIONS[k]

@@ -1,5 +1,10 @@
 import type { Readable } from 'svelte/store';
-import type { Dimension, Dimension_MaybeStores, DimensionAccessors } from './types-describe.js';
+import type {
+	Dimension,
+	Dimension_MaybeStores,
+	DimensionAccessors,
+	DimensionAccessors_MaybeStores,
+} from './types-describe.js';
 import type { DomainField } from './types-basic.js';
 
 export type StoreOrType<TYPE> = TYPE | Readable<TYPE>;
@@ -78,9 +83,20 @@ export type Infer_DimensionAccessor_ReturnType<ROW, ACCESSOR> =
 		? RETURNTYPE
 		: never;
 
+export type Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION extends DimensionAccessors_MaybeStores<ROW, any, any>, ROW> =
+	'accessor' extends keyof DIMENSION
+	? Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['accessor']>>
+	: 'accessors' extends keyof DIMENSION
+	? {
+			[sub in keyof DIMENSION['accessors']]:
+				Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['accessors'][sub]>>
+	}
+	: never
+
 export type Infer_Dimension_MaybeStores_Accessors<DIMENSION extends Dimension_MaybeStores<any, any, any, any, any, any>> =
 	'accessor' extends keyof DIMENSION
 	? DIMENSION['accessor']
 	: 'accessors' extends keyof DIMENSION
 	? DIMENSION['accessors'][keyof DIMENSION['accessors']]
 	: never;
+
