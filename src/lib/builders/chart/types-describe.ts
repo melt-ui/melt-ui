@@ -18,10 +18,19 @@ export type ChartBasics<ROW> = {
 	padding?: Sides | number;
 }
 
+export type DimensionAccessors<ROW, META, DOMAINTYPE> =
+	{
+		accessor:
+			Accessor<ROW, META, DOMAINTYPE>
+	} |
+	{
+		accessors: Record<string, Accessor<ROW, META, DOMAINTYPE>>
+	}
+
 export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+	DimensionAccessors<ROW, META, DOMAINTYPE> &
 	{
 		discrete: true;
-		accessor: Accessor<ROW, META, DOMAINTYPE>;
 		range?: Range<RANGETYPE, META>;
 		reverse?: Reverse<META>;
 		extents?: ExtentsDiscrete<DOMAINTYPE, META>;
@@ -31,9 +40,9 @@ export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RA
 	}
 
 export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+	DimensionAccessors<ROW, META, DOMAINTYPE> &
 	{
 		discrete?: false;
-		accessor: Accessor<ROW, META, DOMAINTYPE>;
 		range?: Range<RANGETYPE, META>;
 		reverse?: Reverse<META>;
 		extents?: ExtentsContinuous<DOMAINTYPE, META>;

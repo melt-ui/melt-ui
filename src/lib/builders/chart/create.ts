@@ -1,7 +1,15 @@
 import type { ChartBasics, DimensionContinuous, DimensionDiscrete } from './types-describe.js';
-import type { InferGeneratorReturn, InferMaybeStoreInner, MaybeStores, ReplaceLeafType, Stores } from './types-util.js';
+import type {
+	InferMaybeAccessors,
+	InferGeneratorReturn,
+	InferMaybeStoreInner,
+	MaybeStores,
+	ReplaceLeafType,
+	Stores, InferAccessorReturn,
+} from './types-util.js';
 import type { ChartBasicsDerived, DimensionContinuousDerived, DimensionDiscreteDerived } from './types-create.js';
 import type {
+	Accessor,
 	AccessorFunc,
 	AccessorScaledOutput,
 	DomainContinuousBound,
@@ -51,61 +59,41 @@ export function createChart<
 					DIMENSIONS[k] extends MaybeStores<DimensionDiscrete<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>>
 					? Stores<DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
 					& Stores<DimensionDiscreteDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
-					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<DIMENSIONS[k]['accessor']>>> }
+					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<InferMaybeAccessors<DIMENSIONS[k]>>>> }
 					: DIMENSIONS[k] extends MaybeStores<DimensionContinuous<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>>
 					? Stores<DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
 					& Stores<DimensionContinuousDerived<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>>
-					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<DIMENSIONS[k]['accessor']>>> }
+					& { scaled_d: Readable<AccessorScaledOutput<ROW, META, DOMAINTYPE, RANGETYPE, InferMaybeStoreInner<InferMaybeAccessors<DIMENSIONS[k]>>>> }
 					: never
 				) &
 				{
 					// maintain correct return type for accessor
 					accessor_d:
-						DIMENSIONS[k]['accessor'] extends keyof ROW
-						? Readable<(row: ROW, info: { meta: META }) => ROW[DIMENSIONS[k]['accessor']]>
-						: DIMENSIONS[k]['accessor'] extends (row: ROW, info: { meta: META }) => infer DT
-						? Readable<(row: ROW, info: { meta: META }) => DT>
-						: DIMENSIONS[k]['accessor'] extends Readable<infer ACCESSOR>
+						'accessor' extends keyof DIMENSIONS[k]
 						? (
-							ACCESSOR extends keyof ROW
-							? Readable<(row: ROW, info: { meta: META }) => ROW[ACCESSOR]>
-							: ACCESSOR extends (row: ROW, info: { meta: META }) => infer DT
+							DIMENSIONS[k]['accessor'] extends keyof ROW
+							? Readable<(row: ROW, info: { meta: META }) => ROW[DIMENSIONS[k]['accessor']]>
+							: DIMENSIONS[k]['accessor'] extends (row: ROW, info: { meta: META }) => infer DT
 							? Readable<(row: ROW, info: { meta: META }) => DT>
+							: DIMENSIONS[k]['accessor'] extends Readable<infer ACCESSOR>
+							? (
+								ACCESSOR extends keyof ROW
+								? Readable<(row: ROW, info: { meta: META }) => ROW[ACCESSOR]>
+								: ACCESSOR extends (row: ROW, info: { meta: META }) => infer DT
+								? Readable<(row: ROW, info: { meta: META }) => DT>
+								: never
+							)
 							: never
 						)
 						: never
 					scaled_d:
 						DIMENSIONS[k] extends MaybeStores<DimensionDiscrete<ROW, META, any, infer RANGETYPE, any, any>>
 						? (
-								DIMENSIONS[k]['accessor'] extends keyof ROW
-								? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<ROW[DIMENSIONS[k]['accessor']], RANGETYPE>>
-								: DIMENSIONS[k]['accessor'] extends (row: ROW, info: { meta: META }) => infer DT
-								? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<DT, RANGETYPE>>
-								: DIMENSIONS[k]['accessor'] extends Readable<infer ACCESSOR>
-								? (
-									ACCESSOR extends keyof ROW
-									? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<ROW[ACCESSOR], RANGETYPE>>
-									: ACCESSOR extends (row: ROW, info: { meta: META }) => infer DT
-									? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<DT, RANGETYPE>>
-									: never
-								)
-								: never
+								Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<InferAccessorReturn<ROW, META, InferMaybeAccessors<DIMENSIONS[k]>>, RANGETYPE>>
 						)
 						: DIMENSIONS[k] extends MaybeStores<DimensionContinuous<ROW, META, any, infer RANGETYPE, any, any>>
 						? (
-								DIMENSIONS[k]['accessor'] extends keyof ROW
-								? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<ROW[DIMENSIONS[k]['accessor']], RANGETYPE>>
-								: DIMENSIONS[k]['accessor'] extends (row: ROW, info: { meta: META }) => infer DT
-								? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<DT, RANGETYPE>>
-								: DIMENSIONS[k]['accessor'] extends Readable<infer ACCESSOR>
-								? (
-									ACCESSOR extends keyof ROW
-									? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<ROW[ACCESSOR], RANGETYPE>>
-									: ACCESSOR extends (row: ROW, info: { meta: META }) => infer DT
-									? Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<DT, RANGETYPE>>
-									: never
-								)
-								: never
+								Readable<(row: ROW, info: { meta: META }) => ReplaceLeafType<InferAccessorReturn<ROW, META, InferMaybeAccessors<DIMENSIONS[k]>>, RANGETYPE>>
 						)
 						: never
 				};
@@ -215,7 +203,10 @@ export function createChart<
 		Readable<ExtentsDiscreteSet<DOMAINTYPE>>
 	>
 	{
-		const accessor = makeStore(props.accessor);
+		const accessor = 'accessor' in props ? makeStore(props.accessor) : undefined;
+		const accessors = 'accessors' in props
+			? Object.fromEntries(Object.entries(props.accessors).map(([name, accessor]) => tuple(name, makeStore(accessor))))
+			: undefined;
 		const range = makeStore(props.range);
 		const reverse = makeStore(props.reverse);
 		const sort = makeStore(props.sort);
@@ -223,15 +214,54 @@ export function createChart<
 		const domain = makeStore(props.domain);
 		const scalerFactory = makeStore(props.scalerFactory);
 
-		const accessor_d = derived(
-			accessor,
-			($accessor) => {
-				if (typeof $accessor === 'function')
-					return $accessor
-				else
-					return (row: ROW) => row[$accessor] as DOMAINTYPE;
-			}
-		);
+		const accessors_d = accessors
+			? Object.fromEntries(
+				Object
+					.entries(accessors)
+					.map(([name, accessor]) => [
+						name,
+						derived(
+							accessor,
+							($accessor) => {
+								if (typeof $accessor === 'function')
+									return $accessor
+								else
+									return (row: ROW) => row[$accessor] as DOMAINTYPE;
+							}
+						)
+					])
+			)
+			: { };
+
+		const accessor_d = accessor
+			? derived(
+				accessor,
+				($accessor) => {
+					if (typeof $accessor === 'function')
+						return $accessor
+					else
+						return (row: ROW) => row[$accessor] as DOMAINTYPE;
+				}
+			)
+		: Object.entries(accessors_d).length !== 0
+		? derived(
+				Object.values(accessors_d),
+				($accessors_d) => {
+					const keys = Object.keys(accessors_d);
+					return (row: ROW, info: { meta: META }) => {
+						return Object.fromEntries(
+							keys.map((key, i) => [
+								key,
+								$accessors_d[i](row, info)
+							])
+						)
+					}
+				}
+		)
+		: undefined;
+
+		if (!accessor_d)
+			throw new Error('no accessors defined');
 
 		const checker = derived(
 			[accessor_d, extents],
@@ -386,7 +416,8 @@ export function createChart<
 
 		return {
 			discrete: true,
-			accessor,
+			accessor: accessor!,
+			accessors: accessors!,
 			range,
 			reverse,
 			sort,
@@ -394,6 +425,7 @@ export function createChart<
 			domain,
 			scalerFactory,
 			accessor_d,
+			accessors_d,
 			extents_d,
 			domain_d,
 			range_d,
@@ -416,7 +448,10 @@ export function createChart<
 		Readable<undefined | ExtentsContinuousBound<DOMAINTYPE>>
 	>
 	{
-		const accessor = makeStore(props.accessor);
+		const accessor = 'accessor' in props ? makeStore(props.accessor) : undefined;
+		const accessors = 'accessors' in props
+			? Object.fromEntries(Object.entries(props.accessors).map(([name, accessor]) => tuple(name, makeStore(accessor))))
+			: undefined;
 		const range = makeStore(props.range);
 		const reverse = makeStore(props.reverse);
 		const extents = makeStore(props.extents);
@@ -424,15 +459,55 @@ export function createChart<
 		const domain = makeStore(props.domain);
 		const scalerFactory = makeStore(props.scalerFactory);
 
-		const accessor_d = derived(
-			accessor,
-			($accessor) => {
-				if (typeof $accessor === 'function')
-					return $accessor
-				else
-					return (row: ROW) => row[$accessor] as DOMAINTYPE;
-			}
-		);
+		const accessors_d = accessors
+			? Object.fromEntries(
+				Object
+					.entries(accessors)
+					.map(([name, accessor]) => [
+						name,
+						derived(
+							accessor,
+							($accessor) => {
+								if (typeof $accessor === 'function')
+									return $accessor
+								else
+									return (row: ROW) => row[$accessor] as DOMAINTYPE;
+							}
+						)
+					])
+			)
+			: { };
+
+		const accessor_d = accessor
+			? derived(
+				accessor,
+				($accessor) => {
+					if (typeof $accessor === 'function')
+						return $accessor
+					else
+						return (row: ROW) => row[$accessor] as DOMAINTYPE;
+				}
+			)
+			: Object.entries(accessors_d).length !== 0
+				? derived(
+					Object.values(accessors_d),
+					($accessors_d) => {
+						const keys = Object.keys(accessors_d);
+						return (row: ROW, info: { meta: META }) => {
+							return Object.fromEntries(
+								keys.map((key, i) => [
+									key,
+									$accessors_d[i](row, info)
+								])
+							)
+						}
+					}
+				)
+				: undefined;
+
+		if (!accessor_d)
+			throw new Error('no accessors defined');
+
 
 		const checker = derived(
 			[accessor_d, extents, extentsDefault],
@@ -574,7 +649,8 @@ export function createChart<
 
 		return {
 			discrete: false,
-			accessor,
+			accessor: accessor!,
+			accessors: accessors!,
 			range,
 			reverse,
 			extents,
@@ -582,6 +658,7 @@ export function createChart<
 			domain,
 			scalerFactory,
 			accessor_d,
+			accessors_d,
 			extents_d,
 			domain_d,
 			range_d,

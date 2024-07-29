@@ -23,6 +23,9 @@ export type DimensionDiscreteDerived<ROW, META, DOMAINTYPE extends DOMAINSIMPLET
 	{
 		discrete: true;
 		accessor_d: AccessorFunc<ROW, META, DOMAINTYPE>;
+		accessors_d: {
+			[k: string]: AccessorFunc<ROW, META, DOMAINTYPE>;
+		}
 		range_d: RangeList<RANGETYPE> | undefined;
 		extents_d: ExtentsDiscreteSet<DOMAINTYPE>;
 		domain_d: DomainDiscreteSet<DOMAINTYPE>;
@@ -33,6 +36,9 @@ export type DimensionContinuousDerived<ROW, META, DOMAINTYPE extends DOMAINSIMPL
 	{
 		discrete: false;
 		accessor_d: AccessorFunc<ROW, META, DOMAINTYPE>;
+		accessors_d: {
+			[k: string]: AccessorFunc<ROW, META, DOMAINTYPE>;
+		}
 		range_d: RangeList<RANGETYPE> | undefined;
 		extents_d: undefined | ExtentsContinuousBound<DOMAINTYPE>;
 		domain_d: undefined | DomainContinuousBound<DOMAINTYPE>;
