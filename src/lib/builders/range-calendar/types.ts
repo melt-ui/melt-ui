@@ -13,7 +13,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default false
 	 */
-	preventDeselect?: boolean;
+	preventDeselect?: boolean | undefined;
 
 	/**
 	 * The minimum selectable date. When provided, the
@@ -22,7 +22,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined
 	 */
-	minValue?: DateValue;
+	minValue?: DateValue | undefined;
 
 	/**
 	 * The maximum selectable date. When provided, the
@@ -31,7 +31,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined
 	 */
-	maxValue?: DateValue;
+	maxValue?: DateValue | undefined;
 
 	/**
 	 * The default value for the date field. When provided,
@@ -39,7 +39,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateRange;
+	defaultValue?: DateRange | undefined;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -51,7 +51,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateRange>;
+	onValueChange?: ChangeFn<DateRange> | undefined;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -61,7 +61,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateRange>;
+	value?: Writable<DateRange> | undefined;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -75,7 +75,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
+	defaultPlaceholder?: DateValue | undefined;
 
 	/**
 	 * A writable store that can be used to control the placeholder
@@ -98,7 +98,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default Writable<CalendarDate> - the current date at midnight.
 	 */
-	placeholder?: Writable<DateValue>;
+	placeholder?: Writable<DateValue> | undefined;
 
 	/**
 	 * A function called when the placeholder value changes. It receives
@@ -113,7 +113,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue> | undefined;
 
 	/**
 	 * Only applicable when `numberOfMonths` is greater than 1.
@@ -130,7 +130,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default false
 	 */
-	pagedNavigation?: boolean;
+	pagedNavigation?: boolean | undefined;
 
 	/**
 	 * The day of the week to start the calendar on, which must
@@ -139,7 +139,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default 0 (Sunday)
 	 */
-	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | undefined;
 
 	/**
 	 * How the string representation of the weekdays provided via the `weekdays` state
@@ -154,7 +154,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#weekday
 	 */
-	weekdayFormat?: Intl.DateTimeFormatOptions['weekday'];
+	weekdayFormat?: Intl.DateTimeFormatOptions['weekday'] | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will
@@ -165,7 +165,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateDisabled?: Matcher;
+	isDateDisabled?: Matcher | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -182,7 +182,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: Matcher | undefined;
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.
@@ -194,7 +194,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default false
 	 */
-	fixedWeeks?: boolean;
+	fixedWeeks?: boolean | undefined;
 
 	/**
 	 * The number of months to display on the calendar at once. To control
@@ -202,7 +202,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default 1
 	 */
-	numberOfMonths?: number;
+	numberOfMonths?: number | undefined;
 
 	/**
 	 * The label for the calendar, which is used for
@@ -219,12 +219,12 @@ export type RangeCalendarProps = {
 	 * @example 'Booking date' - will be read as 'Booking date, January 2021' if the
 	 * current month is January 2021.
 	 */
-	calendarLabel?: string;
+	calendarLabel?: string | undefined;
 
 	/**
 	 * @default 'en'
 	 */
-	locale?: string;
+	locale?: string | undefined;
 
 	/**
 	 * Whether the calendar is disabled. When true, the user will not
@@ -233,7 +233,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * Whether the calendar is readonly. When true, the user will be able
@@ -243,7 +243,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default false
 	 */
-	readonly?: boolean;
+	readonly?: boolean | undefined;
 
 	/**
 	 * Override any of the element IDs set by the builder.
@@ -253,7 +253,7 @@ export type RangeCalendarProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<IdObj<RangeCalendarIdParts>>;
+	ids?: Partial<IdObj<RangeCalendarIdParts>> | undefined;
 };
 
 export type CreateRangeCalendarProps = RangeCalendarProps;

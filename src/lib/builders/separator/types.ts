@@ -7,7 +7,7 @@ export type CreateSeparatorProps = {
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: Orientation;
+	orientation?: Orientation | undefined;
 
 	/*
 	 * Whether the separator is purely decorative or not. If true,
@@ -16,7 +16,7 @@ export type CreateSeparatorProps = {
 	 *
 	 * @default false
 	 */
-	decorative?: boolean;
+	decorative?: boolean | undefined;
 };
 
 export type Separator = BuilderReturn<typeof createSeparator>;

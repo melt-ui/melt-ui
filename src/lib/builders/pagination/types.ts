@@ -14,21 +14,21 @@ export type CreatePaginationProps = {
 	 *
 	 * @default 1
 	 */
-	perPage?: number;
+	perPage?: number | undefined;
 
 	/**
 	 * Number of visible items before and after the current page
 	 *
 	 * @default 1
 	 */
-	siblingCount?: number;
+	siblingCount?: number | undefined;
 
 	/**
 	 * The uncontrolled default page of the pagination.
 	 *
 	 * @default 1
 	 */
-	defaultPage?: number;
+	defaultPage?: number | undefined;
 
 	/**
 	 * The controlled page store for the pagination.
@@ -36,14 +36,14 @@ export type CreatePaginationProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	page?: Writable<number>;
+	page?: Writable<number> | undefined;
 
 	/**
 	 * The callback invoked when the value of the page store changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onPageChange?: ChangeFn<number>;
+	onPageChange?: ChangeFn<number> | undefined;
 };
 
 export type Page = {
@@ -62,8 +62,8 @@ export type PageItem = (Page | Ellipsis) & {
 
 export type GetPageItemsArgs = {
 	totalPages: number;
-	siblingCount?: number;
-	page?: number;
+	siblingCount?: number | undefined;
+	page?: number | undefined;
 };
 
 export type Pagination = BuilderReturn<typeof createPagination>;

@@ -12,7 +12,7 @@ export type { ListboxComponentEvents } from './events.js';
 
 export type ListboxOption<Value = unknown> = {
 	value: Value;
-	label?: string;
+	label?: string | undefined;
 };
 
 export type ListboxSelected<Multiple extends boolean, Value> = WhenTrue<
@@ -31,19 +31,19 @@ export type CreateListboxProps<
 	 *
 	 * @default  placement: 'bottom'
 	 */
-	positioning?: FloatingConfig;
+	positioning?: FloatingConfig | undefined;
 
 	/**
 	 * The size of the arrow in pixels.
 	 * @default undefined
 	 */
-	arrowSize?: number;
+	arrowSize?: number | undefined;
 
 	/**
 	 * Determines behavior when scrolling items into view.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
-	scrollAlignment?: 'nearest' | 'center';
+	scrollAlignment?: 'nearest' | 'center' | undefined;
 
 	/**
 	 * Whether or not the listbox should loop through the list when
@@ -51,11 +51,11 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	loop?: boolean;
+	loop?: boolean | undefined;
 
-	disabled?: boolean;
-	required?: boolean;
-	name?: string;
+	disabled?: boolean | undefined;
+	required?: boolean | undefined;
+	name?: string | undefined;
 
 	/**
 	 * Whether or not the listbox should be open by default
@@ -65,19 +65,19 @@ export type CreateListboxProps<
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
+	defaultOpen?: boolean | undefined;
 
 	/**
 	 * An optional controlled store that manages the open state of the listbox.
 	 */
-	open?: Writable<boolean>;
+	open?: Writable<boolean> | undefined;
 
 	/**
 	 * Change function that is called when the listbox's `open` state changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onOpenChange?: ChangeFn<boolean>;
+	onOpenChange?: ChangeFn<boolean> | undefined;
 
 	/**
 	 * The default selected option.
@@ -86,19 +86,19 @@ export type CreateListboxProps<
 	 *
 	 * @default undefined
 	 */
-	defaultSelected?: S;
+	defaultSelected?: S | undefined;
 
 	/**
 	 * An optional controlled store that manages the selected option of the listbox.
 	 */
-	selected?: Writable<S>;
+	selected?: Writable<S> | undefined;
 
 	/**
 	 * A change handler for the selected store called when the selected would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onSelectedChange?: ChangeFn<S | undefined>;
+	onSelectedChange?: ChangeFn<S | undefined> | undefined;
 
 	/**
 	 * Whether or not to close the listbox menu when the user clicks
@@ -106,7 +106,7 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: boolean | undefined;
 
 	/**
 	 * Escape behavior type.
@@ -117,7 +117,7 @@ export type CreateListboxProps<
 	 *
 	 * @defaultValue `close`
 	 */
-	escapeBehavior?: EscapeBehaviorType;
+	escapeBehavior?: EscapeBehaviorType | undefined;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -125,7 +125,7 @@ export type CreateListboxProps<
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: InteractOutsideEvent) => void;
+	onOutsideClick?: ((event: InteractOutsideEvent) => void) | undefined;
 
 	/**
 	 * Whether or not to prevent scrolling the page when the
@@ -133,21 +133,21 @@ export type CreateListboxProps<
 	 *
 	 * @default true
 	 */
-	preventScroll?: boolean;
+	preventScroll?: boolean | undefined;
 
 	/**
 	 * Whether should prevent text selection overflowing the element when the element is the top layer.
 	 *
 	 * @defaultValue `true`
 	 */
-	preventTextSelectionOverflow?: boolean;
+	preventTextSelectionOverflow?: boolean | undefined;
 
 	/**
 	 * If not undefined, the listbox menu will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: PortalConfig | null;
+	portal?: PortalConfig | null | undefined;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -157,42 +157,42 @@ export type CreateListboxProps<
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
-	multiple?: Multiple;
+	multiple?: Multiple | undefined;
 
 	/**
 	 * The name of the builder using listbox.
 	 *
 	 * @default 'listbox
 	 */
-	builder?: string;
+	builder?: string | undefined;
 
 	/**
 	 * Whether or not to enable typeahead.
 	 *
 	 * @default true
 	 */
-	typeahead?: boolean;
+	typeahead?: boolean | undefined;
 
 	/**
 	 * IF true, whenever an option is hovered, the highlightedItem will be set to that option.
 	 *
 	 * @default true
 	 */
-	highlightOnHover?: boolean;
+	highlightOnHover?: boolean | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<ListboxIdParts>>;
+	ids?: Partial<IdObj<ListboxIdParts>> | undefined;
 };
 
 export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {
 	/**
 	 *  Is the item disabled?
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 };
 
 export type Listbox<

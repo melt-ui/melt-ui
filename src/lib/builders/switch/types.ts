@@ -9,44 +9,44 @@ export type CreateSwitchProps = {
 	 *
 	 * @default false
 	 */
-	defaultChecked?: boolean;
+	defaultChecked?: boolean | undefined;
 
 	/**
 	 * The controlled checked state of the switch.
 	 * If provided, this will override the value passed to `defaultChecked`.
 	 */
-	checked?: Writable<boolean>;
+	checked?: Writable<boolean> | undefined;
 
 	/**
 	 * The callback invoked when the checked state of the switch changes.
 	 */
-	onCheckedChange?: ChangeFn<boolean>;
+	onCheckedChange?: ChangeFn<boolean> | undefined;
 
 	/**
 	 * When `true`, prevents the user from interacting with the switch.
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * When `true`, indicates that the user must check the switch before the owning form can be submitted.
 	 * @default false
 	 */
-	required?: boolean;
+	required?: boolean | undefined;
 
 	/**
 	 * The name of the switch. Submitted with its owning form as part of a name/value pair.
 	 *
 	 * @default undefined
 	 */
-	name?: string;
+	name?: string | undefined;
 
 	/**
 	 * The value given as data when submitted with a `name`.
 	 * @default undefined
 	 */
-	value?: string;
+	value?: string | undefined;
 };
 
 export type Switch = BuilderReturn<typeof createSwitch>;

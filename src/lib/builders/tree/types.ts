@@ -10,14 +10,14 @@ export type CreateTreeViewProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
 	/**
 	 * Which tree items are expanded by default.
 	 *
 	 * @default []
 	 */
-	defaultExpanded?: string[];
+	defaultExpanded?: string[] | undefined;
 
 	/**
 	 * Optionally pass a writable store to control the expanded items of the tree.
@@ -25,14 +25,14 @@ export type CreateTreeViewProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	expanded?: Writable<string[]>;
+	expanded?: Writable<string[]> | undefined;
 
 	/**
 	 * A callback called when the value of the `expanded` store should be changed.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onExpandedChange?: ChangeFn<string[]>;
+	onExpandedChange?: ChangeFn<string[]> | undefined;
 };
 
 export type TreeParts = 'label' | 'item' | 'group';

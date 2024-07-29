@@ -9,7 +9,7 @@ export type CreateProgressProps = {
 	 *
 	 * @default 0
 	 */
-	defaultValue?: number | null;
+	defaultValue?: number | null | undefined;
 
 	/**
 	 * The controlled value store for the radio group.
@@ -17,21 +17,21 @@ export type CreateProgressProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	value?: Writable<number | null>;
+	value?: Writable<number | null> | undefined;
 
 	/**
 	 * The callback invoked when the value store of the progress changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<number | null>;
+	onValueChange?: ChangeFn<number | null> | undefined;
 
 	/**
 	 * The maximum value of the progress.
 	 *
 	 * @default 100
 	 */
-	max?: number;
+	max?: number | undefined;
 };
 
 export type Progress = BuilderReturn<typeof createProgress>;

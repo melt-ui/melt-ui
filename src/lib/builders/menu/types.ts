@@ -16,27 +16,27 @@ export type _CreateMenuProps = {
 	 *
 	 * @default  placement: 'bottom'
 	 */
-	positioning?: FloatingConfig;
+	positioning?: FloatingConfig | undefined;
 
 	/**
 	 * The size of the arrow in pixels.
 	 * @default 8
 	 */
-	arrowSize?: number;
+	arrowSize?: number | undefined;
 
 	/**
 	 * The direction of the text in the dropdown menu
 	 *
 	 * @default 'ltr'
 	 */
-	dir?: TextDirection;
+	dir?: TextDirection | undefined;
 
 	/**
 	 * Whether or not to prevent scrolling when the menu is open.
 	 *
 	 * @default true
 	 */
-	preventScroll?: boolean;
+	preventScroll?: boolean | undefined;
 
 	/**
 	 * Escape behavior type.
@@ -47,28 +47,28 @@ export type _CreateMenuProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	escapeBehavior?: EscapeBehaviorType;
+	escapeBehavior?: EscapeBehaviorType | undefined;
 
 	/**
 	 * Whether or not to close the menu when an internal item is clicked.
 	 *
 	 * @default true
 	 */
-	closeOnItemClick?: boolean;
+	closeOnItemClick?: boolean | undefined;
 
 	/**
 	 * If not `undefined`, the menu will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: PortalConfig | null;
+	portal?: PortalConfig | null | undefined;
 
 	/**
 	 * Whether or not to close the menu when a click occurs outside of it.
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: boolean | undefined;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -76,21 +76,21 @@ export type _CreateMenuProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: InteractOutsideEvent) => void;
+	onOutsideClick?: ((event: InteractOutsideEvent) => void) | undefined;
 
 	/**
 	 * Whether should prevent text selection overflowing the element when the element is the top layer.
 	 *
 	 * @defaultValue `true`
 	 */
-	preventTextSelectionOverflow?: boolean;
+	preventTextSelectionOverflow?: boolean | undefined;
 
 	/**
 	 * Whether or not to loop the menu navigation.
 	 *
 	 * @default false
 	 */
-	loop?: boolean;
+	loop?: boolean | undefined;
 
 	/**
 	 * Whether the menu is open by default or not.
@@ -99,7 +99,7 @@ export type _CreateMenuProps = {
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
+	defaultOpen?: boolean | undefined;
 
 	/**
 	 * A controlled open state store for the menu. If provided, the
@@ -107,14 +107,14 @@ export type _CreateMenuProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	open?: Writable<boolean>;
+	open?: Writable<boolean> | undefined;
 
 	/**
 	 * A callback for when the open state changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onOpenChange?: ChangeFn<boolean>;
+	onOpenChange?: ChangeFn<boolean> | undefined;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -124,57 +124,57 @@ export type _CreateMenuProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
 	/**
 	 * Whether to use typeahead to automatically focus elements.
 	 * @default true
 	 */
-	typeahead?: boolean;
+	typeahead?: boolean | undefined;
 
 	/**
 	 * Override the default autofocus behavior of the menu
 	 * on close.
 	 */
-	closeFocus?: FocusProp;
+	closeFocus?: FocusProp | undefined;
 
 	/**
 	 * Optionally prevent focusing the first item in the menu
 	 */
-	disableFocusFirstItem?: boolean;
+	disableFocusFirstItem?: boolean | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<_MenuIdParts>>;
+	ids?: Partial<IdObj<_MenuIdParts>> | undefined;
 };
 
 export type _CreateSubmenuProps = Pick<
 	_CreateMenuProps,
 	'arrowSize' | 'positioning' | 'open' | 'onOpenChange' | 'ids'
 > & {
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 };
 
 export type _CreateRadioGroupProps = {
-	defaultValue?: string;
-	value?: Writable<string>;
-	onValueChange?: ChangeFn<string | null>;
+	defaultValue?: string | undefined;
+	value?: Writable<string> | undefined;
+	onValueChange?: ChangeFn<string | null> | undefined;
 };
 
 export type _ItemProps = {
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 };
 
 export type _CheckboxItemProps = _ItemProps & {
-	defaultChecked?: boolean | 'indeterminate';
-	checked?: Writable<boolean | 'indeterminate'>;
-	onCheckedChange?: ChangeFn<boolean | 'indeterminate'>;
+	defaultChecked?: boolean | 'indeterminate' | undefined;
+	checked?: Writable<boolean | 'indeterminate'> | undefined;
+	onCheckedChange?: ChangeFn<boolean | 'indeterminate'> | undefined;
 };
 
 export type _RadioItemProps = {
 	value: string;
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 };
 
 export type _RadioItemActionProps = _ItemProps;
@@ -219,7 +219,7 @@ export type _MenuBuilderOptions = {
 	 */
 	removeScroll: boolean;
 
-	ids?: Partial<IdObj<_MenuIdParts>>;
+	ids?: Partial<IdObj<_MenuIdParts>> | undefined;
 };
 
 export type _MenuParts =

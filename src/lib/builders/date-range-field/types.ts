@@ -12,7 +12,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateRange;
+	defaultValue?: DateRange | undefined;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -24,7 +24,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateRange>;
+	onValueChange?: ChangeFn<DateRange> | undefined;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -34,7 +34,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateRange>;
+	value?: Writable<DateRange> | undefined;
 
 	/**
 	 * The date that is used when the date field is empty to
@@ -42,7 +42,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
+	defaultPlaceholder?: DateValue | undefined;
 
 	/**
 	 * A writable store that can be used to control the placeholder
@@ -57,7 +57,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default Writable<CalendarDate> - the current date at midnight.
 	 */
-	placeholder?: Writable<DateValue>;
+	placeholder?: Writable<DateValue> | undefined;
 
 	/**
 	 * A function called when the placeholder value changes. It receives
@@ -72,7 +72,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue> | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -81,24 +81,24 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: Matcher | undefined;
 
 	/**
 	 * @default 'en'
 	 */
-	locale?: string;
+	locale?: string | undefined;
 
 	/**
 	 * The value to be used as the `name` attribute for the
 	 * `startHiddenInput` element.
 	 */
-	startName?: string;
+	startName?: string | undefined;
 
 	/**
 	 * The value to be used as the `name` attribute for the
 	 * `endHiddenInput` element.
 	 */
-	endName?: string;
+	endName?: string | undefined;
 
 	/**
 	 *
@@ -106,7 +106,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	readonlySegments?: { start: EditableSegmentPart[]; end: EditableSegmentPart[] };
+	readonlySegments?: { start: EditableSegmentPart[]; end: EditableSegmentPart[] } | undefined;
 
 	/**
 	 * Override any of the element IDs set by the builder.
@@ -116,9 +116,9 @@ export type DateRangeFieldProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<IdObj<DateRangeFieldIdParts>>;
-	startIds?: Partial<IdObj<DateFieldIdParts>>;
-	endIds?: Partial<IdObj<DateFieldIdParts>>;
+	ids?: Partial<IdObj<DateRangeFieldIdParts>> | undefined;
+	startIds?: Partial<IdObj<DateFieldIdParts>> | undefined;
+	endIds?: Partial<IdObj<DateFieldIdParts>> | undefined;
 };
 
 export type CreateDateRangeFieldProps = Expand<

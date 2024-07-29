@@ -18,21 +18,21 @@ export type CreateAvatarProps = {
 	 *
 	 * @default 0
 	 */
-	delayMs?: number;
+	delayMs?: number | undefined;
 
 	/**
 	 * The controlled loading status store for the avatar.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	loadingStatus?: Writable<ImageLoadingStatus>;
+	loadingStatus?: Writable<ImageLoadingStatus> | undefined;
 
 	/**
 	 * A callback invoked when the loading status store of the avatar changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onLoadingStatusChange?: ChangeFn<ImageLoadingStatus>;
+	onLoadingStatusChange?: ChangeFn<ImageLoadingStatus> | undefined;
 };
 
 export type Avatar = BuilderReturn<typeof createAvatar>;

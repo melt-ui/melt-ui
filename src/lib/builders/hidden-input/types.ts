@@ -3,10 +3,10 @@ import type { HTMLInputAttributes } from 'svelte/elements';
 
 export type CreateHiddenInputProps = {
 	value: MaybeReadable<string>;
-	disabled?: MaybeReadable<boolean>;
+	disabled?: MaybeReadable<boolean> | undefined;
 	name?: MaybeReadable<string | undefined> | undefined;
-	required?: MaybeReadable<boolean>;
-	prefix?: string;
-	type?: MaybeReadable<HTMLInputAttributes['type']>;
-	checked?: MaybeReadable<boolean | undefined | 'indeterminate'>;
+	required?: MaybeReadable<boolean> | undefined;
+	prefix?: string | undefined;
+	type?: MaybeReadable<HTMLInputAttributes['type']> | undefined;
+	checked?: MaybeReadable<boolean | undefined | 'indeterminate'> | undefined;
 };

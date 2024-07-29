@@ -9,7 +9,7 @@ export type FocusTrapConfig = FocusTrapOptions & {
 	 * Default: `false`. If `false`, when the trap is deactivated,
 	 * focus will *not* return to the element that had focus before activation.
 	 */
-	returnFocusOnDeactivate?: boolean;
+	returnFocusOnDeactivate?: boolean | undefined;
 	/**
 	 * Default: `false`. If `false` or returns `false`, the `Escape` key will not trigger
 	 * deactivation of the focus trap. This can be useful if you want
@@ -17,7 +17,7 @@ export type FocusTrapConfig = FocusTrapOptions & {
 	 * way out. Note that if a function is given, it's only called if the ESC key
 	 * was pressed.
 	 */
-	escapeDeactivates?: boolean | KeyboardEventToBoolean;
+	escapeDeactivates?: boolean | KeyboardEventToBoolean | undefined;
 	/**
 	 * If set and is or returns `true`, a click outside the focus trap will not
 	 * be prevented, even when `clickOutsideDeactivates` is `false`. When
@@ -26,5 +26,5 @@ export type FocusTrapConfig = FocusTrapOptions & {
 	 * if (and even which) clicks are allowed outside the trap in conjunction
 	 * with `clickOutsideDeactivates: false`. Default: `true`.
 	 */
-	allowOutsideClick?: boolean | MouseEventToBoolean;
+	allowOutsideClick?: boolean | MouseEventToBoolean | undefined;
 };

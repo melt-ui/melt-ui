@@ -12,7 +12,7 @@ export type CreateDialogProps = {
 	 *
 	 * @default true
 	 */
-	preventScroll?: boolean;
+	preventScroll?: boolean | undefined;
 
 	/**
 	 * Escape behavior type.
@@ -23,14 +23,14 @@ export type CreateDialogProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	escapeBehavior?: EscapeBehaviorType;
+	escapeBehavior?: EscapeBehaviorType | undefined;
 
 	/**
 	 * If true, the dialog will close when the user clicks outside of it.
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: boolean | undefined;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -38,40 +38,40 @@ export type CreateDialogProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: PointerEvent | MouseEvent | TouchEvent) => void;
+	onOutsideClick?: ((event: PointerEvent | MouseEvent | TouchEvent) => void) | undefined;
 
 	/**
 	 * The `role` attribute to apply to the dialog.
 	 *
 	 * @default 'dialog'
 	 */
-	role?: 'dialog' | 'alertdialog';
+	role?: 'dialog' | 'alertdialog' | undefined;
 
 	/**
 	 * If true, the dialog will be open by default.
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
+	defaultOpen?: boolean | undefined;
 
 	/**
 	 * A writable store that controls the open state of the dialog.
 	 * @see [Controlled Usage](https://melt-ui.com/docs/controlled#bring-your-own-store)
 	 */
-	open?: Writable<boolean>;
+	open?: Writable<boolean> | undefined;
 
 	/**
 	 * A function that will be called when the open state of the dialog changes.
 	 * @see [Controlled Usage](https://melt-ui.com/docs/controlled#change-functions)
 	 */
-	onOpenChange?: ChangeFn<boolean>;
+	onOpenChange?: ChangeFn<boolean> | undefined;
 
 	/**
 	 * If not undefined, the dialog content will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: PortalConfig | null;
+	portal?: PortalConfig | null | undefined;
 
 	/**
 	 * If true, the dialog will be visible regardless of the open state.
@@ -80,24 +80,24 @@ export type CreateDialogProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
 	/**
 	 * Override the default autofocus behavior of the dialog
 	 * on open.
 	 */
-	openFocus?: FocusProp;
+	openFocus?: FocusProp | undefined;
 
 	/**
 	 * Override the default autofocus behavior of the dialog
 	 * on close.
 	 */
-	closeFocus?: FocusProp;
+	closeFocus?: FocusProp | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<DialogIdParts>>;
+	ids?: Partial<IdObj<DialogIdParts>> | undefined;
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;

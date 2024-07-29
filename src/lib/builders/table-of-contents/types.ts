@@ -30,15 +30,15 @@ export type CreateTableOfContentsArgs = {
 	/**
 	 * An array of headings to exclude from the table.
 	 */
-	exclude?: Heading[];
+	exclude?: Heading[] | undefined;
 	/**
 	 * The pixel offset added when scrolling to a heading.
 	 */
-	scrollOffset?: number;
+	scrollOffset?: number | undefined;
 	/**
 	 * The scroll behavior ('smooth' or 'instant').
 	 */
-	scrollBehaviour?: ScrollBehaviour;
+	scrollBehaviour?: ScrollBehaviour | undefined;
 	/**
 	 * The type of headings to consider as active:
 	 * - 'none': No intersection observers are added, and no headings are considered active.
@@ -49,24 +49,24 @@ export type CreateTableOfContentsArgs = {
 	 * - 'lowest-parents': Parents of the heading with the lowest visible content are also considered active.
 	 * - 'highest-parents': Parents of the heading with the highest visible content are also considered active.
 	 */
-	activeType?: ActiveType;
+	activeType?: ActiveType | undefined;
 	/**
 	 * The root margin for the intersection observer. Refer to the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) for more information.
 	 */
-	rootMargin?: string;
+	rootMargin?: string | undefined;
 	/**
 	 * A custom filter function for headings.
 	 */
-	headingFilterFn?: HeadingFilterFn;
+	headingFilterFn?: HeadingFilterFn | undefined;
 	/**
 	 * A custom scroll function.
 	 */
-	scrollFn?: ScrollFn;
+	scrollFn?: ScrollFn | undefined;
 
 	/**
 	 * A custom pushState function, expected to be SvelteKit's pushState function.
 	 */
-	pushStateFn?: PushStateFn;
+	pushStateFn?: PushStateFn | undefined;
 };
 
 export type ElementHeadingLU = {
@@ -82,7 +82,7 @@ export type TableOfContentsItem = {
 	index: number;
 	id: string;
 	node: HTMLHeadingElement;
-	children?: TableOfContentsItem[];
+	children?: TableOfContentsItem[] | undefined;
 };
 
 export type TableOfContents = ReturnType<typeof createTableOfContents>;

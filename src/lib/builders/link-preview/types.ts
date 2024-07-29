@@ -15,14 +15,14 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default  placement: 'bottom'
 	 */
-	positioning?: FloatingConfig;
+	positioning?: FloatingConfig | undefined;
 
 	/**
 	 * Whether or not the linkpreview is open by default.
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
+	defaultOpen?: boolean | undefined;
 
 	/**
 	 * A controlled open state store for the linkpreview. If provided, the
@@ -30,21 +30,21 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	open?: Writable<boolean>;
+	open?: Writable<boolean> | undefined;
 
 	/**
 	 * A callback for when the open state changes
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onOpenChange?: ChangeFn<boolean>;
+	onOpenChange?: ChangeFn<boolean> | undefined;
 
 	/**
 	 * The delay in milliseconds to hover before opening the linkpreview
 	 *
 	 * @default 700
 	 */
-	openDelay?: number;
+	openDelay?: number | undefined;
 
 	/**
 	 * The delay in milliseconds after the pointer leaves the
@@ -52,7 +52,7 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default 300
 	 */
-	closeDelay?: number;
+	closeDelay?: number | undefined;
 
 	/**
 	 * Whether or not to close the linkpreview when the pointer is clicked
@@ -60,7 +60,7 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: boolean;
+	closeOnOutsideClick?: boolean | undefined;
 
 	/**
 	 * A custom event handler for the "outside click" event, which
@@ -68,7 +68,7 @@ export type CreateLinkPreviewProps = {
 	 * If `event.preventDefault()` is called within the function,
 	 * the dialog will not close when the user clicks outside of it.
 	 */
-	onOutsideClick?: (event: InteractOutsideEvent) => void;
+	onOutsideClick?: ((event: InteractOutsideEvent) => void) | undefined;
 
 	/**
 	 * Escape behavior type.
@@ -79,21 +79,21 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	escapeBehavior?: EscapeBehaviorType;
+	escapeBehavior?: EscapeBehaviorType | undefined;
 
 	/**
 	 * Whether should prevent text selection overflowing the element when the element is the top layer.
 	 *
 	 * @defaultValue `true`
 	 */
-	preventTextSelectionOverflow?: boolean;
+	preventTextSelectionOverflow?: boolean | undefined;
 
 	/**
 	 * The size of the optional arrow element in pixels
 	 *
 	 * @default 8
 	 */
-	arrowSize?: number;
+	arrowSize?: number | undefined;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.
@@ -103,19 +103,19 @@ export type CreateLinkPreviewProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
 	/**
 	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
 	 */
-	portal?: PortalConfig | null;
+	portal?: PortalConfig | null | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<LinkPreviewIdParts>>;
+	ids?: Partial<IdObj<LinkPreviewIdParts>> | undefined;
 };
 
 export type LinkPreview = BuilderReturn<typeof createLinkPreview>;

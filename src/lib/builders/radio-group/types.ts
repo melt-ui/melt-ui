@@ -10,7 +10,7 @@ export type CreateRadioGroupProps = {
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * When `true`, indicates that the user must select a radio button before
@@ -18,9 +18,9 @@ export type CreateRadioGroupProps = {
 	 *
 	 * @default false
 	 */
-	required?: boolean;
+	required?: boolean | undefined;
 
-	name?: string;
+	name?: string | undefined;
 
 	/**
 	 * Whether or not the radio group should loop around when the end
@@ -28,40 +28,40 @@ export type CreateRadioGroupProps = {
 	 *
 	 * @default false
 	 */
-	loop?: boolean;
+	loop?: boolean | undefined;
 
 	/**
 	 * The orientation of the radio group.
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: Orientation;
+	orientation?: Orientation | undefined;
 
 	/**
 	 * The uncontrolled default value of the radio group.
 	 *
 	 * @default undefined
 	 */
-	defaultValue?: string;
+	defaultValue?: string | undefined;
 
 	/**
 	 * The controlled value store for the radio group.
 	 * If provided, this will override the value passed to `defaultValue`.
 	 */
-	value?: Writable<string>;
+	value?: Writable<string> | undefined;
 
 	/**
 	 * The callback invoked when the value store of the radio group changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<string>;
+	onValueChange?: ChangeFn<string> | undefined;
 };
 
 export type RadioGroupItemProps =
 	| {
 			value: string;
-			disabled?: boolean;
+			disabled?: boolean | undefined;
 	  }
 	| string;
 

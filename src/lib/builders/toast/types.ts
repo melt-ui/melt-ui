@@ -6,9 +6,9 @@ export type EmptyType = Record<never, never>;
 export type CreateToasterProps = {
 	// Time in milliseconds before the toast is automatically closed.
 	// If set to 0, the toast will not be automatically closed.
-	closeDelay?: number;
-	type?: 'foreground' | 'background';
-	hover?: 'pause' | 'pause-all' | null;
+	closeDelay?: number | undefined;
+	type?: 'foreground' | 'background' | undefined;
+	hover?: 'pause' | 'pause-all' | null | undefined;
 };
 
 export type AddToastProps<T = object> = Omit<CreateToasterProps, 'hover'> & {
@@ -27,7 +27,7 @@ export type Toast<T = object> = {
 	data: T;
 	timeout: number | null;
 	createdAt: number;
-	pausedAt?: number;
+	pausedAt?: number | undefined;
 	pauseDuration: number;
 	getPercentage: () => number;
 };

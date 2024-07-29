@@ -12,14 +12,14 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 	 *
 	 * @default false
 	 */
-	multiple?: Multiple;
+	multiple?: Multiple | undefined;
 
 	/**
 	 * When `true`, prevents the user from interacting with the accordion.
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * Whether the accordion content should be displayed even if it is not open.
@@ -29,12 +29,12 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
 	/**
 	 * The uncontrolled default value of the accordion.
 	 */
-	defaultValue?: AccordionValue<Multiple>;
+	defaultValue?: AccordionValue<Multiple> | undefined;
 
 	/**
 	 * The controlled value store for the accordion.
@@ -55,7 +55,7 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 export type AccordionItemProps =
 	| {
 			value: string;
-			disabled?: boolean;
+			disabled?: boolean | undefined;
 	  }
 	| string;
 

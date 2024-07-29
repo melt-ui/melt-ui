@@ -8,7 +8,7 @@ export type CreateCollapsibleProps = {
 	/**
 	 * Whether the collapsible is disabled which prevents it from being opened.
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * Whether the collapsible content should be displayed even if it is not open.
@@ -18,14 +18,14 @@ export type CreateCollapsibleProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: boolean;
+	forceVisible?: boolean | undefined;
 
 	/**
 	 * Whether the collapsible is open by default.
 	 *
 	 * @default false
 	 */
-	defaultOpen?: boolean;
+	defaultOpen?: boolean | undefined;
 
 	/**
 	 * Optionally pass a writable store to control the open state of the collapsible.
@@ -33,14 +33,14 @@ export type CreateCollapsibleProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	open?: Writable<boolean>;
+	open?: Writable<boolean> | undefined;
 
 	/**
 	 * A callback called when the value of the `open` store should be changed.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onOpenChange?: ChangeFn<boolean>;
+	onOpenChange?: ChangeFn<boolean> | undefined;
 };
 
 export type Collapsible = BuilderReturn<typeof createCollapsible>;

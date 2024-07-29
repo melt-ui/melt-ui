@@ -15,7 +15,7 @@ type DateRangePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateRange;
+	defaultValue?: DateRange | undefined;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -27,7 +27,7 @@ type DateRangePickerProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateRange>;
+	onValueChange?: ChangeFn<DateRange> | undefined;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -37,7 +37,7 @@ type DateRangePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateRange>;
+	value?: Writable<DateRange> | undefined;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -51,7 +51,7 @@ type DateRangePickerProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholder?: DateValue;
+	defaultPlaceholder?: DateValue | undefined;
 
 	/**
 	 * A writable store that can be used to control the placeholder
@@ -74,7 +74,7 @@ type DateRangePickerProps = {
 	 *
 	 * @default Writable<CalendarDate> - the current date at midnight.
 	 */
-	placeholder?: Writable<DateValue>;
+	placeholder?: Writable<DateValue> | undefined;
 
 	/**
 	 * A function called when the placeholder value changes. It receives
@@ -89,7 +89,7 @@ type DateRangePickerProps = {
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue> | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will
@@ -100,7 +100,7 @@ type DateRangePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateDisabled?: Matcher;
+	isDateDisabled?: Matcher | undefined;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -117,12 +117,12 @@ type DateRangePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDateUnavailable?: Matcher;
+	isDateUnavailable?: Matcher | undefined;
 
 	/**
 	 * @default 'en'
 	 */
-	locale?: string;
+	locale?: string | undefined;
 };
 
 type ModifiedDateFieldProps = Omit<

@@ -4,7 +4,7 @@ export type ModalConfig = {
 	/**
 	 * Handler called when the overlay closes.
 	 */
-	onClose?: () => void;
+	onClose?: (() => void) | undefined;
 	/**
 	 * Whether the modal is able to be closed by interacting outside of it.
 	 * If true, the `onClose` callback will be called when the user interacts
@@ -12,7 +12,7 @@ export type ModalConfig = {
 	 *
 	 * @default true
 	 */
-	closeOnInteractOutside?: boolean;
+	closeOnInteractOutside?: boolean | undefined;
 
 	/**
 	 * If `closeOnInteractOutside` is `true` and this function is provided,
@@ -24,5 +24,5 @@ export type ModalConfig = {
 	 * closing the modal. If `closeOnInteractOutside` is `false`, this function
 	 * will not be called.
 	 */
-	shouldCloseOnInteractOutside?: (event: InteractOutsideEvent) => boolean;
+	shouldCloseOnInteractOutside?: ((event: InteractOutsideEvent) => boolean) | undefined;
 };
