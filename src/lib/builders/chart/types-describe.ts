@@ -101,8 +101,8 @@ export type DimensionRange_MaybeStores<META, RANGETYPE> = {
 }
 
 export type DimensionRange_Stores<META, RANGETYPE> = {
-	range?: Readable<Range<RANGETYPE, META> | undefined>;
-	reverse?: Readable<Reverse<META> | undefined>;
+	range: Readable<Range<RANGETYPE, META> | undefined>;
+	reverse: Readable<Reverse<META> | undefined>;
 }
 
 export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =

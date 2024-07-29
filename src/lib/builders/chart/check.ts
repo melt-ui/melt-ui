@@ -64,17 +64,17 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 
 	type HasMeta = Assert<IsEqual<typeof result.meta, Readable<typeof meta>>, true>
 	
-	type A = typeof result.dimensions.merge.accessors;
-	const a: A = null!;
-
-	type B = InferStoreInner<A>;
-	const b: B = null!;
-
-	type C = ReturnType<B>
-	const c: C = null!;
-
-	type R = ReplaceLeafType<typeof complexReturn, string>;
-	const r: R = null!;
+//	type A = typeof result.dimensions.x.reverse;
+//	const a: A = null!;
+//
+//	type B = InferStoreInner<A>;
+//	const b: B = null!;
+//
+//	type C = ReturnType<B>
+//	const c: C = null!;
+//
+//	type R = ReplaceLeafType<typeof complexReturn, string>;
+//	const r: R = null!;
 
 	type XDiscrete = Assert<IsEqual<typeof result.dimensions.x.discrete, true>, true>;
 	type XAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.x.accessor_d>>, [Row, { meta: typeof meta }]>, true>;
