@@ -8,7 +8,7 @@ import type {
 	DimensionDiscrete_Stores,
 } from './types-describe.js';
 import type {
-	Infer_DimensionAccessor_ReturnType,
+	Infer_DimensionAccessor_ReturnType, Infer_DimensionAccessors_MaybeStores_DomainType,
 	Infer_DimensionAccessors_MaybeStores_ReturnType,
 	InferGeneratorReturn,
 	ReplaceLeafType,
@@ -65,11 +65,11 @@ export function createChart<
 		dimensions: {
 			[k in keyof DIMENSIONS]: (
 					DIMENSIONS[k] extends DimensionDiscrete_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
-					? DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
-					& DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					? DimensionDiscrete_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					& DimensionDiscreteDerived_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					: DIMENSIONS[k] extends DimensionContinuous_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
-					? DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
-					& DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					? DimensionContinuous_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					& DimensionContinuousDerived_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					: never
 				) &
 				{
@@ -526,7 +526,7 @@ export function createChart<
 		DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
-			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>
+			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
 			scaleds_d:
 				'accessors' extends keyof DIMENSION
 					? {
