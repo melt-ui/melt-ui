@@ -40,6 +40,20 @@ describe('Combobox', () => {
 		expect(menu).not.toBeVisible();
 	});
 
+	test('Doesnt closes when input is clicked with (closeOnInputClick=false)', async () => {
+		const { getByTestId } = render(ComboboxTest, { closeOnInputClick: false });
+		const input = getByTestId('input');
+		const menu = getByTestId('menu');
+		const user = userEvent.setup();
+
+		expect(menu).not.toBeVisible();
+		await user.click(input);
+		expect(getByTestId('menu')).toBeVisible();
+
+		await user.click(input);
+		expect(menu).toBeVisible();
+	});
+
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
 		const { getByTestId } = render(ComboboxTest);
 		const trigger = getByTestId('input');
@@ -261,6 +275,23 @@ describe('Combobox (forceVisible)', () => {
 
 		await user.click(input);
 		expect(getMenu()).toBeNull();
+	});
+
+	test('Doesnt closes when input is clicked with (closeOnInputClick=false)', async () => {
+		const user = userEvent.setup();
+		const { getByTestId, queryByTestId } = render(ComboboxForceVisibleTest, {
+			closeOnInputClick: false,
+		});
+		const input = getByTestId('input');
+		const getMenu = () => queryByTestId('menu');
+
+		expect(getMenu()).toBeNull();
+
+		await user.click(input);
+		expect(getMenu()).not.toBeNull();
+
+		await user.click(input);
+		expect(getMenu()).not.toBeNull();
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
