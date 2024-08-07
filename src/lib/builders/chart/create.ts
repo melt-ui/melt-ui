@@ -1,21 +1,24 @@
 import type {
 	ChartBasics_MaybeStores,
-	ChartBasics_Stores, Dimension,
-	Dimension_MaybeStores, DimensionAccessors,
+	ChartBasics_Stores,
+	Dimension,
+	Dimension_MaybeStores,
 	DimensionContinuous_MaybeStores,
 	DimensionContinuous_Stores,
 	DimensionDiscrete_MaybeStores,
 	DimensionDiscrete_Stores,
 } from './types-describe.js';
 import type {
-	Infer_DimensionAccessor_ReturnType, Infer_DimensionAccessors_MaybeStores_DomainType,
+	Infer_DimensionAccessor_ReturnType,
+	Infer_DimensionAccessors_MaybeStores_DomainType,
 	Infer_DimensionAccessors_MaybeStores_ReturnType,
-	InferGeneratorReturn, InferMaybeStoreInner,
-	ReplaceLeafType, Store,
+	InferGeneratorReturn,
+	ReplaceLeafType,
 } from './types-util.js';
 import type {
 	ChartBasicsDerived_Stores,
 	DimensionContinuousDerived_Stores,
+	DimensionCreated_Stores,
 	DimensionDiscreteDerived_Stores,
 } from './types-create.js';
 import type {
@@ -62,8 +65,9 @@ export function createChart<
 	ChartBasics_Stores<ROW, META> &
 	ChartBasicsDerived_Stores<ROW, META> &
 	{
-		dimensions: {
-			[k in keyof DIMENSIONS]: (
+		dimensions: Record<keyof DIMENSIONS, DimensionCreated_Stores<ROW, META, any, any, any, any>> & {
+			[k in keyof DIMENSIONS]:
+				(
 					DIMENSIONS[k] extends DimensionDiscrete_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
 					? DimensionDiscrete_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					& DimensionDiscreteDerived_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
