@@ -64,9 +64,9 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 
 	type HasMeta = Assert<IsEqual<typeof result.meta, Readable<typeof meta>>, true>
 	
-	type A = typeof result.meta;
-	const a: A = null!;
-
+//	type A = typeof result.meta;
+//	const a: A = null!;
+//
 //	type B = InferStoreInner<A>;
 //	const b: B = null!;
 //
@@ -79,14 +79,14 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 	type XDiscrete = Assert<IsEqual<typeof result.dimensions.x.discrete, true>, true>;
 	type XAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.x.get_d>>, [Row, { meta: typeof meta }]>, true>;
 	type XAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.x.get_d>>, string>, true>;
-	type XDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.x.domain>, DomainDiscrete<string, typeof meta> | undefined>, true>
+	type XDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.x.input.domain>, DomainDiscrete<string, typeof meta> | undefined>, true>
 	type XDomainD = Assert<IsEqual<InferStoreInner<typeof result.dimensions.x.domain_d>, DomainDiscreteSet<string>>, true>
 	type XScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.x.get_scaled_d>>, number>, true>
 
 	type YDiscrete = Assert<IsEqual<typeof result.dimensions.y.discrete, false>, true>;
 	type YAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.y.get_d>>, [Row, { meta: typeof meta }]>, true>;
 	type YAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.y.get_d>>, number>, true>;
-	type YDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.y.domain>, DomainContinuous<number, typeof meta> | undefined>, true>
+	type YDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.y.input.domain>, DomainContinuous<number, typeof meta> | undefined>, true>
 
 	type HasDefaultXScale = Assert<Contains<InferStoreInner<typeof result.dimensions.x.scale_d>, 'bandwidth'>, true>;
 	type HasDefaultYScale = Assert<Contains<InferStoreInner<typeof result.dimensions.y.scale_d>, 'interpolate'>, true>;
@@ -94,14 +94,14 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 	type ComplexDiscrete = Assert<IsEqual<typeof result.dimensions.complex.discrete, true>, false>;
 	type ComplexAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.complex.get_d>>, [Row, { meta: typeof meta }]>, true>;
 	type ComplexAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.complex.get_d>>, typeof complexReturn>, true>;
-	type ComplexDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.complex.domain>, DomainContinuous<number, typeof meta> | undefined>, true>
+	type ComplexDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.complex.input.domain>, DomainContinuous<number, typeof meta> | undefined>, true>
 	type ComplexDomainD = Assert<IsEqual<InferStoreInner<typeof result.dimensions.complex.domain_d>, DomainContinuousBound<number> | undefined>, true>
 	type ComplexScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.complex.get_scaled_d>>, typeof complexReturn>, true>
 
 	type MergeDiscrete = Assert<IsEqual<typeof result.dimensions.merge.discrete, true>, false>;
 	type MergeAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.merge.get_d>>, [Row, { meta: typeof meta }]>, true>;
 	type MergeAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_d>>, { a: number, b: number }>, true>;
-	type MergeDomain = Assert<IsEqual<typeof result.dimensions.merge.domain, Readable<DomainContinuous<number, typeof meta> | undefined>>, true>
+	type MergeDomain = Assert<IsEqual<typeof result.dimensions.merge.input.domain, Readable<DomainContinuous<number, typeof meta> | undefined>>, true>
 	type MergeDomainD = Assert<IsEqual<InferStoreInner<typeof result.dimensions.merge.domain_d>, DomainContinuousBound<number> | undefined>, true>
 	type MergeScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_scaled_d>>, { a: number, b: number }>, true>
 	type MergeAccessorAReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_sub_d.a>>, number>, true>;
