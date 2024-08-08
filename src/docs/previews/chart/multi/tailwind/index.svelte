@@ -22,11 +22,11 @@
 		margin: 20,
 		dimensions: {
 			x: {
-				accessor: 'year',
+				get: 'year',
 				...h_band
 			},
 			y: {
-				accessors: {
+				get_sub: {
 					apples: row => [0, row.apples],
 					bananas: 'bananas'
 				},
@@ -40,16 +40,16 @@
 		data,
 		width,
 		height,
-		area_d,
+		area,
 		dimensions: {
 			x: {
-				scaled_d: x_scaled_d,
-				scaler_d: x_scaler_d
+				get_scaled: x_get_scaled,
+				scale: x_scale
 			},
 			y: {
-				scaleds_d: {
-					apples: y_scaled_d_apples,
-					bananas: y_scaled_d_bananas
+				get_sub_scaled: {
+					apples: y_get_apples_scaled,
+					bananas: y_get_bananas_scaled
 				},
 			}
 		}
@@ -61,26 +61,26 @@
 	<div bind:clientWidth={$width} bind:clientHeight={$height} class="w-full h-full">
 			{#if typeof window !== 'undefined' && $width && $height}
 				<svg class="w-full h-full">
-					<rect x={0} y={0} width={$area_d.width} height={$area_d.height} stroke="red" fill="none" stroke-width="3" stroke-dasharray="16 16" />
-					<rect x={$area_d.margin.outer.left} y={$area_d.margin.outer.top} width={$area_d.margin.outer.width} height={$area_d.margin.outer.height} stroke="green" fill="none" stroke-width="3" stroke-dasharray="0 16 0" />
+					<rect x={0} y={0} width={$area.width} height={$area.height} stroke="red" fill="none" stroke-width="3" stroke-dasharray="16 16" />
+					<rect x={$area.margin.outer.left} y={$area.margin.outer.top} width={$area.margin.outer.width} height={$area.margin.outer.height} stroke="green" fill="none" stroke-width="3" stroke-dasharray="0 16 0" />
 
-					<rect x={$area_d.margin.inner.left} y={$area_d.margin.inner.top} width={$area_d.margin.inner.width} height={$area_d.margin.inner.height} stroke="green" fill="none" stroke-width="3" stroke-dasharray="0 16 0" />
-					<rect x={$area_d.padding.outer.left} y={$area_d.padding.outer.top} width={$area_d.padding.outer.width} height={$area_d.padding.outer.height} stroke="blue" fill="none" stroke-width="3" stroke-dasharray="16 16"  />
+					<rect x={$area.margin.inner.left} y={$area.margin.inner.top} width={$area.margin.inner.width} height={$area.margin.inner.height} stroke="green" fill="none" stroke-width="3" stroke-dasharray="0 16 0" />
+					<rect x={$area.padding.outer.left} y={$area.padding.outer.top} width={$area.padding.outer.width} height={$area.padding.outer.height} stroke="blue" fill="none" stroke-width="3" stroke-dasharray="16 16"  />
 
-					<rect x={$area_d.padding.inner.left} y={$area_d.padding.inner.top} width={$area_d.padding.inner.width} height={$area_d.padding.inner.height} stroke="blue" fill="none" stroke-width="3" stroke-dasharray="16 16"  />
+					<rect x={$area.padding.inner.left} y={$area.padding.inner.top} width={$area.padding.inner.width} height={$area.padding.inner.height} stroke="blue" fill="none" stroke-width="3" stroke-dasharray="16 16"  />
 
-					<g transform="translate({$area_d.padding.inner.left}, {$area_d.padding.inner.top})">
+					<g transform="translate({$area.padding.inner.left}, {$area.padding.inner.top})">
 						{#each $data as row, i}
-							{@const x = $x_scaled_d(row)}
-							{@const y = $y_scaled_d_apples(row)}
-							{@const w = $x_scaler_d.bandwidth() }
+							{@const x = $x_get_scaled(row)}
+							{@const y = $y_get_apples_scaled(row)}
+							{@const w = $x_scale.bandwidth() }
 
 							<rect x={x} y={y[1]} width={w} height={y[0] - y[1]} stroke="green" class="fill-white stroke-magnum-800 stroke-[2px]"/>
 						{/each}
 
-						<g transform="translate({$x_scaler_d.bandwidth() / 2}, 0)">
-							<path d="M{$data.map(row => `${$x_scaled_d(row)}, ${$y_scaled_d_bananas(row)}`).join(' L')}" class="fill-none stroke-magnum-800 stroke-[4px]"/>
-							<path d="M{$data.map(row => `${$x_scaled_d(row)}, ${$y_scaled_d_bananas(row)}`).join(' L')}" class="fill-none stroke-magnum-300 [stroke-dasharray:4_4] stroke-[2px]"/>
+						<g transform="translate({$x_scale.bandwidth() / 2}, 0)">
+							<path d="M{$data.map(row => `${$x_get_scaled(row)}, ${$y_get_bananas_scaled(row)}`).join(' L')}" class="fill-none stroke-magnum-800 stroke-[4px]"/>
+							<path d="M{$data.map(row => `${$x_get_scaled(row)}, ${$y_get_bananas_scaled(row)}`).join(' L')}" class="fill-none stroke-magnum-300 [stroke-dasharray:4_4] stroke-[2px]"/>
 						</g>
 					</g>
 				</svg>
