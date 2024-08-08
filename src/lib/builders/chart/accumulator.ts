@@ -7,13 +7,13 @@ export interface Accumulator<ROW, META, EXTENTS> {
 
 export type AccumulatorCreator<ROW, META, EXTENTS> = () => Accumulator<ROW, META, EXTENTS>;
 
-export function createAccumulatorCreatorDiscrete<ROW, META, DOMAINTYPE>(accessor: ((row: ROW, info: { meta: META }) => DomainField<DOMAINTYPE>)) : AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>> {
+export function createAccumulatorCreatorDiscrete<ROW, META, DOMAINTYPE>(get: ((row: ROW, info: { meta: META }) => DomainField<DOMAINTYPE>)) : AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>> {
 	return () => {
 		const extents = new Set<DOMAINTYPE>();
 
 		return {
 			accumulate(row: ROW, info: { meta: META }) {
-				const field = accessor(row, info);
+				const field = get(row, info);
 
 				const check = (field: DomainField<DOMAINTYPE>) => {
 					if (Array.isArray(field))
@@ -34,13 +34,13 @@ export function createAccumulatorCreatorDiscrete<ROW, META, DOMAINTYPE>(accessor
 	}
 }
 
-export function createAccumulatorCreatorContinuous<ROW, META, DOMAINTYPE>(accessor: ((row: ROW, info: { meta: META }) => DomainField<DOMAINTYPE>), extentsDefault: undefined | ExtentsContinuousBound<DOMAINTYPE>) : AccumulatorCreator<ROW, META, undefined | ExtentsContinuousBound<DOMAINTYPE>> {
+export function createAccumulatorCreatorContinuous<ROW, META, DOMAINTYPE>(get: ((row: ROW, info: { meta: META }) => DomainField<DOMAINTYPE>), extentsDefault: undefined | ExtentsContinuousBound<DOMAINTYPE>) : AccumulatorCreator<ROW, META, undefined | ExtentsContinuousBound<DOMAINTYPE>> {
 	return () => {
 		let extents: undefined | [DOMAINTYPE, DOMAINTYPE] = undefined;
 
 		return {
 			accumulate(row: ROW, info: { meta: META }) {
-				const field = accessor(row, info);
+				const field = get(row, info);
 
 				const check = (field: DomainField<DOMAINTYPE>) => {
 					if (Array.isArray(field))

@@ -2,7 +2,7 @@ import { type NumberValue, scaleBand, scaleLinear, scaleSqrt } from 'd3-scale';
 import type { DomainContinuousBound, DomainDiscreteSet, RangeList, Scaler } from './types-basic.js';
 import type { StringValue } from './types-util.js';
 
-export function scalerFactoryBand<DOMAINTYPE extends StringValue = string>(
+export function scaleFactoryBand<DOMAINTYPE extends StringValue = string>(
 	{
 		domain_d,
 		range_d
@@ -20,7 +20,7 @@ export function scalerFactoryBand<DOMAINTYPE extends StringValue = string>(
 	return scale as (typeof scale & Scaler<DOMAINTYPE, number>);
 }
 
-export function scalerFactoryLinear<DOMAINTYPE extends NumberValue>(
+export function scaleFactoryLinear<DOMAINTYPE extends NumberValue>(
 	{
 		domain_d,
 		range_d
@@ -40,7 +40,7 @@ export function scalerFactoryLinear<DOMAINTYPE extends NumberValue>(
 	return scale as (typeof scale & Scaler<DOMAINTYPE, number>);
 }
 
-export function scalerFactorySqrt<DOMAINTYPE extends NumberValue>(
+export function scaleFactorySqrt<DOMAINTYPE extends NumberValue>(
 	{
 		domain_d,
 		range_d

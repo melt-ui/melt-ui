@@ -35,8 +35,8 @@ import type {
 	RangeList,
 	Reverse,
 	Scaler,
-	ScalerFactoryContinuous,
-	ScalerFactoryDiscrete,
+	ScaleFactoryContinuous,
+	ScaleFactoryDiscrete,
 	Sides,
 	Size,
 } from './types-basic.js';
@@ -79,19 +79,19 @@ export function createChart<
 				(
 					DIMENSIONS[k] extends Dimension<ROW, META, any, any, infer DOMAINSIMPLETYPE, any>
 					? (
-							'accessor' extends keyof DIMENSIONS[k]
+							'get' extends keyof DIMENSIONS[k]
 							? {
-									accessor:
+									get:
 										Readable<Accessor<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>>>
 							}
 							: object
 					) &
 						(
-							'accessors' extends keyof DIMENSIONS[k]
+							'get_sub' extends keyof DIMENSIONS[k]
 							? {
-									accessors:
+									get_sub:
 										{
-											[sub in keyof (DIMENSIONS[k]['accessors'])]:
+											[sub in keyof (DIMENSIONS[k]['get_sub'])]:
 												Readable<Accessor<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>>>
 										}
 							}
@@ -100,26 +100,26 @@ export function createChart<
 					: object
 				) &
 				{
-					// maintain correct return type for accessor(s)
-					accessor_d:
+					// maintain correct return type for get(s)
+					get_d:
 						Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSIONS[k], ROW>>>
-					accessors_d:
-						'accessors' extends keyof DIMENSIONS[k]
+					get_sub_d:
+						'get_sub' extends keyof DIMENSIONS[k]
 						? {
-								[sub in keyof DIMENSIONS[k]['accessors']]:
-									Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['accessors'][sub]>>>
+								[sub in keyof DIMENSIONS[k]['get_sub']]:
+									Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['get_sub'][sub]>>>
 							}
 						: Record<string, never>
-					scaled_d:
+					get_scaled_d:
 						DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
 						? Readable<AccessorFuncRt<ROW, META, ReplaceLeafType<Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSIONS[k], ROW>, RANGETYPE>>>
 						: never
-					scaleds_d:
-						'accessors' extends keyof DIMENSIONS[k]
+					get_sub_scaled_d:
+						'get_sub' extends keyof DIMENSIONS[k]
 							? {
-									[sub in keyof DIMENSIONS[k]['accessors']]:
+									[sub in keyof DIMENSIONS[k]['get_sub']]:
 									DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
-										? ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['accessors'][sub]>, RANGETYPE>
+										? ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['get_sub'][sub]>, RANGETYPE>
 										: never
 								}
 							: Record<string, never>
@@ -216,52 +216,52 @@ export function createChart<
 		}
 	);
 
-	function create_accessors_d<DOMAINTYPE>(
-		accessor: Readable<Accessor<ROW, META, DOMAINTYPE>> | undefined,
-		accessors: {
+	function create_get_sub_d<DOMAINTYPE>(
+		get: Readable<Accessor<ROW, META, DOMAINTYPE>> | undefined,
+		get_sub: {
 			[p: string]:
 				Readable<keyof ROW | AccessorFunc<ROW, META, DOMAINTYPE>>
 			} | undefined
 	) {
-		const accessors_d = accessors
+		const get_sub_d = get_sub
 			? Object.fromEntries(
 				Object
-					.entries(accessors)
-					.map(([name, accessor]) => [
+					.entries(get_sub)
+					.map(([name, get]) => [
 						name,
 						derived(
-							accessor,
-							($accessor) => {
-								if (typeof $accessor === 'function')
-									return $accessor
+							get,
+							($get) => {
+								if (typeof $get === 'function')
+									return $get
 								else
-									return (row: ROW) => row[$accessor] as DOMAINTYPE;
+									return (row: ROW) => row[$get] as DOMAINTYPE;
 							}
 						)
 					])
 			)
 			: { };
 
-		const accessor_d = accessor
+		const get_d = get
 			? derived(
-				accessor,
-				($accessor) => {
-					if (typeof $accessor === 'function')
-						return $accessor
+				get,
+				($get) => {
+					if (typeof $get === 'function')
+						return $get
 					else
-						return (row: ROW) => row[$accessor] as DOMAINTYPE;
+						return (row: ROW) => row[$get] as DOMAINTYPE;
 				}
 			)
-			: Object.entries(accessors_d).length !== 0
+			: Object.entries(get_sub_d).length !== 0
 				? derived(
-					Object.values(accessors_d),
-					($accessors_d) => {
-						const keys = Object.keys(accessors_d);
+					Object.values(get_sub_d),
+					($get_sub_d) => {
+						const keys = Object.keys(get_sub_d);
 						return (row: ROW, info: { meta: META }) => {
 							return Object.fromEntries(
 								keys.map((key, i) => [
 									key,
-									$accessors_d[i](row, info)
+									$get_sub_d[i](row, info)
 								])
 							)
 						}
@@ -269,10 +269,10 @@ export function createChart<
 				)
 				: undefined;
 
-		if (!accessor_d)
-			throw new Error('no accessors defined');
+		if (!get_d)
+			throw new Error('no get_sub defined');
 
-		return { accessor_d, accessors_d };
+		return { get_d, get_sub_d };
 	}
 
 	function create_range_d<RANGETYPE>(
@@ -302,10 +302,10 @@ export function createChart<
 		return range_d;
 	}
 
-	function create_scaled_d<DOMAINTYPE extends DOMAINSIMPLETYPE, DOMAINSIMPLETYPE, RANGETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
-		scalerFactory:
-			Readable<ScalerFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>> |
-			Readable<ScalerFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>,
+	function create_get_scaled_d<DOMAINTYPE extends DOMAINSIMPLETYPE, DOMAINSIMPLETYPE, RANGETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+		scaleFactory:
+			Readable<ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>> |
+			Readable<ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>,
 		meta:
 			Readable<META>,
 		domain_d:
@@ -313,25 +313,25 @@ export function createChart<
 			Readable<DomainContinuousBound<DOMAINTYPE> | undefined>,
 		range_d:
 			Readable<RangeList<RANGETYPE> | undefined>,
-		accessor_d:
+		get_d:
 			Readable<AccessorFunc<ROW, META, DOMAINTYPE>>,
-		accessors_d:
+		get_sub_d:
 			{ [p: string]: Readable<AccessorFunc<ROW, META, DOMAINTYPE>> }
 	) {
-		const scaler_d = derived(
+		const scale_d = derived(
 			[
-				scalerFactory,
+				scaleFactory,
 				meta,
 				domain_d,
 				range_d
 			],
 			([
-				 $scalerFactory,
+				 $scaleFactory,
 				 $meta,
 				 $domain_d,
 				 $range_d
 			 ]) => {
-				return $scalerFactory({
+				return $scaleFactory({
 					meta: $meta as never,
 					domain_d: $domain_d as never,
 					range_d: $range_d
@@ -339,12 +339,12 @@ export function createChart<
 			}
 		);
 
-		function create_scaled_d(accessor_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>) {
-			const scaled_d = derived(
-				[accessor_d, scaler_d],
-				([$accessor_d, $scaler_d]) => {
+		function create_get_scaled_d(get_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>) {
+			const get_scaled_d = derived(
+				[get_d, scale_d],
+				([$get_d, $scale_d]) => {
 					return ((row: ROW, info: { meta: META }) => {
-						const value = $accessor_d(row, info);
+						const value = $get_d(row, info);
 
 						const map = (value: DomainField<DOMAINTYPE>): DomainField<RANGETYPE> => {
 							if (Array.isArray(value))
@@ -353,7 +353,7 @@ export function createChart<
 							if (!!value && typeof value === 'object')
 								return Object.fromEntries(Object.entries(value).map(([n, v]) => [n, map(v)]));
 
-							return $scaler_d(value);
+							return $scale_d(value);
 						}
 
 						return map(value);
@@ -361,24 +361,24 @@ export function createChart<
 				}
 			);
 
-			return scaled_d;
+			return get_scaled_d;
 		}
 
-		const scaled_d = create_scaled_d(accessor_d)
+		const get_scaled_d = create_get_scaled_d(get_d)
 
-		const scaleds_d = Object.fromEntries(
+		const get_sub_scaled_d = Object.fromEntries(
 			Object
-				.entries(accessors_d)
-				.map(([name, accessor_d]) => tuple(
+				.entries(get_sub_d)
+				.map(([name, get_d]) => tuple(
 					name,
-					create_scaled_d(accessor_d)
+					create_get_scaled_d(get_d)
 				))
 		);
 
 		return {
-			scaler_d,
-			scaled_d,
-			scaleds_d
+			scale_d,
+			get_scaled_d,
+			get_sub_scaled_d
 		}
 	}
 
@@ -392,12 +392,12 @@ export function createChart<
 		DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
-			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
-			scaleds_d:
-				'accessors' extends keyof DIMENSION
+			get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
+			get_sub_scaled_d:
+				'get_sub' extends keyof DIMENSION
 					? {
-						[sub in keyof DIMENSION['accessors']]:
-							ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSION['accessors'][sub]>, RANGETYPE>
+						[sub in keyof DIMENSION['get_sub']]:
+							ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSION['get_sub'][sub]>, RANGETYPE>
 					}
 					: Record<string, never>
 		},
@@ -405,29 +405,29 @@ export function createChart<
 		Readable<ExtentsDiscreteSet<DOMAINTYPE>>
 	>
 	{
-		const accessor = 'accessor' in props ? makeStore(props.accessor) : undefined;
-		const accessors = 'accessors' in props
-			?  Object.fromEntries(Object.entries(props.accessors).map(([name, accessor]) => tuple(name, makeStore(accessor))))
+		const get = 'get' in props ? makeStore(props.get) : undefined;
+		const get_sub = 'get_sub' in props
+			?  Object.fromEntries(Object.entries(props.get_sub).map(([name, get]) => tuple(name, makeStore(get))))
 			: undefined;
 		const range = makeStore(props.range);
 		const reverse = makeStore(props.reverse);
 		const sort = makeStore(props.sort);
 		const extents = makeStore(props.extents);
 		const domain = makeStore(props.domain);
-		const scalerFactory = makeStore(props.scalerFactory);
+		const scaleFactory = makeStore(props.scaleFactory);
 
-		const { accessor_d, accessors_d } = create_accessors_d(accessor, accessors);
+		const { get_d, get_sub_d } = create_get_sub_d(get, get_sub);
 
 		const checker = derived(
-			[accessor_d, extents],
-			([$accessor_d, $extents], set: ((value: ExtentsDiscreteSet<DOMAINTYPE> | AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>>) => void)) => {
+			[get_d, extents],
+			([$get_d, $extents], set: ((value: ExtentsDiscreteSet<DOMAINTYPE> | AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>>) => void)) => {
 
 				if (typeof $extents === 'function') {
 					return meta.subscribe($meta => {
 						const extents = $extents({ meta: $meta });
 
 						if (!extents) {
-							set(createAccumulatorCreatorDiscrete($accessor_d));
+							set(createAccumulatorCreatorDiscrete($get_d));
 							return;
 						}
 
@@ -442,7 +442,7 @@ export function createChart<
 				}
 
 				if (!$extents) {
-					set(createAccumulatorCreatorDiscrete($accessor_d));
+					set(createAccumulatorCreatorDiscrete($get_d));
 					return;
 				}
 
@@ -510,36 +510,36 @@ export function createChart<
 		const range_d = create_range_d(range, reverse);
 
 		const {
-			scaler_d,
-			scaled_d,
-			scaleds_d
-		} = create_scaled_d(
-			scalerFactory,
+			scale_d,
+			get_scaled_d,
+			get_sub_scaled_d
+		} = create_get_scaled_d(
+			scaleFactory,
 			meta,
 			domain_d,
 			range_d,
-			accessor_d,
-			accessors_d
+			get_d,
+			get_sub_d
 		);
 
 		return {
 			discrete: true,
-			accessor: accessor!,
-			accessors: accessors!,
+			get: get!,
+			get_sub: get_sub!,
 			range,
 			reverse,
 			sort,
 			extents,
 			domain,
-			scalerFactory,
-			accessor_d,
-			accessors_d,
+			scaleFactory,
+			get_d,
+			get_sub_d,
 			extents_d,
 			domain_d,
 			range_d,
-			scaler_d,
-			scaled_d,
-			scaleds_d: scaleds_d as never
+			scale_d,
+			get_scaled_d,
+			get_sub_scaled_d: get_sub_scaled_d as never
 		}
 	}
 
@@ -553,12 +553,12 @@ export function createChart<
 		DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
-			scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
-			scaleds_d:
-				'accessors' extends keyof DIMENSION
+			get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
+			get_sub_scaled_d:
+				'get_sub' extends keyof DIMENSION
 					? {
-						[sub in keyof DIMENSION['accessors']]:
-						ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSION['accessors'][sub]>, RANGETYPE>
+						[sub in keyof DIMENSION['get_sub']]:
+						ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSION['get_sub'][sub]>, RANGETYPE>
 					}
 					: Record<string, never>
 		},
@@ -566,29 +566,29 @@ export function createChart<
 		Readable<undefined | ExtentsContinuousBound<DOMAINTYPE>>
 	>
 	{
-		const accessor = 'accessor' in props ? makeStore(props.accessor) : undefined;
-		const accessors = 'accessors' in props
-			? Object.fromEntries(Object.entries(props.accessors).map(([name, accessor]) => tuple(name, makeStore(accessor))))
+		const get = 'get' in props ? makeStore(props.get) : undefined;
+		const get_sub = 'get_sub' in props
+			? Object.fromEntries(Object.entries(props.get_sub).map(([name, get]) => tuple(name, makeStore(get))))
 			: undefined;
 		const range = makeStore(props.range);
 		const reverse = makeStore(props.reverse);
 		const extents = makeStore(props.extents);
 		const extentsDefault = makeStore(props.extentsDefault);
 		const domain = makeStore(props.domain);
-		const scalerFactory = makeStore(props.scalerFactory);
+		const scaleFactory = makeStore(props.scaleFactory);
 
-		const { accessor_d, accessors_d } = create_accessors_d(accessor, accessors);
+		const { get_d, get_sub_d } = create_get_sub_d(get, get_sub);
 
 		const checker = derived(
-			[accessor_d, extents, extentsDefault],
-			([$accessor_d, $extents, $extentsDefault], set: ((value: undefined | ExtentsContinuousBound<DOMAINTYPE> | AccumulatorCreator<ROW, META, undefined | ExtentsContinuousBound<DOMAINTYPE>>) => void)) => {
+			[get_d, extents, extentsDefault],
+			([$get_d, $extents, $extentsDefault], set: ((value: undefined | ExtentsContinuousBound<DOMAINTYPE> | AccumulatorCreator<ROW, META, undefined | ExtentsContinuousBound<DOMAINTYPE>>) => void)) => {
 
 				if (typeof $extents === 'function') {
 					return meta.subscribe($meta => {
 						const extents = $extents({ meta: $meta });
 
 						if (!extents) {
-							set(createAccumulatorCreatorContinuous($accessor_d, $extentsDefault));
+							set(createAccumulatorCreatorContinuous($get_d, $extentsDefault));
 							return;
 						}
 
@@ -598,7 +598,7 @@ export function createChart<
 				}
 
 				if (!$extents) {
-					set(createAccumulatorCreatorContinuous($accessor_d, $extentsDefault));
+					set(createAccumulatorCreatorContinuous($get_d, $extentsDefault));
 					return;
 				}
 
@@ -657,36 +657,36 @@ export function createChart<
 		const range_d = create_range_d(range, reverse);
 
 		const {
-			scaler_d,
-			scaled_d,
-			scaleds_d
-		} = create_scaled_d(
-			scalerFactory,
+			scale_d,
+			get_scaled_d,
+			get_sub_scaled_d
+		} = create_get_scaled_d(
+			scaleFactory,
 			meta,
 			domain_d,
 			range_d,
-			accessor_d,
-			accessors_d
+			get_d,
+			get_sub_d
 		);
 
 		return {
 			discrete: false,
-			accessor: accessor!,
-			accessors: accessors!,
+			get: get!,
+			get_sub: get_sub!,
 			range,
 			reverse,
 			extents,
 			extentsDefault,
 			domain,
-			scalerFactory,
-			accessor_d,
-			accessors_d,
+			scaleFactory,
+			get_d,
+			get_sub_d,
 			extents_d,
 			domain_d,
 			range_d,
-			scaler_d,
-			scaled_d,
-			scaleds_d: scaleds_d as never
+			scale_d,
+			get_scaled_d,
+			get_sub_scaled_d: get_sub_scaled_d as never
 		}
 	}
 

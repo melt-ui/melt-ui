@@ -27,15 +27,15 @@ export type ChartBasicsDerived_Stores<ROW, META> = {
 }
 
 export type DimensionAccessorsDerived<ROW, META, DOMAINTYPE> = {
-	accessor_d: AccessorFunc<ROW, META, DOMAINTYPE>;
-	accessors_d: {
+	get_d: AccessorFunc<ROW, META, DOMAINTYPE>;
+	get_sub_d: {
 		[k: string]: AccessorFunc<ROW, META, DOMAINTYPE>;
 	}
 }
 
 export type DimensionAccessorsDerived_Stores<ROW, META, DOMAINTYPE> = {
-	accessor_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
-	accessors_d: {
+	get_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
+	get_sub_d: {
 		[k: string]: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
 	}
 }
@@ -48,18 +48,22 @@ export type DimensionRangeDerived_Stores<RANGETYPE> = {
 	range_d: Readable<RangeList<RANGETYPE> | undefined>;
 }
 
-export type DimensionScalerDerived<SCALER> = {
-	scaler_d: SCALER;
+export type DimensionScalerDerived<ROW, META, RANGETYPE, SCALER> = {
+	scale_d: SCALER;
+	get_scaled_d: AccessorFunc<ROW, META, RANGETYPE>;
+	get_sub_scaled_d: Record<string, AccessorFunc<ROW, META, RANGETYPE>>;
 }
 
-export type DimensionScalerDerived_Stores<SCALER> = {
-	scaler_d: Readable<SCALER>;
+export type DimensionScalerDerived_Stores<ROW, META, RANGETYPE, SCALER> = {
+	scale_d: Readable<SCALER>;
+	get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
+	get_sub_scaled_d: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
 }
 
 export type DimensionDiscreteDerived<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessorsDerived<ROW, META, DOMAINTYPE> &
 	DimensionRangeDerived<RANGETYPE> &
-	DimensionScalerDerived<SCALER> &
+	DimensionScalerDerived<ROW, META, RANGETYPE, SCALER> &
 	{
 		discrete: true;
 		extents_d: ExtentsDiscreteSet<DOMAINTYPE>;
@@ -69,7 +73,7 @@ export type DimensionDiscreteDerived<ROW, META, DOMAINTYPE extends DOMAINSIMPLET
 export type DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessorsDerived_Stores<ROW, META, DOMAINTYPE> &
 	DimensionRangeDerived_Stores<RANGETYPE> &
-	DimensionScalerDerived_Stores<SCALER> &
+	DimensionScalerDerived_Stores<ROW, META, RANGETYPE, SCALER> &
 	{
 		discrete: true;
 		extents_d: Readable<ExtentsDiscreteSet<DOMAINTYPE>>;
@@ -79,7 +83,7 @@ export type DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE extends DOMAIN
 export type DimensionContinuousDerived<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessorsDerived<ROW, META, DOMAINTYPE> &
 	DimensionRangeDerived<RANGETYPE> &
-	DimensionScalerDerived<SCALER> &
+	DimensionScalerDerived<ROW, META, RANGETYPE, SCALER> &
 	{
 		discrete: false;
 		extents_d: undefined | ExtentsContinuousBound<DOMAINTYPE>;
@@ -89,7 +93,7 @@ export type DimensionContinuousDerived<ROW, META, DOMAINTYPE extends DOMAINSIMPL
 export type DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessorsDerived_Stores<ROW, META, DOMAINTYPE> &
 	DimensionRangeDerived_Stores<RANGETYPE> &
-	DimensionScalerDerived_Stores<SCALER> &
+	DimensionScalerDerived_Stores<ROW, META, RANGETYPE, SCALER> &
 	{
 		discrete: false;
 		extents_d: Readable<undefined | ExtentsContinuousBound<DOMAINTYPE>>;

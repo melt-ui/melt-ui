@@ -41,12 +41,12 @@ export type Infer_DimensionAccessor_ReturnType<ROW, ACCESSOR> =
 		: never;
 
 export type Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION extends DimensionAccessors_MaybeStores<ROW, any, any>, ROW> =
-	'accessor' extends keyof DIMENSION
-	? Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['accessor']>>
-	: 'accessors' extends keyof DIMENSION
+	'get' extends keyof DIMENSION
+	? Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['get']>>
+	: 'get_sub' extends keyof DIMENSION
 	? {
-			[sub in keyof DIMENSION['accessors']]:
-				Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['accessors'][sub]>>
+			[sub in keyof DIMENSION['get_sub']]:
+				Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['get_sub'][sub]>>
 	}
 	: never
 
