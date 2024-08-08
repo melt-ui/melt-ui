@@ -21,7 +21,7 @@ import type {
 } from './types-basic.js';
 import type { Readable } from 'svelte/store';
 
-export type ChartBasicsCreated_Stores<ROW, META> = {
+export type ChartBasics<ROW, META> = {
 	area: Readable<Area>;
 	meta: Readable<META>;
 	data: Readable<ROW[]>;
@@ -31,44 +31,7 @@ export type ChartBasicsCreated_Stores<ROW, META> = {
 	padding: Readable<Sides | number | undefined>;
 }
 
-export type DimensionAccessorsDerived_Stores<ROW, META, DOMAINTYPE> = {
-	get_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
-	get_sub_d: {
-		[k: string]: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
-	}
-}
-
-export type DimensionRangeDerived_Stores<RANGETYPE> = {
-	range_d: Readable<RangeList<RANGETYPE> | undefined>;
-}
-
-export type DimensionScaleDerived_Stores<ROW, META, RANGETYPE, SCALER> = {
-	scale_d: Readable<SCALER>;
-	get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
-	get_sub_scaled_d: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
-}
-
-export type DimensionDiscreteDerived_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
-	DimensionAccessorsDerived_Stores<ROW, META, DOMAINTYPE> &
-	DimensionRangeDerived_Stores<RANGETYPE> &
-	DimensionScaleDerived_Stores<ROW, META, RANGETYPE, SCALER> &
-	{
-		discrete: true;
-		extents_d: Readable<ExtentsDiscreteSet<DOMAINTYPE>>;
-		domain_d: Readable<DomainDiscreteSet<DOMAINTYPE>>;
-	}
-
-export type DimensionContinuousDerived_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
-	DimensionAccessorsDerived_Stores<ROW, META, DOMAINTYPE> &
-	DimensionRangeDerived_Stores<RANGETYPE> &
-	DimensionScaleDerived_Stores<ROW, META, RANGETYPE, SCALER> &
-	{
-		discrete: false;
-		extents_d: Readable<undefined | ExtentsContinuousBound<DOMAINTYPE>>;
-		domain_d: Readable<undefined | DomainContinuousBound<DOMAINTYPE>>
-	}
-
-export type DimensionDiscreteCreated_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	{
 		// static
 		discrete: true;
@@ -95,7 +58,7 @@ export type DimensionDiscreteCreated_Stores<ROW, META, DOMAINTYPE extends DOMAIN
 		domain_d: Readable<DomainDiscreteSet<DOMAINTYPE>>;
 	};
 
-export type DimensionContinuousCreated_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	{
 		// static
 		discrete: false;
@@ -123,7 +86,7 @@ export type DimensionContinuousCreated_Stores<ROW, META, DOMAINTYPE extends DOMA
 		domain_d: Readable<DomainContinuousBound<DOMAINTYPE> | undefined>;
 	};
 
-export type DimensionCreated_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type Dimension<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	{
 		// static
 		discrete: true | false;

@@ -11,12 +11,7 @@ import type {
 	InferGeneratorReturn,
 	ReplaceLeafType,
 } from './types-util.js';
-import type {
-	ChartBasicsCreated_Stores,
-	DimensionContinuousCreated_Stores,
-	DimensionCreated_Stores,
-	DimensionDiscreteCreated_Stores,
-} from './types-create.js';
+import type { ChartBasics, Dimension, DimensionContinuous, DimensionDiscrete } from './types-create.js';
 import type {
 	Accessor,
 	AccessorFunc,
@@ -58,15 +53,15 @@ export function createChart<
 			dimensions: DIMENSIONS
 		}
 ):
-	ChartBasicsCreated_Stores<ROW, META> &
+	ChartBasics<ROW, META> &
 	{
-		dimensions: Record<keyof DIMENSIONS, DimensionCreated_Stores<ROW, META, any, any, any, any>> & {
+		dimensions: Record<keyof DIMENSIONS, Dimension<ROW, META, any, any, any, any>> & {
 			[k in keyof DIMENSIONS]:
 				(
 					DIMENSIONS[k] extends DimensionDiscrete_Describe<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
-					? DimensionDiscreteCreated_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					? DimensionDiscrete<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					: DIMENSIONS[k] extends DimensionContinuous_Describe<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
-					? DimensionContinuousCreated_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
+					? DimensionContinuous<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					: never
 				) &
 				(
@@ -382,7 +377,7 @@ export function createChart<
 		// yield
 		Readable<ExtentsDiscreteSet<DOMAINTYPE> | AccumulatorCreator<ROW, META, ExtentsDiscreteSet<DOMAINTYPE>>>,
 		// return
-		DimensionDiscreteCreated_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
+		DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
 			get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
 			get_sub_scaled_d:
@@ -542,7 +537,7 @@ export function createChart<
 		// yield
 		Readable<undefined | ExtentsContinuousBound<DOMAINTYPE> | AccumulatorCreator<ROW, META, undefined | ExtentsContinuousBound<DOMAINTYPE>>>,
 		// return
-		DimensionContinuousCreated_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
+		DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
 			get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
 			get_sub_scaled_d:
