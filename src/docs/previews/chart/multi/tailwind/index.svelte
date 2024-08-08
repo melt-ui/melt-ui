@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createChart, h_band, h_linear, v_linear } from '$lib/index.js';
+	import { createChart, h_band, h_linear, v_linear, melt } from '$lib/index.js';
 
 	type R = { year: string, apples: number, bananas: number, cherries: number, dates: number }
 	const rdata: R[] = [
@@ -16,8 +16,6 @@
 	export const chart = createChart({
 		data: rdata,
 		meta: meta,
-		width: 0,
-		height: 0,
 		padding: 10,
 		margin: 20,
 		dimensions: {
@@ -41,6 +39,9 @@
 		width,
 		height,
 		area,
+		elements: {
+			root
+		},
 		dimensions: {
 			x: {
 				get_scaled: x_get_scaled,
@@ -58,7 +59,7 @@
 </script>
 <h1>Multi</h1>
 <div class="w-[600px] h-[400px]">
-	<div bind:clientWidth={$width} bind:clientHeight={$height} class="w-full h-full">
+	<div use:melt={$root} class="w-full h-full">
 			{#if typeof window !== 'undefined' && $width && $height}
 				<svg class="w-full h-full">
 					<rect x={0} y={0} width={$area.width} height={$area.height} stroke="red" fill="none" stroke-width="3" stroke-dasharray="16 16" />

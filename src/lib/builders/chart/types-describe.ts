@@ -24,8 +24,8 @@ export type ChartBasics_Describe<ROW, META> =
 	{
 		data: MaybeStore<ROW[]>;
 		//meta?: META; // A chart should either have meta or not have meta, never either
-		width: MaybeStore<number>;
-		height: MaybeStore<number>;
+		width?: MaybeStore<number>;
+		height?: MaybeStore<number>;
 		margin?: MaybeStore<Sides | number | undefined>;
 		padding?: MaybeStore<Sides | number | undefined>;
 	}

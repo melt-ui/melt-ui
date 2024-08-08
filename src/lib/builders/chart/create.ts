@@ -1,3 +1,4 @@
+import { makeElement } from '$lib/internal/helpers/index.js';
 import type {
 	ChartBasics_Describe,
 	Dimension_Describe,
@@ -38,6 +39,9 @@ import {
 	createAccumulatorCreatorDiscrete,
 } from './accumulator.js';
 import { makeStore, tuple } from './util.js';
+import type { MeltActionReturn } from '../../internal/types.js';
+import { resizeObserver } from '../scroll-area/helpers.js';
+import type { ChartEvents } from './events.js';
 
 export function createChart<
 	ROW,
@@ -122,8 +126,9 @@ export function createChart<
 	// chart basics
 	const data = makeStore(props.data);
 	const meta = props.meta ? makeStore(props.meta) : readonly(writable(undefined as META));
-	const width = makeStore(props.width);
-	const height = makeStore(props.height);
+	const size = (props.width === undefined || props.height === undefined) ? writable<Size>({ width: 0, height: 0 }) : undefined;
+	const width = props.width !== undefined ? makeStore(props.width) : derived(size!, $size => $size.width);
+	const height = props.height !== undefined ? makeStore(props.height) : derived(size!, $size => $size.height);
 	const padding = makeStore(props.padding);
 	const margin = makeStore(props.margin);
 
@@ -738,6 +743,44 @@ export function createChart<
 				InferGeneratorReturn<typeof generator>
 	);
 
+	const root = makeElement(
+		'chart',
+		{
+			stores: [area_d],
+			returned: ([$area]) => {
+				return {
+					'style':
+						`--chart-w: ${$area.width};` +
+						`--chart-h: ${$area.height};` +
+						`--chart-ml: ${$area.margin.left};` +
+						`--chart-mt: ${$area.margin.top};` +
+						`--chart-mr: ${$area.margin.right};` +
+						`--chart-mb: ${$area.margin.bottom};` +
+						`--chart-mw: ${$area.margin.inner.width};` +
+						`--chart-mh: ${$area.margin.inner.height};` +
+						`--chart-pl: ${$area.padding.left};` +
+						`--chart-pt: ${$area.padding.top};` +
+						`--chart-pr: ${$area.padding.right};` +
+						`--chart-pb: ${$area.padding.bottom};` +
+						`--chart-pw: ${$area.padding.inner.width};` +
+						`--chart-ph: ${$area.padding.inner.height};`
+				}
+			},
+			action: (node: HTMLElement): MeltActionReturn<ChartEvents['root']> => {
+				const unsub_resize = size
+					? resizeObserver(node, () => {
+						 size.set({ width: node.clientWidth, height: node.clientHeight });
+					})
+					: undefined;
+
+				return {
+					destroy() {
+						unsub_resize?.();
+					}
+				}
+			}
+		}
+	);
 
 	return {
 		data,
@@ -747,6 +790,9 @@ export function createChart<
 		padding,
 		margin,
 		area: area_d,
+		elements: {
+			root
+		},
 		dimensions: Object.fromEntries(dimensionResults.map(
 			(result, i) =>
 				tuple(dimensionNames[i], result)

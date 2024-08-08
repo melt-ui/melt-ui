@@ -20,6 +20,15 @@ import type {
 	SortFunc,
 } from './types-basic.js';
 import type { Readable } from 'svelte/store';
+import type { MeltElement } from '../../internal/helpers/index.js';
+import type { Action } from 'svelte/action';
+
+type RootElement = MeltElement<
+		[Readable<Area>],
+		Action<any, any, Record<never, any>>,
+		([$area]: [Area]) => { style: string },
+		'chart'
+	>;
 
 export type ChartBasics<ROW, META> = {
 	area: Readable<Area>;
@@ -29,6 +38,9 @@ export type ChartBasics<ROW, META> = {
 	height: Readable<number>;
 	margin: Readable<Sides | number | undefined>;
 	padding: Readable<Sides | number | undefined>;
+	elements: {
+		root: RootElement
+	}
 }
 
 export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
