@@ -26,6 +26,8 @@ export type ReplaceLeafType<TYPE, TO> =
 	? { [K in keyof TYPE]: ReplaceLeafType<TYPE[K], TO> }
 	: TYPE extends Array<infer ELEMENT>
 	? Array<ReplaceLeafType<ELEMENT, TO>>
+	: TYPE extends Date
+	? TO
 	: TYPE extends Record<string, infer MEMBER>
 	? { [k in keyof TYPE]: ReplaceLeafType<TYPE[k], TO> }
 	: TO;

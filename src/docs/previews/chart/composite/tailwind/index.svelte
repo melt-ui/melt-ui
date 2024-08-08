@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { createChart, h_band, v_linear, melt, h_linear } from '$lib/index.js';
 	import { writable } from 'svelte/store';
-	import { scaleFactoryTime } from '$lib/builders/chart/scale.js';
+	import { scaleFactoryTime, scaleFactoryUtc } from '$lib/builders/chart/scale.js';
+	import { utcYear } from 'd3-time';
+	import { utcParse } from 'd3-time-format';
 
 	type Fruit = 'apples' | 'bananas' | 'cherries' | 'dates';
 
@@ -26,7 +28,7 @@
 	const chart_total = createChart({
 		data: [tdata],
 		padding: 10,
-		margin: 10,
+		margin: { left: 0, right: 0, top: 0, bottom: 50 },
 		dimensions: {
 			time: {
 				discrete: true,
@@ -47,15 +49,17 @@
 		}
 	});
 
+	const parse_year = utcParse("%Y")
+
 	const chart_series = createChart({
 		data: rdata,
 		padding: 10,
-		margin: 10,
+		margin: { left: 0, right: 0, top: 0, bottom: 50 },
 		dimensions: {
 			time: {
-				get: 'year',
+				get: (row) => parse_year(row.year),
 				...h_linear,
-				scaleFactoryTime
+				scaleFactory: scaleFactoryUtc
 			},
 			total: {
 				get_sub: {
@@ -100,6 +104,8 @@
 		dimensions: {
 			time: {
 				get_scaled: cs_x,
+				scale: cs_scale,
+				domain: cs_domain
 			},
 			total: {
 				get_sub_scaled: {
@@ -112,7 +118,7 @@
 
 	$: if ($cs_extents && $ct_extents) $domain = [Math.min($cs_extents[0], $ct_extents[0]), Math.max($cs_extents[1], $ct_extents[1])];
 
-	$: console.log($ct_extents, $cs_extents, $domain);
+	$: console.log($cs_domain, $cs_scale.domain());
 
 </script>
 <style lang="postcss">
@@ -181,6 +187,26 @@
 							class="stroke-green-600"
 							data-series={fruit}
 						/>
+					{/each}
+				</g>
+				<g transform="translate({$cs_area.padding.inner.left}, {$cs_area.margin.inner.bottom})">
+					<line
+						x1={0}
+						x2={$cs_area.padding.inner.width}
+						y1={0}
+						y2={0}
+						class="stroke-gray-400 stroke-[3px] [stroke-linecap:round]"
+						/>
+
+					{#each $cs_scale.ticks(utcYear.every(1)) as tick, i}
+						<line
+							x1={$cs_scale(tick)}
+							y1={0}
+							x2={$cs_scale(tick)}
+							y2={5}
+							class="stroke-gray-400 stroke-[3px] [stroke-linecap:round]"
+							data-tick={JSON.stringify({ tick, i })}
+							/>
 					{/each}
 				</g>
 			</svg>

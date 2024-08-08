@@ -20,7 +20,7 @@ import type {
 	DomainContinuousBound,
 	DomainDiscreteArray,
 	DomainDiscreteSet,
-	DomainField,
+	DomainField, DomainFieldRecord,
 	ExtentsContinuousBound,
 	ExtentsDiscreteSet,
 	Range,
@@ -38,7 +38,7 @@ import {
 	createAccumulatorCreatorContinuous,
 	createAccumulatorCreatorDiscrete,
 } from './accumulator.js';
-import { makeStore, tuple } from './util.js';
+import { is_date, is_domain_leaf, makeStore, tuple } from './util.js';
 import type { MeltActionReturn } from '../../internal/types.js';
 import { resizeObserver } from '../scroll-area/helpers.js';
 import type { ChartEvents } from './events.js';
@@ -347,7 +347,7 @@ export function createChart<
 							if (Array.isArray(value))
 								return value.map(v => map(v))
 
-							if (!!value && typeof value === 'object')
+							if (!!value && typeof value === 'object' && !is_domain_leaf(value))
 								return Object.fromEntries(Object.entries(value).map(([n, v]) => [n, map(v)]));
 
 							return $scale_d(value);

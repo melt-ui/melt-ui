@@ -1,4 +1,4 @@
-import { type NumberValue, scaleBand, scaleLinear, scaleSqrt, scaleTime } from 'd3-scale';
+import { type NumberValue, scaleBand, scaleLinear, scaleSqrt, scaleTime, scaleUtc } from 'd3-scale';
 import type { DomainContinuousBound, DomainDiscreteSet, RangeList, Scale } from './types-basic.js';
 import type { StringValue } from './types-util.js';
 
@@ -40,7 +40,7 @@ export function scaleFactoryLinear<DOMAINTYPE extends NumberValue>(
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
-export function scaleFactoryTime<DOMAINTYPE extends NumberValue>(
+export function scaleFactoryTime<DOMAINTYPE extends Date | NumberValue>(
 	{
 		domain_d,
 		range_d
@@ -50,6 +50,26 @@ export function scaleFactoryTime<DOMAINTYPE extends NumberValue>(
 	}
 ) {
 	const scale = scaleTime<number>();
+
+	if (domain_d)
+		scale.domain(domain_d);
+
+	if (range_d)
+		scale.range(range_d);
+
+	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
+}
+
+export function scaleFactoryUtc<DOMAINTYPE extends Date | NumberValue>(
+	{
+		domain_d,
+		range_d
+	}: {
+		domain_d: DomainContinuousBound<DOMAINTYPE> | undefined,
+		range_d: RangeList<number> | undefined
+	}
+) {
+	const scale = scaleUtc<number>();
 
 	if (domain_d)
 		scale.domain(domain_d);

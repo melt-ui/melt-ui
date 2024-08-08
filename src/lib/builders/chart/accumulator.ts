@@ -1,4 +1,5 @@
 import type { DomainField, ExtentsContinuousBound, ExtentsDiscreteSet } from './types-basic.js';
+import { is_date, is_domain_leaf } from './util.js';
 
 export interface Accumulator<ROW, META, EXTENTS> {
 	accumulate: (row: ROW, info: { meta: META }) => void;
@@ -19,7 +20,7 @@ export function createAccumulatorCreatorDiscrete<ROW, META, DOMAINTYPE>(get: ((r
 					if (Array.isArray(field))
 						field.forEach(field => check(field));
 					else
-					if (field !== null && typeof field === 'object')
+					if (field !== null && typeof field === 'object' && !is_domain_leaf(field))
 						Object.values(field).forEach(field => check(field));
 					else
 						extents.add(field);
@@ -46,7 +47,7 @@ export function createAccumulatorCreatorContinuous<ROW, META, DOMAINTYPE>(get: (
 					if (Array.isArray(field))
 						field.forEach(field => check(field));
 					else
-					if (field !== null && typeof field === 'object')
+					if (field !== null && typeof field === 'object' && !is_domain_leaf(field))
 						Object.values(field).forEach(field => check(field));
 					else
 					if (extents === undefined)

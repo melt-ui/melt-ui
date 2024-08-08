@@ -111,6 +111,12 @@ importers:
       '@types/d3-scale':
         specifier: ^4.0.8
         version: 4.0.8
+      '@types/d3-time':
+        specifier: ^3.0.3
+        version: 3.0.3
+      '@types/d3-time-format':
+        specifier: ^4.0.3
+        version: 4.0.3
       '@types/hast':
         specifier: ^3.0.4
         version: 3.0.4
@@ -144,6 +150,12 @@ importers:
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
+      d3-time:
+        specifier: ^3.1.0
+        version: 3.1.0
+      d3-time-format:
+        specifier: ^4.1.0
+        version: 4.1.0
       escape-html:
         specifier: ^1.0.3
         version: 1.0.3
@@ -2319,6 +2331,9 @@ packages:
 
   '@types/d3-scale@4.0.8':
     resolution: {integrity: sha512-gkK1VVTr5iNiYJ7vWDI+yUFFlszhNMtVeneJ6lUTKPjprsvLLI9/tgEGiXJOnlINJA8FyA88gfnQsHbybVZrYQ==}
+
+  '@types/d3-time-format@4.0.3':
+    resolution: {integrity: sha512-5xg9rC+wWL8kdDj153qZcsJ0FWiFt0J5RB6LYUNZjwSnesfblqrI/bJ1wBdJ8OQfncgbJG5+2F+qfqnqyzYxyg==}
 
   '@types/d3-time@3.0.3':
     resolution: {integrity: sha512-2p6olUZ4w3s+07q3Tm2dbiMZy5pCDfYwtLXXHUnVzXgQlZ/OyPtUz6OL382BkOuGlLXqfT+wqv8Fw2v8/0geBw==}
@@ -9712,6 +9727,8 @@ snapshots:
   '@types/d3-scale@4.0.8':
     dependencies:
       '@types/d3-time': 3.0.3
+
+  '@types/d3-time-format@4.0.3': {}
 
   '@types/d3-time@3.0.3': {}
 

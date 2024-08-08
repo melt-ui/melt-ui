@@ -1,7 +1,8 @@
 import { type Readable, writable } from 'svelte/store';
 import type { Dimension, DimensionContinuous, DimensionDiscrete } from './types-create.js';
-import type { Scale } from './types-basic.js';
+import type { DomainFieldRecord, Scale } from './types-basic.js';
 import type { Dimension_Describe } from './types-describe.js';
+import * as Domain from 'node:domain';
 
 export function isStore<TYPE>(maybeStore: TYPE | Readable<TYPE>): maybeStore is Readable<TYPE> {
 	return maybeStore && typeof maybeStore === 'object' && 'subscribe' in maybeStore;
@@ -121,4 +122,12 @@ export function get_dimension<
 	}
 	else
 		return dimensions[name];
+}
+
+export function is_date(value: any): value is Date {
+	return !!value && typeof value === 'object' && Object.prototype.toString.call(value) === '[object Date]';
+}
+
+export function is_domain_leaf<DOMAINTYPE>(value: DomainFieldRecord<DOMAINTYPE> | DOMAINTYPE): value is DOMAINTYPE {
+	return is_date(value);
 }
