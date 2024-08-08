@@ -64,7 +64,7 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 
 	type HasMeta = Assert<IsEqual<typeof result.meta, Readable<typeof meta>>, true>
 	
-	type A = typeof result.dimensions.merge.domain;
+	type A = typeof result.meta;
 	const a: A = null!;
 
 //	type B = InferStoreInner<A>;
