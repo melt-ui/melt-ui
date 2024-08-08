@@ -15,7 +15,7 @@ import type {
 } from './types-basic.js';
 import type { MaybeStore } from './types-util.js';
 
-export type ChartBasicsMeta_Describe<META> =
+type ChartBasicsMeta_Describe<META> =
 	object |
 	{ meta: MaybeStore<META> }
 
@@ -30,7 +30,7 @@ export type ChartBasics_Describe<ROW, META> =
 		padding?: MaybeStore<Sides | number | undefined>;
 	}
 
-type DimensionAccessors_Describe<ROW, META, DOMAINTYPE> =
+export type DimensionAccessors_Describe<ROW, META, DOMAINTYPE> =
 	{
 		get:
 			MaybeStore<Accessor<ROW, META, DOMAINTYPE>>

@@ -58,5 +58,3 @@ export type Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSION extends Di
 			: never
 		)
 		: never
-
-export type CombineObjects<A,B> = { [k in keyof A | keyof B]: (k extends keyof A ? A[k] : undefined) | (k extends keyof B ? B[k] : undefined) };
