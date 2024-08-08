@@ -6,7 +6,7 @@ import type {
 	ExtentsContinuousBound,
 	ExtentsDiscreteSet,
 	RangeList,
-	Scale,
+	Scale, Sides,
 } from './types-basic.js';
 import type { Readable } from 'svelte/store';
 import type {
@@ -15,14 +15,26 @@ import type {
 	DimensionDiscrete,
 	DimensionDiscrete_Stores,
 } from './types-describe.js';
-import type { CombineObjects } from './types-util.js';
+import type { CombineObjects, MaybeStore } from './types-util.js';
 
-export type ChartBasicsDerived<ROW, META> = {
+export type ChartBasicsCreated<ROW, META> = {
 	area: Area;
+	meta: META;
+	data: ROW[];
+	width: number;
+	height: number;
+	margin: Sides | number | undefined;
+	padding: Sides | number | undefined;
 }
 
-export type ChartBasicsDerived_Stores<ROW, META> = {
+export type ChartBasicsCreated_Stores<ROW, META> = {
 	area: Readable<Area>;
+	meta: MaybeStore<META>;
+	data: MaybeStore<ROW[]>;
+	width: MaybeStore<number>;
+	height: MaybeStore<number>;
+	margin: MaybeStore<Sides | number | undefined>;
+	padding: MaybeStore<Sides | number | undefined>;
 }
 
 export type DimensionAccessorsDerived<ROW, META, DOMAINTYPE> = {

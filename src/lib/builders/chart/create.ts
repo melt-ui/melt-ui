@@ -16,7 +16,7 @@ import type {
 	ReplaceLeafType,
 } from './types-util.js';
 import type {
-	ChartBasicsDerived_Stores,
+	ChartBasicsCreated_Stores,
 	DimensionContinuousDerived_Stores,
 	DimensionCreated_Stores,
 	DimensionDiscreteDerived_Stores,
@@ -63,7 +63,7 @@ export function createChart<
 		}
 ):
 	ChartBasics_Stores<ROW, META> &
-	ChartBasicsDerived_Stores<ROW, META> &
+	ChartBasicsCreated_Stores<ROW, META> &
 	{
 		dimensions: Record<keyof DIMENSIONS, DimensionCreated_Stores<ROW, META, any, any, any, any>> & {
 			[k in keyof DIMENSIONS]:
