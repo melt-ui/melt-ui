@@ -769,7 +769,7 @@ export function createChart<
 			action: (node: HTMLElement): MeltActionReturn<ChartEvents['root']> => {
 				const unsub_resize = size
 					? resizeObserver(node, () => {
-						 size.set({ width: node.clientWidth, height: node.clientHeight });
+							size.set({ width: node.clientWidth, height: node.clientHeight });
 					})
 					: undefined;
 

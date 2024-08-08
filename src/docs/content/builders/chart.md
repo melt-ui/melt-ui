@@ -58,6 +58,14 @@ This is useful when combining multiple graphs into one chart.
   <svelte:component this={previews.multi} /> 
 </Preview>
 
+### Composite
+
+Multiple charts can be combined into composite charts. 
+
+<Preview code={snippets.composite}> 
+  <svelte:component this={previews.composite} /> 
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />
