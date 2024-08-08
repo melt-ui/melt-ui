@@ -1,7 +1,7 @@
 import { createChart } from './create.js';
 import type { Readable } from 'svelte/store';
 import type { DomainContinuous, DomainContinuousBound, DomainDiscrete, DomainDiscreteSet } from './types-basic.js';
-import { scaleFactoryBand, scaleFactoryLinear } from './scale.js';
+import { scaleFactoryBand, scaleFactoryLinear, scaleFactoryUtc } from './scale.js';
 import { h_linear } from './cardinal.js';
 import type { InferStoreInner } from './types-util.js';
 import { tuple } from './util.js';
@@ -53,6 +53,10 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 					b: 'bananas'
 				},
 				scaleFactory: scaleFactoryLinear
+			},
+			date: {
+				get: () => ({ a: new Date(), b: new Date() }),
+				scaleFactory: scaleFactoryUtc
 			}
 		}
 	});
@@ -106,4 +110,6 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 	type MergeScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_scaled>>, { a: number, b: number }>, true>
 	type MergeAccessorAReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_sub.a>>, number>, true>;
 	type MergeAccessorBReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_sub.b>>, number>, true>;
+
+	type DateScaled = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.date.get_scaled>>, { a: number, b: number }>, true>
 }
