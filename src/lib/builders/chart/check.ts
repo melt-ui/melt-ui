@@ -2,8 +2,8 @@ import { createChart } from './create.js';
 import type { Readable } from 'svelte/store';
 import type { DomainContinuous, DomainContinuousBound, DomainDiscrete, DomainDiscreteSet } from './types-basic.js';
 import { scaleFactoryBand, scaleFactoryLinear } from './scale.js';
-import { h_linear, h_range } from './cardinal.js';
-import type { InferStoreInner, ReplaceLeafType } from './types-util.js';
+import { h_linear } from './cardinal.js';
+import type { InferStoreInner } from './types-util.js';
 import { tuple } from './util.js';
 
 type IsEqual<A,B> =
@@ -64,9 +64,9 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 
 	type HasMeta = Assert<IsEqual<typeof result.meta, Readable<typeof meta>>, true>
 	
-//	type A = typeof result.dimensions.x.reverse;
-//	const a: A = null!;
-//
+	type A = typeof result.dimensions.merge.domain;
+	const a: A = null!;
+
 //	type B = InferStoreInner<A>;
 //	const b: B = null!;
 //
@@ -101,7 +101,7 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 	type MergeDiscrete = Assert<IsEqual<typeof result.dimensions.merge.discrete, true>, false>;
 	type MergeAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.merge.get_d>>, [Row, { meta: typeof meta }]>, true>;
 	type MergeAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_d>>, { a: number, b: number }>, true>;
-	type MergeDomain = Assert<IsEqual<typeof result.dimensions.merge.domain, undefined | Readable<DomainContinuous<number, typeof meta> | undefined>>, true>
+	type MergeDomain = Assert<IsEqual<typeof result.dimensions.merge.domain, Readable<DomainContinuous<number, typeof meta> | undefined>>, true>
 	type MergeDomainD = Assert<IsEqual<InferStoreInner<typeof result.dimensions.merge.domain_d>, DomainContinuousBound<number> | undefined>, true>
 	type MergeScaledD = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_scaled_d>>, { a: number, b: number }>, true>
 	type MergeAccessorAReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.merge.get_sub_d.a>>, number>, true>;

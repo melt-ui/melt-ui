@@ -16,9 +16,9 @@ import type {
 import type { MaybeStore } from './types-util.js';
 import type { Readable } from 'svelte/store';
 
-export type ChartBasicsMeta<META> =
-	object |
-	{ meta: META }
+//export type ChartBasicsMeta<META> =
+//	object |
+//	{ meta: META }
 
 export type ChartBasicsMeta_MaybeStores<META> =
 	object |
@@ -27,15 +27,15 @@ export type ChartBasicsMeta_MaybeStores<META> =
 export type ChartBasicsMeta_Stores<META> =
 	{ meta: Readable<META> }
 
-export type ChartBasics<ROW, META> =
-	ChartBasicsMeta<META> &
-	{
-		data: ROW[];
-		width: number;
-		height: number;
-		margin?: Sides | number;
-		padding?: Sides | number;
-	}
+//export type ChartBasics<ROW, META> =
+//	ChartBasicsMeta<META> &
+//	{
+//		data: ROW[];
+//		width: number;
+//		height: number;
+//		margin?: Sides | number;
+//		padding?: Sides | number;
+//	}
 
 export type ChartBasics_MaybeStores<ROW, META> =
 	ChartBasicsMeta_MaybeStores<META> &
@@ -60,14 +60,14 @@ export type ChartBasics_Stores<ROW, META> =
 		padding?: Readable<Sides | number | undefined>;
 	}
 
-export type DimensionAccessors<ROW, META, DOMAINTYPE> =
-	{
-		get:
-			Accessor<ROW, META, DOMAINTYPE>
-	} |
-	{
-		get_sub: Record<string, Accessor<ROW, META, DOMAINTYPE>>
-	}
+//export type DimensionAccessors<ROW, META, DOMAINTYPE> =
+//	{
+//		get:
+//			Accessor<ROW, META, DOMAINTYPE>
+//	} |
+//	{
+//		get_sub: Record<string, Accessor<ROW, META, DOMAINTYPE>>
+//	}
 
 export type DimensionAccessors_MaybeStores<ROW, META, DOMAINTYPE> =
 	{
@@ -90,10 +90,10 @@ export type DimensionAccessors_Stores<ROW, META, DOMAINTYPE> =
 	}
 
 
-export type DimensionRange<META, RANGETYPE> = {
-	range?: Range<RANGETYPE, META>;
-	reverse?: Reverse<META>;
-}
+//export type DimensionRange<META, RANGETYPE> = {
+//	range?: Range<RANGETYPE, META>;
+//	reverse?: Reverse<META>;
+//}
 
 export type DimensionRange_MaybeStores<META, RANGETYPE> = {
 	range?: MaybeStore<Range<RANGETYPE, META> | undefined>;
@@ -105,16 +105,16 @@ export type DimensionRange_Stores<META, RANGETYPE> = {
 	reverse: Readable<Reverse<META> | undefined>;
 }
 
-export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
-	DimensionAccessors<ROW, META, DOMAINTYPE> &
-	DimensionRange<META, RANGETYPE> &
-	{
-		discrete: true;
-		extents?: ExtentsDiscrete<DOMAINTYPE, META>;
-		domain?: DomainDiscrete<DOMAINTYPE, META>;
-		sort?: SortFunc<DOMAINTYPE>;
-		scaleFactory: ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>;
-	}
+//export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
+//	DimensionAccessors<ROW, META, DOMAINTYPE> &
+//	DimensionRange<META, RANGETYPE> &
+//	{
+//		discrete: true;
+//		extents?: ExtentsDiscrete<DOMAINTYPE, META>;
+//		domain?: DomainDiscrete<DOMAINTYPE, META>;
+//		sort?: SortFunc<DOMAINTYPE>;
+//		scaleFactory: ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>;
+//	}
 
 export type DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors_MaybeStores<ROW, META, DOMAINTYPE> &
@@ -132,22 +132,22 @@ export type DimensionDiscrete_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLET
 	DimensionRange_Stores<META, RANGETYPE> &
 	{
 		discrete: true;
-		extents?: Readable<ExtentsDiscrete<DOMAINTYPE, META> | undefined>;
-		domain?: Readable<DomainDiscrete<DOMAINTYPE, META> | undefined>;
-		sort?: Readable<SortFunc<DOMAINTYPE> | undefined>;
+		extents: Readable<ExtentsDiscrete<DOMAINTYPE, META> | undefined>;
+		domain: Readable<DomainDiscrete<DOMAINTYPE, META> | undefined>;
+		sort: Readable<SortFunc<DOMAINTYPE> | undefined>;
 		scaleFactory: Readable<ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
-export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
-	DimensionAccessors<ROW, META, DOMAINTYPE> &
-	DimensionRange<META, RANGETYPE> &
-	{
-		discrete?: false;
-		extents?: ExtentsContinuous<DOMAINTYPE, META>;
-		extentsDefault?: ExtentsContinuousBound<DOMAINTYPE>;
-		domain?: DomainContinuous<DOMAINTYPE, META>;
-		scaleFactory: ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>;
-	}
+//export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
+//	DimensionAccessors<ROW, META, DOMAINTYPE> &
+//	DimensionRange<META, RANGETYPE> &
+//	{
+//		discrete?: false;
+//		extents?: ExtentsContinuous<DOMAINTYPE, META>;
+//		extentsDefault?: ExtentsContinuousBound<DOMAINTYPE>;
+//		domain?: DomainContinuous<DOMAINTYPE, META>;
+//		scaleFactory: ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>;
+//	}
 
 export type DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors_MaybeStores<ROW, META, DOMAINTYPE> &
@@ -164,23 +164,23 @@ export type DimensionContinuous_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPL
 	DimensionAccessors_Stores<ROW, META, DOMAINTYPE> &
 	DimensionRange_Stores<META, RANGETYPE> &
 	{
-		discrete?: false;
-		extents?: Readable<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
-		extentsDefault?: Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
-		domain?: Readable<DomainContinuous<DOMAINTYPE, META> | undefined>;
+		discrete: false;
+		extents: Readable<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
+		extentsDefault: Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
+		domain: Readable<DomainContinuous<DOMAINTYPE, META> | undefined>;
 		scaleFactory: Readable<ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
-export type Dimension<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
-	DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
-	DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
+//export type Dimension<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
+//	DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
+//	DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
 
 export type Dimension_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
 	DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
 
-export type Dimension_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
-	DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
-	DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
+//export type Dimension_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
+//	DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
+//	DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
 
 

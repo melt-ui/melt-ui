@@ -1,7 +1,6 @@
 import type {
 	ChartBasics_MaybeStores,
 	ChartBasics_Stores,
-	Dimension,
 	Dimension_MaybeStores,
 	DimensionContinuous_MaybeStores,
 	DimensionContinuous_Stores,
@@ -77,7 +76,7 @@ export function createChart<
 					: never
 				) &
 				(
-					DIMENSIONS[k] extends Dimension<ROW, META, any, any, infer DOMAINSIMPLETYPE, any>
+					DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, any, infer DOMAINSIMPLETYPE, any>
 					? (
 							'get' extends keyof DIMENSIONS[k]
 							? {
