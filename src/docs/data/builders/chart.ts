@@ -9,7 +9,7 @@ const keyboard: KeyboardSchema = [
 /**
  * Props that are also returned in the form of stores via the `options` property.
  */
-const builder = builderSchema('checkbox', {
+const builder = builderSchema('chart', {
 	title: 'createChart',
 	props: [
 		{
@@ -58,74 +58,136 @@ const builder = builderSchema('checkbox', {
 				'A record of dimensions required for the chart'
 		},
 		{
-			name: 'dimension\r\n.<NAME>\r\n.accessor',
-			type: ['keyof ROW', '(row, meta) => value', 'Readable<keyof ROW | (row, meta) => value>'],
+			name: 'dimension.\n<NAME>.\nget',
+			type: ['Key', 'Accessor', 'Readable<Key | Accessor>'],
+			required: true,
+			longType: {
+				rawCode:
+					'type Key<ROW> = keyof ROW;\n' +
+					'type Accessor<ROW,META,DOMAIN> = (row: ROW, { meta: META }) => DOMAIN;\n'
+			},
 			description:
-				'key or method used to extract a domain value(s) from a row'
+				'key or method used to extract a domain value(s) from a row\n' +
+				'One of either get or get_sub must be provided'
 		},
 		{
-			name: 'dimension\r\n.<NAME>\r\n.range',
+			name: 'dimension.\n<NAME>.\nget_sub',
+			type: [
+				'Record<Key, Accessor | Readable<Key | Accessor>>'
+			],
+			required: true,
+			longType: {
+				rawCode:
+					'type Key<ROW> = keyof ROW;\n' +
+					'type Accessor<ROW,META,DOMAIN> = (row: ROW, { meta: META }) => DOMAIN;\n'
+			},
+			description:
+				'Record of keys/methods used to extract a domain value(s) from a row\n' +
+				'One of either get or get_sub must be provided'
+		},
+		{
+			name: 'dimension.\n<NAME>.\nrange',
 			type: [
 				'undefined',
-				'[min: number, ...number[], max: number]',
-				'(props: { area_d: Area, meta: META }) => [min: number, ...number[], max: number]',
-				'Readable<undefined | [min: number, ...number[], max: number] | (props: { area_d: Area, meta: META }) => [min: number, ...number[], max: number]>',
+				'RangeList',
+				'RangeFunc',
+				'Readable<undefined | RangeList | RangeFunc>',
 			],
+			longType: {
+				rawCode:
+					'type RangeList<RANGETYPE> = [RANGETYPE, RANGETYPE, ...RANGETYPE[]];\n' +
+					'type RangeFunc<RANGETYPE, META> = (info: { area: Area, meta: META }) => RangeList<RANGETYPE>;'
+			},
 			description:
 				'the range of values which the domain is mapped to'
 		},
 		{
-			name: 'dimension\r\n.<NAME>\r\n.reverse',
+			name: 'dimension.\n<NAME>.\nreverse',
 			type: [
 				'undefined',
 				'boolean',
 				'Readable<undefined | boolean>',
 			],
 			description:
-				'If true, reverses the domain. This is primarily useful for the cardinal vertical (usually y) axis as larger values are traditionally towards the top of the chart which is opposite to the usual html/svg coordinate system'
+				'If true, reverses the domain.\n' +
+				'This is primarily useful for the cardinal vertical (usually y) axis as larger values are traditionally towards the top of the chart which is opposite to the usual html/svg coordinate system'
 		},
 		{
-			name: 'dimension\r\n.<NAME>\r\n.extents',
+			name: 'dimension.\n<NAME>.\nextents',
 			type: [
 				'undefined',
-				'[min: number, max: number]',
-				'Set([...values])',
-				'Readable<undefined | [min: number, max: number] | Set([...values])>',
+				'ExtentsDiscrete',
+				'ExtentsContinuous',
+				'Readable<undefined | ExtentsDiscrete>',
+				'Readable<undefined | ExtentsContinuous>',
 			],
+			longType: {
+				rawCode:
+					'type ExtentsDiscreteArray<DOMAINTYPE> = DOMAINTYPE[];\n' +
+					'type ExtentsDiscreteSet<DOMAINTYPE> = ReadonlySet<DOMAINTYPE>;\n' +
+					'type ExtentsDiscreteFunc<DOMAINTYPE, META> = (info: { meta: META }) => (ExtentsDiscreteArray<DOMAINTYPE> | ExtentsDiscreteSet<DOMAINTYPE> | undefined);\n' +
+					'type ExtentsDiscrete<DOMAINTYPE, META> = ExtentsDiscreteArray<DOMAINTYPE> | ExtentsDiscreteSet<DOMAINTYPE> | ExtentsDiscreteFunc<DOMAINTYPE, META>;\n' +
+					'type ExtentsContinuousBound<DOMAINTYPE> = [DOMAINTYPE, DOMAINTYPE];\n' +
+					'type ExtentsContinuousFunc<DOMAINTYPE, META> = (info: { meta: META }) => (ExtentsContinuousBound<DOMAINTYPE> | undefined);\n' +
+					'type ExtentsContinuous<DOMAINTYPE, META> = ExtentsContinuousBound<DOMAINTYPE> | ExtentsContinuousFunc<DOMAINTYPE, META>;'
+			},
 			description:
-				'If undefined, extents are calculated dynamically from the provided data. By providing extents explicitly, these calculations can be avoided'
+				'Specify the full extents of the data.\n' +
+				'For discrete domains, this resolves to a set. For continuous domains, this resolves to a range.\n' +
+				'If undefined, extents are calculated dynamically from the provided data. By providing extents explicitly, these calculations can be avoided\n'
 		},
 		{
-			name: 'dimension\r\n.<NAME>\r\n.domain',
+			name: 'dimension.\n<NAME>.\ndomain',
 			type: [
 				'undefined',
-				'[min: number | null, max: number | null]',
-				'(extents, { meta }) => [min: number | null, max: number | null] | undefined',
-				'Readable<undefined | [min: number, max: number] | ((extents, { meta }) => [min: number | null, max: number | null] | undefined)>',
-				'[...values]',
-				'Set([...values])',
-				'(extents, { meta }) => [...values] | Set([...values]) | undefined',
-				'Readable<undefined | [...values] | Set([...values]) | ((extents, { meta }) => [...values] | Set([...values]) | undefined)>',
+				'DomainDiscrete',
+				'DomainContinuous',
+				'Readable<undefined | DomainDiscrete>',
+				'Readable<undefined | DomainContinuous>',
 			],
+			longType: {
+				rawCode:
+					'type DomainDiscreteArray<DOMAINTYPE> = DOMAINTYPE[];\n' +
+					'type DomainDiscreteSet<DOMAINTYPE> = ReadonlySet<DOMAINTYPE>;\n' +
+					'type DomainDiscreteFunc<DOMAINTYPE, META> = (extents: ExtentsDiscreteSet<DOMAINTYPE>, info: { meta: META }) => (DomainDiscreteArray<DOMAINTYPE> | DomainDiscreteSet<DOMAINTYPE> | undefined);\n' +
+					'type DomainDiscrete<DOMAINTYPE, META> = DomainDiscreteArray<DOMAINTYPE> | DomainDiscreteSet<DOMAINTYPE> | DomainDiscreteFunc<DOMAINTYPE, META>;\n' +
+					'type DomainContinuousOptionalBound<DOMAINTYPE> = [DOMAINTYPE | undefined | null, DOMAINTYPE | undefined | null];\n' +
+					'type DomainContinuousBound<DOMAINTYPE> = [DOMAINTYPE, DOMAINTYPE];\n' +
+					'type DomainContinuousFunc<DOMAINTYPE, META> = (extents: undefined | ExtentsContinuousBound<DOMAINTYPE>, info: { meta: META }) => (DomainContinuousOptionalBound<DOMAINTYPE> | DomainContinuousBound<DOMAINTYPE> | undefined);\n' +
+					'type DomainContinuous<DOMAINTYPE, META> = DomainContinuousOptionalBound<DOMAINTYPE> | DomainContinuousBound<DOMAINTYPE> | DomainContinuousFunc<DOMAINTYPE, META>;'
+			},
 			description:
 				'If undefined, domain is calculated from extents. If `min` or `max` is null, they are taken from extents'
 		},
 		{
-			name: 'dimension\r\n.<NAME>\r\n.sort',
+			name: 'dimension.\n<NAME>.\nsort',
 			type: [
 				'undefined',
-				'(a, b) => number',
-				'Readable<undefined | (a, b) => number>',
+				'Comparator',
+				'Readable<undefined | Comparator>',
 			],
+			longType: {
+				rawCode:
+					'type Comparator<DOMAIN> = (a: DOMAIN, b: DOMAIN) => number'
+			},
 			description:
-				'Only valid in discrete dimensions. Used to sort domain values via Array.sort'
+				'Only valid in discrete dimensions.\n' +
+				'If provided, sorts the domain values using using the provided Comparator'
 		},
 		{
-			name: 'dimension\r\n.<NAME>\r\n.scalerFactory',
+			name: 'dimension.\n<NAME>.\nscaleFactory',
 			type: [
-				'({ meta, domain_d, range_d }) => Scale',
-				'Readable<{ meta, domain_d, range_d }) => Scale>',
+				'ScaleFactoryDiscrete',
+				'ScaleFactoryContinuous',
+				'Readable<ScaleFactoryDiscrete>',
+				'Readable<ScaleFactoryContinuous>',
 			],
+			required: true,
+			longType: {
+				rawCode:
+					'type ScaleFactoryDiscrete<DOMAINTYPE, RANGETYPE, META, SCALER extends Scale<DOMAINTYPE, RANGETYPE>> = (info: { meta: META, domain_d: DomainDiscreteSet<DOMAINTYPE>, range_d: RangeList<RANGETYPE> | undefined }) => SCALER;\n' +
+					'type ScaleFactoryContinuous<DOMAINTYPE, RANGETYPE, META, SCALER extends Scale<DOMAINTYPE, RANGETYPE>> = (info: { meta: META, domain_d: undefined | DomainContinuousBound<DOMAINTYPE>, range_d: RangeList<RANGETYPE> | undefined }) => SCALER;'
+			},
 			description:
 				'Using the provided meta, domain_d and range_d inputs, creates and initialises a scale function which is used to map domain values to range values'
 		},
@@ -150,6 +212,7 @@ const schemas: APISchema[] = [
 const features = [
 	'All specifiers can be controlled or uncontrolled',
 	'User definable dimensions',
+	'End to end type safety when defining chart dimensions',
 	'Supports any number of dimensions',
 	'Defaults for cardinal dimensions',
 	'Support for overlaying charts'
