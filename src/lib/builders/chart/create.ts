@@ -69,19 +69,23 @@ export function createChart<
 					? (
 							'get' extends keyof DIMENSIONS[k]
 							? {
+								input: {
 									get:
 										Readable<Accessor<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>>>
+								}
 							}
 							: object
 					) &
 						(
 							'get_sub' extends keyof DIMENSIONS[k]
 							? {
+								input: {
 									get_sub:
 										{
 											[sub in keyof (DIMENSIONS[k]['get_sub'])]:
-												Readable<Accessor<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>>>
+											Readable<Accessor<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>>>
 										}
+								}
 							}
 							: object
 					)
@@ -89,20 +93,20 @@ export function createChart<
 				) &
 				{
 					// maintain correct return type for get(s)
-					get_d:
+					get:
 						Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSIONS[k], ROW>>>
-					get_sub_d:
+					get_sub:
 						'get_sub' extends keyof DIMENSIONS[k]
 						? {
 								[sub in keyof DIMENSIONS[k]['get_sub']]:
 									Readable<AccessorFuncRt<ROW, META, Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['get_sub'][sub]>>>
 							}
 						: Record<string, never>
-					get_scaled_d:
+					get_scaled:
 						DIMENSIONS[k] extends Dimension_Describe<ROW, META, any, infer RANGETYPE, any, any>
 						? Readable<AccessorFuncRt<ROW, META, ReplaceLeafType<Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSIONS[k], ROW>, RANGETYPE>>>
 						: never
-					get_sub_scaled_d:
+					get_sub_scaled:
 						'get_sub' extends keyof DIMENSIONS[k]
 							? {
 									[sub in keyof DIMENSIONS[k]['get_sub']]:
@@ -379,8 +383,8 @@ export function createChart<
 		// return
 		DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
-			get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
-			get_sub_scaled_d:
+			get_scaled: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
+			get_sub_scaled:
 				'get_sub' extends keyof DIMENSION
 					? {
 						[sub in keyof DIMENSION['get_sub']]:
@@ -521,14 +525,14 @@ export function createChart<
 				domain,
 				scaleFactory,
 			},
-			get_d,
-			get_sub_d,
-			extents_d,
-			domain_d,
-			range_d,
-			scale_d,
-			get_scaled_d,
-			get_sub_scaled_d: get_sub_scaled_d as never
+			get: get_d,
+			get_sub: get_sub_d,
+			extents: extents_d,
+			domain: domain_d,
+			range: range_d,
+			scale: scale_d,
+			get_scaled: get_scaled_d,
+			get_sub_scaled: get_sub_scaled_d as never
 		}
 	}
 
@@ -541,8 +545,8 @@ export function createChart<
 		// return
 		DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> &
 		{
-			get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
-			get_sub_scaled_d:
+			get_scaled: Readable<AccessorFunc<ROW, META, RANGETYPE>>,
+			get_sub_scaled:
 				'get_sub' extends keyof DIMENSION
 					? {
 						[sub in keyof DIMENSION['get_sub']]:
@@ -669,14 +673,14 @@ export function createChart<
 				domain,
 				scaleFactory,
 			},
-			get_d,
-			get_sub_d,
-			extents_d,
-			domain_d,
-			range_d,
-			scale_d,
-			get_scaled_d,
-			get_sub_scaled_d: get_sub_scaled_d as never
+			get: get_d,
+			get_sub: get_sub_d,
+			extents: extents_d,
+			domain: domain_d,
+			range: range_d,
+			scale: scale_d,
+			get_scaled: get_scaled_d,
+			get_sub_scaled: get_sub_scaled_d as never
 		}
 	}
 

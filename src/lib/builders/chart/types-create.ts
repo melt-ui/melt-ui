@@ -50,14 +50,14 @@ export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RA
 		}
 
 		// derived
-		get_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
-		get_sub_d: Record<string, Readable<AccessorFunc<ROW, META, DOMAINTYPE>>>;
-		range_d: Readable<RangeList<RANGETYPE> | undefined>;
-		scale_d: Readable<SCALER>;
-		get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
-		get_sub_scaled_d: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
-		extents_d: Readable<ExtentsDiscreteSet<DOMAINTYPE>>;
-		domain_d: Readable<DomainDiscreteSet<DOMAINTYPE>>;
+		get: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
+		get_sub: Record<string, Readable<AccessorFunc<ROW, META, DOMAINTYPE>>>;
+		range: Readable<RangeList<RANGETYPE> | undefined>;
+		scale: Readable<SCALER>;
+		get_scaled: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
+		get_sub_scaled: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
+		extents: Readable<ExtentsDiscreteSet<DOMAINTYPE>>;
+		domain: Readable<DomainDiscreteSet<DOMAINTYPE>>;
 	};
 
 export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
@@ -80,14 +80,14 @@ export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, 
 
 		// derived
 		//discrete: true | false;
-		get_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
-		get_sub_d: Record<string, Readable<AccessorFunc<ROW, META, DOMAINTYPE>>>;
-		range_d: Readable<RangeList<RANGETYPE> | undefined>;
-		scale_d: Readable<SCALER>;
-		get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
-		get_sub_scaled_d: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
-		extents_d: Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
-		domain_d: Readable<DomainContinuousBound<DOMAINTYPE> | undefined>;
+		get: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
+		get_sub: Record<string, Readable<AccessorFunc<ROW, META, DOMAINTYPE>>>;
+		range: Readable<RangeList<RANGETYPE> | undefined>;
+		scale: Readable<SCALER>;
+		get_scaled: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
+		get_sub_scaled: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
+		extents: Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
+		domain: Readable<DomainContinuousBound<DOMAINTYPE> | undefined>;
 	};
 
 export type Dimension<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
@@ -96,23 +96,25 @@ export type Dimension<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE,
 		discrete: true | false;
 
 		// inputs
-		get: Readable<Accessor<ROW, META, DOMAINTYPE>>;
-		get_sub: Record<string, Readable<Accessor<ROW, META, DOMAINTYPE>>>;
-		range: Readable<Range<RANGETYPE, META> | undefined>;
-		reverse: Readable<Reverse<META> | undefined>;
-		extents: Readable<ExtentsDiscrete<DOMAINTYPE, META> | undefined> | Readable<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
-		extentsDefault?: Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined> | undefined;
-		domain: Readable<DomainDiscrete<DOMAINTYPE, META> | undefined> | Readable<DomainContinuous<DOMAINTYPE, META> | undefined>;
-		sort?: Readable<SortFunc<DOMAINTYPE> | undefined> | undefined;
-		scaleFactory: Readable<ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>> | Readable<ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
+		input: {
+			get: Readable<Accessor<ROW, META, DOMAINTYPE>>;
+			get_sub: Record<string, Readable<Accessor<ROW, META, DOMAINTYPE>>>;
+			range: Readable<Range<RANGETYPE, META> | undefined>;
+			reverse: Readable<Reverse<META> | undefined>;
+			extents: Readable<ExtentsDiscrete<DOMAINTYPE, META> | undefined> | Readable<ExtentsContinuous<DOMAINTYPE, META> | undefined>;
+			extentsDefault?: Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined> | undefined;
+			domain: Readable<DomainDiscrete<DOMAINTYPE, META> | undefined> | Readable<DomainContinuous<DOMAINTYPE, META> | undefined>;
+			sort?: Readable<SortFunc<DOMAINTYPE> | undefined> | undefined;
+			scaleFactory: Readable<ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>> | Readable<ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
+		}
 
 		// derived
-		get_d: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
-		get_sub_d: Record<string, Readable<AccessorFunc<ROW, META, DOMAINTYPE>>>;
-		range_d: Readable<RangeList<RANGETYPE> | undefined>;
-		scale_d: Readable<SCALER>;
-		get_scaled_d: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
-		get_sub_scaled_d: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
-		extents_d: Readable<ExtentsDiscreteSet<DOMAINTYPE>> | Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
-		domain_d: Readable<DomainDiscreteSet<DOMAINTYPE>> | Readable<DomainContinuousBound<DOMAINTYPE> | undefined>;
+		get: Readable<AccessorFunc<ROW, META, DOMAINTYPE>>;
+		get_sub: Record<string, Readable<AccessorFunc<ROW, META, DOMAINTYPE>>>;
+		range: Readable<RangeList<RANGETYPE> | undefined>;
+		scale: Readable<SCALER>;
+		get_scaled: Readable<AccessorFunc<ROW, META, RANGETYPE>>;
+		get_sub_scaled: Record<string, Readable<AccessorFunc<ROW, META, RANGETYPE>>>;
+		extents: Readable<ExtentsDiscreteSet<DOMAINTYPE>> | Readable<ExtentsContinuousBound<DOMAINTYPE> | undefined>;
+		domain: Readable<DomainDiscreteSet<DOMAINTYPE>> | Readable<DomainContinuousBound<DOMAINTYPE> | undefined>;
 	};
