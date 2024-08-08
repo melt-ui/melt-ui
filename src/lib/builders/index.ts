@@ -1,5 +1,6 @@
 export * from './accordion/index.js';
 export * from './avatar/index.js';
+export * from './chart/index.js';
 export * from './checkbox/index.js';
 export * from './collapsible/index.js';
 export * from './combobox/index.js';
