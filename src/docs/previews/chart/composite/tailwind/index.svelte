@@ -28,7 +28,7 @@
 	const chart_total = createChart({
 		data: [tdata],
 		padding: 10,
-		margin: { left: 50, right: 0, top: 0, bottom: 50 },
+		margin: { left: 65, right: 0, top: 0, bottom: 50 },
 		dimensions: {
 			time: {
 				discrete: true,
@@ -120,16 +120,11 @@
 
 	$: series_ticks = $cs_scale.ticks(utcYear.every(1));
 
+	// Combine domains
 	$: if ($cs_extents && $ct_extents) $domain = [Math.min($cs_extents[0], $ct_extents[0]), Math.max($cs_extents[1], $ct_extents[1])];
-
-	$: console.log($cs_domain, $cs_scale.domain());
 
 </script>
 <style lang="postcss">
-	div {
-			border: 2px solid red;
-	}
-
 	rect[data-series='apples'],
 	path[data-series='apples'] {
 			@apply stroke-green-700;
@@ -156,11 +151,11 @@
 </style>
 
 <div class="w-[700px] h-[400px] grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr]">
-	<div class="min-w-[100px]">
+	<div class="min-w-[150px] text-center">
 		Total
 	</div>
-	<div>
-		Series
+	<div class="text-center">
+		Sales
 	</div>
 	<div use:melt={$ct_root}>
 		{#if typeof window !== 'undefined' && $ct_area.width && $ct_area.height}
@@ -189,14 +184,24 @@
 					/>
 
 					{#each $ct_y_scale.ticks() as tick, i}
-						<line
-							x1={-5}
-							y1={$ct_y_scale(tick)}
-							x2={0}
-							y2={$ct_y_scale(tick)}
-							class="stroke-gray-400 stroke-[3px] [stroke-linecap:round]"
-							data-tick={JSON.stringify({ tick, i })}
-						/>
+						<g transform="translate(0, {$ct_y_scale(tick)})">
+							<line
+								x1={-5}
+								y1={0}
+								x2={0}
+								y2={0}
+								class="stroke-gray-400 stroke-[3px] [stroke-linecap:round]"
+								data-tick={JSON.stringify({ tick, i })}
+							/>
+
+							<text
+								x={-10}
+								y={0}
+								dominant-baseline="middle"
+								text-anchor="end"
+								class="fill-gray-400"
+							>{tick}</text>
+						</g>
 					{/each}
 				</g>
 			</svg>
