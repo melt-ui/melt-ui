@@ -88,8 +88,8 @@ const complexReturn = tuple(1,2,{a: 1, b: 2, c: [3,4,5]});
 	type YAccessorReturn = Assert<IsEqual<ReturnType<InferStoreInner<typeof result.dimensions.y.get_d>>, number>, true>;
 	type YDomain = Assert<IsEqual<InferStoreInner<typeof result.dimensions.y.domain>, DomainContinuous<number, typeof meta> | undefined>, true>
 
-	type HasDefaultXScaler = Assert<Contains<InferStoreInner<typeof result.dimensions.x.scale_d>, 'bandwidth'>, true>;
-	type HasDefaultYScaler = Assert<Contains<InferStoreInner<typeof result.dimensions.y.scale_d>, 'interpolate'>, true>;
+	type HasDefaultXScale = Assert<Contains<InferStoreInner<typeof result.dimensions.x.scale_d>, 'bandwidth'>, true>;
+	type HasDefaultYScale = Assert<Contains<InferStoreInner<typeof result.dimensions.y.scale_d>, 'interpolate'>, true>;
 
 	type ComplexDiscrete = Assert<IsEqual<typeof result.dimensions.complex.discrete, true>, false>;
 	type ComplexAccessorInput = Assert<IsEqual<Parameters<InferStoreInner<typeof result.dimensions.complex.get_d>>, [Row, { meta: typeof meta }]>, true>;

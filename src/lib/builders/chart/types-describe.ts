@@ -7,7 +7,7 @@ import type {
 	ExtentsDiscrete,
 	Range,
 	Reverse,
-	Scaler,
+	Scale,
 	ScaleFactoryContinuous,
 	ScaleFactoryDiscrete,
 	Sides,
@@ -105,7 +105,7 @@ export type DimensionRange_Stores<META, RANGETYPE> = {
 	reverse: Readable<Reverse<META> | undefined>;
 }
 
-export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors<ROW, META, DOMAINTYPE> &
 	DimensionRange<META, RANGETYPE> &
 	{
@@ -116,7 +116,7 @@ export type DimensionDiscrete<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RA
 		scaleFactory: ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>;
 	}
 
-export type DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors_MaybeStores<ROW, META, DOMAINTYPE> &
 	DimensionRange_MaybeStores<META, RANGETYPE> &
 	{
@@ -127,7 +127,7 @@ export type DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSI
 		scaleFactory: MaybeStore<ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
-export type DimensionDiscrete_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionDiscrete_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors_Stores<ROW, META, DOMAINTYPE> &
 	DimensionRange_Stores<META, RANGETYPE> &
 	{
@@ -138,7 +138,7 @@ export type DimensionDiscrete_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLET
 		scaleFactory: Readable<ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
-export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors<ROW, META, DOMAINTYPE> &
 	DimensionRange<META, RANGETYPE> &
 	{
@@ -149,7 +149,7 @@ export type DimensionContinuous<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, 
 		scaleFactory: ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>;
 	}
 
-export type DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors_MaybeStores<ROW, META, DOMAINTYPE> &
 	DimensionRange_MaybeStores<META, RANGETYPE> &
 	{
@@ -160,7 +160,7 @@ export type DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE extends DOMAIN
 		scaleFactory: MaybeStore<ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
-export type DimensionContinuous_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type DimensionContinuous_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionAccessors_Stores<ROW, META, DOMAINTYPE> &
 	DimensionRange_Stores<META, RANGETYPE> &
 	{
@@ -171,15 +171,15 @@ export type DimensionContinuous_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPL
 		scaleFactory: Readable<ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>;
 	}
 
-export type Dimension<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type Dimension<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionDiscrete<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
 	DimensionContinuous<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
 
-export type Dimension_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type Dimension_MaybeStores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
 	DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
 
-export type Dimension_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>> =
+export type Dimension_Stores<ROW, META, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>> =
 	DimensionDiscrete_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER> |
 	DimensionContinuous_Stores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>;
 

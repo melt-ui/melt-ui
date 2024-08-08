@@ -1,5 +1,5 @@
 import { type NumberValue, scaleBand, scaleLinear, scaleSqrt } from 'd3-scale';
-import type { DomainContinuousBound, DomainDiscreteSet, RangeList, Scaler } from './types-basic.js';
+import type { DomainContinuousBound, DomainDiscreteSet, RangeList, Scale } from './types-basic.js';
 import type { StringValue } from './types-util.js';
 
 export function scaleFactoryBand<DOMAINTYPE extends StringValue = string>(
@@ -17,7 +17,7 @@ export function scaleFactoryBand<DOMAINTYPE extends StringValue = string>(
 	if (range_d)
 		scale.range(range_d);
 
-	return scale as (typeof scale & Scaler<DOMAINTYPE, number>);
+	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
 export function scaleFactoryLinear<DOMAINTYPE extends NumberValue>(
@@ -37,7 +37,7 @@ export function scaleFactoryLinear<DOMAINTYPE extends NumberValue>(
 	if (range_d)
 		scale.range(range_d);
 
-	return scale as (typeof scale & Scaler<DOMAINTYPE, number>);
+	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
 export function scaleFactorySqrt<DOMAINTYPE extends NumberValue>(
@@ -57,5 +57,5 @@ export function scaleFactorySqrt<DOMAINTYPE extends NumberValue>(
 	if (range_d)
 		scale.range(range_d);
 
-	return scale as (typeof scale & Scaler<DOMAINTYPE, number>);
+	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }

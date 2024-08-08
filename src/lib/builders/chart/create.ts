@@ -34,7 +34,7 @@ import type {
 	Range,
 	RangeList,
 	Reverse,
-	Scaler,
+	Scale,
 	ScaleFactoryContinuous,
 	ScaleFactoryDiscrete,
 	Sides,
@@ -302,7 +302,7 @@ export function createChart<
 		return range_d;
 	}
 
-	function create_get_scaled_d<DOMAINTYPE extends DOMAINSIMPLETYPE, DOMAINSIMPLETYPE, RANGETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+	function create_get_scaled_d<DOMAINTYPE extends DOMAINSIMPLETYPE, DOMAINSIMPLETYPE, RANGETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>>(
 		scaleFactory:
 			Readable<ScaleFactoryDiscrete<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>> |
 			Readable<ScaleFactoryContinuous<DOMAINSIMPLETYPE, RANGETYPE, META, SCALER>>,
@@ -382,7 +382,7 @@ export function createChart<
 		}
 	}
 
-	function * createDimensionDiscrete<DIMENSION extends DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+	function * createDimensionDiscrete<DIMENSION extends DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>>(
 		props: DIMENSION
 	)
 	: Generator<
@@ -543,7 +543,7 @@ export function createChart<
 		}
 	}
 
-	function * createDimensionContinuous<DIMENSION extends DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scaler<DOMAINSIMPLETYPE, RANGETYPE>>(
+	function * createDimensionContinuous<DIMENSION extends DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>>(
 		props: DIMENSION
 	)
 		: Generator<
