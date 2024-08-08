@@ -3,4 +3,4 @@ export type { ChartBasics_Describe, Dimension_Describe, DimensionDiscrete_Descri
 
 export { createChart  } from './create.js';
 export { h_range, h_linear, h_band, v_range, v_linear, v_band } from './cardinal.js';
-export { is_discrete, is_continuous } from './util.js';
+export { is_discrete, is_continuous, get_dimension } from './util.js';
