@@ -45,6 +45,15 @@ export function get_dimension<
 export function get_dimension<
 	DIMENSIONS extends {
 		[k: string]: Dimension<any, any, any, any, any, any>
+	}
+>(
+	dimensions: DIMENSIONS,
+	name: string,
+): DIMENSIONS[keyof DIMENSIONS & string];
+
+export function get_dimension<
+	DIMENSIONS extends {
+		[k: string]: Dimension<any, any, any, any, any, any>
 	},
 	NAME extends keyof DIMENSIONS & string,
 	SUB extends keyof DIMENSIONS[NAME]['get_sub'] & string
@@ -61,6 +70,33 @@ export function get_dimension<
 	DIMENSIONS extends {
 		[k: string]: Dimension<any, any, any, any, any, any>
 	},
+	NAME extends keyof DIMENSIONS & string
+>(
+	dimensions: DIMENSIONS,
+	name: NAME,
+	sub: string
+): Omit<DIMENSIONS[NAME], 'get' | 'get_scaled' | 'get_sub' | 'get_sub_scaled'> & {
+	get: DIMENSIONS[NAME]['get_sub'][keyof DIMENSIONS[NAME]['get_sub'] & string],
+	get_scaled: DIMENSIONS[NAME]['get_sub_scaled'][keyof DIMENSIONS[NAME]['get_sub_scaled'] & string]
+};
+
+export function get_dimension<
+	DIMENSIONS extends {
+		[k: string]: Dimension<any, any, any, any, any, any>
+	}
+>(
+	dimensions: DIMENSIONS,
+	name: string,
+	sub: string
+): Omit<DIMENSIONS[keyof DIMENSIONS & string], 'get' | 'get_scaled' | 'get_sub' | 'get_sub_scaled'> & {
+	get: DIMENSIONS[keyof DIMENSIONS & string]['get_sub'][keyof DIMENSIONS[keyof DIMENSIONS & string]['get_sub'] & string],
+	get_scaled: DIMENSIONS[keyof DIMENSIONS & string]['get_sub_scaled'][keyof DIMENSIONS[keyof DIMENSIONS & string]['get_sub_scaled'] & string]
+};
+
+export function get_dimension<
+	DIMENSIONS extends {
+		[k: string]: Dimension<any, any, any, any, any, any>
+	},
 	NAME extends keyof DIMENSIONS & string,
 	SUB extends keyof DIMENSIONS[NAME]['get_sub'] & string
 >(
@@ -69,6 +105,9 @@ export function get_dimension<
 	sub?: SUB | undefined
 ): any {
 	if (sub !== undefined) {
+		if (Object.hasOwn(dimensions[name].get_sub, sub))
+			throw new Error('dimension does not exist');
+
 		const { get_sub, get_sub_scaled, ...clone} = Object.assign(
 			{},
 			dimensions[name],
