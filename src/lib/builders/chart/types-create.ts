@@ -18,11 +18,11 @@ import type {
 import type { CombineObjects } from './types-util.js';
 
 export type ChartBasicsDerived<ROW, META> = {
-	area_d: Area;
+	area: Area;
 }
 
 export type ChartBasicsDerived_Stores<ROW, META> = {
-	area_d: Readable<Area>;
+	area: Readable<Area>;
 }
 
 export type DimensionAccessorsDerived<ROW, META, DOMAINTYPE> = {

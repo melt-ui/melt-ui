@@ -752,7 +752,7 @@ export function createChart<
 		height,
 		padding,
 		margin,
-		area_d,
+		area: area_d,
 		dimensions: Object.fromEntries(dimensionResults.map(
 			(result, i) =>
 				tuple(dimensionNames[i], result)
