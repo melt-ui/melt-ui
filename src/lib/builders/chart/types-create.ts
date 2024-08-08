@@ -10,9 +10,8 @@ import type {
 } from './types-basic.js';
 import type { Readable } from 'svelte/store';
 import type {
-	Dimension,
-	Dimension_Stores,
-	DimensionContinuous, DimensionContinuous_Stores,
+	DimensionContinuous,
+	DimensionContinuous_Stores,
 	DimensionDiscrete,
 	DimensionDiscrete_Stores,
 } from './types-describe.js';
