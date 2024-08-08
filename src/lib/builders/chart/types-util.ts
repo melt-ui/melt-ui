@@ -1,5 +1,5 @@
 import type { Readable } from 'svelte/store';
-import type { Dimension_MaybeStores, DimensionAccessors_MaybeStores } from './types-describe.js';
+import type { Dimension_Describe, DimensionAccessors_Describe } from './types-describe.js';
 import type { DomainField } from './types-basic.js';
 
 export type MaybeStore<TYPE> = TYPE | Readable<TYPE>;
@@ -40,7 +40,7 @@ export type Infer_DimensionAccessor_ReturnType<ROW, ACCESSOR> =
 		? RETURNTYPE
 		: never;
 
-export type Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION extends DimensionAccessors_MaybeStores<ROW, any, any>, ROW> =
+export type Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION extends DimensionAccessors_Describe<ROW, any, any>, ROW> =
 	'get' extends keyof DIMENSION
 	? Infer_DimensionAccessor_ReturnType<ROW, InferMaybeStoreInner<DIMENSION['get']>>
 	: 'get_sub' extends keyof DIMENSION
@@ -50,7 +50,7 @@ export type Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION extends Di
 	}
 	: never
 
-export type Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSION extends DimensionAccessors_MaybeStores<ROW, any, any>, ROW, DOMAINSIMPLETYPE> =
+export type Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSION extends DimensionAccessors_Describe<ROW, any, any>, ROW, DOMAINSIMPLETYPE> =
 	Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSION, ROW> extends DomainField<infer DOMAINTYPE>
 		? (
 			DOMAINTYPE extends DOMAINSIMPLETYPE

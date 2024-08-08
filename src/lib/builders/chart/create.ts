@@ -1,8 +1,8 @@
 import type {
-	ChartBasics_MaybeStores,
-	Dimension_MaybeStores,
-	DimensionContinuous_MaybeStores,
-	DimensionDiscrete_MaybeStores,
+	ChartBasics_Describe,
+	Dimension_Describe,
+	DimensionContinuous_Describe,
+	DimensionDiscrete_Describe,
 } from './types-describe.js';
 import type {
 	Infer_DimensionAccessor_ReturnType,
@@ -48,11 +48,11 @@ export function createChart<
 	ROW,
 	META,
 	DIMENSIONS extends {
-		[k: string]: Dimension_MaybeStores<ROW, META, any, any, any, any>
+		[k: string]: Dimension_Describe<ROW, META, any, any, any, any>
 	},
 >(
 	props:
-		ChartBasics_MaybeStores<ROW, META> &
+		ChartBasics_Describe<ROW, META> &
 		{
 			meta?: META | Readable<META>
 			dimensions: DIMENSIONS
@@ -63,14 +63,14 @@ export function createChart<
 		dimensions: Record<keyof DIMENSIONS, DimensionCreated_Stores<ROW, META, any, any, any, any>> & {
 			[k in keyof DIMENSIONS]:
 				(
-					DIMENSIONS[k] extends DimensionDiscrete_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
+					DIMENSIONS[k] extends DimensionDiscrete_Describe<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
 					? DimensionDiscreteCreated_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
-					: DIMENSIONS[k] extends DimensionContinuous_MaybeStores<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
+					: DIMENSIONS[k] extends DimensionContinuous_Describe<ROW, META, infer DOMAINTYPE, infer RANGETYPE, infer DOMAINSIMPLETYPE, infer SCALER>
 					? DimensionContinuousCreated_Stores<ROW, META, Infer_DimensionAccessors_MaybeStores_DomainType<DIMENSIONS[k], ROW, DOMAINSIMPLETYPE>, RANGETYPE, DOMAINSIMPLETYPE, SCALER>
 					: never
 				) &
 				(
-					DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, any, infer DOMAINSIMPLETYPE, any>
+					DIMENSIONS[k] extends Dimension_Describe<ROW, META, any, any, infer DOMAINSIMPLETYPE, any>
 					? (
 							'get' extends keyof DIMENSIONS[k]
 							? {
@@ -104,14 +104,14 @@ export function createChart<
 							}
 						: Record<string, never>
 					get_scaled_d:
-						DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
+						DIMENSIONS[k] extends Dimension_Describe<ROW, META, any, infer RANGETYPE, any, any>
 						? Readable<AccessorFuncRt<ROW, META, ReplaceLeafType<Infer_DimensionAccessors_MaybeStores_ReturnType<DIMENSIONS[k], ROW>, RANGETYPE>>>
 						: never
 					get_sub_scaled_d:
 						'get_sub' extends keyof DIMENSIONS[k]
 							? {
 									[sub in keyof DIMENSIONS[k]['get_sub']]:
-									DIMENSIONS[k] extends Dimension_MaybeStores<ROW, META, any, infer RANGETYPE, any, any>
+									DIMENSIONS[k] extends Dimension_Describe<ROW, META, any, infer RANGETYPE, any, any>
 										? ReplaceLeafType<Infer_DimensionAccessor_ReturnType<ROW, DIMENSIONS[k]['get_sub'][sub]>, RANGETYPE>
 										: never
 								}
@@ -375,7 +375,7 @@ export function createChart<
 		}
 	}
 
-	function * createDimensionDiscrete<DIMENSION extends DimensionDiscrete_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>>(
+	function * createDimensionDiscrete<DIMENSION extends DimensionDiscrete_Describe<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>>(
 		props: DIMENSION
 	)
 	: Generator<
@@ -535,7 +535,7 @@ export function createChart<
 		}
 	}
 
-	function * createDimensionContinuous<DIMENSION extends DimensionContinuous_MaybeStores<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>>(
+	function * createDimensionContinuous<DIMENSION extends DimensionContinuous_Describe<ROW, META, DOMAINTYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER>, DOMAINTYPE extends DOMAINSIMPLETYPE, RANGETYPE, DOMAINSIMPLETYPE, SCALER extends Scale<DOMAINSIMPLETYPE, RANGETYPE>>(
 		props: DIMENSION
 	)
 		: Generator<
