@@ -191,7 +191,6 @@
 								x2={0}
 								y2={0}
 								class="stroke-gray-400 stroke-[3px] [stroke-linecap:round]"
-								data-tick={JSON.stringify({ tick, i })}
 							/>
 
 							<text
@@ -236,7 +235,6 @@
 								x2={0}
 								y2={5}
 								class="stroke-gray-400 stroke-[3px] [stroke-linecap:round]"
-								data-tick={JSON.stringify({ tick, i })}
 								/>
 
 								<text

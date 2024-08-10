@@ -20,7 +20,6 @@
 		}
 	} = chart;
 
-	$: console.log($area);
 </script>
 <h1>Layout</h1>
 <div class="w-[600px] h-[300px]">
