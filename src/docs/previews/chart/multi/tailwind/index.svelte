@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { createChart, h_band, h_linear, v_linear, melt } from '$lib/index.js';
-	import { scaleBand } from 'd3-scale';
-	import type { StringValue } from '$lib/builders/chart/types-util.js';
-	import type { DomainDiscreteSet, RangeList, Scale } from '$lib/builders/chart/types-basic.js';
+	import { createChart, h_band, melt, v_linear } from '$lib/index.js';
+	import { scaleFactoryAdjust, scaleFactoryBand } from '$lib/builders/chart/scale.js';
 
 	const sentence = "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. These are pangrams and so the distribution frequency of individual letters is unusual.".toLowerCase();
 	const frequency = "abcdefghijklmnopqrstuvwyxz".split('').map(
@@ -12,26 +10,6 @@
 			words: sentence.split(/\w\./g).filter(word => word.includes(letter)).length
 		}));
 
-	function scaleFactoryBand<DOMAINTYPE extends StringValue = string>(
-		{
-			domain_d,
-			range_d
-		}: {
-			domain_d: DomainDiscreteSet<DOMAINTYPE>,
-			range_d: RangeList<number> | undefined
-		}
-	) {
-		const scale = scaleBand<DOMAINTYPE>()
-			.domain(domain_d);
-
-		if (range_d)
-			scale.range(range_d);
-
-		scale.paddingInner(0.2);
-
-		return scale as (typeof scale & Scale<DOMAINTYPE, number>);
-	}
-
 	export const chart = createChart({
 		data: frequency,
 		padding: 10,
@@ -40,7 +18,7 @@
 			letter: {
 				get: 'letter',
 				...h_band,
-				scaleFactory: scaleFactoryBand
+				scaleFactory: scaleFactoryAdjust(scaleFactoryBand, scale => scale.paddingInner(0.2))
 			},
 			frequency: {
 				get_sub: {

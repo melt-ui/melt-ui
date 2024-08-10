@@ -330,8 +330,8 @@ export function createChart<
 			 ]) => {
 				return $scaleFactory({
 					meta: $meta as never,
-					domain_d: $domain_d as never,
-					range_d: $range_d
+					domain: $domain_d as never,
+					range: $range_d
 				})
 			}
 		);

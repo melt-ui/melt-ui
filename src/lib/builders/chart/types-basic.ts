@@ -62,8 +62,8 @@ export type SortFunc<DOMAINTYPE> = (a: DOMAINTYPE, b: DOMAINTYPE) => number;
 
 export type Scale<DOMAINTYPE, RANGETYPE> = (value: DOMAINTYPE) => RANGETYPE;
 
-export type ScaleFactoryDiscrete<DOMAINTYPE, RANGETYPE, META, SCALER extends Scale<DOMAINTYPE, RANGETYPE>> = (info: { meta: META, domain_d: DomainDiscreteSet<DOMAINTYPE>, range_d: RangeList<RANGETYPE> | undefined }) => SCALER;
-export type ScaleFactoryContinuous<DOMAINTYPE, RANGETYPE, META, SCALER extends Scale<DOMAINTYPE, RANGETYPE>> = (info: { meta: META, domain_d: undefined | DomainContinuousBound<DOMAINTYPE>, range_d: RangeList<RANGETYPE> | undefined }) => SCALER;
+export type ScaleFactoryDiscrete<DOMAINTYPE, RANGETYPE, META, SCALER extends Scale<DOMAINTYPE, RANGETYPE>> = (info: { meta: META, domain: DomainDiscreteSet<DOMAINTYPE>, range: RangeList<RANGETYPE> | undefined }) => SCALER;
+export type ScaleFactoryContinuous<DOMAINTYPE, RANGETYPE, META, SCALER extends Scale<DOMAINTYPE, RANGETYPE>> = (info: { meta: META, domain: undefined | DomainContinuousBound<DOMAINTYPE>, range: RangeList<RANGETYPE> | undefined }) => SCALER;
 
 export type AccessorScaledOutput<ROW,META,DOMAINTYPE, RANGETYPE,ACCESSOR> =
 	ACCESSOR extends AccessorFunc<ROW, META, DOMAINTYPE>

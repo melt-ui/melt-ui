@@ -2,100 +2,107 @@ import { type NumberValue, scaleBand, scaleLinear, scaleSqrt, scaleTime, scaleUt
 import type { DomainContinuousBound, DomainDiscreteSet, RangeList, Scale } from './types-basic.js';
 import type { StringValue } from './types-util.js';
 
+export function scaleFactoryAdjust<FACTORY extends (...args: any) => any>(factory: FACTORY, adjust: (scale: ReturnType<FACTORY>) => ReturnType<FACTORY>)
+	: FACTORY {
+	return <never>((...args: never[]) => {
+		return adjust(factory(...args));
+	});
+}
+
 export function scaleFactoryBand<DOMAINTYPE extends StringValue = string>(
 	{
-		domain_d,
-		range_d
+		domain,
+		range
 	}: {
-		domain_d: DomainDiscreteSet<DOMAINTYPE>,
-		range_d: RangeList<number> | undefined
+		domain: DomainDiscreteSet<DOMAINTYPE>,
+		range: RangeList<number> | undefined
 	}
 ) {
 	const scale = scaleBand<DOMAINTYPE>()
-		.domain(domain_d);
+		.domain(domain);
 
-	if (range_d)
-		scale.range(range_d);
+	if (range)
+		scale.range(range);
 
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
 export function scaleFactoryLinear<DOMAINTYPE extends NumberValue>(
 	{
-		domain_d,
-		range_d
+		domain,
+		range
 	}: {
-		domain_d: DomainContinuousBound<DOMAINTYPE> | undefined,
-		range_d: RangeList<number> | undefined
+		domain: DomainContinuousBound<DOMAINTYPE> | undefined,
+		range: RangeList<number> | undefined
 	}
 ) {
 	const scale = scaleLinear<number>();
 
-	if (domain_d)
-		scale.domain(domain_d);
+	if (domain)
+		scale.domain(domain);
 
-	if (range_d)
-		scale.range(range_d);
+	if (range)
+		scale.range(range);
 
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
 export function scaleFactoryTime<DOMAINTYPE extends Date | NumberValue>(
 	{
-		domain_d,
-		range_d
+		domain,
+		range
 	}: {
-		domain_d: DomainContinuousBound<DOMAINTYPE> | undefined,
-		range_d: RangeList<number> | undefined
+		domain: DomainContinuousBound<DOMAINTYPE> | undefined,
+		range: RangeList<number> | undefined
 	}
 ) {
 	const scale = scaleTime<number>();
 
-	if (domain_d)
-		scale.domain(domain_d);
+	if (domain)
+		scale.domain(domain);
 
-	if (range_d)
-		scale.range(range_d);
+	if (range)
+		scale.range(range);
 
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
 export function scaleFactoryUtc<DOMAINTYPE extends Date | NumberValue>(
 	{
-		domain_d,
-		range_d
+		domain,
+		range
 	}: {
-		domain_d: DomainContinuousBound<DOMAINTYPE> | undefined,
-		range_d: RangeList<number> | undefined
+		domain: DomainContinuousBound<DOMAINTYPE> | undefined,
+		range: RangeList<number> | undefined
 	}
 ) {
 	const scale = scaleUtc<number>();
 
-	if (domain_d)
-		scale.domain(domain_d);
+	if (domain)
+		scale.domain(domain);
 
-	if (range_d)
-		scale.range(range_d);
+	if (range)
+		scale.range(range);
 
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
 export function scaleFactorySqrt<DOMAINTYPE extends NumberValue>(
 	{
-		domain_d,
-		range_d
+		domain,
+		range
 	}: {
-		domain_d: DomainContinuousBound<DOMAINTYPE> | undefined,
-		range_d: RangeList<number> | undefined
+		domain: DomainContinuousBound<DOMAINTYPE> | undefined,
+		range: RangeList<number> | undefined
 	}
 ) {
 	const scale = scaleSqrt<number>();
 
-	if (domain_d)
-		scale.domain(domain_d);
+	if (domain)
+		scale.domain(domain);
 
-	if (range_d)
-		scale.range(range_d);
+	if (range)
+		scale.range(range);
 
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
