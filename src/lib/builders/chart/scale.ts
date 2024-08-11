@@ -2,14 +2,21 @@ import { type NumberValue, scaleBand, scaleLinear, scaleSqrt, scaleTime, scaleUt
 import type { DomainContinuousBound, DomainDiscreteSet, RangeList, Scale } from './types-basic.js';
 import type { StringValue } from './types-util.js';
 
-export function scaleFactoryAdjust<FACTORY extends (...args: any) => any>(factory: FACTORY, adjust: (scale: ReturnType<FACTORY>) => ReturnType<FACTORY>)
+function adjust<FACTORY extends (...args: any) => any>(this: FACTORY, adjust: (scale: ReturnType<FACTORY>) => ReturnType<FACTORY>)
 	: FACTORY {
-	return <never>((...args: never[]) => {
-		return adjust(factory(...args));
-	});
+	return <never>Object.assign(
+		(...args: never[]) => {
+				return adjust(this(...args));
+			},
+		{ adjust }
+		);
 }
 
-export function scaleFactoryBand<DOMAINTYPE extends StringValue = string>(
+function applyAdjust<FUNC>(func: FUNC): FUNC & { adjust: typeof adjust } {
+	return Object.assign(func as never, { adjust });
+}
+
+export function scaleFactoryBand_<DOMAINTYPE extends StringValue = string>(
 	{
 		domain,
 		range
@@ -27,7 +34,10 @@ export function scaleFactoryBand<DOMAINTYPE extends StringValue = string>(
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
-export function scaleFactoryLinear<DOMAINTYPE extends NumberValue>(
+export const scaleFactoryBand = applyAdjust(scaleFactoryBand_);
+
+
+export function scaleFactoryLinear_<DOMAINTYPE extends NumberValue>(
 	{
 		domain,
 		range
@@ -47,7 +57,9 @@ export function scaleFactoryLinear<DOMAINTYPE extends NumberValue>(
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
-export function scaleFactoryTime<DOMAINTYPE extends Date | NumberValue>(
+export const scaleFactoryLinear = applyAdjust(scaleFactoryLinear_);
+
+export function scaleFactoryTime_<DOMAINTYPE extends Date | NumberValue>(
 	{
 		domain,
 		range
@@ -67,7 +79,9 @@ export function scaleFactoryTime<DOMAINTYPE extends Date | NumberValue>(
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
-export function scaleFactoryUtc<DOMAINTYPE extends Date | NumberValue>(
+export const scaleFactoryTime = applyAdjust(scaleFactoryTime_);
+
+export function scaleFactoryUtc_<DOMAINTYPE extends Date | NumberValue>(
 	{
 		domain,
 		range
@@ -87,7 +101,9 @@ export function scaleFactoryUtc<DOMAINTYPE extends Date | NumberValue>(
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
 
-export function scaleFactorySqrt<DOMAINTYPE extends NumberValue>(
+export const scaleFactoryUtc = applyAdjust(scaleFactoryUtc_);
+
+export function scaleFactorySqrt_<DOMAINTYPE extends NumberValue>(
 	{
 		domain,
 		range
@@ -106,3 +122,5 @@ export function scaleFactorySqrt<DOMAINTYPE extends NumberValue>(
 
 	return scale as (typeof scale & Scale<DOMAINTYPE, number>);
 }
+
+export const scaleFactorySqrt = applyAdjust(scaleFactorySqrt_);

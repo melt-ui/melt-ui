@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createChart, h_band, melt, v_linear } from '$lib/index.js';
-	import { scaleFactoryAdjust, scaleFactoryBand } from '$lib/builders/chart/scale.js';
+	import { scaleFactoryBand } from '$lib/builders/chart/scale.js';
 
 	const sentence = "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. These are pangrams and so the distribution frequency of individual letters is unusual.".toLowerCase();
 	const frequency = "abcdefghijklmnopqrstuvwyxz".split('').map(
@@ -10,6 +10,8 @@
 			words: sentence.split(/\w\./g).filter(word => word.includes(letter)).length
 		}));
 
+
+
 	export const chart = createChart({
 		data: frequency,
 		padding: 10,
@@ -18,7 +20,7 @@
 			letter: {
 				get: 'letter',
 				...h_band,
-				scaleFactory: scaleFactoryAdjust(scaleFactoryBand, scale => scale.paddingInner(0.2))
+				scaleFactory: scaleFactoryBand.adjust(scale => scale.paddingInner(0.2))
 			},
 			frequency: {
 				get_sub: {

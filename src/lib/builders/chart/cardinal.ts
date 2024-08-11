@@ -6,12 +6,12 @@ export const h_range = ({ area }: { area: Area}) => [0, area.padding.inner.width
 export const h_band = {
 	discrete: true,
 	range: h_range,
-	scaleFactory: scaleFactoryBand<string>
+	scaleFactory: scaleFactoryBand
 } as const;
 
 export const h_linear = {
 	range: h_range,
-	scaleFactory: scaleFactoryLinear<number>
+	scaleFactory: scaleFactoryLinear
 } as const
 
 export const v_range = ({ area }: { area: Area}) => [0, area.padding.inner.height] as [number, number];
@@ -20,11 +20,11 @@ export const v_band = {
 	discrete: true as const,
 	range: v_range,
 	reverse: true,
-	scaleFactory: scaleFactoryBand<string>
+	scaleFactory: scaleFactoryBand
 } as const
 
 export const v_linear = {
 	range: v_range,
 	reverse: true,
-	scaleFactory: scaleFactoryLinear<number>
+	scaleFactory: scaleFactoryLinear
 } as const
