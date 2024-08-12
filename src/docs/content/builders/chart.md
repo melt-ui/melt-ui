@@ -120,7 +120,7 @@ This is useful when combining multiple graphs into one chart.
 
 ### Composite
 
-Multiple charts can be combined into composite charts. 
+Multiple charts can be arranged in a way that their domains and ranges are aligned, ensuring a consistent and comparative visual representation.
 
 <Preview code={snippets.composite}> 
   <svelte:component this={previews.composite} /> 
