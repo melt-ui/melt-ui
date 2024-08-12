@@ -22,10 +22,8 @@ above to create your chart.
 
 ## Glossary
 
-- **Get / Get_Sub**: A key/function or record of key/functions used to extract the domain data for a given row
-- **Discrete**: Discrete data consists of separate and distinct values (like categories), while continuous data is unbroken and can take any value within a range (like temperature or time)
 - **Extent**: The range of values present in the given data for the given domain 
-- **Domain**: The range of values to display for the given domain 
+- **Domain**: The range or set of values to display for the given domain 
 - **Range**: The range of values which the domain is mapped to  
 - **Scale**: The mapping function/instance used for mapping a domain onto a range
 
