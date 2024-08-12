@@ -29,23 +29,6 @@ above to create your chart.
 - **Range**: The range of values which the domain is mapped to  
 - **Scale**: The mapping function/instance used for mapping a domain onto a range
 
-In the example above, we have the following:
-    
-* x dimension:
-    * Get: `'year'`
-    * Discrete: `true`
-    * Extent: `Set(['2016', '2017', '2018', '2019'])`
-    * Domain: `Set(['2016', '2017', '2018', '2019'])`
-    * Range: `width - margin - padding`
-    * Scale: [`d3 scaleBand`](https://d3js.org/d3-scale/band)
-* y dimension:
-    * Get: `'apples'`
-    * Discrete: `false`
-    * Extent: `[820, 3840]`
-    * Domain: `[0, 3840]`
-    * Range: `height - margin - padding`
-    * Scale: [`d3 scaleLinear`](https://d3js.org/d3-scale/linear)
-
 ## Examples
 
 ### Layout
