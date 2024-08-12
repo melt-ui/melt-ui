@@ -1,30 +1,42 @@
 <script lang="ts">
 	import { createChart, h_band, h_linear, v_linear, melt } from '$lib/index.js';
+	import { utcFormat, utcParse } from 'd3-time-format';
+	import { timeDay, timeMonth, utcYear } from 'd3-time';
+	import { scaleFactoryTime, scaleFactoryUtc } from '$lib/builders/chart/scale.js';
 
-	type R = { year: string, apples: number, bananas: number, cherries: number, dates: number }
-	const rdata: R[] = [
-		{year: '2019', apples: 3840, bananas: 1920, cherries: 960, dates: 400},
-		{year: '2018', apples: 1600, bananas: 1440, cherries: 960, dates: 400},
-		{year: '2017', apples: 820, bananas: 1000, cherries: 640, dates: 400},
-		{year: '2016', apples: 820, bananas: 560, cherries: 720, dates: 400}
-	];
+	const parse_date = utcParse("%Y-%m-%d")
+	const format_date = utcFormat("%Y-%m-%d");
+	const format_month = utcFormat("%b");
+	const format_year = utcFormat("%Y");
 
-	const meta = {
-		myMeta: 'hello world'
-	}
+	const rdata = timeDay
+		.every(1)!
+		.range(
+			timeMonth.floor(timeDay.offset(new Date(), -365/2)),
+			timeMonth.ceil(new Date())
+		)
+		.map(
+			(date, i) =>
+				({ date: format_date(date), value: i*i })
+		);
 
 	export const chart = createChart({
 		data: rdata,
-		meta: meta,
 		padding: 10,
-		margin: 20,
+		margin: {
+			top: 0,
+			left: 60,
+			bottom: 40,
+			right: 0
+		},
 		dimensions: {
 			x: {
-				get: 'year',
-				...h_band
+				get: row => parse_date(row.date),
+				...h_linear,
+				scaleFactory: scaleFactoryTime
 			},
 			y: {
-				get: row => [0, row.apples],
+				get: 'value',
 				domain: [0, null],
 				...v_linear
 			}
@@ -46,32 +58,97 @@
 			},
 			y: {
 				get_scaled: y_get_scaled,
+				scale: y_scale
 			}
 		}
 	} = chart;
+
+	$: x_ticks = $x_scale.ticks(timeMonth.every(1));
+
+	$: console.log( 'ticks', x_ticks );
 
 </script>
 <div class="w-[600px] h-[400px]">
 	<div use:melt={$root} class="w-full h-full">
 			{#if typeof window !== 'undefined' && $width && $height}
 				<svg class="w-full h-full">
-					<rect x={0} y={0} width={$area.width} height={$area.height} stroke="red" fill="none" stroke-width="3" stroke-dasharray="16 16" />
-					<rect x={$area.margin.outer.left} y={$area.margin.outer.top} width={$area.margin.outer.width} height={$area.margin.outer.height} stroke="green" fill="none" stroke-width="3" stroke-dasharray="0 16 0" />
-
-					<rect x={$area.margin.inner.left} y={$area.margin.inner.top} width={$area.margin.inner.width} height={$area.margin.inner.height} stroke="green" fill="none" stroke-width="3" stroke-dasharray="0 16 0" />
-					<rect x={$area.padding.outer.left} y={$area.padding.outer.top} width={$area.padding.outer.width} height={$area.padding.outer.height} stroke="blue" fill="none" stroke-width="3" stroke-dasharray="16 16"  />
-
-					<rect x={$area.padding.inner.left} y={$area.padding.inner.top} width={$area.padding.inner.width} height={$area.padding.inner.height} stroke="blue" fill="none" stroke-width="3" stroke-dasharray="16 16"  />
-
 					<g transform="translate({$area.padding.inner.left}, {$area.padding.inner.top})">
-						{#each $data as row, i}
-							{@const x = $x_get_scaled(row)}
-							{@const y = $y_get_scaled(row)}
-							{@const w = $x_scale.bandwidth() }
+						<path
+							d="M{$data.map(row => `${$x_get_scaled(row)},${$y_get_scaled(row)}`).join('L')}"
+							class="stroke-indigo-900 fill-none stroke-2"
+							/>
+					</g>
 
-							<rect x={x} y={y[1]} width={w} height={y[0] - y[1]} stroke="green" class="fill-white stroke-magnum-800 stroke-[2px]"/>
+					<g transform="translate({$area.margin.inner.left}, {$area.padding.inner.top})">
+						<line
+							x1={0}
+							x2={0}
+							y1={0}
+							y2={$area.padding.inner.height}
+							class="stroke-black stroke-[3px] [stroke-linecap:round]"
+						/>
+
+						{#each $y_scale.ticks() as tick, i}
+							<g transform="translate(0, {$y_scale(tick)})">
+								<line
+									x1={-5}
+									y1={0}
+									x2={0}
+									y2={0}
+									class="stroke-black stroke-[3px] [stroke-linecap:round]"
+								/>
+
+								<text
+									x={-10}
+									y={0}
+									dominant-baseline="middle"
+									text-anchor="end"
+									class="fill-black"
+									data-tick={JSON.stringify(tick)}
+								>{tick}</text>
+							</g>
 						{/each}
 					</g>
+
+
+					<g transform="translate({$area.padding.inner.left}, {$area.margin.inner.bottom})">
+						<line
+							x1={0}
+							x2={$area.padding.inner.width}
+							y1={0}
+							y2={0}
+							class="stroke-black stroke-[3px] [stroke-linecap:round]"
+						/>
+
+						{#each x_ticks as tick, i}
+							<g transform="translate({($x_scale(tick) + $x_scale(timeMonth.offset(tick, 1)))/2}, 0)">
+								<line
+									x1={0}
+									y1={0}
+									x2={0}
+									y2={5}
+									class="stroke-black stroke-[3px] [stroke-linecap:round]"
+								/>
+
+								<text
+									x={0}
+									y={10}
+									dominant-baseline="hanging"
+									text-anchor="middle"
+									class="fill-black"
+								>{format_month(tick)}</text>
+								<text
+									x={0}
+									y={26}
+									dominant-baseline="hanging"
+									text-anchor="middle"
+									class="fill-black"
+								>{format_year(tick)}</text>
+							</g>
+
+						{/each}
+					</g>
+
 				</svg>
 			{/if}
 		</div>
