@@ -108,14 +108,14 @@ interface Size {
 }
 ```
 
-### Multiple
+### Compound
 
 Dimensions can be specified as a collection of sub dimensions, allowing all sub dimensions in the range to share extents, domain, range and scale properties.
 
 This is useful when combining multiple graphs into one chart.
 
-<Preview code={snippets.multi}> 
-  <svelte:component this={previews.multi} /> 
+<Preview code={snippets.compound}> 
+  <svelte:component this={previews.compound} /> 
 </Preview>
 
 ### Composite
