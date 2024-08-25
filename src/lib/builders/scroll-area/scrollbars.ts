@@ -108,17 +108,26 @@ export function createBaseScrollbarAction(state: ScrollAreaState) {
 			addEventListener(document, 'wheel', handleWheel, { passive: false })
 		);
 
-		const unsubResizeContent = effect([rootState.contentEl], ([$contentEl]) => {
-			if (!$contentEl) return noop;
+		const unsubResizeContent = effect(
+			[rootState.contentEl, rootState.viewportEl],
+			([$contentEl, $viewportEl]) => {
+				if (!$contentEl || !$viewportEl) return noop;
 
-			return resizeObserver($contentEl, scrollbarState.handleSizeChange);
-		});
+				const unsubContentObserver = resizeObserver($contentEl, scrollbarState.handleSizeChange);
+				const unsubViewportObserver = resizeObserver($viewportEl, scrollbarState.handleSizeChange);
+
+				return () => {
+					unsubContentObserver();
+					unsubViewportObserver();
+				};
+			}
+		);
 
 		return {
 			destroy() {
 				unsubEvents();
 				unsubResizeContent();
-			},
+			}
 		};
 	}
 
