@@ -92,6 +92,13 @@ export type CreatePopoverProps = {
 	preventScroll?: boolean;
 
 	/**
+	 * If set to `true`, whenever you open this popover, all other popovers
+	 * with `group` also set to `true` will close. If you pass in a string
+	 * instead, only popovers with the same `group` value will be closed.
+	 */
+	group?: boolean | string;
+
+	/**
 	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
