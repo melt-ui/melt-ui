@@ -121,7 +121,7 @@
 		</div>
 
 		<div
-			class="z-10 flex max-h-[min(600px,50vh)] flex-col"
+			class="z-50 flex max-h-[min(600px,50vh)] flex-col"
 			use:melt={$menu}
 			class:hidden={!$inputValue}
 		>
