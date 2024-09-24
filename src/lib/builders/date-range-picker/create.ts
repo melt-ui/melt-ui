@@ -17,6 +17,7 @@ import { createFormatter, dateStore, getDefaultDate } from '$lib/internal/helper
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { createDateRangeField } from '../date-range-field/create.js';
 import type { DateRangePickerEvents } from './events.js';
+import { defaults as calendarDefaults } from '../calendar/create.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -37,6 +38,18 @@ const defaults = {
 	maxValue: undefined,
 	weekdayFormat: 'narrow',
 	onOutsideClick: undefined,
+	...omit(
+		calendarDefaults,
+		'isDateDisabled',
+		'isDateUnavailable',
+		'value',
+		'locale',
+		'disabled',
+		'readonly',
+		'minValue',
+		'maxValue',
+		'weekdayFormat'
+	),
 } satisfies CreateDateRangePickerProps;
 
 export function createDateRangePicker(props?: CreateDateRangePickerProps) {
