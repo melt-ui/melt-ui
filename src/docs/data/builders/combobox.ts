@@ -32,6 +32,13 @@ const OPTION_PROPS = [
 			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
 	},
 	{
+		name: 'highlightOnOpen',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'When true, opening the combobox will update the `highlightedItem` store with the first selected option',
+	},
+	{
 		name: 'name',
 		type: 'string',
 		description: 'The name to be used for the hidden input.',

@@ -37,6 +37,13 @@ const OPTION_PROPS = [
 		description:
 			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
 	},
+	{
+		name: 'highlightOnOpen',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'When true, opening the select will update the `highlightedItem` store with the first selected option',
+	},
 ];
 
 const BUILDER_NAME = 'select';
