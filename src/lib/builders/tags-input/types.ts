@@ -4,20 +4,20 @@ import type { Writable } from 'svelte/store';
 import type { createTagsInput } from './create.js';
 export type { TagsInputComponentEvents } from './events.js';
 export type CreateTagsInputProps = {
-	placeholder?: string;
-	disabled?: boolean;
-	editable?: boolean;
-	selected?: Tag;
-	defaultTags?: string[] | Tag[];
-	tags?: Writable<Tag[]>;
-	onTagsChange?: ChangeFn<Tag[]>;
-	unique?: boolean;
-	trim?: boolean;
-	blur?: Blur;
-	addOnPaste?: boolean;
-	maxTags?: number;
-	allowed?: string[];
-	denied?: string[];
+	placeholder?: string | undefined;
+	disabled?: boolean | undefined;
+	editable?: boolean | undefined;
+	selected?: Tag | undefined;
+	defaultTags?: string[] | Tag[] | undefined;
+	tags?: Writable<Tag[]> | undefined;
+	onTagsChange?: ChangeFn<Tag[]> | undefined;
+	unique?: boolean | undefined;
+	trim?: boolean | undefined;
+	blur?: Blur | undefined;
+	addOnPaste?: boolean | undefined;
+	maxTags?: number | undefined;
+	allowed?: string[] | undefined;
+	denied?: string[] | undefined;
 	/**
 	 * Optional validator/parser function that runs on tag addition.
 	 *
@@ -27,7 +27,7 @@ export type CreateTagsInputProps = {
 	 *
 	 * @param tag The tag to be added
 	 */
-	add?: AddTag;
+	add?: AddTag | undefined;
 	/**
 	 * Optional validator/parser function that runs on tag removal.
 	 *
@@ -37,7 +37,7 @@ export type CreateTagsInputProps = {
 	 *
 	 * @param tag The tag to be removed
 	 */
-	remove?: RemoveTag;
+	remove?: RemoveTag | undefined;
 	/**
 	 * Optional validator/parser function that runs on tag update.
 	 *
@@ -47,7 +47,7 @@ export type CreateTagsInputProps = {
 	 *
 	 * @param tag The tag to be updated
 	 */
-	update?: UpdateTag;
+	update?: UpdateTag | undefined;
 };
 
 export type Blur = 'nothing' | 'add' | 'clear';
@@ -60,8 +60,8 @@ export type Tag = {
 export type TagProps = {
 	id: string;
 	value: string;
-	disabled?: boolean;
-	editable?: boolean;
+	disabled?: boolean | undefined;
+	editable?: boolean | undefined;
 };
 
 export type UpdateTag = (tag: Tag) => (Tag | never) | Promise<Tag | never>;

@@ -17,15 +17,15 @@ export type EscapeKeydownConfig = {
 	 *
 	 * @defaultValue `close`
 	 */
-	behaviorType?: EscapeBehaviorType | WithGet<Readable<EscapeBehaviorType>>;
+	behaviorType?: EscapeBehaviorType | WithGet<Readable<EscapeBehaviorType>> | undefined;
 
 	/**
 	 * Callback when user presses the escape key element.
 	 */
-	handler?: (evt: KeyboardEvent) => void;
+	handler?: ((evt: KeyboardEvent) => void) | undefined;
 
 	/**
 	 * A predicate function or a list of elements that should not trigger the event.
 	 */
-	ignore?: ((e: KeyboardEvent) => boolean) | Element[];
+	ignore?: ((e: KeyboardEvent) => boolean) | Element[] | undefined;
 };

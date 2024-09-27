@@ -6,22 +6,22 @@ export type { ToolbarComponentEvents } from './events.js';
 export type ToolbarGroupType = 'single' | 'multiple';
 
 export type CreateToolbarProps = {
-	loop?: boolean;
-	orientation?: Orientation;
+	loop?: boolean | undefined;
+	orientation?: Orientation | undefined;
 };
 
 export type CreateToolbarGroupProps<T extends ToolbarGroupType = 'single'> = {
-	defaultValue?: T extends 'single' ? string : string[];
-	value?: Writable<string | string[] | undefined>;
-	onValueChange?: ChangeFn<string | string[] | undefined>;
-	type?: T;
-	disabled?: boolean;
+	defaultValue?: (T extends 'single' ? string : string[]) | undefined;
+	value?: Writable<string | string[] | undefined> | undefined;
+	onValueChange?: ChangeFn<string | string[] | undefined> | undefined;
+	type?: T | undefined;
+	disabled?: boolean | undefined;
 };
 
 export type ToolbarGroupItemProps =
 	| {
 			value: string;
-			disabled?: boolean;
+			disabled?: boolean | undefined;
 	  }
 	| string;
 

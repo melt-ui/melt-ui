@@ -19,7 +19,7 @@ export type InteractOutsideConfig = {
 	 * which is either a `pointerup`, `mouseup`, or `touchend`
 	 * event, depending on the user's input device.
 	 */
-	onInteractOutside?: (e: InteractOutsideEvent) => void;
+	onInteractOutside?: ((e: InteractOutsideEvent) => void) | undefined;
 
 	/**
 	 * Callback fired when an outside interaction event starts,
@@ -30,11 +30,11 @@ export type InteractOutsideConfig = {
 	 * begins an outside interaction, but before the interaction
 	 * completes.
 	 */
-	onInteractOutsideStart?: (e: InteractOutsideEvent) => void;
+	onInteractOutsideStart?: ((e: InteractOutsideEvent) => void) | undefined;
 
 	/**
 	 * Whether or not outside interactions should be handled.
 	 * @default true
 	 */
-	enabled?: boolean;
+	enabled?: boolean | undefined;
 };

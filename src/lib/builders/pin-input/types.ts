@@ -10,7 +10,7 @@ export type CreatePinInputProps = {
 	 *
 	 * @default '○'
 	 */
-	placeholder?: string;
+	placeholder?: string | undefined;
 
 	/**
 	 * The name of the input. Submitted with its owning form as part
@@ -18,28 +18,28 @@ export type CreatePinInputProps = {
 	 *
 	 * @default undefined
 	 */
-	name?: string;
+	name?: string | undefined;
 
 	/**
 	 * If `true`, prevents the user from interacting with the input.
 	 *
 	 * @default false
 	 */
-	disabled?: boolean;
+	disabled?: boolean | undefined;
 
 	/**
 	 * The type of the input. Use `password` to mask the input.
 	 *
 	 * @default 'text'
 	 */
-	type?: 'text' | 'password';
+	type?: 'text' | 'password' | undefined;
 
 	/**
 	 * The uncontrolled default value of the pin input.
 	 *
 	 * @default []
 	 */
-	defaultValue?: string[];
+	defaultValue?: string[] | undefined;
 
 	/**
 	 * The controlled value store for the pin input.
@@ -47,19 +47,19 @@ export type CreatePinInputProps = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	value?: Writable<string[]>;
+	value?: Writable<string[]> | undefined;
 
 	/**
 	 * The callback invoked when the value store of the pin input changes.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<string[]>;
+	onValueChange?: ChangeFn<string[]> | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<PinInputIdParts>>;
+	ids?: Partial<IdObj<PinInputIdParts>> | undefined;
 };
 
 export type PinInput = BuilderReturn<typeof createPinInput>;

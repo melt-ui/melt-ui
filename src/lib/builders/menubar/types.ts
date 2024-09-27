@@ -13,7 +13,7 @@ export type CreateMenubarProps = {
 	 *
 	 * @default true
 	 */
-	loop?: boolean;
+	loop?: boolean | undefined;
 
 	/**
 	 * Escape behavior type.
@@ -24,7 +24,7 @@ export type CreateMenubarProps = {
 	 *
 	 * @defaultValue `close`
 	 */
-	escapeBehavior?: EscapeBehaviorType;
+	escapeBehavior?: EscapeBehaviorType | undefined;
 
 	/**
 	 * Whether to prevent scrolling the body when any menu within
@@ -32,12 +32,12 @@ export type CreateMenubarProps = {
 	 *
 	 * @default true
 	 */
-	preventScroll?: boolean;
+	preventScroll?: boolean | undefined;
 
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<IdObj<MenubarIdParts>>;
+	ids?: Partial<IdObj<MenubarIdParts>> | undefined;
 };
 
 export type CreateMenubarMenuProps = Omit<_Menu['builder'], 'preventScroll'>;
