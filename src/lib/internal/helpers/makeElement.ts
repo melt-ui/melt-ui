@@ -4,9 +4,9 @@ import { isBrowser, isHTMLElement, noop } from './index.js';
 import { removeUndefined } from './object.js';
 import { lightable } from './store/lightable.js';
 
-export function getElementByMeltId(id: string) {
+export function getElementByMeltId(id: string, rootElement?: ParentNode) {
 	if (!isBrowser) return null;
-	const el = document.querySelector(`[data-melt-id="${id}"]`);
+	const el = (rootElement ?? document).querySelector(`[data-melt-id="${id}"]`);
 	return isHTMLElement(el) ? el : null;
 }
 
