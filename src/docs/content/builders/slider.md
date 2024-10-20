@@ -73,7 +73,7 @@ past each other.
 
 ### Shdaow dom
 
-By default, the slider uses the `document` as the root element to query it's internal components.
+By default, the slider uses the `document` as the root element to query its internal components.
 By utilizing the `rootElement` property you can override this behaviour, this is especially useful when running inside the shadow-dom. 
 
 <Preview code={snippets.shadow}>
