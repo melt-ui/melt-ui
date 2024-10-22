@@ -47,8 +47,6 @@
 
 <a
 	href="#main"
-	on:blur={() => (skipToContent = false)}
-	on:focus={() => (skipToContent = true)}
 	class="force-dark fixed top-[-20rem] z-0 ml-56 rounded-br-xl rounded-tl-xl bg-neutral-900 px-2 py-1 text-neutral-100 focus:top-4 focus:z-[1000] max-sm:right-[6]"
 	tabindex="0"
 >

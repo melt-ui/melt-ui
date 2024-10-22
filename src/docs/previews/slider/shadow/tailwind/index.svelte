@@ -41,6 +41,4 @@
 	});
 </script>
 
-<main bind:this={elementRoot}>
-
-</main>
+<main bind:this={elementRoot} />
