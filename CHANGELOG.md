@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.84.0
+
+### Minor Changes
+
+- feat: add a pushState prop to createTableOfContents ([#1239](https://github.com/melt-ui/melt-ui/pull/1239))
+
+### Patch Changes
+
+- feat: added support to define own root when using slider. ([#1276](https://github.com/melt-ui/melt-ui/pull/1276))
+
 ## 0.83.0
 
 ### Minor Changes
