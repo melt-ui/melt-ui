@@ -83,6 +83,13 @@ export type CreateSliderProps = {
 	 * @default true
 	 */
 	autoSort?: boolean;
+
+	/**
+	 * By default, MeltUI uses the `document` as the root element to find your components, if you are using a shadow-dom or want to specify you own root element you should provide it here.
+	 *
+	 * @default document
+	 */
+	rootElement?: ParentNode;
 };
 
 export type Slider = BuilderReturn<typeof createSlider>;
