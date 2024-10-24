@@ -492,7 +492,6 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 				return {
 					'aria-hidden': editing,
-					'aria-selected': selected,
 					'data-tag-id': tag.id,
 					'data-tag-value': tag.value,
 					'data-selected': selected ? '' : undefined,
@@ -500,7 +499,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'data-editing': editing ? '' : undefined,
 					'data-disabled': disabledAttr(disabled),
 					disabled: disabledAttr(disabled),
-					hidden: editing,
+					hidden: editing ? '' : undefined,
 					tabindex: -1,
 					style: editing
 						? styleToString({
@@ -588,7 +587,6 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
 				return {
-					'aria-selected': selected,
 					'data-tag-id': tag.id,
 					'data-tag-value': tag.value,
 					'data-selected': selected ? '' : undefined,
@@ -639,7 +637,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'aria-hidden': !editing,
 					'data-tag-id': tag.id,
 					'data-tag-value': tag.value,
-					hidden: !editing ? true : undefined,
+					hidden: !editing ? '' : undefined,
 					contenteditable: editing,
 					tabindex: -1,
 					style: !editing
