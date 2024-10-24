@@ -65,6 +65,7 @@ const defaults = {
 	loop: true,
 	defaultOpen: false,
 	closeOnOutsideClick: true,
+	closeOnInputClick: true,
 	preventScroll: true,
 	escapeBehavior: 'close',
 	forceVisible: false,
@@ -134,6 +135,7 @@ export function createListbox<
 		scrollAlignment,
 		loop,
 		closeOnOutsideClick,
+		closeOnInputClick,
 		escapeBehavior,
 		preventScroll,
 		portal,
@@ -294,7 +296,11 @@ export function createListbox<
 					node.focus(); // Fix for safari not adding focus on trigger
 					const $open = open.get();
 					if ($open) {
-						closeMenu();
+						const $closeOnInputClick = closeOnInputClick.get();
+
+						if ($closeOnInputClick) {
+							closeMenu();
+						}
 					} else {
 						openMenu();
 					}

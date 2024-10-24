@@ -109,6 +109,14 @@ export type CreateListboxProps<
 	closeOnOutsideClick?: boolean;
 
 	/**
+	 * Whether or not to close the listbox menu when the user clicks
+	 * input element of the listbox.
+	 *
+	 * @default true
+	 */
+	closeOnInputClick?: boolean;
+
+	/**
 	 * Escape behavior type.
 	 * `close`: Closes the element immediately.
 	 * `defer-otherwise-close`: Delegates the action to the parent element. If no parent is found, it closes the element.
