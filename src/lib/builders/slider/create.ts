@@ -570,6 +570,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 		states: {
 			value,
+			active: isActive,
 		},
 		options,
 	};
