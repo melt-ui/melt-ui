@@ -51,7 +51,7 @@ The `group` and `groupLabel` elements can be used to group combobox list items.
   <svelte:component this={previews.group} /> 
 </Preview>
 
-### Shdaow dom
+### Shadow dom
 
 By default, the comboBox uses the `document` as the root element to query its internal components. By
 utilizing the `rootElement` property you can override this behaviour, this is especially useful when
