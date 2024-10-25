@@ -35,7 +35,7 @@
 					color: #262626; text-transform: capitalize; font-weight: 600; padding: .25rem 1rem .25rem 1rem;
 					border-radius: .375rem;
 				}
-				.menu-item:hover {
+				.menu-item[data-highlighted] {
 					color: #793a15; background: #fce0ac;
 				}
 				.text-wrapper {
