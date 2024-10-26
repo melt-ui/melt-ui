@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.85.0
+
+### Minor Changes
+
+- feat: expose active state on slider ([#1278](https://github.com/melt-ui/melt-ui/pull/1278))
+
+### Patch Changes
+
+- fix(tags-input): hidden attribute on tags ([#1265](https://github.com/melt-ui/melt-ui/pull/1265))
+
 ## 0.84.0
 
 ### Minor Changes
