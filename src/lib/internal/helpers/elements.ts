@@ -37,6 +37,10 @@ export function getPortalDestination(
 }
 
 export function isOrContainsTarget(node: HTMLElement, target: Element) {
+	if (target.shadowRoot) {
+
+	}
+
 	return node === target || node.contains(target);
 }
 

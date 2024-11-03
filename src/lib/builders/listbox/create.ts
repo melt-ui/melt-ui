@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions/index.js';
+import { type InteractOutsideEvent, usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addHighlight,
@@ -36,7 +36,7 @@ import {
 	styleToString,
 	toWritableStores,
 	toggle,
-	withGet,
+	withGet, getElementById,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
@@ -77,6 +77,7 @@ const defaults = {
 	highlightOnHover: true,
 	onOutsideClick: undefined,
 	preventTextSelectionOverflow: true,
+	rootElement: undefined,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
@@ -148,7 +149,19 @@ export function createListbox<
 		highlightOnHover,
 		onOutsideClick,
 		preventTextSelectionOverflow,
+		rootElement
 	} = options;
+
+	const $rootElement = rootElement.get();
+
+	if (isBrowser && $rootElement === undefined) {
+		rootElement.set(document);
+	} else {
+		if (props?.portal === undefined) {
+			portal.set($rootElement as HTMLElement);
+		}
+	}
+
 	const { name, selector } = createElHelpers<ListboxParts>(withDefaults.builder);
 
 	const ids = toWritableStores({ ...generateIds(listboxIdParts), ...withDefaults.ids });
@@ -212,7 +225,7 @@ export function createListbox<
 		// Wait a tick for the menu to open then highlight the selected item.
 		await tick();
 
-		const menuElement = document.getElementById(ids.menu.get());
+		const menuElement = getElementById(ids.menu.get(), rootElement.get());
 		if (!isHTMLElement(menuElement)) return;
 
 		const selectedItem = menuElement.querySelector('[aria-selected=true]');
@@ -334,7 +347,7 @@ export function createListbox<
 							const $selectedItem = selected.get();
 							if ($selectedItem) return;
 
-							const menuEl = document.getElementById(ids.menu.get());
+							const menuEl = getElementById(ids.menu.get(), rootElement.get());
 							if (!isHTMLElement(menuEl)) return;
 
 							const enabledItems = Array.from(
@@ -385,7 +398,7 @@ export function createListbox<
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
 						// Get all the menu items.
-						const menuElement = document.getElementById(ids.menu.get());
+						const menuElement = getElementById(ids.menu.get(), rootElement.get());
 						if (!isHTMLElement(menuElement)) return;
 						const itemElements = getOptions(menuElement);
 						if (!itemElements.length) return;
@@ -426,7 +439,7 @@ export function createListbox<
 						highlightedItem.set(nextItem);
 						nextItem?.scrollIntoView({ block: $scrollAlignment });
 					} else if (typeahead.get()) {
-						const menuEl = document.getElementById(ids.menu.get());
+						const menuEl = getElementById(ids.menu.get(), rootElement.get());
 						if (!isHTMLElement(menuEl)) return;
 
 						handleTypeaheadSearch(e.key, getOptions(menuEl));
@@ -480,7 +493,7 @@ export function createListbox<
 									modal: {
 										closeOnInteractOutside: $closeOnOutsideClick,
 										onClose: closeMenu,
-										shouldCloseOnInteractOutside: (e) => {
+										shouldCloseOnInteractOutside: (e: InteractOutsideEvent) => {
 											onOutsideClick.get()?.(e);
 											if (e.defaultPrevented) return false;
 											const target = e.target;
@@ -632,7 +645,7 @@ export function createListbox<
 	 */
 	effect([highlightedItem], ([$highlightedItem]) => {
 		if (!isBrowser) return;
-		const menuElement = document.getElementById(ids.menu.get());
+		const menuElement = getElementById(ids.menu.get(), rootElement.get());
 		if (!isHTMLElement(menuElement)) return;
 		getOptions(menuElement).forEach((node) => {
 			if (node === $highlightedItem) {
