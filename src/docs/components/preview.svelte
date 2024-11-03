@@ -22,7 +22,7 @@
 	};
 
 	export type PreviewProps = {
-		class: string;
+		class?: string;
 		code: {
 			[codingStyle: string]: CodeEntry | null;
 		};
