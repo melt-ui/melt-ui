@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.86.0
+
+### Minor Changes
+
+- feat: added support to specify a root element when using listbox elem… ([#1279](https://github.com/melt-ui/melt-ui/pull/1279))
+
 ## 0.85.0
 
 ### Minor Changes
