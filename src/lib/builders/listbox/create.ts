@@ -36,7 +36,8 @@ import {
 	styleToString,
 	toWritableStores,
 	toggle,
-	withGet, getElementById,
+	withGet,
+	getElementById,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
@@ -149,7 +150,7 @@ export function createListbox<
 		highlightOnHover,
 		onOutsideClick,
 		preventTextSelectionOverflow,
-		rootElement
+		rootElement,
 	} = options;
 
 	const $rootElement = rootElement.get();

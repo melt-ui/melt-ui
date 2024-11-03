@@ -5,8 +5,8 @@ import { removeUndefined } from './object.js';
 import { lightable } from './store/lightable.js';
 
 /* @deprecated
-*  We need to stop using `data-melt-id` and use normal ids for a11y compatibility.
-*  Use the `id` and use `getElementById` */
+ *  We need to stop using `data-melt-id` and use normal ids for a11y compatibility.
+ *  Use the `id` and use `getElementById` */
 export function getElementByMeltId(id: string, rootElement?: ParentNode) {
 	if (!isBrowser) return null;
 	const el = (rootElement ?? document).querySelector(`[data-melt-id="${id}"]`);

@@ -87,7 +87,7 @@ export function isWritable(value: unknown): value is Writable<unknown> {
 export function isAttachedToDocument(element: unknown): boolean {
 	if (!isHTMLElement(element)) return false;
 
-	const rootNode = element.getRootNode()
+	const rootNode = element.getRootNode();
 
 	if (rootNode === document) return true;
 

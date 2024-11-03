@@ -11,7 +11,7 @@ export type InteractOutsideInterceptEventType =
 
 export type InteractOutsideInterceptHandler<E extends InteractOutsideInterceptEventType> = (
 	ev: HTMLElementEventMap[E],
-	computedEventData?: ComputedEventData,
+	computedEventData?: ComputedEventData
 ) => void;
 
 /**

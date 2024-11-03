@@ -69,7 +69,7 @@
 	} = createCombobox({
 		forceVisible: true,
 		multiple: true,
-		rootElement: componentRoot
+		rootElement: componentRoot,
 	});
 
 	$: filteredMangas = $touchedInput
@@ -86,17 +86,11 @@
 <div class="root">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label use:melt={$label}>
-		<span class="label"
-			>Choose your favorite manga:</span
-		>
+		<span class="label">Choose your favorite manga:</span>
 	</label>
 
 	<div style:position="relative">
-		<input
-			use:melt={$input}
-			class="input"
-			placeholder="Best book ever"
-		/>
+		<input use:melt={$input} class="input" placeholder="Best book ever" />
 		<div class="chevron">
 			{#if $open}
 				<ChevronUp style="width: 1rem; height: 1rem;" />
@@ -107,16 +101,9 @@
 	</div>
 </div>
 {#if $open}
-	<ul
-		class="menu"
-		use:melt={$menu}
-		transition:fly={{ duration: 150, y: -5 }}
-	>
+	<ul class="menu" use:melt={$menu} transition:fly={{ duration: 150, y: -5 }}>
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-		<div
-			class="menu-inner"
-			tabindex="0"
-		>
+		<div class="menu-inner" tabindex="0">
 			{#each filteredMangas as book, index (index)}
 				<li
 					use:melt={$option({

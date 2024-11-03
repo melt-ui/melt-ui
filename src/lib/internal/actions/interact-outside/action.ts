@@ -4,7 +4,9 @@ import {
 	isElement,
 	executeCallbacks,
 	noop,
-	debounce, isShadowRoot, isHTMLElement,
+	debounce,
+	isShadowRoot,
+	isHTMLElement,
 } from '$lib/internal/helpers/index.js';
 import type {
 	ComputedEventData,
@@ -109,15 +111,18 @@ export const useInteractOutside = ((node, config: InteractOutsideConfig = {}) =>
 		 * Debouncing `onPointerDown` ensures that other events can be flagged as not intercepted,
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
-		const onPointerDownDebounced = debounce((e: InteractOutsideEvent, computedEventData?: ComputedEventData) => {
-			if (!wasTopLayerInPointerDownCapture || isAnyEventIntercepted()) return;
-			if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
-			const target = computedEventData?.shadowTarget ? computedEventData.shadowTarget : e.target;
-			if (isElement(target) && isOrContainsTarget(node, target)) {
-				isPointerDownInside = true;
-			}
-			isPointerDown = true;
-		}, 10);
+		const onPointerDownDebounced = debounce(
+			(e: InteractOutsideEvent, computedEventData?: ComputedEventData) => {
+				if (!wasTopLayerInPointerDownCapture || isAnyEventIntercepted()) return;
+				if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
+				const target = computedEventData?.shadowTarget ? computedEventData.shadowTarget : e.target;
+				if (isElement(target) && isOrContainsTarget(node, target)) {
+					isPointerDownInside = true;
+				}
+				isPointerDown = true;
+			},
+			10
+		);
 		unsubPointerDown = onPointerDownDebounced.destroy;
 
 		/**

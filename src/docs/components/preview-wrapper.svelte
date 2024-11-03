@@ -20,7 +20,7 @@
 			position: {
 				default: 'relative',
 				static: 'static',
-			}
+			},
 		},
 		defaultVariants: {
 			variant: 'default',
