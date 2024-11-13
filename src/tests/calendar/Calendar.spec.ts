@@ -748,6 +748,30 @@ describe('Calendar', () => {
 		expect(weekdayElement).toHaveTextContent('L');
 	});
 
+	test('Changing value programatically is reflected in markup', async () => {
+		const calendarDateTime = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
+		const $value = writable(calendarDateTime);
+		const { getByTestId } = setup({
+			defaultPlaceholder: calendarDateTime,
+			value: $value,
+			placeholder: $value,
+		});
+
+		const someDay = getByTestId('month-1-date-20');
+		expect(someDay).toHaveAttribute('data-value', calendarDateTime.toString());
+		const newDate = calendarDateTime.set({ hour: 2, minute: 2 });
+		$value.set(newDate);
+
+		// Tick to allow svelte reactivity to do it's job
+		await tick();
+
+		const insideValue = getByTestId('inside-value');
+		expect(insideValue).toHaveTextContent(newDate.toString());
+
+		const sameDay = getByTestId('month-1-date-20');
+		expect(sameDay).toHaveAttribute('data-value', newDate.toString());
+	});
+
 	test('custom ids are applied when provided', async () => {
 		const ids = {
 			accessibleHeading: 'id-heading',
