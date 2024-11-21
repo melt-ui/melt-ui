@@ -43,16 +43,22 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 type Side = (typeof SIDE_OPTIONS)[number];
 type Align = (typeof ALIGN_OPTIONS)[number];
 
+export function isVirtualElement(element: unknown): element is VirtualElement {
+	return isObject(element) && 'getBoundingClientRect' in element;
+}
+
 export function useFloating(
 	reference: HTMLElement | VirtualElement | undefined,
 	floating: HTMLElement | undefined,
 	opts: FloatingConfig = {}
 ) {
-	if (!floating || !reference || opts === null)
+	if (!floating || !reference || opts === null) {
 		return {
 			destroy: noop,
 		};
+	}
 
+	console.log(reference, floating, opts);
 	const options = { ...defaultConfig, ...opts };
 
 	const arrowEl = floating.querySelector('[data-arrow=true]');
@@ -112,7 +118,7 @@ export function useFloating(
 
 	function compute() {
 		if (!reference || !floating) return;
-		if (!isAttachedToDocument(reference)) return;
+		if (!isVirtualElement(reference) && !isAttachedToDocument(reference)) return;
 
 		const { placement, strategy } = options;
 
