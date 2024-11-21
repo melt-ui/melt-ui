@@ -279,8 +279,11 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
-			rootActiveTrigger.set(node);
 			applyAttrsIfDisabled(node);
+			rootActiveTrigger.update((p) => {
+				if (p) return p;
+				return node;
+			});
 
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -312,10 +315,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			);
 
 			return {
-				destroy() {
-					unsub();
-					rootActiveTrigger.set(null);
-				},
+				destroy: unsub,
 			};
 		},
 	});
@@ -725,6 +725,17 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
+		safeOnMount(() => {
+			/**
+			 * Set active trigger on mount to handle controlled/forceVisible
+			 * state.
+			 */
+			const subTrigger = document.getElementById(subIds.trigger.get());
+			if (subTrigger) {
+				subActiveTrigger.set(subTrigger);
+			}
+		});
+
 		const subIsVisible = derivedVisible({
 			open: subOpen,
 			forceVisible,
@@ -807,8 +818,12 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (isCloseKey) {
 							const $subActiveTrigger = subActiveTrigger.get();
 							e.preventDefault();
-							$subActiveTrigger && handleRovingFocus($subActiveTrigger);
-							subOpen.set(false);
+							subOpen.update(() => {
+								if ($subActiveTrigger) {
+									handleRovingFocus($subActiveTrigger);
+								}
+								return false;
+							});
 							return;
 						}
 
@@ -880,7 +895,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
-				subActiveTrigger.set(node);
+				subActiveTrigger.update((p) => {
+					if (p) return p;
+					return node;
+				});
 
 				const unsubTimer = () => {
 					clearTimerStore(subOpenTimer);
@@ -897,7 +915,16 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 						handleRovingFocus(triggerEl);
-						subOpen.set(true);
+						if (!subOpen.get()) {
+							subOpen.update((prev) => {
+								const isAlreadyOpen = prev;
+								if (!isAlreadyOpen) {
+									subActiveTrigger.set(triggerEl);
+									return !prev;
+								}
+								return prev;
+							});
+						}
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
 						const $typed = typed.get();
@@ -939,7 +966,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (!subOpen.get() && !openTimer && !isElementDisabled(triggerEl)) {
 							subOpenTimer.set(
 								window.setTimeout(() => {
-									subOpen.set(true);
+									subOpen.update(() => {
+										subActiveTrigger.set(triggerEl);
+										return true;
+									});
 									clearTimerStore(subOpenTimer);
 								}, 100)
 							);
@@ -1011,7 +1041,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 				return {
 					destroy() {
-						subActiveTrigger.set(null);
 						unsubTimer();
 						unsubEvents();
 					},
@@ -1093,6 +1122,16 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	};
 
 	safeOnMount(() => {
+		/**
+		 * We need to set the active trigger on mount to cover the
+		 * case where the user sets the `open` store to `true` without
+		 * clicking on the trigger.
+		 */
+		const triggerEl = document.getElementById(rootIds.trigger.get());
+		if (isHTMLElement(triggerEl) && rootOpen.get()) {
+			rootActiveTrigger.set(triggerEl);
+		}
+
 		const unsubs: Array<() => void> = [];
 
 		const handlePointer = () => isUsingKeyboard.set(false);
@@ -1171,6 +1210,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			if (isOpen) {
 				nextFocusable.set(getNextFocusable(triggerEl));
 				prevFocusable.set(getPreviousFocusable(triggerEl));
+				rootActiveTrigger.set(triggerEl);
 			}
 
 			return isOpen;
