@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.86.1
+
+### Patch Changes
+
+- fix context menu not being anchored ([`da69d429`](https://github.com/melt-ui/melt-ui/commit/da69d4290dc9e3f9c10b6b88a6aa8b77f580c735))
+
+- fix nested menus only opening once ([`7cfa1988`](https://github.com/melt-ui/melt-ui/commit/7cfa1988543087d958645847fca3b6ee6cf7e66a))
+
 ## 0.86.0
 
 ### Minor Changes
