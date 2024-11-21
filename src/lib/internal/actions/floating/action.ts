@@ -58,7 +58,6 @@ export function useFloating(
 		};
 	}
 
-	console.log(reference, floating, opts);
 	const options = { ...defaultConfig, ...opts };
 
 	const arrowEl = floating.querySelector('[data-arrow=true]');
