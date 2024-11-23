@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.86.2
+
+### Patch Changes
+
+- close context menu when another one opens (fixes [#1290](https://github.com/melt-ui/melt-ui/issues/1290)) ([`0c137be6`](https://github.com/melt-ui/melt-ui/commit/0c137be686958f083106f7a1690f81a3553c94eb))
+
 ## 0.86.1
 
 ### Patch Changes
