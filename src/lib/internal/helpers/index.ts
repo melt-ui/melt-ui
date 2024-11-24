@@ -1,5 +1,6 @@
 export * from './array.js';
 export * from './attr.js';
+export * from './callbacks.js';
 export * from './makeElement.js';
 export * from './dom.js';
 export * from './event.js';
@@ -14,7 +15,6 @@ export * from './sleep.js';
 export * from './style.js';
 export * from './id.js';
 export * from './keyboard.js';
-export * from './callbacks.js';
 export * from './debounce.js';
 export * from './platform.js';
 export * from './polygon/index.js';
