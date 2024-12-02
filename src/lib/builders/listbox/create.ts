@@ -76,6 +76,7 @@ const defaults = {
 	name: undefined,
 	typeahead: true,
 	highlightOnHover: true,
+	highlightOnOpen: true,
 	onOutsideClick: undefined,
 	preventTextSelectionOverflow: true,
 	rootElement: undefined,
@@ -148,6 +149,7 @@ export function createListbox<
 		typeahead,
 		name: nameProp,
 		highlightOnHover,
+		highlightOnOpen,
 		onOutsideClick,
 		preventTextSelectionOverflow,
 		rootElement,
@@ -223,15 +225,17 @@ export function createListbox<
 	async function openMenu() {
 		open.set(true);
 
-		// Wait a tick for the menu to open then highlight the selected item.
-		await tick();
+		if (highlightOnOpen.get()) {
+			// Wait a tick for the menu to open then highlight the selected item.
+			await tick();
 
-		const menuElement = getElementById(ids.menu.get(), rootElement.get());
-		if (!isHTMLElement(menuElement)) return;
+			const menuElement = getElementById(ids.menu.get(), rootElement.get());
+			if (!isHTMLElement(menuElement)) return;
 
-		const selectedItem = menuElement.querySelector('[aria-selected=true]');
-		if (!isHTMLElement(selectedItem)) return;
-		highlightedItem.set(selectedItem);
+			const selectedItem = menuElement.querySelector('[aria-selected=true]');
+			if (!isHTMLElement(selectedItem)) return;
+			highlightedItem.set(selectedItem);
+		}
 	}
 
 	/** Closes the menu & clears the active trigger */

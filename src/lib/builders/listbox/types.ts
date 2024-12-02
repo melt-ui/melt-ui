@@ -183,6 +183,13 @@ export type CreateListboxProps<
 	highlightOnHover?: boolean;
 
 	/**
+	 * IF true, when the listbox is opened, the highlightedItem will be set to the first selected option.
+	 *
+	 * @default true
+	 */
+	highlightOnOpen?: boolean;
+
+	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
 	ids?: Partial<IdObj<ListboxIdParts>>;
