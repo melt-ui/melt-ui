@@ -21,6 +21,12 @@ const OPTION_PROPS = [
 		default: 'false',
 		description: 'Whether to disable the focus trap.',
 	},
+	{
+		name: 'group',
+		type: 'string | boolean',
+		description:
+			'If set to `true`, whenever you open this popover, all other popovers with `group` also set to `true` will close. If you pass in a string instead, only popovers with the same `group` value will be closed.',
+	},
 	PROPS.ARROW_SIZE,
 	PROPS.ESCAPE_BEHAVIOR,
 	PROPS.CLOSE_ON_OUTSIDE_CLICK,

@@ -23,7 +23,7 @@ import {
 
 import { usePopper, usePortal, type InteractOutsideEvent } from '$lib/internal/actions/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 import { tick } from 'svelte';
@@ -45,10 +45,14 @@ const defaults = {
 	closeFocus: undefined,
 	onOutsideClick: undefined,
 	preventTextSelectionOverflow: true,
+	group: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close' | 'overlay';
 const { name } = createElHelpers<PopoverParts>('popover');
+
+// Store a global map to get the currently open tooltip.
+const groupMap = new Map<string | true, Writable<boolean>>();
 
 export const popoverIdParts = ['trigger', 'content'] as const;
 export type PopoverIdParts = typeof popoverIdParts;
@@ -70,6 +74,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		closeFocus,
 		onOutsideClick,
 		preventTextSelectionOverflow,
+		group,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -261,6 +266,27 @@ export function createPopover(args?: CreatePopoverProps) {
 				destroy: unsub,
 			};
 		},
+	});
+
+	effect(open, ($open) => {
+		const currentGroup = group.get();
+		if (currentGroup === undefined || currentGroup === false) {
+			return;
+		}
+
+		if (!$open) {
+			if (groupMap.get(currentGroup) === open) {
+				// Tooltip is no longer open
+				groupMap.delete(currentGroup);
+			}
+			return;
+		}
+
+		// Close the currently open tooltip in the same group
+		// and set this tooltip as the open one.
+		const currentOpen = groupMap.get(currentGroup);
+		currentOpen?.set(false);
+		groupMap.set(currentGroup, open);
 	});
 
 	effect([open, activeTrigger, preventScroll], ([$open, $activeTrigger, $preventScroll]) => {
