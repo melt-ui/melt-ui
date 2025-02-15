@@ -1,5 +1,45 @@
 # @melt-ui/svelte
 
+## 0.86.2
+
+### Patch Changes
+
+- close context menu when another one opens (fixes [#1290](https://github.com/melt-ui/melt-ui/issues/1290)) ([`0c137be6`](https://github.com/melt-ui/melt-ui/commit/0c137be686958f083106f7a1690f81a3553c94eb))
+
+## 0.86.1
+
+### Patch Changes
+
+- fix context menu not being anchored ([`da69d429`](https://github.com/melt-ui/melt-ui/commit/da69d4290dc9e3f9c10b6b88a6aa8b77f580c735))
+
+- fix nested menus only opening once ([`7cfa1988`](https://github.com/melt-ui/melt-ui/commit/7cfa1988543087d958645847fca3b6ee6cf7e66a))
+
+## 0.86.0
+
+### Minor Changes
+
+- feat: added support to specify a root element when using listbox elem… ([#1279](https://github.com/melt-ui/melt-ui/pull/1279))
+
+## 0.85.0
+
+### Minor Changes
+
+- feat: expose active state on slider ([#1278](https://github.com/melt-ui/melt-ui/pull/1278))
+
+### Patch Changes
+
+- fix(tags-input): hidden attribute on tags ([#1265](https://github.com/melt-ui/melt-ui/pull/1265))
+
+## 0.84.0
+
+### Minor Changes
+
+- feat: add a pushState prop to createTableOfContents ([#1239](https://github.com/melt-ui/melt-ui/pull/1239))
+
+### Patch Changes
+
+- feat: added support to define own root when using slider. ([#1276](https://github.com/melt-ui/melt-ui/pull/1276))
+
 ## 0.83.0
 
 ### Minor Changes

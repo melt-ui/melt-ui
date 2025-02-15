@@ -13,7 +13,12 @@ import {
 	autoUpdate,
 } from '@floating-ui/dom';
 import type { FloatingConfig } from './types.js';
-import { isHTMLElement, isObject, noop } from '$lib/internal/helpers/index.js';
+import {
+	isAttachedToDocument,
+	isHTMLElement,
+	isObject,
+	noop,
+} from '$lib/internal/helpers/index.js';
 import type { Placement, VirtualElement } from '@floating-ui/core';
 
 const defaultConfig = {
@@ -38,15 +43,20 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 type Side = (typeof SIDE_OPTIONS)[number];
 type Align = (typeof ALIGN_OPTIONS)[number];
 
+export function isVirtualElement(element: unknown): element is VirtualElement {
+	return isObject(element) && 'getBoundingClientRect' in element;
+}
+
 export function useFloating(
 	reference: HTMLElement | VirtualElement | undefined,
 	floating: HTMLElement | undefined,
 	opts: FloatingConfig = {}
 ) {
-	if (!floating || !reference || opts === null)
+	if (!floating || !reference || opts === null) {
 		return {
 			destroy: noop,
 		};
+	}
 
 	const options = { ...defaultConfig, ...opts };
 
@@ -107,9 +117,8 @@ export function useFloating(
 
 	function compute() {
 		if (!reference || !floating) return;
-		// if the reference is no longer in the document (e.g. it was removed), ignore it
-		if (isHTMLElement(reference) && !reference.ownerDocument.documentElement.contains(reference))
-			return;
+		if (!isVirtualElement(reference) && !isAttachedToDocument(reference)) return;
+
 		const { placement, strategy } = options;
 
 		computePosition(reference, floating, {

@@ -256,6 +256,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			};
 
 			const unsub = executeCallbacks(
+				addMeltEventListener(window, 'contextmenu', (e) => {
+					if (node.contains(e.target as Node)) return;
+					rootOpen.set(false);
+				}),
 				addMeltEventListener(node, 'contextmenu', (e) => {
 					/**
 					 * Clear the long press because some platforms already

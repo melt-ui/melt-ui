@@ -5,8 +5,11 @@ import {
 	executeCallbacks,
 	noop,
 	debounce,
+	isShadowRoot,
+	isHTMLElement,
 } from '$lib/internal/helpers/index.js';
 import type {
+	ComputedEventData,
 	InteractOutsideConfig,
 	InteractOutsideEvent,
 	InteractOutsideInterceptEventType,
@@ -16,7 +19,7 @@ import type { Action } from 'svelte/action';
 
 const layers = new Set<HTMLElement>();
 
-export const useInteractOutside = ((node, config = {}) => {
+export const useInteractOutside = ((node, config: InteractOutsideConfig = {}) => {
 	let unsubEvents = noop;
 	let unsubPointerDown = noop;
 	let unsubPointerUp = noop;
@@ -84,7 +87,13 @@ export const useInteractOutside = ((node, config = {}) => {
 	) => {
 		return addEventListener(documentObj, eventType, (e: HTMLElementEventMap[E]) => {
 			interceptedEvents[eventType] = false;
-			handler?.(e);
+			const computedData: ComputedEventData = {};
+
+			if (isHTMLElement(e.target) && isShadowRoot(e.target.shadowRoot)) {
+				computedData.shadowTarget = e.composedPath()[0];
+			}
+
+			handler?.(e, computedData);
 		});
 	};
 
@@ -102,15 +111,18 @@ export const useInteractOutside = ((node, config = {}) => {
 		 * Debouncing `onPointerDown` ensures that other events can be flagged as not intercepted,
 		 * allowing a comprehensive check for intercepted events thereafter.
 		 */
-		const onPointerDownDebounced = debounce((e: InteractOutsideEvent) => {
-			if (!wasTopLayerInPointerDownCapture || isAnyEventIntercepted()) return;
-			if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
-			const target = e.target;
-			if (isElement(target) && isOrContainsTarget(node, target)) {
-				isPointerDownInside = true;
-			}
-			isPointerDown = true;
-		}, 10);
+		const onPointerDownDebounced = debounce(
+			(e: InteractOutsideEvent, computedEventData?: ComputedEventData) => {
+				if (!wasTopLayerInPointerDownCapture || isAnyEventIntercepted()) return;
+				if (onInteractOutside && isValidEvent(e, node)) onInteractOutsideStart?.(e);
+				const target = computedEventData?.shadowTarget ? computedEventData.shadowTarget : e.target;
+				if (isElement(target) && isOrContainsTarget(node, target)) {
+					isPointerDownInside = true;
+				}
+				isPointerDown = true;
+			},
+			10
+		);
 		unsubPointerDown = onPointerDownDebounced.destroy;
 
 		/**

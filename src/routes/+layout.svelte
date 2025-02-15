@@ -47,8 +47,6 @@
 
 <a
 	href="#main"
-	on:blur={() => (skipToContent = false)}
-	on:focus={() => (skipToContent = true)}
 	class="force-dark fixed top-[-20rem] z-0 ml-56 rounded-br-xl rounded-tl-xl bg-neutral-900 px-2 py-1 text-neutral-100 focus:top-4 focus:z-[1000] max-sm:right-[6]"
 	tabindex="0"
 >
@@ -60,10 +58,17 @@
 	</div>
 	<header
 		class={cn(
-			'sticky bottom-0 z-40 w-full px-2 pb-2 md:bottom-[none] md:top-0 md:pb-0 md:pt-2',
+			'sticky bottom-0 z-40 flex w-full flex-col gap-2 px-2 pb-2 md:bottom-[none] md:top-0 md:pb-0 md:pt-2',
 			!isRoot && 'bg-neutral-900'
 		)}
 	>
+		<div
+			class="container rounded-md bg-magnum-400 py-2 text-center text-xs font-semibold text-magnum-800 lg:text-base"
+		>
+			<a class="underline" href="https://next.melt-ui.com">
+				Check out the new version, with Runes!
+			</a>
+		</div>
 		<SiteHeader />
 	</header>
 

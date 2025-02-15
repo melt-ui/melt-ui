@@ -144,7 +144,7 @@ export type CreateListboxProps<
 
 	/**
 	 * If not undefined, the listbox menu will be rendered within the provided element or selector.
-	 *
+	 * Otherwise, the `rootElement`, if provided, will be used.
 	 * @default 'body'
 	 */
 	portal?: PortalConfig | null;
@@ -186,6 +186,13 @@ export type CreateListboxProps<
 	 * Optionally override the default ids we assign to the elements
 	 */
 	ids?: Partial<IdObj<ListboxIdParts>>;
+
+	/**
+	 * By default, MeltUI uses the `document` as the root element to find your components, if you are using a shadow-dom or want to specify you own root element you should provide it here.
+	 *
+	 * @default document
+	 */
+	rootElement?: ParentNode;
 };
 
 export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {

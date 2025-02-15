@@ -37,6 +37,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		scrollOffset,
 		headingFilterFn,
 		scrollFn,
+		pushStateFn,
 	} = argsWithDefaults;
 
 	const { name } = createElHelpers('table-of-contents');
@@ -375,7 +376,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 					// Add items hash to URL
 					if (id) {
-						history.pushState({}, '', `#${id}`);
+						if (pushStateFn) {
+							pushStateFn(`#${id}`, {});
+						} else {
+							history.pushState({}, '', `#${id}`);
+						}
 					}
 				})
 			);

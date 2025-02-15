@@ -17,6 +17,10 @@
 				lg: 'h-[24rem] sm:h-[32rem]',
 				auto: 'h-auto py-6 lg:py-12',
 			},
+			position: {
+				default: 'relative',
+				static: 'static',
+			},
 		},
 		defaultVariants: {
 			variant: 'default',
@@ -30,10 +34,11 @@
 
 	export let variant: PreviewVariants['variant'] = 'default';
 	export let size: PreviewVariants['size'] = 'default';
+	export let position: PreviewVariants['position'] = 'default';
 	export let id: string | undefined = undefined;
 </script>
 
-<div class={cn(previewVariants({ variant, size }))} data-variant={variant} {id}>
+<div class={cn(previewVariants({ variant, size, position }))} data-variant={variant} {id}>
 	<div class={cn('z-10 mx-auto inline-block px-4')}>
 		<slot />
 	</div>

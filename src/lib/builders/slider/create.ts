@@ -35,6 +35,7 @@ const defaults = {
 	dir: 'ltr',
 	disabled: false,
 	autoSort: true,
+	rootElement: undefined,
 } satisfies CreateSliderProps;
 
 const { name } = createElHelpers('slider');
@@ -45,7 +46,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const options = toWritableStores(
 		omit(withDefaults, 'value', 'onValueChange', 'onValueCommitted', 'defaultValue')
 	);
-	const { min, max, step, orientation, dir, disabled, autoSort } = options;
+	const { min, max, step, orientation, dir, disabled, autoSort, rootElement } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -94,7 +95,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	};
 
 	const getAllThumbs = () => {
-		const root = getElementByMeltId(meltIds.root);
+		const root = getElementByMeltId(meltIds.root, rootElement.get());
 		if (!root) return null;
 
 		return Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
@@ -473,7 +474,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				e.preventDefault();
 				e.stopPropagation();
 
-				const sliderEl = getElementByMeltId($root['data-melt-id']);
+				const sliderEl = getElementByMeltId($root['data-melt-id'], rootElement.get());
 				const closestThumb = activeThumb.get();
 				if (!sliderEl || !closestThumb) return;
 
@@ -503,7 +504,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const pointerDown = (e: PointerEvent) => {
 				if (e.button !== 0) return;
 
-				const sliderEl = getElementByMeltId($root['data-melt-id']);
+				const sliderEl = getElementByMeltId($root['data-melt-id'], rootElement.get());
 				const closestThumb = getClosestThumb(e);
 				if (!closestThumb || !sliderEl) return;
 
@@ -528,11 +529,13 @@ export const createSlider = (props?: CreateSliderProps) => {
 				isActive.set(false);
 			};
 
+			const $rootElement = rootElement.get() ?? document;
+
 			const unsub = executeCallbacks(
-				addEventListener(document, 'pointerdown', pointerDown),
-				addEventListener(document, 'pointerup', pointerUp),
-				addEventListener(document, 'pointerleave', pointerUp),
-				addEventListener(document, 'pointermove', pointerMove)
+				addEventListener($rootElement, 'pointerdown', pointerDown),
+				addEventListener($rootElement, 'pointerup', pointerUp),
+				addEventListener($rootElement, 'pointerleave', pointerUp),
+				addEventListener($rootElement, 'pointermove', pointerMove)
 			);
 
 			return () => {
@@ -567,6 +570,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 		states: {
 			value,
+			active: isActive,
 		},
 		options,
 	};

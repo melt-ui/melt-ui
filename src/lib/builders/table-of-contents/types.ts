@@ -20,6 +20,8 @@ export type HeadingFilterFn = (heading: HTMLHeadingElement) => boolean;
 
 export type ScrollFn = (id: string) => void;
 
+export type PushStateFn = (url: string | URL, state: object) => void;
+
 export type CreateTableOfContentsArgs = {
 	/**
 	 * The ID of the container holding the page content.
@@ -60,6 +62,11 @@ export type CreateTableOfContentsArgs = {
 	 * A custom scroll function.
 	 */
 	scrollFn?: ScrollFn;
+
+	/**
+	 * A custom pushState function, expected to be SvelteKit's pushState function.
+	 */
+	pushStateFn?: PushStateFn;
 };
 
 export type ElementHeadingLU = {

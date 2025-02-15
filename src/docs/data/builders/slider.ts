@@ -108,9 +108,10 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A writable store that can be used to get the current value of the slider.',
 		},
 		{
-			name: 'ticks',
-			type: 'Readable<number>',
-			description: 'A readable store that can be used to get the current number of ticks.',
+			name: 'active',
+			type: 'Readable<boolean>',
+			description:
+				'A readable store that can be used to get whether the slider is actively being interacted with.',
 		},
 	],
 	options: OPTION_PROPS,

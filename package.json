@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.83.0",
+	"version": "0.86.2",
 	"license": "MIT",
 	"repository": "github:melt-ui/melt-ui",
 	"author": "Thomas G. Lopes",
@@ -148,5 +148,5 @@
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
-	"packageManager": "pnpm@8.6.3"
+	"packageManager": "pnpm@9.12.2"
 }

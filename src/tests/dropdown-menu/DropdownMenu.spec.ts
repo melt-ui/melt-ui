@@ -361,7 +361,7 @@ describe('Dropdown Menu (forceVisible)', () => {
 		expect(getByTestId('checkboxItem1')).toHaveFocus();
 	});
 
-	test.todo('Doesnt focus disabled menu items', async () => {
+	test.skip('Doesnt focus disabled menu items', async () => {
 		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
 
 		expect(queryByTestId('menu')).toBeNull();

@@ -22,6 +22,7 @@
 	};
 
 	export type PreviewProps = {
+		class?: string;
 		code: {
 			[codingStyle: string]: CodeEntry | null;
 		};
@@ -45,11 +46,13 @@
 		viewCode: boolean;
 		variant?: PreviewVariants['variant'];
 		size?: PreviewVariants['size'];
+		position?: PreviewVariants['position'];
 	};
 
 	export let code: $$Props['code'];
 	export let variant: $$Props['variant'] = 'dark';
 	export let size: $$Props['size'] = 'default';
+	export let position: $$Props['position'] = 'default';
 
 	const usingPreprocessor = getUsingPreprocessor();
 
@@ -197,7 +200,7 @@
 			{/key}
 		</TabsRoot>
 	{:else}
-		<PreviewWrapper {variant} {size}>
+		<PreviewWrapper {variant} {size} {position}>
 			<slot />
 		</PreviewWrapper>
 	{/if}

@@ -4,9 +4,18 @@ import { isBrowser, isHTMLElement, noop } from './index.js';
 import { removeUndefined } from './object.js';
 import { lightable } from './store/lightable.js';
 
-export function getElementByMeltId(id: string) {
+/* @deprecated
+ *  We need to stop using `data-melt-id` and use normal ids for a11y compatibility.
+ *  Use the `id` and use `getElementById` */
+export function getElementByMeltId(id: string, rootElement?: ParentNode) {
 	if (!isBrowser) return null;
-	const el = document.querySelector(`[data-melt-id="${id}"]`);
+	const el = (rootElement ?? document).querySelector(`[data-melt-id="${id}"]`);
+	return isHTMLElement(el) ? el : null;
+}
+
+export function getElementById(id: string, rootElement?: ParentNode) {
+	if (!isBrowser) return null;
+	const el = (rootElement ?? document).querySelector(`[id="${id}"]`);
 	return isHTMLElement(el) ? el : null;
 }
 

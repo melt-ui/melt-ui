@@ -88,7 +88,7 @@
 			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="changeEmail">
 				New email
 			</label>
-			<input id="changeEmail" type="password" />
+			<input id="changeEmail" type="email" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
 			<button class="save">Save changes</button>
