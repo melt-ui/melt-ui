@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.86.3
+
+### Patch Changes
+
+- fix webkit noop undefined runtime error by changing import order of helpers ([#1294](https://github.com/melt-ui/melt-ui/pull/1294))
+
 ## 0.86.2
 
 ### Patch Changes
