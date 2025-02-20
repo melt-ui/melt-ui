@@ -1175,15 +1175,25 @@ export function createDateField(props?: CreateDateFieldProps) {
 		states.hour.hasTouched = true;
 
 		const $hourCycle = hourCycle.get();
+		const $locale = locale.get();
+
+		const hourCycleBasedOnLocale =
+			$hourCycle === 24
+				? $hourCycle
+				: Intl.DateTimeFormat($locale, { hour: 'numeric' }).resolvedOptions().hour12
+				? 12
+				: 24;
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
-					const next = dateRef.cycle('hour', 1, { hourCycle: $hourCycle }).hour;
+					const next = dateRef.cycle('hour', 1, { hourCycle: hourCycleBasedOnLocale }).hour;
 					announcer.announce(next);
 					return next;
 				}
-				const next = dateRef.set({ hour: prev }).cycle('hour', 1, { hourCycle: $hourCycle }).hour;
+				const next = dateRef
+					.set({ hour: prev })
+					.cycle('hour', 1, { hourCycle: hourCycleBasedOnLocale }).hour;
 				announcer.announce(next);
 				return next;
 			});
@@ -1192,11 +1202,13 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
-					const next = dateRef.cycle('hour', -1, { hourCycle: $hourCycle }).hour;
+					const next = dateRef.cycle('hour', -1, { hourCycle: hourCycleBasedOnLocale }).hour;
 					announcer.announce(next);
 					return next;
 				}
-				const next = dateRef.set({ hour: prev }).cycle('hour', -1, { hourCycle: $hourCycle }).hour;
+				const next = dateRef
+					.set({ hour: prev })
+					.cycle('hour', -1, { hourCycle: hourCycleBasedOnLocale }).hour;
 				announcer.announce(next);
 				return next;
 			});
@@ -1230,7 +1242,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num === 0) {
 						states.hour.lastKeyZero = true;
 						announcer.announce(null);
-						return null;
+
+						if (hourCycleBasedOnLocale === 12) {
+							return null;
+						} else {
+							return 0;
+						}
 					}
 
 					/**
