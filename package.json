@@ -54,6 +54,14 @@
 			]
 		}
 	},
+	"keywords": [
+		"svelte",
+		"UI",
+		"melt",
+		"headless",
+		"component",
+		"library"
+	],
 	"files": [
 		"dist",
 		"!dist/**/tests"
