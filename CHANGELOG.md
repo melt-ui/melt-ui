@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.86.4
+
+### Patch Changes
+
+- update npm keywords ([`97d693c6`](https://github.com/melt-ui/melt-ui/commit/97d693c622708a794c21c11d95a100c4cef46d13))
+
 ## 0.86.3
 
 ### Patch Changes
