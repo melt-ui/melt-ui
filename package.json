@@ -30,15 +30,18 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"svelte": "./dist/index.js"
+			"svelte": "./dist/index.js",
+			"default": "./dist/index.js"
 		},
 		"./internal/*": {
 			"types": "./dist/internal/*/index.d.ts",
-			"svelte": "./dist/internal/*/index.js"
+			"svelte": "./dist/internal/*/index.js",
+			"default": "./dist/internal/*/index.js"
 		},
 		"./internal/types": {
 			"types": "./dist/internal/types.d.ts",
-			"svelte": "./dist/internal/types.js"
+			"svelte": "./dist/internal/types.js",
+			"default": "./dist/internal/types.js"
 		}
 	},
 	"typesVersions": {
