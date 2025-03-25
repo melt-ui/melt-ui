@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.86.5
+
+### Patch Changes
+
+- fix exports ([`eb71dc2b`](https://github.com/melt-ui/melt-ui/commit/eb71dc2b2cbb081b2cb49c625b2289ffa977c2f6))
+
 ## 0.86.4
 
 ### Patch Changes
