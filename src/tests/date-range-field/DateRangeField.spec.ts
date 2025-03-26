@@ -1,11 +1,12 @@
 import { testKbd as kbd } from '../utils.js';
-import { render } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DateRangeFieldTest from './DateRangeFieldTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned } from '@internationalized/date';
-import type { CreateDateRangeFieldProps } from '$lib/index.js';
+import type { CreateDateRangeFieldProps, DateRange } from '$lib/index.js';
+import { get, writable } from 'svelte/store';
 
 const exampleDate = {
 	start: new CalendarDate(2022, 1, 1),
@@ -321,5 +322,36 @@ describe('DateField', () => {
 			await user.keyboard(kbd.ARROW_UP);
 			expect(yearSegment).toHaveTextContent(String(exampleDate.end['year']));
 		}
+	});
+
+	test('clearing value should clear segments', async () => {
+		const value = writable<DateRange>({
+			start: new CalendarDate(2023, 10, 11),
+			end: new CalendarDate(2023, 10, 12),
+		});
+
+		const { getByTestId } = setup({
+			value,
+		});
+
+		value.set({ start: undefined, end: undefined });
+
+		const fields = ['start', 'end'] as const;
+		const segments = [
+			['month', 'mm'],
+			['day', 'dd'],
+			['year', 'yyyy'],
+		] as const;
+
+		await Promise.all(
+			fields.map(async (field) =>
+				Promise.all(
+					segments.map(async ([segmentKey, segmentPlaceholder]) => {
+						const segmentEl = getByTestId(`${field}-${segmentKey}`);
+						await waitFor(() => expect(segmentEl).toHaveTextContent(String(segmentPlaceholder)));
+					})
+				)
+			)
+		);
 	});
 });
