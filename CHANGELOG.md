@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.86.6
+
+### Patch Changes
+
+- fix dropdown menu (closes #1196) ([`b06b51a7`](https://github.com/melt-ui/melt-ui/commit/b06b51a71b383367ef4f9c598bfea4a6e3814ecc))
+
 ## 0.86.5
 
 ### Patch Changes
