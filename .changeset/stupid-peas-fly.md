@@ -2,4 +2,4 @@
 '@melt-ui/svelte': patch
 ---
 
-fix dropdown menu
+fix dropdown menu (closes #1196)
