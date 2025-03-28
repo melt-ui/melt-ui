@@ -198,7 +198,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									closeOnInteractOutside: $closeOnOutsideClick,
 									shouldCloseOnInteractOutside: (e) => {
 										onOutsideClick.get()?.(e);
-										if (e.defaultPrevented) return false;
+										// if (e.defaultPrevented) return false;
 
 										if (
 											isHTMLElement($rootActiveTrigger) &&
