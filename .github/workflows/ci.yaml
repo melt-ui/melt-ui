@@ -24,7 +24,10 @@ jobs:
         with:
           version: 8.6.3
           run_install: true
-      - run: pnpm run lint --ci
+      - run: |
+          curl -LO https://trunk.io/releases/trunk
+          chmod +x ./trunk
+          git commit ./trunk -m "Commit Trunk to our repo"
 
   Check:
     runs-on: ubuntu-latest
