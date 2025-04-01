@@ -25,9 +25,8 @@ jobs:
           version: 8.6.3
           run_install: true
       - run: |
-          curl -LO https://trunk.io/releases/trunk
-          chmod +x ./trunk
-          git commit ./trunk -m "Commit Trunk to our repo"
+          curl -fsSLO --retry 3 https://trunk.io/releases/trunk && chmod +x trunk 
+          ./trunk check --ci
 
   Check:
     runs-on: ubuntu-latest
