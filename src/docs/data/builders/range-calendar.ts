@@ -226,12 +226,12 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'Readable<(date: DateValue) => boolean>',
 		},
 		{
-			name: 'isSeletionStart',
+			name: 'isSelectionStart',
 			description:
 				'A function that returns whether the given date is the date at the start of the selection range.',
 		},
 		{
-			name: 'isSeletionEnd',
+			name: 'isSelectionEnd',
 			description:
 				'A function that returns whether the given date is the date at the end of the selection range.',
 		},
