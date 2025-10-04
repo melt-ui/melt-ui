@@ -27,6 +27,7 @@ import {
 	styleToString,
 	toWritableStores,
 	withGet,
+	isBrowser,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { DateValue } from '@internationalized/date';
@@ -78,6 +79,7 @@ const defaults = {
 	required: false,
 	minValue: undefined,
 	maxValue: undefined,
+	rootElement: undefined,
 } satisfies CreateDateFieldProps;
 
 type DateFieldParts = 'segment' | 'label' | 'hidden-input' | 'field' | 'validation';
@@ -118,7 +120,13 @@ export function createDateField(props?: CreateDateFieldProps) {
 		required,
 		minValue,
 		maxValue,
+		rootElement,
 	} = options;
+
+	const $rootElement = rootElement.get();
+	if (isBrowser && $rootElement === undefined) {
+		rootElement.set(document);
+	}
 
 	const defaultDate = getDefaultDate({
 		defaultPlaceholder: withDefaults.defaultPlaceholder,
@@ -279,7 +287,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const firstSegment = getFirstSegment(ids.field.get());
+					const firstSegment = getFirstSegment(ids.field.get(), $rootElement);
 					if (!firstSegment) return;
 					sleep(1).then(() => firstSegment.focus());
 				}),
@@ -363,7 +371,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 			return {
 				destroy() {
-					removeDescriptionElement(ids.description.get());
+					removeDescriptionElement(ids.description.get(), $rootElement);
 				},
 			};
 		},
@@ -454,7 +462,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					return defaultAttrs;
 				}
 				const id = $idValues[part];
-				const hasDescription = isFirstSegment(id, $idValues.field) || $value;
+				const hasDescription = isFirstSegment(id, $idValues.field, $rootElement) || $value;
 				const describedBy = hasDescription
 					? `${hasDescription} ${$isInvalid ? $idValues.validation : ''}`
 					: undefined;
@@ -561,13 +569,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 		});
 		const $segmentValues = segmentValues.get();
 		const $fieldId = ids.field.get();
-		if (areAllSegmentsFilled($segmentValues, $fieldId)) {
+		if (areAllSegmentsFilled($segmentValues, $fieldId, $rootElement)) {
 			value.set(
-				getValueFromSegments({
-					segmentObj: $segmentValues,
-					id: $fieldId,
-					dateRef: placeholder.get(),
-				})
+				getValueFromSegments(
+					{
+						segmentObj: $segmentValues,
+						id: $fieldId,
+						dateRef: placeholder.get(),
+					},
+					$rootElement
+				)
 			);
 			updatingDayPeriod.set(null);
 		} else {
@@ -780,7 +791,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, $fieldId);
+				moveToNextSegment(e, $fieldId, $rootElement);
 			}
 		}
 
@@ -797,7 +808,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, $fieldId);
+			handleSegmentNavigation(e, $fieldId, $rootElement);
 		}
 	}
 
@@ -963,7 +974,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, $fieldId);
+				moveToNextSegment(e, $fieldId, $rootElement);
 			}
 		}
 
@@ -986,7 +997,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, $fieldId);
+			handleSegmentNavigation(e, $fieldId, $rootElement);
 		}
 	}
 
@@ -1097,7 +1108,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, $fieldId);
+				moveToNextSegment(e, $fieldId, $rootElement);
 			}
 		}
 
@@ -1119,7 +1130,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, $fieldId);
+			handleSegmentNavigation(e, $fieldId, $rootElement);
 		}
 	}
 
@@ -1279,7 +1290,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, $fieldId);
+				moveToNextSegment(e, $fieldId, $rootElement);
 			}
 		}
 
@@ -1302,7 +1313,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, $fieldId);
+			handleSegmentNavigation(e, $fieldId, $rootElement);
 		}
 	}
 
@@ -1463,7 +1474,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, $fieldId);
+				moveToNextSegment(e, $fieldId, $rootElement);
 			}
 		}
 
@@ -1486,7 +1497,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, $fieldId);
+			handleSegmentNavigation(e, $fieldId, $rootElement);
 		}
 	}
 
@@ -1648,7 +1659,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, $fieldId);
+				moveToNextSegment(e, $fieldId, $rootElement);
 			}
 		}
 
@@ -1671,7 +1682,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, $fieldId);
+			handleSegmentNavigation(e, $fieldId, $rootElement);
 		}
 	}
 
@@ -1765,7 +1776,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.field.get());
+			handleSegmentNavigation(e, ids.field.get(), $rootElement);
 		}
 	}
 
@@ -1823,7 +1834,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function handleTimeZoneSegmentKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.field.get());
+			handleSegmentNavigation(e, ids.field.get(), $rootElement);
 		}
 	}
 
@@ -1858,7 +1869,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	effect(value, ($value) => {
 		if ($value) {
 			// Set the description of the field for screen readers
-			setDescription(ids.description.get(), formatter, $value);
+			setDescription(ids.description.get(), formatter, $value, $rootElement);
 		}
 		if ($value && placeholder.get() !== $value) {
 			placeholder.set($value);

@@ -573,6 +573,16 @@ and editable.
 	<svelte:component this={previews.readonlySegments} />
 </Preview>
 
+### Shadow DOM
+
+By default, the Date Field uses the `document` as the root element to query its internal components.
+By utilizing the `rootElement` property you can override this behaviour, this is especially useful
+when running inside the Shadow DOM.
+
+<Preview code={snippets.shadow} >
+    <svelte:component this={previews.shadow} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />

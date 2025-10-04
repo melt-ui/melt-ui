@@ -33,6 +33,7 @@ import {
 	kbd,
 	isNumberString,
 	styleToString,
+	getElementById,
 } from '$lib/internal/helpers/index.js';
 import { get, type Writable } from 'svelte/store';
 import type { IdObj } from '$lib/internal/helpers/index.js';
@@ -226,9 +227,9 @@ export function isAnySegmentPart(part: unknown): part is SegmentPart {
  * the date picker, which is when all the segments have
  * been filled.
  */
-function getUsedSegments(id: string) {
+function getUsedSegments(id: string, rootElement?: ParentNode) {
 	if (!isBrowser) return [];
-	const usedSegments = getSegments(id)
+	const usedSegments = getSegments(id, rootElement)
 		.map((el) => el.dataset.segment)
 		.filter((part): part is EditableSegmentPart => {
 			return EDITABLE_SEGMENT_PARTS.includes(part as EditableSegmentPart);
@@ -242,9 +243,9 @@ type GetValueFromSegments = {
 	dateRef: DateValue;
 };
 
-export function getValueFromSegments(props: GetValueFromSegments) {
+export function getValueFromSegments(props: GetValueFromSegments, rootElement?: ParentNode) {
 	const { segmentObj, id, dateRef } = props;
-	const usedSegments = getUsedSegments(id);
+	const usedSegments = getUsedSegments(id, rootElement);
 	let date = dateRef;
 	usedSegments.forEach((part) => {
 		if ('hour' in segmentObj) {
@@ -270,8 +271,12 @@ export function getValueFromSegments(props: GetValueFromSegments) {
  * @param segmentValues - The current `SegmentValueObj`
  * @param id  - The id of the date field
  */
-export function areAllSegmentsFilled(segmentValues: SegmentValueObj, id: string) {
-	const usedSegments = getUsedSegments(id);
+export function areAllSegmentsFilled(
+	segmentValues: SegmentValueObj,
+	id: string,
+	rootElement?: ParentNode
+) {
+	const usedSegments = getUsedSegments(id, rootElement);
 	return usedSegments.every((part) => {
 		if ('hour' in segmentValues) {
 			return segmentValues[part] !== null;
@@ -392,9 +397,9 @@ export function syncSegmentValues(props: SyncSegmentValuesProps) {
  * @param id - The id of the element to check if it's the first segment
  * @param fieldId - The id of the date field associated with the segment
  */
-export function isFirstSegment(id: string, fieldId: string) {
+export function isFirstSegment(id: string, fieldId: string, rootElement?: ParentNode) {
 	if (!isBrowser) return false;
-	const segments = getSegments(fieldId);
+	const segments = getSegments(fieldId, rootElement);
 	return segments.length ? segments[0].id === id : false;
 }
 
@@ -406,10 +411,15 @@ export function isFirstSegment(id: string, fieldId: string) {
  * so it can be associated via `aria-describedby` and read by
  * screen readers as the user interacts with the date field.
  */
-export function setDescription(id: string, formatter: Formatter, value: DateValue) {
+export function setDescription(
+	id: string,
+	formatter: Formatter,
+	value: DateValue,
+	rootElement?: ParentNode
+) {
 	if (!isBrowser) return;
 	const valueString = formatter.selectedDate(value);
-	const el = document.getElementById(id);
+	const el = getElementById(id, rootElement);
 	if (!el) {
 		const div = document.createElement('div');
 		div.style.cssText = styleToString({
@@ -428,9 +438,9 @@ export function setDescription(id: string, formatter: Formatter, value: DateValu
  * the provided ID. This function should be called when the
  * date field is unmounted.
  */
-export function removeDescriptionElement(id: string) {
+export function removeDescriptionElement(id: string, rootElement?: ParentNode) {
 	if (!isBrowser) return;
-	const el = document.getElementById(id);
+	const el = getElementById(id, rootElement);
 	if (!el) return;
 	document.body.removeChild(el);
 }
