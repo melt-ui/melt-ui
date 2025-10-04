@@ -517,16 +517,6 @@ export function createCalendar<
 	effect([placeholder], ([$placeholder]) => {
 		if (!isBrowser || !$placeholder) return;
 
-		const $visibleMonths = visibleMonths.get();
-
-		/**
-		 * If the placeholder's month is already in the visible months,
-		 * we don't need to do anything.
-		 */
-		if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
-			return;
-		}
-
 		const $weekStartsOn = weekStartsOn.get();
 		const $locale = locale.get();
 		const $fixedWeeks = fixedWeeks.get();
