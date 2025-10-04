@@ -97,6 +97,12 @@ const dateRangePickerProps = [
 		description: 'Whether to always show 6 weeks in the calendar.',
 	},
 	{
+		name: 'numberOfMonths',
+		type: 'number',
+		default: '1',
+		description: 'The number of months to display on the calendar simultaneously.',
+	},
+	{
 		name: 'calendarLabel',
 		type: 'string',
 		default: '"Event date"',
