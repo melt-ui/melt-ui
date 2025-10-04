@@ -161,4 +161,16 @@ describe('Popover (Default)', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 		expect(getByTestId('content-2')).toBeVisible();
 	});
+
+	describe('aria-expanded attribute', () => {
+		it('should be true when open', async () => {
+			const { trigger } = await open();
+			expect(trigger).toHaveAttribute('aria-expanded', 'true');
+		});
+
+		it('should be false when closed', async () => {
+			const { trigger } = setup({ forceVisible: true });
+			expect(trigger).toHaveAttribute('aria-expanded', 'false');
+		});
+	});
 });

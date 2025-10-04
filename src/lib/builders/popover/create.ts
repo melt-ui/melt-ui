@@ -160,13 +160,13 @@ export function createPopover(args?: CreatePopoverProps) {
 	}
 
 	const trigger = makeElement(name('trigger'), {
-		stores: [isVisible, ids.content, ids.trigger],
-		returned: ([$isVisible, $contentId, $triggerId]) => {
+		stores: [open, ids.content, ids.trigger],
+		returned: ([$open, $contentId, $triggerId]) => {
 			return {
 				role: 'button',
 				'aria-haspopup': 'dialog',
-				'aria-expanded': $isVisible ? 'true' : 'false',
-				'data-state': stateAttr($isVisible),
+				'aria-expanded': $open ? 'true' : 'false',
+				'data-state': stateAttr($open),
 				'aria-controls': $contentId,
 				id: $triggerId,
 			} as const;
