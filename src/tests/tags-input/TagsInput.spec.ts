@@ -1,5 +1,5 @@
 import { testKbd as kbd } from '../utils.js';
-import { queryByText, render } from '@testing-library/svelte';
+import { fireEvent, queryByText, render } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe, test } from 'vitest';
@@ -34,6 +34,33 @@ describe('TagsInput', () => {
 		const user = userEvent.setup();
 		const newTag = 'new tag';
 		await user.type(input, `${newTag}${kbd.ENTER}`);
+		expect(input).not.toHaveValue();
+		expect(queryByText(newTag)).toBeInTheDocument();
+	});
+
+	test('Does not add a tag on Enter while composing with an IME', async () => {
+		const { findByRole, queryByText } = render(TagsInput);
+
+		const input = await findByRole('textbox');
+		const user = userEvent.setup();
+		const newTag = 'new tag';
+		await user.type(input, newTag);
+
+		// The Enter keydown that confirms an IME candidate reports `isComposing`.
+		// It must not commit a tag, otherwise the half-composed text is added.
+		const composingEnter = new KeyboardEvent('keydown', {
+			key: 'Enter',
+			bubbles: true,
+			cancelable: true,
+		});
+		Object.defineProperty(composingEnter, 'isComposing', { get: () => true });
+		await fireEvent(input, composingEnter);
+
+		expect(input).toHaveValue(newTag);
+		expect(queryByText(newTag)).not.toBeInTheDocument();
+
+		// Once composition has ended, a normal Enter adds the tag as usual.
+		await user.type(input, kbd.ENTER);
 		expect(input).not.toHaveValue();
 		expect(queryByText(newTag)).toBeInTheDocument();
 	});

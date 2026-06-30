@@ -444,7 +444,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 							highlightText(selector('edit') + `[data-tag-id="${$selected.id}"]`);
 						}
 					} else {
-						if (e.key === kbd.ENTER) {
+						if (e.key === kbd.ENTER && !e.isComposing) {
 							// Add a new tag (if valid)
 							e.preventDefault();
 							const value = node.value;
@@ -680,7 +680,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						node.removeAttribute('data-invalid-edit');
 					}),
 					addMeltEventListener(node, 'keydown', async (e) => {
-						if (e.key === kbd.ENTER) {
+						if (e.key === kbd.ENTER && !e.isComposing) {
 							// Capture the edit value, validate and then update
 							e.preventDefault();
 
