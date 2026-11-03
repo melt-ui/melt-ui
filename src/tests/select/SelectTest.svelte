@@ -5,6 +5,7 @@
 	import { removeUndefined } from '../utils.js';
 
 	export let multiple = false;
+	export let disabled = false;
 	export let defaultValue: string | undefined = undefined;
 	export let escapeBehavior: CreateSelectProps['escapeBehavior'] = 'close';
 	export let closeOnOutsideClick = true;
@@ -14,6 +15,7 @@
 		elements: { trigger, menu, option, group, groupLabel, label },
 		states: { selected, selectedLabel },
 		helpers: { isSelected },
+		options: { disabled: disabledOption },
 		ids: { trigger: triggerId },
 	} = createSelect(
 		removeUndefined({
@@ -30,6 +32,8 @@
 			onOutsideClick,
 		})
 	);
+
+	$: disabledOption.set(disabled);
 
 	let options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],

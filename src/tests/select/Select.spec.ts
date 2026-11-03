@@ -8,6 +8,19 @@ import SelectTest from './SelectTest.svelte';
 const OPEN_KEYS = [kbd.ENTER, kbd.SPACE];
 
 describe('Select', () => {
+	test('Ignores an option after becoming disabled while open', async () => {
+		const user = userEvent.setup();
+		const { getByTestId, component } = render(SelectTest, { defaultValue: 'Caramel' });
+		const trigger = getByTestId('trigger');
+		await user.click(trigger);
+		const option = getByTestId('sweet-option-1');
+
+		await act(() => component.$set({ disabled: true }));
+		await user.click(option);
+
+		expect(trigger).toHaveTextContent('Caramel');
+	});
+
 	test('No accessibility violations', async () => {
 		const { container } = render(SelectTest);
 		expect(await axe(container)).toHaveNoViolations();
