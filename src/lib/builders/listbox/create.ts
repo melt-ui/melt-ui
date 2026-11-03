@@ -210,6 +210,8 @@ export function createListbox<
 	 * @param index array index of the item to select.
 	 */
 	function selectItem(item: HTMLElement) {
+		if (disabled.get()) return;
+
 		const props = getOptionProps(item);
 
 		setOption(props);
